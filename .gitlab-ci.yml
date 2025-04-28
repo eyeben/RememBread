@@ -17,7 +17,7 @@ build:
     paths:
       - RememBread_frontend/dist
   only:
-    - frontend
+    - fe
 
 # Docker Build & Push Stage
 docker_build_push:
@@ -39,7 +39,7 @@ docker_build_push:
   after_script:
     - docker logout
   only:
-    - frontend
+    - fe
 
 # Deploy Stage
 deploy:
@@ -55,4 +55,4 @@ deploy:
     - chmod 600 ~/.ssh/id_rsa
     - ssh-agent sh -c "ssh-add ~/.ssh/id_rsa && ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} 'sudo docker pull ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME} && sudo docker stop my-frontend || true && sudo docker rm my-frontend || true && sudo docker run -d --name my-frontend -p 3000:3000 ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME}'"
   only:
-    - frontend
+    - fe
