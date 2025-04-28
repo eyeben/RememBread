@@ -4,6 +4,7 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
 import CreateFromImage from "@/pages/createIndexCard/CreateFromImage";
+import IndexCardViewPage from "@/pages/IndexCardViewPage";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -34,6 +35,10 @@ const router = createBrowserRouter([
           { path: "pdf", element: <CreateFromPDF /> },
           { path: "image", element: <CreateFromImage /> },
         ],
+      },
+      {
+        path: "card-view",
+        children: [{ path: "my", element: <IndexCardViewPage /> }],
       },
     ],
   },
