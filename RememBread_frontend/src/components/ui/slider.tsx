@@ -1,12 +1,12 @@
-import * as React from "react";
+import { forwardRef, ComponentPropsWithoutRef, ElementRef } from "react";
 import * as SliderPrimitive from "@radix-ui/react-slider";
 import { cn } from "@/lib/utils";
 
-interface SliderProps extends React.ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
+interface SliderProps extends ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
   variant?: "primary" | "positive" | "negative" | "neutral";
 }
 
-const Slider = React.forwardRef<React.ElementRef<typeof SliderPrimitive.Root>, SliderProps>(
+const Slider = forwardRef<ElementRef<typeof SliderPrimitive.Root>, SliderProps>(
   ({ className, variant = "primary", ...props }, ref) => {
     const baseClasses = "relative flex w-full touch-none select-none items-center";
 

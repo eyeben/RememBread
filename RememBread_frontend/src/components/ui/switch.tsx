@@ -1,12 +1,12 @@
-import * as React from "react";
+import { forwardRef, ComponentPropsWithoutRef, ElementRef } from "react";
 import * as SwitchPrimitives from "@radix-ui/react-switch";
 import { cn } from "@/lib/utils";
 
-interface SwitchProps extends React.ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> {
+interface SwitchProps extends ComponentPropsWithoutRef<typeof SwitchPrimitives.Root> {
   variant?: "primary" | "positive" | "negative" | "neutral";
 }
 
-const Switch = React.forwardRef<React.ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
+const Switch = forwardRef<ElementRef<typeof SwitchPrimitives.Root>, SwitchProps>(
   ({ className, variant = "primary", ...props }, ref) => {
     const baseClasses =
       "peer inline-flex h-5 w-9 shrink-0 cursor-pointer items-center rounded-full border-2 border-transparent shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:cursor-not-allowed disabled:opacity-50";
