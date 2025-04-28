@@ -1,6 +1,7 @@
 import { createBrowserRouter } from "react-router-dom";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
+import SignupTermsPage from "@/pages/SignupTermsPage";
 import Layout from "@/components/common/Layout";
 
 const router = createBrowserRouter([
@@ -11,6 +12,11 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
+        handle: { header: false, footer: false },
+      },
+      {
+        path: "/signup/terms",
+        element: <SignupTermsPage />,
         handle: { header: false, footer: false },
       },
     ],
