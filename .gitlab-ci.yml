@@ -1,0 +1,58 @@
+stages:
+  - build
+  - docker
+  - deploy
+
+# Build Stage
+build:
+  stage: build
+  tags:
+    - runner
+  image: node:18
+  script:
+    - cd RememBread_frontend
+    - npm install
+    - npm run build
+  artifacts:
+    paths:
+      - RememBread_frontend/dist
+  only:
+    - frontend
+
+# Docker Build & Push Stage
+docker_build_push:
+  stage: docker
+  tags:
+    - runner
+  image: docker:latest
+  services:
+    - docker:dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""  
+  before_script:
+    - echo "Logging into Docker Hub"
+    - echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
+  script:
+    - cd Frontend
+    - docker build -t ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME} .
+    - docker push ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME}
+  after_script:
+    - docker logout
+  only:
+    - frontend
+
+# Deploy Stage
+deploy:
+  stage: deploy
+  tags:
+    - runner
+  before_script:
+    - apk update && apk add openssh-client
+  script:
+    - echo "Deploying to the server"
+    - mkdir -p ~/.ssh
+    - echo "${SSH_PRIVATE_KEY}" | base64 -d > ~/.ssh/id_rsa
+    - chmod 600 ~/.ssh/id_rsa
+    - ssh-agent sh -c "ssh-add ~/.ssh/id_rsa && ssh -o StrictHostKeyChecking=no ${SSH_USER}@${SSH_HOST} 'sudo docker pull ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME} && sudo docker stop my-frontend || true && sudo docker rm my-frontend || true && sudo docker run -d --name my-frontend -p 3000:3000 ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME}'"
+  only:
+    - frontend
