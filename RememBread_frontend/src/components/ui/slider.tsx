@@ -4,10 +4,11 @@ import { cn } from "@/lib/utils";
 
 interface SliderProps extends ComponentPropsWithoutRef<typeof SliderPrimitive.Root> {
   variant?: "primary" | "positive" | "negative" | "neutral";
+  range?: boolean;
 }
 
 const Slider = forwardRef<ElementRef<typeof SliderPrimitive.Root>, SliderProps>(
-  ({ className, variant = "primary", ...props }, ref) => {
+  ({ className, variant = "primary", range = false, ...props }, ref) => {
     const baseClasses = "relative flex w-full touch-none select-none items-center";
 
     const trackClasses = "relative h-1.5 w-full grow overflow-hidden rounded-full";
@@ -43,7 +44,14 @@ const Slider = forwardRef<ElementRef<typeof SliderPrimitive.Root>, SliderProps>(
         <SliderPrimitive.Track className={cn(trackClasses, stateClasses[variant].track)}>
           <SliderPrimitive.Range className={cn(rangeClasses, stateClasses[variant].range)} />
         </SliderPrimitive.Track>
-        <SliderPrimitive.Thumb className={cn(thumbClasses, stateClasses[variant].thumb)} />
+        {range ? (
+          <>
+            <SliderPrimitive.Thumb className={cn(thumbClasses, stateClasses[variant].thumb)} />
+            <SliderPrimitive.Thumb className={cn(thumbClasses, stateClasses[variant].thumb)} />
+          </>
+        ) : (
+          <SliderPrimitive.Thumb className={cn(thumbClasses, stateClasses[variant].thumb)} />
+        )}
       </SliderPrimitive.Root>
     );
   },

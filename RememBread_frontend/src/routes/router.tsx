@@ -1,7 +1,8 @@
 import { createBrowserRouter } from "react-router-dom";
+import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
-import Layout from "@/components/common/Layout";
+import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
         handle: { header: true, footer: true },
+      },
+      {
+        path: "create",
+        children: [{ path: "pdf", element: <CreateFromPDF /> }],
       },
     ],
   },
