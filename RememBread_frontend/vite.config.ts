@@ -19,24 +19,24 @@ export default defineConfig({
         globPatterns: ['**/*.{js,css,html,ico,png,svg}']
       },
       manifest: {
-        name: 'RememBread',
-        short_name: 'RememBread',
-        description: '빵집 추천 서비스',
-        theme_color: '#ffffff',
-        background_color: '#ffffff',
+        name: '암기빵',
+        short_name: '암기빵',
+        description: '출근길에 굽는 지식 한 조각',
+        theme_color: '#DAB78A',
+        background_color: '#DAB78A',
         display: 'standalone',
         start_url: '/',
         scope: '/',
         orientation: 'portrait',
         icons: [
           {
-            src: 'https://picsum.photos/192/192',
+            src: '/logo.png',
             sizes: '192x192',
             type: 'image/png',
             purpose: 'any'
           },
           {
-            src: 'https://picsum.photos/512/512',
+            src: '/logo.png',
             sizes: '512x512',
             type: 'image/png',
             purpose: 'any'
