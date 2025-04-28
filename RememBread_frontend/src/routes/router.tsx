@@ -3,6 +3,7 @@ import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
+import CreateFromImage from "@/pages/createIndexCard/CreateFromImage";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -29,7 +30,10 @@ const router = createBrowserRouter([
       },
       {
         path: "create",
-        children: [{ path: "pdf", element: <CreateFromPDF /> }],
+        children: [
+          { path: "pdf", element: <CreateFromPDF /> },
+          { path: "image", element: <CreateFromImage /> },
+        ],
       },
     ],
   },
