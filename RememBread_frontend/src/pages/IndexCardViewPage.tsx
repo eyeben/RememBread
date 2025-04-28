@@ -1,5 +1,11 @@
+import IndexCardSearchBar from "@/components/indexCardView/IndexCardSearchBar";
+
 const IndexCardViewPage = () => {
-  return <div>인덱스 카드 조회 페이지임</div>;
+  return (
+    <div className="px-3 pt-2">
+      <IndexCardSearchBar />
+    </div>
+  );
 };
 
 export default IndexCardViewPage;

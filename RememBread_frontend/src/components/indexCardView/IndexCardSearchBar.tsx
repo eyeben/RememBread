@@ -1,11 +1,12 @@
+import { Search } from "lucide-react";
 import { useState } from "react";
 
 const IndexCardSearchBar = () => {
   const [query, setQuery] = useState<string>("");
 
   return (
-    <div className="flex items-center border rounded-full px-4 py-2 w-full max-w-md">
-      <svg
+    <div className="flex items-center border rounded-full px-4 py-2 w-full">
+      {/* <svg
         className="w-4 h-4 text-gray-400 mr-2"
         fill="none"
         stroke="currentColor"
@@ -17,7 +18,8 @@ const IndexCardSearchBar = () => {
           strokeLinejoin="round"
           d="M21 21l-4.35-4.35M10.5 18a7.5 7.5 0 1 0 0-15 7.5 7.5 0 0 0 0 15z"
         />
-      </svg>
+      </svg> */}
+      <Search className="w-5 h-full " />
       <input
         type="text"
         value={query}

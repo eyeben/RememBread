@@ -1,5 +1,5 @@
 import { Link } from "react-router-dom";
-import DefaultBread from "@components/svgs/breads/DefaultBread";
+import DefaultBread from "@/components/svgs/breads/DefaultBread";
 
 const Header = () => {
   return (
