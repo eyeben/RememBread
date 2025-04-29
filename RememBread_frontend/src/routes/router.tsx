@@ -48,22 +48,18 @@ const router = createBrowserRouter([
       {
         path: "/games",
         element: <GamesPage />,
-        handle: { header: true, footer: true },
       },
       {
         path: "/map",
         element: <MapPage />,
-        handle: { header: true, footer: true },
       },
       {
         path: "/card-view",
         element: <IndexCardViewPage />,
-        handle: { header: true, footer: true },
       },
       {
         path: "/profile",
         element: <ProfilePage />,
-        handle: { header: true, footer: true },
       },
     ],
   },

@@ -1,5 +1,5 @@
-import { useNavigate } from 'react-router-dom';
-import 오븐빵 from '@/assets/footer/오븐빵.png';
+import { useNavigate } from "react-router-dom";
+import OvenBread from "@/components/svgs/footer/CreateBread.tsx"
 
 interface FooterModalProps {
   isOpen: boolean;
@@ -8,29 +8,29 @@ interface FooterModalProps {
 
 const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
   const navigate = useNavigate();
-  
+
   if (!isOpen) return null;
 
   const inputTypes = [
-    { 
-      topText: '직접',
-      bottomText: '입력',
-      path: '/create'
+    {
+      topText: "직접",
+      bottomText: "입력",
+      path: "/create",
     },
-    { 
-      topText: '텍스트로',
-      bottomText: '입력',
-      path: '/create/text'
+    {
+      topText: "텍스트로",
+      bottomText: "입력",
+      path: "/create/text",
     },
-    { 
-      topText: 'PDF로',
-      bottomText: '입력',
-      path: '/create/pdf'
+    {
+      topText: "PDF로",
+      bottomText: "입력",
+      path: "/create/pdf",
     },
-    { 
-      topText: '이미지로',
-      bottomText: '입력',
-      path: '/create/image'
+    {
+      topText: "이미지로",
+      bottomText: "입력",
+      path: "/create/image",
     },
   ];
 
@@ -44,13 +44,13 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
       <div className="fixed bottom-16 left-0 right-0 max-w-[600px] mx-auto rounded-t-2xl p-4 z-50">
         <div className="grid grid-cols-4 gap-4">
           {inputTypes.map((type, index) => (
-            <div 
-              key={index} 
+            <div
+              key={index}
               className="flex flex-col items-center cursor-pointer"
               onClick={() => handleClick(type.path)}
             >
               <div className="relative w-24 h-24 flex items-center justify-center">
-                <img src={오븐빵} alt={`${type.topText} ${type.bottomText}`} className="w-24 h-24" />
+                <OvenBread className="w-24 h-24"/>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-center text-xs text-neutral-900 font-bold leading-tight">
                     {type.topText}
@@ -68,4 +68,4 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
   );
 };
 
-export default FooterModal; 
+export default FooterModal;
