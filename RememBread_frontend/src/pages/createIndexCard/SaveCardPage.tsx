@@ -16,7 +16,11 @@ const SaveCardPage = () => {
     { id: 4, parentFolderId: 2, name: "하위 폴더 1-1" },
   ];
 
-  const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
+  const [selectedFolder, setSelectedFolder] = useState<Folder | null>({
+    id: 0,
+    parentFolderId: 0,
+    name: "새로 만들기",
+  });
 
   const handleFolderSelect = (folder: Folder) => {
     setSelectedFolder(folder);
@@ -31,6 +35,15 @@ const SaveCardPage = () => {
 
       <div className="m-5">
         <ul className="list-none">
+          <li className="py-2">
+            <Button
+              className={`w-full ${selectedFolder?.id === 0 ? "bg-primary-500 text-white" : ""}`}
+              variant="primary-outline"
+              onClick={() => handleFolderSelect({ id: 0, parentFolderId: 0, name: "새로 만들기" })}
+            >
+              새로 만들기
+            </Button>
+          </li>
           {folderData.map((folder) => (
             <li key={folder.id} className="py-2">
               <Button
