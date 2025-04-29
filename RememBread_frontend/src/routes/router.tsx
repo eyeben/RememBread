@@ -3,11 +3,12 @@ import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import CreateFromPDFPage from "@/pages/createIndexCard/CreateFromPDFPage";
-import CreateFromSelfFPage from "@/pages/createIndexCard/CreateFromSelfPage";
+import CreateFromSelfPage from "@/pages/createIndexCard/CreateFromSelfPage";
 import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import IndexCardViewPage from "@/pages/IndexCardViewPage";
+import ProfilePage from "@/pages/profile/ProfilePage";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
       {
         path: "create",
         children: [
-          { index: true, element: <CreateFromSelfFPage /> },
+          { index: true, element: <CreateFromSelfPage /> },
           { path: "pdf", element: <CreateFromPDFPage /> },
           { path: "text", element: <CreateFromTextFPage /> },
           { path: "image", element: <CreateFromImageFPage /> },
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "card-view",
         children: [{ path: "my", element: <IndexCardViewPage /> }],
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
       },
     ],
   },
