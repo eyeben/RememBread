@@ -25,9 +25,9 @@ public class User extends BaseEntity {
     private String socialLoginId;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false, columnDefinition = "social_login_type")
+    @Column(nullable = false)
     private SocialLoginType socialLoginType;
 
-    @Column(nullable = false, length = 10)
+    @Column(nullable = false)
     private LocalDateTime lastLoginAt;
 }

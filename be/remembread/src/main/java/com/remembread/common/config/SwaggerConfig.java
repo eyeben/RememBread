@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "쌩고집 API",
+                title = "암기빵 API",
                 version = "v1",
-                description = "쌩고집 API 문서입니다."
+                description = "암기빵 API 문서입니다."
         ),
         security = @SecurityRequirement(name = "bearerAuth")
 )
