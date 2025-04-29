@@ -4,7 +4,7 @@ import InputBread from "@/components/svgs/InputBread";
 import { indexCardSet } from "@/types/indexCard";
 import { createEmptyCard } from "@/utils/createEmptyCard";
 
-const CreateFromSelf = () => {
+const CreateFromSelfPage = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
@@ -126,4 +126,4 @@ const CreateFromSelf = () => {
   );
 };
 
-export default CreateFromSelf;
+export default CreateFromSelfPage;
