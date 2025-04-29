@@ -8,6 +8,7 @@ import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import IndexCardViewPage from "@/pages/IndexCardViewPage";
+import ProfilePage from "@/pages/profile/ProfilePage";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -48,6 +49,10 @@ const router = createBrowserRouter([
       {
         path: "card-view",
         children: [{ path: "my", element: <IndexCardViewPage /> }],
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
       },
     ],
   },
