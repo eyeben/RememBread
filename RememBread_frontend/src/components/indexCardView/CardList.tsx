@@ -3,7 +3,7 @@ import { Star } from "lucide-react";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 
 const BreadList = () => {
-  const breads = Array.from({ length: 20 }, (_, i) => i + 1);
+  const breads = Array.from({ length: 25 }, (_, i) => i + 1);
   const ITEMS_PER_PAGE = 12;
   const [page, setPage] = useState<number>(0);
 
