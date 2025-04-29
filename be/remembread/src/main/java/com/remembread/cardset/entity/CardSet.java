@@ -2,6 +2,7 @@ package com.remembread.cardset.entity;
 
 import com.remembread.card.entity.Card;
 import com.remembread.common.entity.BaseEntity;
+import com.remembread.folder.entity.Folder;
 import com.remembread.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,9 +23,9 @@ public class CardSet extends BaseEntity {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "folder_id")
-//    private Folder folder;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "last_viewed_card_id")
