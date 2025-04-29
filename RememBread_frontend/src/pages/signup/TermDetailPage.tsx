@@ -1,8 +1,10 @@
 import { useNavigate, useParams } from 'react-router-dom';
+import useTermsStore from '@/stores/termsStore';
 
 const TermDetailPage = () => {
   const navigate = useNavigate();
   const { termId } = useParams();
+  const { handleSingleCheck } = useTermsStore();
 
   const termContents = {
     1: {
@@ -29,11 +31,13 @@ const TermDetailPage = () => {
 
   const currentTerm = termContents[Number(termId) as keyof typeof termContents];
 
-  const handleAgree = () => {
-    navigate('/signup');
+  const handleBack = () => {
+    navigate('/signup/terms');
   };
 
-  const handleBack = () => {
+  const handleAgree = () => {
+    const termKey = `term${termId}` as 'term1' | 'term2' | 'term3';
+    handleSingleCheck(termKey, true);
     navigate('/signup/terms');
   };
 

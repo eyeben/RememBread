@@ -1,49 +1,18 @@
-import { useState } from "react";
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Button from "@/components/common/Button";
 import welcomeCroissant from "@/assets/loginImages/웰컴크루아상.png";
+import useTermsStore from "@/stores/termsStore";
 
 const SignupTermsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isDetailPage = location.pathname.includes('/signup/terms/');
   
-  const [checkboxes, setCheckboxes] = useState({
-    all: false,
-    term1: false,
-    term2: false,
-    term3: false,
-  });
-
-  const handleAllCheck = (checked: boolean) => {
-    setCheckboxes({
-      all: checked,
-      term1: checked,
-      term2: checked,
-      term3: checked,
-    });
-  };
-
-  const handleSingleCheck = (name: keyof typeof checkboxes, checked: boolean) => {
-    const newCheckboxes = {
-      ...checkboxes,
-      [name]: checked,
-    };
-    
-    // 모든 필수 약관이 체크되었는지 확인
-    const allChecked = newCheckboxes.term1 && newCheckboxes.term2 && newCheckboxes.term3;
-    
-    setCheckboxes({
-      ...newCheckboxes,
-      all: allChecked,
-    });
-  };
+  const { checkboxes, handleSingleCheck, handleAllCheck, isAllTermsChecked } = useTermsStore();
 
   const handleTermDetail = (termId: number) => {
     navigate(`/signup/terms/${termId}`);
   };
-
-  const isAllTermsChecked = checkboxes.term1 && checkboxes.term2 && checkboxes.term3;
 
   return (
     <>
