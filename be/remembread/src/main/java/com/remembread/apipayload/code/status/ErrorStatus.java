@@ -31,7 +31,17 @@ public enum ErrorStatus implements BaseErrorCode {
     ALREADY_JOIN(HttpStatus.BAD_REQUEST, "USER4004", "이미 %s로 로그인한 이메일입니다."),
     SAME_EMAIL(HttpStatus.BAD_REQUEST , "USER4001", "기존과 동일한 이메일입니다."),
     EMAIL_EXIST(HttpStatus.BAD_REQUEST, "USER4003", "이미 사용 중인 이메일입니다."),
-    UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "USER4004", "이메일 전송에 실패하였습니다.");
+    UNABLE_TO_SEND_EMAIL(HttpStatus.BAD_REQUEST, "USER4004", "이메일 전송에 실패하였습니다."),
+
+
+    //폴터 관련 에러
+    FOLDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOLDER4004", "폴더가 존재하지 않습니다."),
+    FOLDER_FORBIDDEN(HttpStatus.BAD_REQUEST, "FOLDER4003", "폴더의 주인이 아닙니다."),
+
+    //카드셋 관련 에러
+    CARDSET_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOLDER4004", "폴더가 존재하지 않습니다."),
+    CARDSET_FORBIDDEN(HttpStatus.BAD_REQUEST, "FOLDER4003", "폴더의 주인이 아닙니다."),
+    ;
 
 
 
