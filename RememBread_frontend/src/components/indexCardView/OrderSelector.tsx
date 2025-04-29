@@ -1,8 +1,8 @@
 import { useState } from "react";
+import { List } from "lucide-react";
 import { ButtonUI } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-import { List } from "lucide-react";
 
 const sortOptions = [
   { label: "최신순", value: "latest" },
