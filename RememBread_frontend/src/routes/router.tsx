@@ -2,9 +2,11 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
-import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
-import CreateFromText from "@/pages/createIndexCard/CreateFromText";
-import CreateFromImage from "@/pages/createIndexCard/CreateFromImage";
+import CreateFromPDFPage from "@/pages/createIndexCard/CreateFromPDFPage";
+import CreateFromSelfFPage from "@/pages/createIndexCard/CreateFromSelfPage";
+import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
+import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
+import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import IndexCardViewPage from "@/pages/IndexCardViewPage";
 
 const router = createBrowserRouter([
@@ -33,10 +35,15 @@ const router = createBrowserRouter([
       {
         path: "create",
         children: [
-          { path: "pdf", element: <CreateFromPDF /> },
-          { path: "text", element: <CreateFromText /> },
-          { path: "image", element: <CreateFromImage /> },
+          { index: true, element: <CreateFromSelfFPage /> },
+          { path: "pdf", element: <CreateFromPDFPage /> },
+          { path: "text", element: <CreateFromTextFPage /> },
+          { path: "image", element: <CreateFromImageFPage /> },
         ],
+      },
+      {
+        path: "save",
+        element: <SaveCardPage />,
       },
       {
         path: "card-view",

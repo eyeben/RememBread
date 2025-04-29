@@ -1,54 +1,34 @@
 import { useState, ChangeEvent, KeyboardEvent } from "react";
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
-
-GlobalWorkerOptions.workerSrc = pdfWorkerPath;
-
+import { X } from "lucide-react";
 import Button from "@/components/common/Button";
 import HashtagInput from "@/components/common/HashtagInput";
 import InputBread from "@/components/svgs/InputBread";
 import { Input } from "@/components/ui/input";
-import { Slider } from "@/components/ui/slider";
 
-const CreateFromPDF = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [pageCount, setPageCount] = useState<number>(1);
-  const [pageRange, setPageRange] = useState<[number, number]>([0, 0]);
+const CreateFromImagePage = () => {
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState<string>("");
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
+    const files = event.target.files;
 
-    if (file) {
-      if (file.type === "application/pdf") {
-        setSelectedFile(file);
+    if (files) {
+      const validImageTypes = ["image/jpeg", "image/png", "image/gif"];
+      const selectedFiles: File[] = [];
 
-        const fileReader = new FileReader();
+      Array.from(files).forEach((file) => {
+        if (validImageTypes.includes(file.type)) {
+          selectedFiles.push(file);
+        } else {
+          console.error(`"${file.name}" 파일은 이미지 파일이 아닙니다.`);
+        }
+      });
 
-        fileReader.onload = async () => {
-          if (fileReader.result) {
-            const typedarray = new Uint8Array(fileReader.result as ArrayBuffer);
-
-            try {
-              const pdf = await getDocument(typedarray).promise;
-              setPageCount(pdf.numPages);
-              setPageRange([0, pdf.numPages]);
-            } catch (error) {
-              console.error("PDF 로딩 실패", error);
-            }
-          }
-        };
-
-        fileReader.readAsArrayBuffer(file);
-      } else {
-        console.error("PDF 파일만 업로드할 수 있습니다.");
+      if (selectedFiles.length > 0) {
+        setSelectedFiles((prevFiles) => [...prevFiles, ...selectedFiles]);
       }
     }
-  };
-
-  const handleSliderChange = (value: number[]) => {
-    setPageRange([value[0], value[1]]);
   };
 
   const handleHashtagInputChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -73,20 +53,18 @@ const CreateFromPDF = () => {
     }
   };
 
+  const handleRemoveFile = (fileToRemove: File) => {
+    setSelectedFiles(selectedFiles.filter((file) => file !== fileToRemove));
+  };
+
   return (
     <div
       className="flex flex-col justify-between w-full text-center"
       style={{ minHeight: "calc(100vh - 120px)" }}
     >
-      <h1 className="text-primary-500 text-2xl font-bold m-5">PDF파일을 재료로 넣어봐뽱</h1>
+      <h1 className="text-primary-500 text-2xl font-bold m-5">사진을 재료로 넣어봐뽱</h1>
 
       <div className="relative w-full">
-        {selectedFile && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 text-sm text-neutral-700 font-bold">
-            {selectedFile.name}
-          </div>
-        )}
-
         <InputBread className="w-full" />
 
         <Input
@@ -97,8 +75,33 @@ const CreateFromPDF = () => {
       </div>
 
       <div className="m-5 gap-2">
-        {selectedFile && (
+        {selectedFiles.length > 0 && (
           <>
+            <h2 className="text-lg font-semibold">업로드된 이미지</h2>
+            <div className="flex gap-2 flex-wrap justify-between mb-4">
+              {selectedFiles.map((file, index) => (
+                <div
+                  key={index}
+                  className="w-16 h-16 bg-gray-100 border rounded flex flex-col items-center mb-4"
+                >
+                  <div
+                    className="relative w-16 h-16 cursor-pointer"
+                    onClick={() => handleRemoveFile(file)}
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={file.name}
+                      className="object-fill w-16 h-16 rounded"
+                    />
+                    <X className="absolute top-0 right-0" />
+                    <p className="w-16 text-xs text-center overflow-hidden text-ellipsis whitespace-nowrap">
+                      {file.name}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
+
             <HashtagInput
               hashtags={hashtags}
               hashtagInput={hashtagInput}
@@ -107,18 +110,6 @@ const CreateFromPDF = () => {
               handleRemoveHashtag={handleRemoveHashtag}
               handleHashtagInputKeyDown={handleHashtagInputKeyDown}
             />
-
-            <div className="flex flex-col gap-2 text-start">
-              <span>페이지 설정 {`${pageRange[0]} - ${pageRange[1]}`}</span>
-              <Slider
-                defaultValue={[1, pageCount]}
-                max={pageCount}
-                step={1}
-                range={true}
-                value={pageRange}
-                onValueChange={handleSliderChange}
-              />
-            </div>
           </>
         )}
       </div>
@@ -130,4 +121,4 @@ const CreateFromPDF = () => {
   );
 };
 
-export default CreateFromPDF;
+export default CreateFromImagePage;
