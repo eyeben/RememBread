@@ -3,6 +3,7 @@ import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
+import CreateFromSelf from "@/pages/createIndexCard/CreateFromSelf";
 import CreateFromText from "@/pages/createIndexCard/CreateFromText";
 import CreateFromImage from "@/pages/createIndexCard/CreateFromImage";
 import IndexCardViewPage from "@/pages/IndexCardViewPage";
@@ -33,6 +34,7 @@ const router = createBrowserRouter([
       {
         path: "create",
         children: [
+          { index: true, element: <CreateFromSelf /> },
           { path: "pdf", element: <CreateFromPDF /> },
           { path: "text", element: <CreateFromText /> },
           { path: "image", element: <CreateFromImage /> },
