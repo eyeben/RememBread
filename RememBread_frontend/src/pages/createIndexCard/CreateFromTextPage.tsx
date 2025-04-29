@@ -3,7 +3,7 @@ import Button from "@/components/common/Button";
 import HashtagInput from "@/components/common/HashtagInput";
 import InputBread from "@/components/svgs/InputBread";
 
-const CreateFromText = () => {
+const CreateFromTextPage = () => {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
@@ -69,4 +69,4 @@ const CreateFromText = () => {
   );
 };
 
-export default CreateFromText;
+export default CreateFromTextPage;
