@@ -1,0 +1,46 @@
+import { useState } from "react";
+import Profile from "@/components/profile/Profile";
+
+const tabs = ["프로필", "게임 히스토리", "학습 기록"];
+const tabContents = [
+  <div key="0">
+    <Profile />
+  </div>,
+  <div key="1">
+    <div>게임 히스토리</div>
+  </div>,
+  <div key="2">
+    <div>학습 기록</div>
+  </div>,
+];
+
+const ProfilePage = () => {
+  const [selectedTab, setSelectedTab] = useState<number>(0);
+
+  return (
+    <>
+      <div className="relative flex gap-1 border-b my-2">
+        {tabs.map((tab, index) => (
+          <div
+            key={index}
+            className={`flex-1 p-2 text-center cursor-pointer ${
+              selectedTab === index ? "font-bold text-primary-500" : "text-neutral-500"
+            }`}
+            onClick={() => setSelectedTab(index)}
+          >
+            {tab}
+          </div>
+        ))}
+
+        <div
+          className="absolute bottom-0 h-1 bg-primary-500 transition-all duration-300"
+          style={{ width: "33.33%", left: `${selectedTab * 33.33}%` }}
+        />
+      </div>
+
+      <div>{tabContents[selectedTab]}</div>
+    </>
+  );
+};
+
+export default ProfilePage;

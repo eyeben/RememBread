@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import DefaultBread from "@/components/svgs/breads/DefaultBread";
 
 const Header = () => {
   return (
@@ -7,7 +8,7 @@ const Header = () => {
         <ul className="flex justify-between items-center w-full h-full px-5">
           <li className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
             <Link to={"/"}>
-              <img className="w-10" src="/logo.png" alt="로고" />
+              <DefaultBread />
             </Link>
           </li>
         </ul>
