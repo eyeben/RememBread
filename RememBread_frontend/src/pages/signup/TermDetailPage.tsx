@@ -1,14 +1,17 @@
-import { useNavigate, useParams } from 'react-router-dom';
-import useTermsStore from '@/stores/termsStore';
+import { useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import useTermsStore from "@/stores/termsStore";
+import Button from "@/components/common/Button";
 
 const TermDetailPage = () => {
   const navigate = useNavigate();
   const { termId } = useParams();
   const { handleSingleCheck } = useTermsStore();
+  const [isAgreed, setIsAgreed] = useState(false);
 
   const termContents = {
     1: {
-      title: '세부 동의 사항',
+      title: "세부 동의 사항",
       content: `제 1조 (목적)
 이 약관은 주식회사 "암기빵"(이하 "회사"라 합니다)이 제공하는 암기빵 서비스(이하 "서비스"라 합니다)와 관련하여, 회사 이용 과정에서 서비스 이용자와 회사 간의 권리, 의무 및 책임사항의 규정을 목적으로 합니다. 본 약관은 PC통신, 스마트폰(안드로이드 등, 아이폰 등) 앱 등을 이용하는 전자상거래에 대해서도 그 성질에 반하지 않는 한 준용됩니다.
 
@@ -17,64 +20,59 @@ const TermDetailPage = () => {
 
 2. "회사"가 제공 하는 "암기빵"에 게시정보를 제공하여 회원 등록을 한 자로서, "암기빵"의 정보를 지속적으로 제공받으며, "암기빵"이 제공하는 서비스를 계속적으로 이용할 수 있는 자를 의미하고, "암기빵" 광고업소는 포함되지 않습니다.
 
-제 3조 (아이우에오)`
+제 3조 (아이우에오)`,
     },
     2: {
-      title: '개인정보 처리방침',
-      content: '개인정보 처리방침 내용이 들어갈 자리입니다...'
+      title: "개인정보 처리방침",
+      content: "개인정보 처리방침 내용이 들어갈 자리입니다...",
     },
     3: {
-      title: '위치기반 서비스 이용약관',
-      content: '위치기반 서비스 이용약관 내용이 들어갈 자리입니다...'
-    }
+      title: "위치기반 서비스 이용약관",
+      content: "위치기반 서비스 이용약관 내용이 들어갈 자리입니다...",
+    },
   };
 
   const currentTerm = termContents[Number(termId) as keyof typeof termContents];
 
   const handleBack = () => {
-    navigate('/signup/terms');
+    navigate("/signup/terms");
   };
 
   const handleAgree = () => {
-    const termKey = `term${termId}` as 'term1' | 'term2' | 'term3';
+    setIsAgreed(true);
+    const termKey = `term${termId}` as "term1" | "term2" | "term3";
     handleSingleCheck(termKey, true);
-    navigate('/signup/terms');
+    navigate("/signup/terms");
   };
 
   return (
-    <div className="min-h-screen bg-neutral-100">
+    <div className="w-full max-w-[600px] mx-auto pc:border-x">
       <header className="fixed top-0 left-0 right-0 w-full max-w-[600px] h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-50">
         <nav className="h-full mx-auto">
           <div className="flex items-center w-full h-full px-5">
-            <button 
-              onClick={handleBack}
-              className="absolute left-5"
-            >
+            <button onClick={handleBack} className="absolute left-5">
               &lt;
             </button>
-            <h1 className="w-full text-center text-lg font-bold">
-              {currentTerm?.title}
-            </h1>
+            <h1 className="w-full text-center text-lg font-bold">{currentTerm?.title}</h1>
           </div>
         </nav>
       </header>
-      <div className="pt-14">
-        <div className="p-6">
-          <p className="whitespace-pre-line text-sm leading-6">
-            {currentTerm?.content}
-          </p>
+      <div className="pt-14 min-h-screen flex flex-col">
+        <div className="p-6 flex-1">
+          <p className="whitespace-pre-line text-sm leading-6">{currentTerm?.content}</p>
         </div>
-      </div>
-      <div className="fixed bottom-0 left-0 right-0 w-full max-w-[600px] mx-auto p-4 bg-white border-t border-neutral-200">
-        <button 
-          onClick={handleAgree}
-          className="w-full py-3 bg-primary text-white rounded-lg"
-        >
-          동의
-        </button>
+        <div className="flex justify-center items-center py-[14px] px-0 mb-24">
+          <Button
+            variant={isAgreed ? "primary" : "primary-outline"}
+            className="w-[28rem] py-3"
+            onClick={handleAgree}
+          >
+            동의
+          </Button>
+        </div>
       </div>
     </div>
   );
 };
 
-export default TermDetailPage; 
+export default TermDetailPage;
