@@ -128,7 +128,10 @@ module.exports = {
       animation: {
         shake: "shake 0.5s ease-in-out",
       },
+      transformOrigin: {
+        center: "center",
+      },
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 };

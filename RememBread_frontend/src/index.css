@@ -100,6 +100,19 @@
       rgba(0, 0, 0, 0) 85%
     );
   }
+
+  .rotate-y-180 {
+    transform: rotateY(180deg);
+  }
+
+  .rotate-y-0 {
+    transform: rotateY(0deg);
+  }
+
+  .flip {
+    transform-style: preserve-3d;
+    backface-visibility: hidden;
+  }
 }
 
 @keyframes shine {
