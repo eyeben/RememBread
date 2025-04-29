@@ -1,6 +1,5 @@
 package com.remembread.card.entity;
 
-import com.remembread.cardset.entity.CardSet;
 import com.remembread.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;

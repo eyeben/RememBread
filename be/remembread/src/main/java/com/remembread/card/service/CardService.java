@@ -22,9 +22,11 @@ public class CardService {
     public void createCard(CardCreateGetDto request, Long userId) {
         CardSet cardSet = cardSetRepository.findById(request.getCardSetId()).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
 
-        if(!cardSet.getUserId().equals(userId))
+        if(!cardSet.getUser().getId().equals(userId))
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
 
-
+        Card card = Card.builder()
+                .cardSet(cardSet)
+                .build();
     }
 }

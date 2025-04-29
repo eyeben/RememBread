@@ -1,16 +1,14 @@
 package com.remembread.card.entity;
 
 import com.remembread.common.entity.BaseEntity;
+import com.remembread.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 @Entity
 @Table(name = "card_sets")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class CardSet extends BaseEntity {
@@ -19,14 +17,17 @@ public class CardSet extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "folder_id")
-    private Long folderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "folder_id")
+    private Folder folder;
 
-    @Column(name = "last_viewed_card_id")
-    private Long lastViewedCardId;
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "last_viewed_card_id")
+    private Card lastViewedCard;
 
     @Column(length = 25, nullable = false)
     private String name;

@@ -1,16 +1,17 @@
 package com.remembread.card.entity;
 
 import com.remembread.common.entity.BaseEntity;
+import com.remembread.user.entity.User;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
+
+import java.util.List;
+
 
 @Entity
 @Table(name = "folders")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Folder extends BaseEntity {
@@ -19,11 +20,16 @@ public class Folder extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "user_id", nullable = false)
-    private Long userId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
 
-    @Column(name = "upper_folder_id")
-    private Long upperFolderId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "upper_folder_id")
+    private Folder upperFolder;
+
+    @OneToMany(mappedBy = "upperFolder", cascade = CascadeType.ALL)
+    private List<Folder> subFolders;
 
     @Column(length = 25, nullable = false)
     private String name;
