@@ -14,16 +14,16 @@ public class Card {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Long card_set_id;
+    private Long cardSetId;
     private Integer number;
     private String concept;
     private String description;
-    private Integer right_count;
-    private Integer test_count;
-    private Double retention_rate;
-    private Double stability_factor;
-    private LocalDateTime last_right_at;
-    private String concept_url;
-    private String description_url;
+    private Integer rightCount;
+    private Integer testCount;
+    private Double retentionRate;
+    private Double stabilityFactor;
+    private LocalDateTime lastRightAt;
+    private String conceptUrl;
+    private String descriptionUrl;
 
 }
