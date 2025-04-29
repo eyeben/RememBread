@@ -1,11 +1,15 @@
 import { createBrowserRouter } from "react-router-dom";
+import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
-import Layout from "@/components/common/Layout";
 import GamesPage from "@/pages/GamesPage";
 import MapPage from "@/pages/MapPage";
 import CardViewPage from "@/pages/CardViewPage";
 import ProfilePage from "@/pages/ProfilePage";
+import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
+import CreateFromText from "@/pages/createIndexCard/CreateFromText";
+import CreateFromImage from "@/pages/createIndexCard/CreateFromImage";
+import IndexCardViewPage from "@/pages/IndexCardViewPage";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -29,6 +33,18 @@ const router = createBrowserRouter([
         index: true,
         element: <HomePage />,
         handle: { header: true, footer: true },
+      },
+      {
+        path: "create",
+        children: [
+          { path: "pdf", element: <CreateFromPDF /> },
+          { path: "text", element: <CreateFromText /> },
+          { path: "image", element: <CreateFromImage /> },
+        ],
+      },
+      {
+        path: "card-view",
+        children: [{ path: "my", element: <IndexCardViewPage /> }],
       },
       {
         path: "/games",
