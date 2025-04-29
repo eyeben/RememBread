@@ -1,11 +1,10 @@
-import React from 'react';
-import CreateOven from './CreateOven';
+import CreateOven from '@/components/svgs/footer/CreateOven';
 
 interface OvenPolygonProps {
   onClick: () => void;
 }
 
-const OvenPolygon: React.FC<OvenPolygonProps> = ({ onClick }) => {
+const OvenPolygon = ({ onClick }: OvenPolygonProps) => {
   return (
     <div
       className="flex-1 flex flex-col items-center justify-center -mt-9 cursor-pointer"
