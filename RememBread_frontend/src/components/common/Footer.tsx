@@ -15,7 +15,7 @@ import OvenPolygon from "@/components/svgs/footer/OvenPolygon";
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const [isOvenOpen, setIsOvenOpen] = useState(false);
+  const [isOvenOpen, setIsOvenOpen] = useState<boolean>(false);
 
   const isActive = (path: string) => {
     if (path === "/card-view") {
