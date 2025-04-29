@@ -11,7 +11,6 @@ const BreadList = () => {
 
   return (
     <div className="flex flex-col items-center w-full px-4">
-      {/* 빵 리스트 */}
       <div className="flex flex-wrap w-full justify-between gap-4 pc:gap-8">
         {currentItems.map((_, idx) => (
           <div key={idx} className="relative w-[28%] pc:w-1/5">
