@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import SignupTermsPage from "@/pages/SignupTermsPage";
+import TermDetailPage from "@/pages/signup/TermDetailPage";
 import Layout from "@/components/common/Layout";
 
 const router = createBrowserRouter([
@@ -18,6 +19,13 @@ const router = createBrowserRouter([
         path: "/signup/terms",
         element: <SignupTermsPage />,
         handle: { header: false, footer: false },
+        children: [
+          {
+            path: ":termId",
+            element: <TermDetailPage />,
+            handle: { header: false, footer: false },
+          },
+        ],
       },
     ],
   },
