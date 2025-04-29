@@ -13,7 +13,7 @@ build_and_push:
   variables:
     DOCKER_TLS_CERTDIR: ""
   before_script:
-    - apk update && apk add openjdk17 gradle git
+    - apt-get update && apt-get install -y openjdk-17-jdk gradle git
     - echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
   script:
     - cd be/remembread
