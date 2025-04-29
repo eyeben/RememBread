@@ -4,7 +4,6 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import GamesPage from "@/pages/GamesPage";
 import MapPage from "@/pages/MapPage";
-import CardViewPage from "@/pages/CardViewPage";
 import ProfilePage from "@/pages/ProfilePage";
 import CreateFromPDF from "@/pages/createIndexCard/CreateFromPDF";
 import CreateFromText from "@/pages/createIndexCard/CreateFromText";
@@ -58,7 +57,7 @@ const router = createBrowserRouter([
       },
       {
         path: "/card-view",
-        element: <CardViewPage />,
+        element: <IndexCardViewPage />,
         handle: { header: true, footer: true },
       },
       {
