@@ -1,18 +1,16 @@
 package com.remembread.card.entity;
 
+import com.remembread.cardset.entity.CardSet;
 import com.remembread.common.entity.BaseEntity;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "cards")
 @Getter
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
 public class Card extends BaseEntity {
@@ -21,9 +19,9 @@ public class Card extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "card_set_id", nullable = false)
-//    private CardSet cardSet;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "card_set_id", nullable = false)
+    private CardSet cardSet;
 
     @Column(nullable = false)
     private Integer number;
