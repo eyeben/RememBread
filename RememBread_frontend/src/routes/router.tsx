@@ -2,6 +2,8 @@ import { createBrowserRouter } from "react-router-dom";
 import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
+import GamesPage from "@/pages/GamesPage";
+import MapPage from "@/pages/MapPage";
 import SignupTermsPage from "@/pages/SignupTermsPage";
 import TermDetailPage from "@/pages/signup/TermDetailPage";
 import CreateFromPDFPage from "@/pages/createIndexCard/CreateFromPDFPage";
@@ -67,6 +69,14 @@ const router = createBrowserRouter([
       {
         path: "profile",
         element: <ProfilePage />,
+      },
+      {
+        path: "/games",
+        element: <GamesPage />,
+      },
+      {
+        path: "/map",
+        element: <MapPage />,
       },
     ],
   },
