@@ -1,6 +1,6 @@
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import Button from "@/components/common/Button";
-import welcomeCroissant from "@/assets/loginImages/웰컴크루아상.png";
+import WelcomeCroissant from "@/components/svgs/login/WelcomeCroissant";
 import useTermsStore from "@/stores/termsStore";
 
 const SignupTermsPage = () => {
@@ -19,9 +19,7 @@ const SignupTermsPage = () => {
       {!isDetailPage && (
         <div className="flex flex-col items-center min-h-screen p-4">
           <div className="w-full max-w-md text-center mt-20">
-            <img 
-              src={welcomeCroissant} 
-              alt="웰컴 크루아상" 
+            <WelcomeCroissant 
               className="w-[200px] h-[200px] mx-auto mb-8"
             />
             <h1 className="text-2xl font-bold mb-1">암기빵이 처음이시군요</h1>
