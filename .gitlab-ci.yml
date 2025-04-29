@@ -33,7 +33,7 @@ docker_build_push:
     - echo "Logging into Docker Hub"
     - echo ${DOCKER_PASSWORD} | docker login -u ${DOCKER_USERNAME} --password-stdin
   script:
-    - cd Frontend
+    - cd RememBread_frontend
     - docker build -t ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME} .
     - docker push ${DOCKER_USERNAME}/${DOCKER_FRONTEND_IMAGE_NAME}
   after_script:
