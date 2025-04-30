@@ -3,6 +3,7 @@ package com.remembread.card.service;
 import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
@@ -27,6 +28,7 @@ public class CardSetService {
     private final CardRepository cardRepository;
     private final CardSetRepository cardSetRepository;
     private final FolderRepository folderRepository;
+
     private final HashtagRepository hashtagRepository;
     private final CardSetHashtagRepository cardSetHashtagRepository;
 
@@ -62,6 +64,17 @@ public class CardSetService {
                     .build();
             cardSetHashtagRepository.saveAndFlush(cardSetHashtag);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public CardSetResponse getCardSetInfo(Long id) {
+        CardSet cardSet = cardSetRepository.getReferenceById(id);
+        CardSetResponse response = new CardSetResponse();
+        List<String> hashtags = hashtagRepository.findAllNamesByCardSetId(cardSet.getId());
+        response.setName(cardSet.getName());
+        response.setHashtags(hashtags);
+        response.setIsPublic(cardSet.getIsPublic());
+        return response;
     }
     public void forkCardSet(Long cardSetId, Long folderId, Long userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
