@@ -8,7 +8,6 @@ const LoginPage = () => {
 
 
   const FRONT_BASE_URL = 'http://localhost:5173'
-  // const FRONT_BASE_URL = 'https://j12a406.p.ssafy.io' // 배포된 프론트 주소
 
   const REDIRECT_URIS = {
     kakao: `${FRONT_BASE_URL}/account/login/kakao`,

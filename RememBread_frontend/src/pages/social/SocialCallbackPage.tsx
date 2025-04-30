@@ -19,8 +19,8 @@ const SocialCallbackPage = () => {
       try {
         const response = await socialLogin({ code, socialType });
         
+        // 신규 사용자인 경우 약관 동의 페이지로 이동
         if (response.isNewUser) {
-          // 신규 사용자인 경우 약관 동의 페이지로 이동
           navigate('/signup/terms');
         } else {
           // 기존 사용자인 경우 로그인 처리
