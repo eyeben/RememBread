@@ -35,4 +35,6 @@ public class CardService {
         cardRepository.save(card);
     }
 
+    public void createCardMany(CardCreateGetRequest request, Long id) {
+    }
 }
