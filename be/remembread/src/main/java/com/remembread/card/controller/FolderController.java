@@ -4,6 +4,7 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.FolderCreateRequest;
 import com.remembread.card.dto.response.FolderResponse;
+import com.remembread.card.dto.response.SubFolderListResponse;
 import com.remembread.card.service.FolderService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,12 @@ public class FolderController {
     @GetMapping("/{folderId}")
     public ApiResponse<FolderResponse> getFolderInfo(@PathVariable Long folderId) {
         FolderResponse response = folderService.getFolderInfo(folderId);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @GetMapping("/{folderId}/sub-folders")
+    public ApiResponse<SubFolderListResponse> getSubFolderList(@PathVariable Long folderId) {
+        SubFolderListResponse response = folderService.getSubFolderList(folderId);
         return ApiResponse.onSuccess(response);
     }
 }
