@@ -9,6 +9,7 @@ import com.remembread.card.repository.FolderRepository;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,7 @@ import java.util.List;
 public class FolderService {
     private final FolderRepository folderRepository;
 
+    @Transactional
     public void createFolder(FolderCreateRequest request, User user) {
         Folder upper = null;
         if (request.getUpperFolderId() != null) {
@@ -32,11 +34,13 @@ public class FolderService {
         folderRepository.save(folder);
     }
 
+    @Transactional(readOnly = true)
     public FolderResponse getFolderInfo(Long id) {
         Folder folder = folderRepository.getReferenceById(id);
         return FolderConverter.toFolderResponse(folder);
     }
 
+    @Transactional(readOnly = true)
     public SubFolderListResponse getSubFolderList(Long id) {
         Folder folder = folderRepository.getReferenceById(id);
         List<Folder> subFolders = folder.getSubFolders();
