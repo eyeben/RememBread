@@ -1,6 +1,6 @@
 import { SVGProps } from "@/types/svg";
 
-const CardSet = ({ className }: SVGProps) => {
+const DefaultBread = ({ className }: SVGProps) => {
   return (
     <svg
       className={className}
@@ -36,4 +36,4 @@ const CardSet = ({ className }: SVGProps) => {
   );
 };
 
-export default CardSet;
+export default DefaultBread;
