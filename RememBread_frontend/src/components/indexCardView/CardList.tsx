@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Star } from "lucide-react";
 import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
-import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 
 const BreadList = () => {
   const breads = Array.from({ length: 25 }, (_, i) => i + 1);
