@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { tokenUtils } from '@/lib/queryClient';
 import useAuthStore from '@/stores/authStore';
 
@@ -11,7 +11,7 @@ const http = axios.create({
 });
 
 // 요청 인터셉터: accessToken 자동 추가
-http.interceptors.request.use((config) => {
+http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const accessToken = tokenUtils.getToken();
     if (accessToken) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -21,9 +21,9 @@ http.interceptors.request.use((config) => {
 
 // 응답 인터셉터: accessToken 만료되었을 때 자동 재발급
 http.interceptors.response.use(
-    (response) => response,
-    async (error) => {
-        const originalRequest = error.config;
+    (response: AxiosResponse) => response,
+    async (error: AxiosError) => {
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
         if (
             error.response?.status === 401 &&
