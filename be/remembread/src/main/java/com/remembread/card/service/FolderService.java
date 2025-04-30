@@ -31,6 +31,9 @@ public class FolderService {
                 .user(user)
                 .name(request.getName())
                 .build();
+        if (upper != null) {
+            upper.getSubFolders().add(folder);
+        }
         folderRepository.save(folder);
     }
 
