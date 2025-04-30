@@ -7,7 +7,7 @@ import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 const BreadList = () => {
   const breads = Array.from({ length: 25 }, (_, i) => i + 1);
   const ITEMS_PER_PAGE = 12;
-  const [page, setPage] = useState<number>(0);
+  const [page] = useState<number>(0);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
