@@ -12,4 +12,7 @@ public class UserRequestDto {
 
     @NotNull
     Boolean pushEnable;
+
+    @NotNull
+    Long mainCharacterId;
 }
