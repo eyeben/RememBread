@@ -12,8 +12,8 @@ interface AgreeResponse {
  */
 export const completeAgree = async (): Promise<AgreeResponse> => {
   try {
-    const response = await http.get<AgreeResponse>(USER_END_POINT.COMPLETE_AGREE);
-    return response.isSuccess;
+    const response = await http.patch<AgreeResponse>(USER_END_POINT.COMPLETE_AGREE);
+    return response.data;
   } catch (error) {
     throw new Error('약관 동의 처리 중 오류가 발생했습니다.');
   }

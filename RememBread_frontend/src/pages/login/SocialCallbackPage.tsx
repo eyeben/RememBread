@@ -18,14 +18,13 @@ const SocialCallbackPage = () => {
 
       try {
         const response = await socialLogin({ code, socialType });
-        console.log("우리 로그인했어요!!", response);
+        setAuth(response.result.accessToken);
         // 약관 동의하지 않은 사용자는 약관 동의 페이지로 이동
         if (!response.result.isAgreedTerms) {
           navigate('/signup/terms');
         } else {
           // 약관 동의한 사용자는 로그인 처리
-          setAuth(response.result.accessToken);
-          navigate('/index-card/my');
+          navigate('/card-view/my');
         }
       } catch (error) {
         // 에러 발생 시 로그인 페이지로 이동

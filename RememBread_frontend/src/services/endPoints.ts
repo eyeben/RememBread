@@ -13,6 +13,12 @@ export const AUTH_END_POINT = {
     LOGOUT: '/auth/logout',
 };
 
+/**
+ * 유저 정보 관련 URL
+ * 
+ * COMPLETE_AGREE : /users/agree
+ *  
+ */
 export const USER_END_POINT = {
     COMPLETE_AGREE: '/users/agree',
 }
