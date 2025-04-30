@@ -20,6 +20,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigInteger;
+import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -51,17 +53,22 @@ public class LoginService {
             case KAKAO -> {
                 KakaoUserInfo userInfo = kakaoOAuthProvider.getUserInfo(code);
                 socialLoginId = userInfo.getSocialLoginId();
-                nickname = userInfo.getNickname();
+                nickname = userInfo.getNickname() + socialLoginId.substring(0, 4);
             }
             case NAVER -> {
                 NaverUserInfo userInfo = naverOAuthProvider.getUserInfo(code);
                 socialLoginId = userInfo.getSocialLoginId();
-                nickname = userInfo.getNickname();
+
+                try {
+                    nickname = generateNickname(userInfo.getNickname(), socialLoginId);
+                } catch (Exception e) {
+                    throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
+                }
             }
             case GOOGLE -> {
                 GoogleUserInfo userInfo = googleOAuthProvider.getUserInfo(code);
                 socialLoginId = userInfo.getSocialLoginId();
-                nickname = userInfo.getNickname();
+                nickname = userInfo.getNickname() + socialLoginId.substring(0, 4);
             }
             default -> throw new GeneralException(ErrorStatus.INVALID_SOCIAL_PROVIDER);
         }
@@ -70,7 +77,7 @@ public class LoginService {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
 
-        User user = findOrCreateUser(nickname + socialLoginId.substring(0, 4), socialLoginId, socialLoginType);
+        User user = findOrCreateUser(nickname, socialLoginId, socialLoginType);
         log.info("user id: {}", user.getId());
 
         UserTokens userTokens = jwtUtil.createLoginToken(user.getIsAgreedTerms(), user.getId().toString());
@@ -78,6 +85,14 @@ public class LoginService {
         redisService.setValue(redisPrefix + "::refresh-token::" + user.getId(), userTokens.getRefreshToken(), Duration.ofDays(7));
 
         return userTokens;
+    }
+
+    public String generateNickname(String nickname, String socialLoginId) throws Exception {
+        MessageDigest md = MessageDigest.getInstance("SHA-256");
+        byte[] hashBytes = md.digest(socialLoginId.getBytes());
+        int hash = new BigInteger(1, hashBytes).mod(BigInteger.valueOf(10000)).intValue();
+        String suffix = String.format("%04d", hash); // 항상 4자리로 맞춤
+        return nickname + suffix;
     }
 
     public UserTokens reissueAccessToken(String refreshToken, String authHeader) {
@@ -108,7 +123,6 @@ public class LoginService {
         return new UserTokens(false, userId, null, reissuedAccessToken);
     }
 
-
     public Long logout(User user) {
         redisService.deleteValue(redisPrefix + "::refresh-token::" + user.getId());
         return user.getId();
@@ -125,25 +139,21 @@ public class LoginService {
         Character defaultCharacter = characterRepository.findByIsDefaultTrue()
                 .orElseThrow(() -> new RuntimeException("기본 캐릭터가 없습니다"));
 
-        if (userRepository.findByNickname(nickname).isEmpty()) {
-            User user = userRepository.save(User.builder()
-                    .nickname(nickname)
-                    .socialLoginId(socialLoginId)
-                    .socialLoginType(socialLoginType)
-                    .mainCharacter(defaultCharacter)
-                    .pushEnable(false)
-                    .isAgreedTerms(false)
-                    .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
-                    .build());
+        User user = userRepository.save(User.builder()
+                .nickname(nickname)
+                .socialLoginId(socialLoginId)
+                .socialLoginType(socialLoginType)
+                .mainCharacter(defaultCharacter)
+                .pushEnable(false)
+                .isAgreedTerms(false)
+                .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                .build());
 
-            userCharacterRepository.save(UserCharacter.builder()
-                    .user(user)
-                    .character(defaultCharacter)
-                    .build());
+        userCharacterRepository.save(UserCharacter.builder()
+                .user(user)
+                .character(defaultCharacter)
+                .build());
 
-            return user;
-        }
-
-        throw new GeneralException(ErrorStatus.FAILED_TO_GENERATE_NICKNAME);
+        return user;
     }
 }

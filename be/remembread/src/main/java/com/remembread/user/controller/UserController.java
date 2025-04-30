@@ -20,8 +20,9 @@ public class UserController {
 
     @PostMapping("/agree")
     @Operation(summary = "약관 동의 API", description = "회원가입 시 이용약관을 동의로 처리하는 API 입니다.")
-    public ApiResponse<UserResponseDto> agreeTerms(@AuthUser User user) {
-        return ApiResponse.onSuccess(userService.updateUserIsAgreedTerms(user));
+    public ApiResponse<Void> agreeTerms(@AuthUser User user) {
+        userService.updateUserIsAgreedTerms(user);
+        return ApiResponse.onSuccess(null);
     }
 
     @GetMapping
