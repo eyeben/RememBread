@@ -122,6 +122,7 @@ public class LoginService {
                 .nickname(nickname)
                 .socialLoginId(socialLoginId)
                 .socialLoginType(socialLoginType)
+                .pushEnable(false)
                 .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
                 .build());
     }
