@@ -1,3 +1,4 @@
+import { useEffect, useState } from 'react';
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
@@ -15,11 +16,41 @@ import IndexCardViewPage from "@/pages/IndexCardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import { tokenUtils } from '@/lib/queryClient';
+import useAuthStore from '@/stores/authStore';
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
+  const [isLoading, setIsLoading] = useState<boolean>(true);
   const accessToken = tokenUtils.getToken();
-  return accessToken ? <Outlet /> : <Navigate to="/login" replace />;
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      if (!accessToken) {
+        // accessToken이 없을 때만 refreshToken 확인
+        const isRefreshed = await useAuthStore.getState().checkAndRefreshToken();
+        if (!isRefreshed) {
+          // refreshToken으로도 accessToken을 받아오지 못한 경우
+          tokenUtils.removeToken();
+        }
+      }
+      setIsLoading(false);
+    };
+
+    checkAuth();
+  }, [accessToken]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-lg">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return tokenUtils.getToken() ? <Outlet /> : <Navigate to="/login" replace />;
 };
 
 // 로그인 라우트 컴포넌트
