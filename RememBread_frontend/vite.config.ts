@@ -1,12 +1,50 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
+import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 import tailwindcss from "tailwindcss";
 import autoprefixer from "autoprefixer";
-import { NodeGlobalsPolyfillPlugin } from "@esbuild-plugins/node-globals-polyfill";
 
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      devOptions: {
+        enabled: true,
+        type: "module",
+      },
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
+      },
+      manifest: {
+        name: "암기빵",
+        short_name: "암기빵",
+        description: "출근길에 굽는 지식 한 조각",
+        theme_color: "#DAB78A",
+        background_color: "#DAB78A",
+        display: "standalone",
+        start_url: "/",
+        scope: "/",
+        orientation: "portrait",
+        icons: [
+          {
+            src: "/logo.png",
+            sizes: "192x192",
+            type: "image/png",
+            purpose: "any",
+          },
+          {
+            src: "/logo.png",
+            sizes: "512x512",
+            type: "image/png",
+            purpose: "any",
+          },
+        ],
+      },
+    }),
+  ],
   resolve: {
     alias: [
       { find: "@components", replacement: "/src/components" },
