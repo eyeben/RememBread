@@ -60,4 +60,8 @@ public class Card extends BaseEntity {
         this.conceptImageUrl = conceptImageUrl;
         this.descriptionImageUrl = descriptionImageUrl;
     }
+
+    public void modifyCardSet(CardSet cardSet) {
+        this.cardSet = cardSet;
+    }
 }
