@@ -1,34 +1,9 @@
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { useState } from "react";
 import Button from "@/components/common/Button";
-import HashtagInput from "@/components/common/HashtagInput";
-import InputBread from "@/components/svgs/InputBread";
+import InputBread from "@/components/svgs/breads/InputBread";
 
 const CreateFromTextPage = () => {
-  const [hashtags, setHashtags] = useState<string[]>([]);
-  const [hashtagInput, setHashtagInput] = useState<string>("");
   const [inputText, setInputText] = useState<string>("");
-
-  const handleHashtagInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHashtagInput(event.target.value);
-  };
-
-  const handleAddHashtag = () => {
-    if (hashtagInput.trim() !== "" && !hashtags.includes(hashtagInput.trim())) {
-      setHashtags([...hashtags, hashtagInput.trim()]);
-      setHashtagInput("");
-    }
-  };
-
-  const handleRemoveHashtag = (hashtag: string) => {
-    setHashtags(hashtags.filter((tag) => tag !== hashtag));
-  };
-
-  const handleHashtagInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleAddHashtag();
-    }
-  };
 
   return (
     <div
@@ -37,9 +12,9 @@ const CreateFromTextPage = () => {
     >
       <h1 className="text-primary-500 text-2xl font-bold m-5">텍스트를 재료로 넣어봐뽱</h1>
 
-      <div className="relative w-full">
+      <div className="flex justify-center relative w-full px-5">
         <textarea
-          className="absolute top-1/4 left-1/3 w-1/3 h-1/2 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold"
+          className="absolute top-[17%] left-[17%] pc:left-1/4 w-2/3 pc:w-1/2 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold"
           value={inputText}
           placeholder="여기에 텍스트를 입력하세요"
           onChange={(e) => setInputText(e.target.value)}
@@ -48,18 +23,7 @@ const CreateFromTextPage = () => {
           }}
         />
 
-        <InputBread className="w-full" />
-      </div>
-
-      <div className="m-5 gap-2">
-        <HashtagInput
-          hashtags={hashtags}
-          hashtagInput={hashtagInput}
-          handleHashtagInputChange={handleHashtagInputChange}
-          handleAddHashtag={handleAddHashtag}
-          handleRemoveHashtag={handleRemoveHashtag}
-          handleHashtagInputKeyDown={handleHashtagInputKeyDown}
-        />
+        <InputBread className="w-full h-full max-w-md aspect-square" />
       </div>
 
       <Button className="m-5" variant="primary">
