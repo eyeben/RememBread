@@ -3,6 +3,7 @@ package com.remembread.card.service;
 import com.remembread.card.converter.FolderConverter;
 import com.remembread.card.dto.request.FolderCreateRequest;
 import com.remembread.card.dto.response.FolderResponse;
+import com.remembread.card.dto.response.SubFolderListResponse;
 import com.remembread.card.entity.Folder;
 import com.remembread.card.repository.FolderRepository;
 import com.remembread.user.entity.User;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -33,5 +35,11 @@ public class FolderService {
     public FolderResponse getFolderInfo(Long id) {
         Folder folder = folderRepository.getReferenceById(id);
         return FolderConverter.toFolderResponse(folder);
+    }
+
+    public SubFolderListResponse getSubFolderList(Long id) {
+        Folder folder = folderRepository.getReferenceById(id);
+        List<Folder> subFolders = folder.getSubFolders();
+        return FolderConverter.toSubFolderListResponse(subFolders);
     }
 }
