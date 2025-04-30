@@ -5,6 +5,27 @@ import GoogleLogo from "@/components/svgs/login/GoogleLogo";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 
 const LoginPage = () => {
+
+
+  const FRONT_BASE_URL = 'http://localhost:5173'
+  // const FRONT_BASE_URL = 'https://j12a406.p.ssafy.io' // 배포된 프론트 주소
+
+  const REDIRECT_URIS = {
+    kakao: `${FRONT_BASE_URL}/account/login/kakao`,
+    naver: `${FRONT_BASE_URL}/account/login/naver`,
+    google: `${FRONT_BASE_URL}/account/login/google`,
+  }
+
+  const OAUTH_URLS = {
+    kakao: `https://kauth.kakao.com/oauth/authorize?client_id=fa3d810c08ba4120bb3294a94f7696d7&redirect_uri=${REDIRECT_URIS.kakao}&response_type=code`,
+    naver: `https://nid.naver.com/oauth2.0/authorize?client_id=t5BYZ3J2kAlf3socHE7f&redirect_uri=${REDIRECT_URIS.naver}&response_type=code&state=test`,
+    google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=365476883445-led6dhq6oi5fnsjmnnefccacen9obar1.apps.googleusercontent.com&redirect_uri=${REDIRECT_URIS.google}&response_type=code&scope=email`
+  }
+
+  const handleSocialLogin = (type: string) => {
+    window.location.href = OAUTH_URLS[type as keyof typeof OAUTH_URLS]
+  }
+
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
       <div className="text-center mb-20">
@@ -19,6 +40,7 @@ const LoginPage = () => {
         <Button
           variant="shadow"
           className="w-96 h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors"
+          onClick={() => handleSocialLogin('kakao')}
         >
           <div className="w-24 flex justify-end">
             <KakaoLogo className="w-6 h-6" />
@@ -30,6 +52,7 @@ const LoginPage = () => {
         <Button
           variant="shadow"
           className="w-96 h-12 px-6 flex justify-center items-center gap-2.5 bg-[#03C75A] hover:bg-[#02B04E] text-white transition-colors"
+          onClick={() => handleSocialLogin('naver')}
         >
           <div className="w-24 flex justify-end">
             <NaverLogo className="w-6 h-6" />
@@ -41,6 +64,7 @@ const LoginPage = () => {
         <Button
           variant="shadow"
           className="w-96 h-12 px-6 flex justify-center items-center gap-2.5 bg-[#F2F2F2] hover:bg-[#E0E0E0] text-neutral-500 transition-colors"
+          onClick={() => handleSocialLogin('google')}
         >
           <div className="w-24 flex justify-end">
             <GoogleLogo className="w-6 h-6" />
