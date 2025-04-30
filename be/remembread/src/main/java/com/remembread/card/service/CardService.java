@@ -27,6 +27,17 @@ public class CardService {
 
         Card card = Card.builder()
                 .cardSet(cardSet)
+                .concept(request.getConcept())
+                .description(request.getDescription())
+                .correctCount(0)
+                .solvedCount(0)
+                .retentionRate(0f)
+                .stability(1f)
+                .conceptImageUrl(null)
+                .descriptionImageUrl(null)
                 .build();
+
+        cardRepository.save(card);
     }
+
 }

@@ -16,7 +16,7 @@ public class CardController {
 
     @PostMapping("")
     public ApiResponse<?> createCard(@RequestBody CardCreateGetDto request) {
-        cardService.createCard(request, null);// 로그인
+        cardService.createCard(request, null);// 로그인 구현 후 변경
         return ApiResponse.onSuccess(null);
     }
 
