@@ -102,6 +102,7 @@ const BreadList = () => {
       </div>
       {showDeleteModal && (
         <ConfirmDeleteModal
+          open={showDeleteModal}
           message="정말 삭제하시겠습니까?"
           onConfirm={() => {
             setShowDeleteModal(false);

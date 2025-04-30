@@ -1,32 +1,47 @@
+import {
+  AlertDialog,
+  AlertDialogPortal,
+  AlertDialogOverlay,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogFooter,
+  AlertDialogTitle,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+
 interface ConfirmModalProps {
+  open: boolean;
   message: string;
   onConfirm: () => void;
   onCancel: () => void;
 }
 
-const ConfirmDeleteModal = ({ message, onConfirm, onCancel }: ConfirmModalProps) => {
+const ConfirmDeleteModal = ({ open, message, onConfirm, onCancel }: ConfirmModalProps) => {
   return (
-    <div className="fixed inset-0 z-50 flex justify-center items-center">
-      <div className="w-[600px] h-full bg-black bg-opacity-30 flex justify-center items-center">
-        <div className="bg-white rounded-lg p-6 w-80 shadow-lg">
-          <p className="text-center text-lg font-semibold mb-4">{message}</p>
-          <div className="flex justify-between">
-            <button
-              className="w-[45%] bg-negative-500 text-white rounded px-3 py-2"
-              onClick={onConfirm}
-            >
-              삭제
-            </button>
-            <button
-              className="w-[45%] bg-neutral-300 text-black rounded px-3 py-2"
+    <AlertDialog open={open} onOpenChange={(val) => !val && onCancel()}>
+      <AlertDialogPortal>
+        <AlertDialogContent className="w-[80%] rounded-md ">
+          <AlertDialogHeader>
+            <AlertDialogTitle className="text-center">{message}</AlertDialogTitle>
+          </AlertDialogHeader>
+          <AlertDialogFooter className="flex justify-between pc:gap-2 gap-1">
+            <AlertDialogCancel
+              className="pc:w-1/2 w-full bg-neutral-300 text-black hover:bg-neutral-400"
               onClick={onCancel}
             >
               취소
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className="pc:w-1/2 w-full bg-negative-500 text-white hover:bg-negative-600"
+              onClick={onConfirm}
+            >
+              삭제
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialogPortal>
+    </AlertDialog>
   );
 };
 
