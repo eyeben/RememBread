@@ -12,7 +12,7 @@ interface SocialLoginResponse {
   message: string;
   result: {
     accessToken: string;
-    isNew: boolean;
+    isAgreedTerms: boolean;
     userId: string;
   };
 }

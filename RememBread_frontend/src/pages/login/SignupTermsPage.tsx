@@ -28,7 +28,7 @@ const SignupTermsPage = () => {
             </p>
 
             <div className="rounded-lg mb-28">
-              <label className="flex items-center gap-2 mb-4 bg-neutral-50 rounded-lg">
+              <label className="flex items-center gap-2 mb-4 rounded-lg">
                 <input
                   type="checkbox"
                   className="relative w-5 h-5 rounded appearance-none bg-neutral-100 checked:bg-primary-500 checked:border-primary-500 after:content-['✓'] after:absolute after:text-white checked:after:text-white after:opacity-100 after:top-1/2 after:left-1/2 after:-translate-x-1/2 after:-translate-y-1/2"

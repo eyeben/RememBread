@@ -19,7 +19,7 @@ const LoginPage = () => {
     }
   }, [location]);
 
-  const FRONT_BASE_URL = 'http://localhost:5173'
+  const FRONT_BASE_URL = import.meta.env.VITE_FRONT_BASE_URL || 'http://localhost:5173'
 
   const REDIRECT_URIS = {
     kakao: `${FRONT_BASE_URL}/account/login/kakao`,
@@ -28,9 +28,9 @@ const LoginPage = () => {
   }
 
   const OAUTH_URLS = {
-    kakao: `https://kauth.kakao.com/oauth/authorize?client_id=fa3d810c08ba4120bb3294a94f7696d7&redirect_uri=${REDIRECT_URIS.kakao}&response_type=code`,
-    naver: `https://nid.naver.com/oauth2.0/authorize?client_id=t5BYZ3J2kAlf3socHE7f&redirect_uri=${REDIRECT_URIS.naver}&response_type=code&state=test`,
-    google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=365476883445-led6dhq6oi5fnsjmnnefccacen9obar1.apps.googleusercontent.com&redirect_uri=${REDIRECT_URIS.google}&response_type=code&scope=email`
+    kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URIS.kakao}&response_type=code`,
+    naver: `https://nid.naver.com/oauth2.0/authorize?client_id=${import.meta.env.VITE_NAVER_CLIENT_ID}&redirect_uri=${REDIRECT_URIS.naver}&response_type=code&state=test`,
+    google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URIS.google}&response_type=code&scope=email`
   }
 
   
