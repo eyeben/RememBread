@@ -33,17 +33,22 @@ public class CardSet extends BaseEntity {
     private String name;
 
     @Column(name = "correct_count", nullable = false)
+    @Builder.Default
     private Integer correctCount = 0;
 
     @Column(name = "solved_count", nullable = false)
+    @Builder.Default
     private Integer solvedCount = 0;
 
     @Column(name = "is_public", nullable = false)
+    @Builder.Default
     private Boolean isPublic = true;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer views = 0;
 
     @Column(nullable = false)
+    @Builder.Default
     private Integer forks = 0;
 }
