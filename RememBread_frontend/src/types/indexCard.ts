@@ -4,7 +4,9 @@ export interface indexCard {
 }
 
 export interface indexCardSet {
-  folderId: bigint;
+  folderId: number;
+  title: string;
   hashTags: string[];
+  isFavorite: boolean;
   breads: indexCard[];
 }
