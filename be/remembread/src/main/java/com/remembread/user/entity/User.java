@@ -19,6 +19,7 @@ public class User extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
     @Column(nullable = false, length = 10)
     private String nickname;
 
@@ -29,10 +30,12 @@ public class User extends BaseEntity {
     @Column(nullable = false)
     private SocialLoginType socialLoginType;
 
+    @Setter
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "main_character_id")
     private Character mainCharacter;
 
+    @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean pushEnable;
 
