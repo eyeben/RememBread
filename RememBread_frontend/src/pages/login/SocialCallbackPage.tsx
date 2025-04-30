@@ -1,12 +1,11 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { socialLogin } from '@/services/authService';
-import useAuthStore from '@/stores/authStore';
+import { tokenUtils } from '@/lib/queryClient';
 
 const SocialCallbackPage = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  const { setAuth } = useAuthStore();
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const code = searchParams.get('code');
@@ -18,7 +17,7 @@ const SocialCallbackPage = () => {
 
       try {
         const response = await socialLogin({ code, socialType });
-        setAuth(response.result.accessToken);
+        tokenUtils.setToken(response.result.accessToken);
         // 약관 동의하지 않은 사용자는 약관 동의 페이지로 이동
         if (!response.result.isAgreedTerms) {
           navigate('/signup/terms');
@@ -40,7 +39,7 @@ const SocialCallbackPage = () => {
     };
 
     handleSocialLogin();
-  }, [code, socialType, navigate, setAuth]);
+  }, [code, socialType, navigate]);
 
   if (isLoading) {
     return (

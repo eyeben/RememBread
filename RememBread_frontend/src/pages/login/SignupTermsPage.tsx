@@ -1,6 +1,6 @@
 import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { completeAgree } from "@/services/userService";
-import useAuthStore from "@/stores/authStore";
+import { tokenUtils } from "@/lib/queryClient";
 import TermItem from "@/components/signup/TermItem";
 import Button from "@/components/common/Button";
 import useTermsStore from "@/stores/termsStore";
@@ -10,7 +10,6 @@ const SignupTermsPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const isDetailPage = location.pathname.includes("/signup/terms/");
-  const { clearAuth } = useAuthStore();
 
   const { checkboxes, handleAllCheck, isAllTermsChecked } = useTermsStore();
 
@@ -24,7 +23,7 @@ const SignupTermsPage = () => {
       navigate('/card-view/my');
     } catch (error) {
       console.error('약관 동의 처리 중 오류:', error);
-      clearAuth();
+      tokenUtils.removeToken();
       navigate('/login');
     }
   };
