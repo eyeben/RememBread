@@ -38,7 +38,7 @@ public class LoginController {
                 .maxAge(ONE_WEEK_SECONDS)
                 .httpOnly(true)
                 .sameSite("None")
-                .secure(false)
+                .secure(true)
                 .path("/")
                 .build();
 
