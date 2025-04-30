@@ -4,6 +4,8 @@ import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import GamesPage from "@/pages/GamesPage";
 import MapPage from "@/pages/MapPage";
+import SignupTermsPage from "@/pages/SignupTermsPage";
+import TermDetailPage from "@/pages/signup/TermDetailPage";
 import CreateFromPDFPage from "@/pages/createIndexCard/CreateFromPDFPage";
 import CreateFromSelfPage from "@/pages/createIndexCard/CreateFromSelfPage";
 import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
@@ -21,6 +23,18 @@ const router = createBrowserRouter([
         path: "/login",
         element: <LoginPage />,
         handle: { header: false, footer: false },
+      },
+      {
+        path: "/signup/terms",
+        element: <SignupTermsPage />,
+        handle: { header: false, footer: false },
+        children: [
+          {
+            path: ":termId",
+            element: <TermDetailPage />,
+            handle: { header: false, footer: false },
+          },
+        ],
       },
     ],
   },
