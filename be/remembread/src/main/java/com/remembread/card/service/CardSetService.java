@@ -77,10 +77,15 @@ public class CardSetService {
 
         List<Card> cards = cardRepository.findAllByCardSet(cardSet);
         List<Card> newCards = new ArrayList<>();
-        //CardSet newCardSet = new CardSet();
+        CardSet newCardSet = CardSet.builder()
+                .folder(folder)
+                .name(cardSet.getName())
+                .user(folder.getUser())
+                .build();
+        cardSetRepository.save(newCardSet);
         int num = 1;
         for (Card card : cards) {
-            newCards.add(new Card(cardSet, num++, card.getConcept(), card.getDescription(), card.getConceptImageUrl(), card.getDescriptionImageUrl()));
+            newCards.add(new Card(newCardSet, num++, card.getConcept(), card.getDescription(), card.getConceptImageUrl(), card.getDescriptionImageUrl()));
         }
         cardRepository.saveAll(newCards);
     }
