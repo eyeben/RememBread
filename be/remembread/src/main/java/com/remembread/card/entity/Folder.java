@@ -1,4 +1,4 @@
-package com.remembread.folder.entity;
+package com.remembread.card.entity;
 
 import com.remembread.common.entity.BaseEntity;
 import com.remembread.user.entity.User;
@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
+
 
 @Entity
 @Table(name = "folders")
