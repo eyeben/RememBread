@@ -1,18 +1,19 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
+import { indexCardSet } from "@/types/indexCard";
 import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
+import { DummyBreadList } from "@/components/indexCardView/DummyBreadList";
 
 const BreadList = () => {
-  const breads = Array.from({ length: 25 }, (_, i) => i + 1);
-  const ITEMS_PER_PAGE = 12;
-  const [page] = useState<number>(0);
+  const navigate = useNavigate();
+  const breadList: indexCardSet[] = DummyBreadList;
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-
-  const currentItems = breads.slice(page * ITEMS_PER_PAGE, page * ITEMS_PER_PAGE + ITEMS_PER_PAGE);
 
   const toggleItem = (id: number) => {
     if (!isEditing) return;
@@ -24,6 +25,17 @@ const BreadList = () => {
   const toggleEditing = () => {
     setIsEditing((prev) => !prev);
     setSelectedItems([]);
+  };
+
+  const handleCardClick = (folderId: number) => {
+    if (isEditing) {
+      toggleItem(folderId);
+    } else {
+      const selectedCard = breadList.find((item) => item.cardSetId === folderId);
+      navigate(`/card-view/${folderId}`, {
+        state: { card: selectedCard },
+      });
+    }
   };
 
   return (
@@ -71,35 +83,35 @@ const BreadList = () => {
       </div>
 
       <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-4 w-full mt-2">
-        {currentItems.map((item) => (
-          <div key={item} className="relative">
-            {/* 별 아이콘 */}
+        {breadList.map((item) => (
+          <div key={item.cardSetId} className="relative hover:cursor-pointer ">
             <div className="absolute top-2 right-5 z-10">
               <Star
-                fill="#FDE407"
+                fill={item.isLike ? "#FDE407" : "none"}
                 className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
               />
             </div>
 
             <div
-              onClick={() => toggleItem(item)}
+              onClick={() => handleCardClick(item.cardSetId)}
               className={`rounded-md box-border border-2 p-1 h-32 flex flex-col justify-between items-center
-                ${isEditing ? "cursor-pointer" : ""}
-                ${
-                  selectedItems.includes(item)
-                    ? "border-primary-700 bg-primary-100"
-                    : "border-transparent"
-                }
-              `}
+                  ${isEditing ? "cursor-pointer" : ""}
+                  ${
+                    selectedItems.includes(item.cardSetId)
+                      ? "border-primary-700 bg-primary-100"
+                      : "border-transparent"
+                  }
+                `}
             >
-              <CardSet className="w-full h-full" />
+              <CardSet className="w-full h-full hover:cursor-pointer" />
               <div className="text-center w-full mt-1">
-                <span className="pc:text-xl text-sm">정보처리기사 </span>
+                <span className="pc:text-xl text-sm">{item.title}</span>
               </div>
             </div>
           </div>
         ))}
       </div>
+
       {showDeleteModal && (
         <ConfirmDeleteModal
           open={showDeleteModal}

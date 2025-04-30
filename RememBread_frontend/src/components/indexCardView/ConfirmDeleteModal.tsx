@@ -8,6 +8,8 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
+import { VisuallyHidden } from "@radix-ui/react-visually-hidden";
+import { AlertDialogDescription } from "@radix-ui/react-alert-dialog";
 
 interface ConfirmModalProps {
   open: boolean;
@@ -20,9 +22,15 @@ const ConfirmDeleteModal = ({ open, message, onConfirm, onCancel }: ConfirmModal
   return (
     <AlertDialog open={open} onOpenChange={(val) => !val && onCancel()}>
       <AlertDialogPortal>
-        <AlertDialogContent className="w-[80%] rounded-md ">
+        <AlertDialogContent className="w-[80%] rounded-md" aria-describedby="delete-desc">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-center">{message}</AlertDialogTitle>
+            <AlertDialogDescription className="text-center text-sm text-gray-500">
+              {/* 이 작업은 되돌릴 수 없습니다. */}
+            </AlertDialogDescription>
+            <VisuallyHidden>
+              <p id="delete-desc">이 작업은 되돌릴 수 없습니다.</p>
+            </VisuallyHidden>
           </AlertDialogHeader>
           <AlertDialogFooter className="flex justify-between pc:gap-2 gap-1">
             <AlertDialogCancel
