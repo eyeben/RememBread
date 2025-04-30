@@ -9,6 +9,7 @@ import com.remembread.auth.infrastructure.*;
 import com.remembread.common.enums.SocialLoginType;
 import com.remembread.common.service.RedisService;
 import com.remembread.user.entity.User;
+import com.remembread.user.repository.UserCharacterRepository;
 import com.remembread.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,6 +32,7 @@ public class LoginService {
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
     private final UserRepository userRepository;
+    private final UserCharacterRepository userCharacterRepository;
 
     private final KakaoOAuthProvider kakaoOAuthProvider;
     private final NaverOAuthProvider naverOAuthProvider;
@@ -64,12 +66,10 @@ public class LoginService {
             throw new GeneralException(ErrorStatus._BAD_REQUEST);
         }
 
-        boolean isNew = userRepository.findBySocialLoginId(socialLoginId).isEmpty();
-
         User user = findOrCreateUser(nickname + socialLoginId.substring(0, 4), socialLoginId, socialLoginType);
         log.info("user id: {}", user.getId());
 
-        UserTokens userTokens = jwtUtil.createLoginToken(isNew, user.getId().toString());
+        UserTokens userTokens = jwtUtil.createLoginToken(user.getIsAgreedTerms(), user.getId().toString());
         RefreshToken refreshToken = new RefreshToken(user.getId(), userTokens.getRefreshToken());
         redisService.setValue(redisPrefix + "::refresh-token::" + user.getId(), userTokens.getRefreshToken(), Duration.ofDays(7));
 
@@ -118,12 +118,17 @@ public class LoginService {
 
     @Transactional
     public User createUser(String nickname, String socialLoginId, SocialLoginType socialLoginType) {
-        return userRepository.save(User.builder()
-                .nickname(nickname)
-                .socialLoginId(socialLoginId)
-                .socialLoginType(socialLoginType)
-                .pushEnable(false)
-                .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
-                .build());
+        if (userRepository.findByNickname(nickname).isEmpty()) {
+            return userRepository.save(User.builder()
+                    .nickname(nickname)
+                    .socialLoginId(socialLoginId)
+                    .socialLoginType(socialLoginType)
+                    .pushEnable(false)
+                    .isAgreedTerms(false)
+                    .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
+                    .build());
+        }
+
+        throw new GeneralException(ErrorStatus.FAILED_TO_GENERATE_NICKNAME);
     }
 }

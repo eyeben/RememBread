@@ -32,10 +32,10 @@ public class JwtUtil {
 
     //===토큰 생성===//
 
-    public UserTokens createLoginToken(Boolean isNew, String id) {
+    public UserTokens createLoginToken(Boolean isAgreedTerms, String id) {
         String refreshToken = createToken("", refreshTokenExpiry);
         String accessToken = createToken(id, accessTokenExpiry);
-        return new UserTokens(isNew, id, refreshToken, accessToken);
+        return new UserTokens(isAgreedTerms, id, refreshToken, accessToken);
     }
 
     private String createToken(String subject, Long expiredMs) {
