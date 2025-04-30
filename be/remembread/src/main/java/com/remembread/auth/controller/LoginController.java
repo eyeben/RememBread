@@ -25,6 +25,7 @@ public class LoginController {
     private final LoginService loginService;
 
     @GetMapping("/login/{provider}")
+    @Operation(summary = "로그인 API", description = "소셜 로그인을 하는 API입니다. Access Token을 반환하고 쿠키에 Refresh Token을 저장합니다.")
     public ApiResponse<AccessTokenResponse> socialLogin(
             @PathVariable("provider") String provider,
             @RequestParam("code") String code,
