@@ -25,18 +25,14 @@ public class CardService {
         if(!cardSet.getUser().getId().equals(userId))
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
 
-        Card card = Card.builder()
-                .cardSet(cardSet)
-                .concept(request.getConcept())
-                .description(request.getDescription())
-                .correctCount(0)
-                .solvedCount(0)
-                .retentionRate(0f)
-                .stability(1f)
-                .conceptImageUrl(null)
-                .descriptionImageUrl(null)
-                .build();
+        // 마지막 페이지로 업데이트
+        Integer num = 0;
+        Card LastPageCard = cardRepository.findFirstByCardSetOrderByNumberDesc(cardSet).orElse(null);
+        if(LastPageCard != null)
+            num = LastPageCard.getNumber();
 
+        //카드 생성
+        Card card = new Card(cardSet, num, request.getConcept(), request.getDescription(), null, null);
         cardRepository.save(card);
     }
 
