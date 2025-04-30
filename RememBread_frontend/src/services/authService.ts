@@ -54,4 +54,4 @@ export const refreshToken = async (): Promise<RefreshTokenResponse> => {
   } catch (error) {
     throw new Error('토큰 갱신에 실패했습니다.');
   }
-}; 
+};

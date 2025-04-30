@@ -12,3 +12,7 @@ export const AUTH_END_POINT = {
     REFRESH_TOKEN: '/auth/reissue',
     LOGOUT: '/auth/logout',
 };
+
+export const USER_END_POINT = {
+    COMPLETE_AGREE: '/users/agree',
+}
