@@ -7,8 +7,14 @@ interface SocialLoginParams {
 }
 
 interface SocialLoginResponse {
-  accessToken: string;
-  isNewUser: boolean;
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    accessToken: string;
+    isNew: boolean;
+    userId: string;
+  };
 }
 
 interface RefreshTokenResponse {
@@ -30,6 +36,7 @@ export const socialLogin = async ({ code, socialType }: SocialLoginParams): Prom
     );
     return response.data;
   } catch (error) {
+    console.error('소셜 로그인 실패:', error);
     throw new Error('소셜 로그인에 실패했습니다.');
   }
 };

@@ -18,13 +18,12 @@ const SocialCallbackPage = () => {
 
       try {
         const response = await socialLogin({ code, socialType });
-        
         // 신규 사용자인 경우 약관 동의 페이지로 이동
-        if (response.isNewUser) {
+        if (response.result.isNew) {
           navigate('/signup/terms');
         } else {
           // 기존 사용자인 경우 로그인 처리
-          setAuth(response.accessToken);
+          setAuth(response.result.accessToken);
           navigate('/');
         }
       } catch (error) {

@@ -13,6 +13,7 @@ import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import IndexCardViewPage from "@/pages/IndexCardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
+import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 
 const router = createBrowserRouter([
   // 비회원 접근 가능 구간
@@ -22,6 +23,11 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage />,
+        handle: { header: false, footer: false },
+      },
+      {
+        path: "/account/login/:socialType",
+        element: <SocialCallbackPage />,
         handle: { header: false, footer: false },
       },
       {

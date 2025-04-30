@@ -1,3 +1,5 @@
+import { useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
 import Button from "@/components/common/Button";
 import KakaoLogo from "@/components/svgs/login/KakaoLogo";
 import NaverLogo from "@/components/svgs/login/NaverLogo";
@@ -5,7 +7,17 @@ import GoogleLogo from "@/components/svgs/login/GoogleLogo";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 
 const LoginPage = () => {
-
+  const location = useLocation();
+  const navigate = useNavigate();
+ 
+  useEffect(() => {
+    // state로 전달된 에러 메시지가 있다면 alert로 표시
+    if (location.state?.message) {
+      alert(`[${location.state.socialType} 로그인 실패]\n${location.state.message}`);
+      // alert 표시 후 state 초기화 (뒤로 가기 시 다시 alert가 뜨는 것을 방지)
+      navigate(location.pathname, { replace: true });
+    }
+  }, [location]);
 
   const FRONT_BASE_URL = 'http://localhost:5173'
 
@@ -21,6 +33,7 @@ const LoginPage = () => {
     google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=365476883445-led6dhq6oi5fnsjmnnefccacen9obar1.apps.googleusercontent.com&redirect_uri=${REDIRECT_URIS.google}&response_type=code&scope=email`
   }
 
+  
   const handleSocialLogin = (type: string) => {
     window.location.href = OAUTH_URLS[type as keyof typeof OAUTH_URLS]
   }
