@@ -51,4 +51,13 @@ public class Card extends BaseEntity {
 
     @Column(name = "description_image_url", length = 1024)
     private String descriptionImageUrl;
+
+    public Card(CardSet cardSet, Integer number, String concept, String description, String conceptImageUrl, String descriptionImageUrl) {
+        this.cardSet = cardSet;
+        this.number = number;
+        this.concept = concept;
+        this.description = description;
+        this.conceptImageUrl = conceptImageUrl;
+        this.descriptionImageUrl = descriptionImageUrl;
+    }
 }
