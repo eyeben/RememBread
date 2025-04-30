@@ -33,7 +33,7 @@ const BreadList = () => {
     } else {
       const selectedCard = breadList.find((item) => item.cardSetId === folderId);
       navigate(`/card-view/${folderId}`, {
-        state: { id: selectedCard?.cardSetId, tags: selectedCard?.hashTags ?? [] },
+        state: { card: selectedCard },
       });
     }
   };
@@ -84,7 +84,7 @@ const BreadList = () => {
 
       <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-4 w-full mt-2">
         {breadList.map((item) => (
-          <div key={item.cardSetId.toString()} className="relative hover:cursor-pointer ">
+          <div key={item.cardSetId} className="relative hover:cursor-pointer ">
             <div className="absolute top-2 right-5 z-10">
               <Star
                 fill={item.isLike ? "#FDE407" : "none"}

@@ -33,10 +33,10 @@ const TagRow = ({ tags }: { tags: string[] }) => {
     }
   };
   return (
-    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full px-4 py-2 flex items-center gap-2 scrollbar-hide">
+    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full pc:px-8 px-4 py-1 flex items-center gap-2 scrollbar-hide">
       {isInputVisible ? (
         <Save
-          className="min-w-[20px] hover:cursor-pointer"
+          className="min-w-[20px] hover:cursor-pointer text-primary-700"
           size={20}
           onClick={() => {
             setIsInputVisible((prev) => !prev);
@@ -45,7 +45,7 @@ const TagRow = ({ tags }: { tags: string[] }) => {
         />
       ) : (
         <Tags
-          className="min-w-[20px] hover:cursor-pointer"
+          className="min-w-[20px] hover:cursor-pointer text-primary-700"
           size={20}
           onClick={() => setIsInputVisible((prev) => !prev)}
         />
