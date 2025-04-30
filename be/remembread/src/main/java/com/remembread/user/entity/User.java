@@ -36,6 +36,9 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean pushEnable;
 
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isAgreedTerms;
+
     @Column(nullable = false)
     private LocalDateTime lastLoginAt;
 

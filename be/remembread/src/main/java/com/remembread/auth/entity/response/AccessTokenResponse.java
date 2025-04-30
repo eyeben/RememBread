@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccessTokenResponse {
-    private Boolean isNew;
+    private Boolean isAgreedTerms;
     private String userId;
     private String accessToken;
 }
