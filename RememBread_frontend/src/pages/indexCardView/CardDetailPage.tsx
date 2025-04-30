@@ -12,14 +12,14 @@ const CardDetailPage = () => {
       <p className="text-gray-600">현재 선택한 카드 ID: {id}</p>
       <TagRow tags={tags} />
 
-      <div className="mt-10 space-y-4 w-60">
-        <button className="w-full border border-yellow-400 text-yellow-600 py-2 rounded-full">
+      <div className="pc:mt-24 mt-12 space-y-12 w-1/2">
+        <button className="w-full border-2 border-primary-700 text-primary-700 py-2 rounded-full">
           학습하기
         </button>
-        <button className="w-full border border-yellow-400 text-yellow-600 py-2 rounded-full">
+        <button className="w-full border-2 border-primary-700 text-primary-700 py-2 rounded-full">
           TTS 학습하기
         </button>
-        <button className="w-full border border-yellow-400 text-yellow-600 py-2 rounded-full">
+        <button className="w-full border-2 border-primary-700 text-primary-700 py-2 rounded-full">
           테스트하기
         </button>
       </div>

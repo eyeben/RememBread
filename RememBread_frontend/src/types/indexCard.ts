@@ -17,4 +17,6 @@ export interface indexCardSet {
   isLike: boolean;
   totalCardCnt: number;
   hashTags: string[];
+  createdDate?: string | Date;
+  updatedDate?: string | Date;
 }
