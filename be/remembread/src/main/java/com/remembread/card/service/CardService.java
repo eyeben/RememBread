@@ -46,7 +46,7 @@ public class CardService {
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
 
         // 마지막 페이지로 업데이트
-        Integer num = 0;
+        int num = 0;
         Card LastPageCard = cardRepository.findFirstByCardSetOrderByNumberDesc(cardSet).orElse(null);
         if (LastPageCard != null)
             num = LastPageCard.getNumber() + 1;
