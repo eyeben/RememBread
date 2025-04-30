@@ -7,7 +7,7 @@ const TermDetailPage = () => {
   const navigate = useNavigate();
   const { termId } = useParams();
   const { handleSingleCheck } = useTermsStore();
-  const [isAgreed, setIsAgreed] = useState(false);
+  const [isAgreed, setIsAgreed] = useState<boolean>(false);
 
   const termContents = {
     1: {
