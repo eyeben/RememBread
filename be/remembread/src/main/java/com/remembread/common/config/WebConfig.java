@@ -18,7 +18,7 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry) {
         corsRegistry.addMapping("/**")
-                .allowedOriginPatterns("localhost:5173", "k12a704.p.ssafy.io:3000")
+                .allowedOriginPatterns("http://localhost:5173", "https://k12a704.p.ssafy.io:3000")
                 .allowedMethods("*")
                 .allowedHeaders("*")
                 .allowCredentials(true);
