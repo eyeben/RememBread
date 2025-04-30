@@ -5,17 +5,12 @@ import { indexCardSet } from "@/types/indexCard";
 import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
+import { DummyBreadList } from "@/components/indexCardView/DummyBreadList";
 
 const BreadList = () => {
   const navigate = useNavigate();
+  const breadList: indexCardSet[] = DummyBreadList;
 
-  const breadList: indexCardSet[] = Array.from({ length: 25 }, (_, i) => ({
-    folderId: i + 1,
-    title: `SQLD ${i + 1}`,
-    isFavorite: false,
-    hashTags: ["정보처리기사", "실기", i % 2 === 0 ? "네트워크" : "운영체제"],
-    breads: [],
-  }));
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -36,9 +31,9 @@ const BreadList = () => {
     if (isEditing) {
       toggleItem(folderId);
     } else {
-      const selectedCard = breadList.find((item) => item.folderId === folderId);
+      const selectedCard = breadList.find((item) => item.cardSetId === folderId);
       navigate(`/card-view/${folderId}`, {
-        state: { id: selectedCard?.folderId, tags: selectedCard?.hashTags ?? [] },
+        state: { id: selectedCard?.cardSetId, tags: selectedCard?.hashTags ?? [] },
       });
     }
   };
@@ -89,20 +84,20 @@ const BreadList = () => {
 
       <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-4 w-full mt-2">
         {breadList.map((item) => (
-          <div key={item.folderId.toString()} className="relative hover:cursor-pointer ">
+          <div key={item.cardSetId.toString()} className="relative hover:cursor-pointer ">
             <div className="absolute top-2 right-5 z-10">
               <Star
-                fill={item.isFavorite ? "#FDE407" : "none"}
+                fill={item.isLike ? "#FDE407" : "none"}
                 className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
               />
             </div>
 
             <div
-              onClick={() => handleCardClick(item.folderId)}
+              onClick={() => handleCardClick(item.cardSetId)}
               className={`rounded-md box-border border-2 p-1 h-32 flex flex-col justify-between items-center
                   ${isEditing ? "cursor-pointer" : ""}
                   ${
-                    selectedItems.includes(item.folderId)
+                    selectedItems.includes(item.cardSetId)
                       ? "border-primary-700 bg-primary-100"
                       : "border-transparent"
                   }
