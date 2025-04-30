@@ -8,7 +8,10 @@ import com.remembread.auth.entity.UserTokens;
 import com.remembread.auth.infrastructure.*;
 import com.remembread.common.enums.SocialLoginType;
 import com.remembread.common.service.RedisService;
+import com.remembread.user.entity.Character;
 import com.remembread.user.entity.User;
+import com.remembread.user.entity.UserCharacter;
+import com.remembread.user.repository.CharacterRepository;
 import com.remembread.user.repository.UserCharacterRepository;
 import com.remembread.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +35,7 @@ public class LoginService {
     private final JwtUtil jwtUtil;
     private final RedisService redisService;
     private final UserRepository userRepository;
+    private final CharacterRepository characterRepository;
     private final UserCharacterRepository userCharacterRepository;
 
     private final KakaoOAuthProvider kakaoOAuthProvider;
@@ -118,15 +122,26 @@ public class LoginService {
 
     @Transactional
     public User createUser(String nickname, String socialLoginId, SocialLoginType socialLoginType) {
+        Character defaultCharacter = characterRepository.findByIsDefaultTrue()
+                .orElseThrow(() -> new RuntimeException("기본 캐릭터가 없습니다"));
+
         if (userRepository.findByNickname(nickname).isEmpty()) {
-            return userRepository.save(User.builder()
+            User user = userRepository.save(User.builder()
                     .nickname(nickname)
                     .socialLoginId(socialLoginId)
                     .socialLoginType(socialLoginType)
+                    .mainCharacter(defaultCharacter)
                     .pushEnable(false)
                     .isAgreedTerms(false)
                     .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
                     .build());
+
+            userCharacterRepository.save(UserCharacter.builder()
+                    .user(user)
+                    .character(defaultCharacter)
+                    .build());
+
+            return user;
         }
 
         throw new GeneralException(ErrorStatus.FAILED_TO_GENERATE_NICKNAME);
