@@ -19,4 +19,7 @@ public class Character {
 
     @Column(nullable = false, length = 1024)
     private String imageUrl;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean isDefault;
 }
