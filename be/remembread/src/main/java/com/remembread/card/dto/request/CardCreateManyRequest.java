@@ -4,13 +4,13 @@ import lombok.Data;
 
 import java.util.List;
 
+@Data
 public class CardCreateManyRequest {
-    Long folderId;
-    List<String> hashTags;
+    Long cardSetId;
     List<Bread> breads;
 
     @Data
-    private static class Bread {
+    public static class Bread {
         String concept;
         String description;
     }
