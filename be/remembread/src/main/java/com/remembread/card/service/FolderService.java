@@ -1,6 +1,8 @@
 package com.remembread.card.service;
 
+import com.remembread.card.converter.FolderConverter;
 import com.remembread.card.dto.request.FolderCreateRequest;
+import com.remembread.card.dto.response.FolderResponse;
 import com.remembread.card.entity.Folder;
 import com.remembread.card.repository.FolderRepository;
 import com.remembread.user.entity.User;
@@ -26,5 +28,10 @@ public class FolderService {
                 .name(request.getName())
                 .build();
         folderRepository.save(folder);
+    }
+
+    public FolderResponse getFolderInfo(Long id) {
+        Folder folder = folderRepository.getReferenceById(id);
+        return FolderConverter.toFolderResponse(folder);
     }
 }
