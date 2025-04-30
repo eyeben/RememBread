@@ -1,5 +1,5 @@
-import axios from 'axios';
-import useAuthStore from '@/stores/authStore';
+import http from './httpCommon';
+import { AUTH_END_POINT } from './endPoints';
 
 interface SocialLoginParams {
   code: string;
@@ -24,9 +24,10 @@ interface RefreshTokenResponse {
  */
 export const socialLogin = async ({ code, socialType }: SocialLoginParams): Promise<SocialLoginResponse> => {
   try {
-    const response = await axios.get<SocialLoginResponse>(`/auth/login/${socialType}`, { 
-      params: { code } 
-    });
+    const response = await http.get<SocialLoginResponse>(
+      AUTH_END_POINT.SOCIAL_LOGIN(socialType),
+      { params: { code } }
+    );
     return response.data;
   } catch (error) {
     throw new Error('소셜 로그인에 실패했습니다.');
@@ -41,13 +42,7 @@ export const socialLogin = async ({ code, socialType }: SocialLoginParams): Prom
  */
 export const refreshToken = async (): Promise<RefreshTokenResponse> => {
   try {
-    const { accessToken } = useAuthStore.getState();
-    const response = await axios.post<RefreshTokenResponse>('/auth/reissue', null, {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-      withCredentials: true,
-    });
+    const response = await http.post<RefreshTokenResponse>(AUTH_END_POINT.REFRESH_TOKEN);
     return response.data;
   } catch (error) {
     throw new Error('토큰 갱신에 실패했습니다.');
