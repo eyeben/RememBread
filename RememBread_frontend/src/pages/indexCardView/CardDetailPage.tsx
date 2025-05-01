@@ -33,11 +33,15 @@ const CardDetailPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-10">
-      <div className="flex justify-between items-center gap-12">
-        <p className="w-[160px] text-sm text-neutral-500"></p>
-        <h1 className="text-2xl font-semibold mb-4">카드 상세 보기</h1>
-        <p className="w-[160px] text-sm text-neutral-500">현재 선택한 카드 ID: {card.cardSetId}</p>
+    <div className="flex flex-col items-center justify-center py-10 gap-4">
+      <div className="flex justify-between items-center w-full gap-4">
+        <p className="w-1/4 text-sm text-neutral-500"></p>
+        <h1 className="flex flex-1 justify-center pc:text-3xl text-xl font-semibold">
+          카드 상세 보기
+        </h1>
+        <p className="w-1/4 pc:text-sm text-xxs text-neutral-500">
+          현재 선택한 카드 ID: {card.cardSetId}
+        </p>
       </div>
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
