@@ -12,8 +12,9 @@ import CreateFromSelfPage from "@/pages/createIndexCard/CreateFromSelfPage";
 import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
-import IndexCardViewPage from "@/pages/IndexCardViewPage";
+import IndexCardViewPage from "@/pages/indexCardView/IndexCardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
+import CardDetailPage from "@/pages/indexCardView/CardDetailPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import { tokenUtils } from '@/lib/queryClient';
 
@@ -86,30 +87,47 @@ const router = createBrowserRouter([
           },
         ],
       },
-      // 로그인 필요 구간 (Protected)
+    ],
+  },
+
+  // 로그인 필요 구간
+  {
+    path: "/",
+    element: <Layout />,
+    children: [
       {
-        element: <ProtectedOutlet />,
+        index: true,
+        element: <HomePage />,
+        handle: { header: true, footer: true },
+      },
+      {
+        path: "create",
         children: [
-          {
-            index: true,
-            element: <HomePage />,
-            handle: { header: true, footer: true },
-          },
-          {
-            path: "create",
-            children: [
-              { index: true, element: <CreateFromSelfPage /> },
-              { path: "pdf", element: <CreateFromPDFPage /> },
-              { path: "text", element: <CreateFromTextFPage /> },
-              { path: "image", element: <CreateFromImageFPage /> },
-            ],
-          },
-          { path: "save", element: <SaveCardPage /> },
-          { path: "card-view/my", element: <IndexCardViewPage /> },
-          { path: "profile", element: <ProfilePage /> },
-          { path: "games", element: <GamesPage /> },
-          { path: "map", element: <MapPage /> },
+          { index: true, element: <CreateFromSelfPage /> },
+          { path: "pdf", element: <CreateFromPDFPage /> },
+          { path: "text", element: <CreateFromTextFPage /> },
+          { path: "image", element: <CreateFromImageFPage /> },
         ],
+      },
+      {
+        path: "save",
+        element: <SaveCardPage />,
+      },
+      {
+        path: "card-view",
+        children: [{ path: "my", element: <IndexCardViewPage /> }],
+      },
+      {
+        path: "profile",
+        element: <ProfilePage />,
+      },
+      {
+        path: "/games",
+        element: <GamesPage />,
+      },
+      {
+        path: "/map",
+        element: <MapPage />,
       },
     ],
   },

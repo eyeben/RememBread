@@ -1,11 +1,21 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
 import Button from "@/components/common/Button";
-import InputBread from "@/components/svgs/InputBread";
+import InputBread from "@/components/svgs/breads/InputBread";
 import { indexCardSet } from "@/types/indexCard";
 import { createEmptyCard } from "@/utils/createEmptyCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+  type CarouselApi,
+} from "@/components/ui/carousel";
 
 const CreateFromSelfPage = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
@@ -13,29 +23,22 @@ const CreateFromSelfPage = () => {
   const [cardSet, setCardSet] = useState<indexCardSet>({
     folderId: BigInt(0),
     hashTags: [],
-    breads: [createEmptyCard()],
+    breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
   });
 
-  const handleNext = () => {
-    setCardSet((prev) => {
-      const nextIndex = currentIndex + 1;
-      let newBreads = [...prev.breads];
+  const [api, setApi] = useState<CarouselApi>();
 
-      if (nextIndex >= prev.breads.length) {
-        newBreads.push(createEmptyCard());
-      }
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
 
-      return { ...prev, breads: newBreads };
+    setCurrentIndex(api.selectedScrollSnap() + 1);
+
+    api.on("select", () => {
+      setCurrentIndex(api.selectedScrollSnap() + 1);
     });
-
-    setCurrentIndex((prev) => prev + 1);
-    setIsFront(true);
-  };
-
-  const handlePrev = () => {
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : 0));
-    setIsFront(true);
-  };
+  }, [api]);
 
   const handleFlip = () => {
     setIsFront((prev) => !prev);
@@ -45,7 +48,7 @@ const CreateFromSelfPage = () => {
     setTimeout(() => {
       setIsRotating(!isRotating);
       setIsButtonDisabled(false);
-    }, 260);
+    }, 310);
   };
 
   return (
@@ -53,75 +56,75 @@ const CreateFromSelfPage = () => {
       className="flex flex-col justify-between w-full text-center"
       style={{ minHeight: "calc(100vh - 120px)" }}
     >
-      <h1 className="text-primary-500 text-2xl font-bold m-5">빵 굽기</h1>
-
-      <div
-        className={`relative w-full h-full transition-transform duration-700 ${
-          isFront ? "rotate-y-0" : "rotate-y-180"
-        }`}
+      <Button
+        className="text-primary-500 text-2xl font-bold m-5 py-5"
+        variant="primary-outline"
+        onClick={handleFlip}
+        disabled={isButtonDisabled}
       >
-        <div className={!isRotating ? "rotate-y-0" : "rotate-y-180"}>
-          <h1 className="absolute left-1/2 transform -translate-x-1/2 text-2xl font-bold top-1/4">
-            {!isRotating ? "concept" : "description"}
-          </h1>
-        </div>
-
-        {!isRotating ? (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
-            {cardSet.breads[currentIndex]?.concept}제목임
-          </div>
-        ) : (
-          <textarea
-            className="absolute top-1/3 left-1/3 w-1/3 h-1/3 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-            value={cardSet.breads[currentIndex]?.description}
-            placeholder="여기에 텍스트를 입력하세요"
-            onChange={(e) => {
-              const updatedDescription = e.target.value;
-              setCardSet((prev) => {
-                const newBreads = [...prev.breads];
-                newBreads[currentIndex] = {
-                  ...newBreads[currentIndex],
-                  description: updatedDescription,
-                };
-                return { ...prev, breads: newBreads };
-              });
-            }}
-            style={{
-              scrollbarWidth: "none",
-            }}
-          />
-        )}
-
-        <InputBread className="w-full" />
-      </div>
-
-      <div>
-        {currentIndex + 1} / {cardSet.breads.length}
-      </div>
-
-      <div className="w-full">
-        <Button
-          className="mx-5 w-12"
-          variant="primary-outline"
-          onClick={handleFlip}
-          disabled={isButtonDisabled}
-        >
-          뒤집기
-        </Button>
-      </div>
-
-      <Button className="mt-5 mx-5" variant="primary">
-        생성
+        {!isFront ? "concept" : "description"}
       </Button>
 
-      <div className="flex w-full my-5">
-        <Button className="w-full mx-5" variant="primary" onClick={handlePrev}>
-          이전
-        </Button>
-        <Button className="w-full mx-5" variant="primary" onClick={handleNext}>
-          다음
-        </Button>
+      <div className="">
+        {currentIndex} / {cardSet.breads.length}
       </div>
+
+      <Carousel
+        setApi={setApi}
+        opts={{
+          align: "center",
+          loop: false,
+        }}
+        className="w-full max-w-md mx-auto px-4 pc:px-0"
+      >
+        <CarouselContent className="aspect-square">
+          {cardSet.breads.map((bread, index) => (
+            <CarouselItem key={index} className={`relative`}>
+              <div className="relative w-full h-full">
+                <div
+                  className={`relative transition-transform duration-1000 ${
+                    isFront ? "rotate-y-0" : "rotate-y-180"
+                  }`}
+                >
+                  <InputBread className="w-full h-full aspect-square" />
+
+                  {!isRotating ? (
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
+                      {bread?.concept || "제목 없음"}
+                    </div>
+                  ) : (
+                    <textarea
+                      className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
+                      value={bread?.description}
+                      placeholder="여기에 텍스트를 입력하세요"
+                      onChange={(e) => {
+                        const updatedDescription = e.target.value;
+                        setCardSet((prev) => {
+                          const newBreads = [...prev.breads];
+                          newBreads[index] = {
+                            ...newBreads[index],
+                            description: updatedDescription,
+                          };
+                          return { ...prev, breads: newBreads };
+                        });
+                      }}
+                      style={{
+                        scrollbarWidth: "none",
+                      }}
+                    />
+                  )}
+                </div>
+              </div>
+            </CarouselItem>
+          ))}
+        </CarouselContent>
+        <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+        <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+      </Carousel>
+
+      <Button className="my-5 mx-5" variant="primary">
+        생성
+      </Button>
     </div>
   );
 };
