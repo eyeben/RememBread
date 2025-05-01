@@ -70,8 +70,7 @@ const CardDetailPage = () => {
         </>
       )}
 
-      {/* 하위 라우트 (CardStudyPage 등) */}
-      <div className="w-full max-w-3xl mt-8 px-4">
+      <div className="w-full max-w-3xl px-4">
         <Outlet />
       </div>
     </div>
