@@ -1,6 +1,5 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { tokenUtils } from '@/lib/queryClient';
-import useAuthStore from '@/stores/authStore';
 
 const http = axios.create({
     baseURL: import.meta.env.VITE_APP_BASE_URL,
@@ -13,7 +12,8 @@ const http = axios.create({
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const accessToken = tokenUtils.getToken();
-    if (accessToken) {
+    // refresh token 재발급 요청인 경우에도 헤더 추가
+    if (accessToken || config.url?.includes('/auth/reissue')) {
         config.headers.Authorization = `Bearer ${accessToken}`;
     }
     return config;
@@ -31,7 +31,7 @@ http.interceptors.response.use(
         ) {
             originalRequest._retry = true;
             try {
-                const isRefreshed = await useAuthStore.getState().checkAndRefreshToken();
+                const isRefreshed = await tokenUtils.tryRefreshToken();
                 if (isRefreshed) {
                     // 실패했던 요청 다시 보내기
                     const newAccessToken = tokenUtils.getToken();

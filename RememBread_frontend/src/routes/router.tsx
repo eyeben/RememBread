@@ -16,20 +16,20 @@ import IndexCardViewPage from "@/pages/IndexCardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import { tokenUtils } from '@/lib/queryClient';
-import useAuthStore from '@/stores/authStore';
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const accessToken = tokenUtils.getToken();
 
   useEffect(() => {
     const checkAuth = async () => {
-      if (!accessToken) {
-        // accessToken이 없을 때만 refreshToken 확인
-        const isRefreshed = await useAuthStore.getState().checkAndRefreshToken();
+      // accessToken이 없거나 신선하지 않은 경우에만 refresh token으로 갱신 시도
+      if (!tokenUtils.getToken()) {
+        console.log('accessToken이 없거나 신선하지 않습니다. refresh token으로 갱신을 시도합니다.');
+        const isRefreshed = await tokenUtils.tryRefreshToken();
+        
         if (!isRefreshed) {
-          // refreshToken으로도 accessToken을 받아오지 못한 경우
+          console.log('refresh token으로도 accessToken을 받아오지 못했습니다. 로그인 페이지로 이동합니다.');
           tokenUtils.removeToken();
         }
       }
@@ -37,7 +37,7 @@ const ProtectedOutlet = () => {
     };
 
     checkAuth();
-  }, [accessToken]);
+  }, []);
 
   if (isLoading) {
     return (
