@@ -53,7 +53,7 @@ const TagRow = ({ tags }: { tags: string[] }) => {
       {isInputVisible && (
         <input
           type="text"
-          className={`max-w-[150px] border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none  ${
+          className={`max-w-[150px] h-full border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none  ${
             isLimitExceeded
               ? "border-negative-500 focus:ring-2 "
               : "border-gray-300 focus:ring-2 focus:ring-primary-500"
@@ -68,7 +68,7 @@ const TagRow = ({ tags }: { tags: string[] }) => {
       {localTags.map((tag, idx) => (
         <span
           key={idx}
-          className="bg-primary-700 text-white rounded-full px-3 py-1 text-sm whitespace-nowrap hover:cursor-pointer"
+          className="bg-primary-700 h-full text-white border-primary-700 rounded-full px-3 py-1 text-sm whitespace-nowrap hover:cursor-pointer"
         >
           #{tag}
         </span>
