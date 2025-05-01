@@ -109,6 +109,8 @@ public class LoginService {
             userId = jwtUtil.getSubject(refreshToken);
         }
 
+        log.info("reissueAccessToken 요청... accessToken: {}, refreshToken: {}", accessToken, refreshToken);
+
         if (userId == null) {
             throw new GeneralException(ErrorStatus.FAILED_TO_VALIDATE_TOKEN);
         }
