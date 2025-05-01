@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
-
-import Button from "@/components/common/Button";
-import InputBread from "@/components/svgs/breads/InputBread";
 import { indexCardSet } from "@/types/indexCard";
 import { createEmptyCard } from "@/utils/createEmptyCard";
+import InputBread from "@/components/svgs/breads/InputBread";
+import Button from "@/components/common/Button";
 import {
   Carousel,
   CarouselContent,
@@ -13,7 +12,7 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 
-const CreateFromSelfPage = () => {
+const CardTTSPage = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const [isFront, setIsFront] = useState<boolean>(true);
@@ -21,7 +20,7 @@ const CreateFromSelfPage = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
   const [cardSet, setCardSet] = useState<indexCardSet>({
-    folderId: BigInt(0),
+    folderId: Number(0),
     hashTags: [],
     breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
   });
@@ -52,10 +51,7 @@ const CreateFromSelfPage = () => {
   };
 
   return (
-    <div
-      className="flex flex-col justify-between w-full text-center"
-      style={{ minHeight: "calc(100vh - 120px)" }}
-    >
+    <div className="flex flex-col justify-between w-full text-center gap-4">
       <Button
         className="text-primary-500 text-2xl font-bold m-5 py-5"
         variant="primary-outline"
@@ -121,12 +117,8 @@ const CreateFromSelfPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
-
-      <Button className="my-5 mx-5" variant="primary">
-        생성
-      </Button>
     </div>
   );
 };
 
-export default CreateFromSelfPage;
+export default CardTTSPage;
