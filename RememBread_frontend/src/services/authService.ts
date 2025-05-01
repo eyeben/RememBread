@@ -21,6 +21,13 @@ interface RefreshTokenResponse {
   accessToken: string;
 }
 
+interface LogoutResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {}
+}
+
 /** 
  * 소셜 로그인 
  * 
@@ -53,5 +60,19 @@ export const refreshToken = async (): Promise<RefreshTokenResponse> => {
     return response.data;
   } catch (error) {
     throw new Error('토큰 갱신에 실패했습니다.');
+  }
+};
+
+/**
+ * 로그아웃
+ * 
+ * 로그아웃 요청 및 응답 처리
+ */
+export const logout = async (): Promise<LogoutResponse> => {
+  try {
+    const response = await http.post<LogoutResponse>(AUTH_END_POINT.LOGOUT);
+    return response.data;
+  } catch (error) {
+    throw new Error('로그아웃에 실패했습니다.');
   }
 };

@@ -25,6 +25,19 @@ http.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+        // TOKEN4002 에러 처리
+        if (error.response?.data && 
+            typeof error.response.data === 'object' && 
+            'code' in error.response.data &&
+            'isSuccess' in error.response.data &&
+            error.response.data.code === 'TOKEN4002' && 
+            error.response.data.isSuccess === false
+        ) {
+            tokenUtils.removeToken();
+            window.location.href = '/login';
+            return Promise.reject(error);
+        }
+
         if (
             error.response?.status === 401 &&
             !originalRequest._retry // 재시도 방지 플래그

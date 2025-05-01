@@ -17,6 +17,12 @@ interface UserResponse {
   };
 }
 
+interface UpdateUserParams {
+  nickname?: string;
+  pushEnable?: boolean;
+  mainCharacterImageUrl?: string;
+}
+
 /**
  * 약관 동의 완료 확인용
  * 
@@ -33,6 +39,8 @@ export const completeAgree = async (): Promise<AgreeResponse> => {
 
 /**
  * 유저 정보 조회
+ * 
+ * 닉네임, 푸시 알림 설정, 메인 캐릭터 이미지 조회
  */
 export const getUser = async (): Promise<UserResponse> => {
   try {
@@ -42,3 +50,18 @@ export const getUser = async (): Promise<UserResponse> => {
     throw new Error('유저 정보 조회 중 오류가 발생했습니다.');
   }
 };
+
+/**
+ * 유저 정보 수정
+ * 
+ * 이름, 푸시 알림 설정, 메인 캐릭터 이미지 수정
+ */
+export const updateUser = async (params: UpdateUserParams): Promise<UserResponse> => {
+  try {
+    const response = await http.patch<UserResponse>(USER_END_POINT.PATCH_USER, params);
+    return response.data;
+  } catch (error) {
+    throw new Error('유저 정보 수정 중 오류가 발생했습니다.');
+  }
+};
+

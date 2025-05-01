@@ -1,11 +1,15 @@
 import { useState, ChangeEvent, useEffect } from "react";
+import { getUser, updateUser } from "@/services/userService";
+import { logout } from "@/services/authService";
+import { tokenUtils } from "@/lib/queryClient";
 import Button from "@/components/common/Button";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { getUser } from "@/services/userService";
+import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
+  const navigate = useNavigate();
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [pushEnable, setPushEnable] = useState<boolean>(false);
@@ -30,8 +34,18 @@ const Profile = () => {
     setIsEditable(true);
   };
 
-  const handleCompleteClick = () => {
-    setIsEditable(false);
+  const handleCompleteClick = async () => {
+    try {
+      console.log("수정할 데이터", name, pushEnable, mainCharacterImageUrl);
+      await updateUser({
+        nickname: name,
+        pushEnable: pushEnable,
+        mainCharacterImageUrl: mainCharacterImageUrl
+      });
+      setIsEditable(false);
+    } catch (error) {
+      console.error("유저 정보 수정 중 오류가 발생했습니다:", error);
+    }
   };
 
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -40,6 +54,19 @@ const Profile = () => {
 
   const handlePushEnableChange = (checked: boolean) => {
     setPushEnable(checked);
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout();
+      tokenUtils.removeToken();
+      navigate('/login');
+    } catch (error) {
+      console.error('로그아웃 중 오류가 발생했습니다:', error);
+      // 에러가 발생하더라도 로컬의 토큰은 삭제하고 로그인 페이지로 이동
+      tokenUtils.removeToken();
+      navigate('/login');
+    }
   };
 
   return (
@@ -85,7 +112,12 @@ const Profile = () => {
         </Button>
       )}
 
-      <a className="text-sm text-neutral-400">로그아웃</a>
+      <a 
+        className="text-lg text-red-500 mb-6 underline cursor-pointer" 
+        onClick={handleLogout}
+      >
+        로그아웃
+      </a>
     </div>
   );
 };
