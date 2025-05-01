@@ -90,10 +90,9 @@ const router = createBrowserRouter([
     ],
   },
 
-  // 로그인 필요 구간
+  // 로그인 필요 구간 (protected)
   {
-    path: "/",
-    element: <Layout />,
+    element: <ProtectedOutlet />,
     children: [
       {
         index: true,
@@ -115,7 +114,10 @@ const router = createBrowserRouter([
       },
       {
         path: "card-view",
-        children: [{ path: "my", element: <IndexCardViewPage /> }],
+        children: [
+          { path: "my", element: <IndexCardViewPage /> },
+          { path: ":indexCardId", element: <CardDetailPage /> },
+        ],
       },
       {
         path: "profile",
