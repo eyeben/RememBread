@@ -21,4 +21,5 @@ export const AUTH_END_POINT = {
  */
 export const USER_END_POINT = {
     COMPLETE_AGREE: '/users/agree',
+    GET_USER: '/users',
 }

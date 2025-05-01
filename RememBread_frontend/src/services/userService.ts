@@ -5,6 +5,18 @@ interface AgreeResponse {
   isSuccess: boolean;
 }
 
+interface UserResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    nickname: string;
+    mainCharacterImageUrl: string;
+    pushEnable: boolean;
+    socialLoginType: string;
+  };
+}
+
 /**
  * 약관 동의 완료 확인용
  * 
@@ -16,5 +28,17 @@ export const completeAgree = async (): Promise<AgreeResponse> => {
     return response.data;
   } catch (error) {
     throw new Error('약관 동의 처리 중 오류가 발생했습니다.');
+  }
+};
+
+/**
+ * 유저 정보 조회
+ */
+export const getUser = async (): Promise<UserResponse> => {
+  try {
+    const response = await http.get<UserResponse>(USER_END_POINT.GET_USER);
+    return response.data;
+  } catch (error) {
+    throw new Error('유저 정보 조회 중 오류가 발생했습니다.');
   }
 };

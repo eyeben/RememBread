@@ -1,12 +1,30 @@
-import { useState, ChangeEvent } from "react";
+import { useState, ChangeEvent, useEffect } from "react";
 import Button from "@/components/common/Button";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { getUser } from "@/services/userService";
 
 const Profile = () => {
   const [isEditable, setIsEditable] = useState<boolean>(false);
-  const [name, setName] = useState<string>("원서");
+  const [name, setName] = useState<string>("");
+  const [pushEnable, setPushEnable] = useState<boolean>(false);
+  const [mainCharacterImageUrl, setMainCharacterImageUrl] = useState<string>("");
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const userData = await getUser();
+        setName(userData.result.nickname);
+        setPushEnable(userData.result.pushEnable);
+        setMainCharacterImageUrl(userData.result.mainCharacterImageUrl);
+      } catch (error) {
+        console.error("유저 정보를 불러오는 중 오류가 발생했습니다:", error);
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   const handleEditClick = () => {
     setIsEditable(true);
@@ -20,13 +38,21 @@ const Profile = () => {
     setName(e.target.value);
   };
 
+  const handlePushEnableChange = (checked: boolean) => {
+    setPushEnable(checked);
+  };
+
   return (
     <div
       className="flex flex-col justify-between items-center"
       style={{ minHeight: "calc(100vh - 200px)" }}
     >
       <div className="flex flex-col items-center">
-        <DefaultBread className="w-60 h-60" />
+        {mainCharacterImageUrl ? (
+          <img src={mainCharacterImageUrl} alt="프로필 캐릭터" className="w-60 h-60" />
+        ) : (
+          <DefaultBread className="w-60 h-60" />
+        )}
         <Button className="w-1/2" variant="primary-outline">
           변경하기
         </Button>
@@ -41,7 +67,11 @@ const Profile = () => {
         ></Input>
         <div className="flex w-1/2 justify-between">
           <div>위치 알람 설정</div>
-          <Switch disabled={!isEditable} />
+          <Switch 
+            checked={pushEnable} 
+            onCheckedChange={handlePushEnableChange}
+            disabled={!isEditable} 
+          />
         </div>
       </div>
 

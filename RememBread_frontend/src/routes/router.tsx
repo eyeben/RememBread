@@ -87,49 +87,49 @@ const router = createBrowserRouter([
           },
         ],
       },
-    ],
-  },
 
-  // 로그인 필요 구간 (protected)
-  {
-    element: <ProtectedOutlet />,
-    children: [
+      // 로그인 필요 구간 (protected)
       {
-        index: true,
-        element: <HomePage />,
+        element: <ProtectedOutlet />,
         handle: { header: true, footer: true },
-      },
-      {
-        path: "create",
         children: [
-          { index: true, element: <CreateFromSelfPage /> },
-          { path: "pdf", element: <CreateFromPDFPage /> },
-          { path: "text", element: <CreateFromTextFPage /> },
-          { path: "image", element: <CreateFromImageFPage /> },
+          {
+            index: true,
+            element: <HomePage />,
+          },
+          {
+            path: "create",
+            children: [
+              { index: true, element: <CreateFromSelfPage /> },
+              { path: "pdf", element: <CreateFromPDFPage /> },
+              { path: "text", element: <CreateFromTextFPage /> },
+              { path: "image", element: <CreateFromImageFPage /> },
+            ],
+          },
+          {
+            path: "save",
+            element: <SaveCardPage />,
+          },
+          {
+            path: "card-view",
+            children: [
+              { path: "my", element: <IndexCardViewPage /> },
+              { path: ":indexCardId", element: <CardDetailPage /> },
+            ],
+          },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
+          {
+            path: "/games",
+            element: <GamesPage />,
+          },
+          {
+            path: "/map",
+            element: <MapPage />,
+          },
         ],
-      },
-      {
-        path: "save",
-        element: <SaveCardPage />,
-      },
-      {
-        path: "card-view",
-        children: [
-          { path: "my", element: <IndexCardViewPage /> },
-          { path: ":indexCardId", element: <CardDetailPage /> },
-        ],
-      },
-      {
-        path: "profile",
-        element: <ProfilePage />,
-      },
-      {
-        path: "/games",
-        element: <GamesPage />,
-      },
-      {
-        path: "/map",
-        element: <MapPage />,
       },
     ],
   },
