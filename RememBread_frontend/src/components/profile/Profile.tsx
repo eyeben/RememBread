@@ -1,4 +1,5 @@
 import { useState, ChangeEvent, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUser, updateUser } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
@@ -6,7 +7,6 @@ import Button from "@/components/common/Button";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { useNavigate } from "react-router-dom";
 
 const Profile = () => {
   const navigate = useNavigate();
