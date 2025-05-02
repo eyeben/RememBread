@@ -4,6 +4,7 @@ import com.remembread.card.converter.CardConverter;
 import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.CardListResponse;
 import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.entity.Card;
@@ -111,5 +112,14 @@ public class CardSetService {
         CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
         List<Card> cards = cardRepository.getCardsByCardSet(cardSet);
         return CardConverter.toCardListResponse(cards);
+    }
+
+    @Transactional
+    public void updateCardSetInfo(Long cardSetId, CardSetUpdateRequest request) {
+        CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
+        cardSet.updateName(request.getName());
+        cardSet.updateIsPublic(request.getIsPublic());
+        this.setHashtag(request.getHashtags(), cardSet);
+        cardSetRepository.save(cardSet);
     }
 }
