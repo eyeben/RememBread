@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { indexCardSet } from "@/types/indexCard";
 import { createEmptyCard } from "@/utils/createEmptyCard";
-import InputBread from "@/components/svgs/breads/InputBread";
 import Button from "@/components/common/Button";
+import InputBread from "@/components/svgs/breads/InputBread";
+
 import {
   Carousel,
   CarouselContent,
