@@ -31,20 +31,22 @@ const ProtectedOutlet = () => {
     const checkAuth = async () => {
       const currentToken = tokenUtils.getToken();
       
-      // 토큰이 없는 경우에만 재발급 시도
+      // 토큰이 없는 경우 바로 로그인 페이지로 리다이렉트
       if (!currentToken) {
-        const isRefreshed = await tokenUtils.tryRefreshToken();
-        
-        if (isRefreshed) {
-          setIsLoading(false);
-        } else {
-          tokenUtils.removeToken();
-          setRedirectPath('/login');
-          setShouldRedirect(true);
-        }
-      } else {
+        setShouldRedirect(true);
         setIsLoading(false);
+        return;
       }
+
+      // 토큰이 있는 경우에만 재발급 시도
+      const isRefreshed = await tokenUtils.tryRefreshToken();
+      
+      if (!isRefreshed) {
+        tokenUtils.removeToken();
+        setShouldRedirect(true);
+      }
+      
+      setIsLoading(false);
     };
 
     checkAuth();
