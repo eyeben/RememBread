@@ -4,14 +4,14 @@ const CardSet = ({ className }: SVGProps) => {
   return (
 <svg className={className} width="68" height="77" viewBox="0 0 68 77" fill="none" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
 <g filter="url(#filter0_d_374_7829)">
-<path d="M30.5107 3.66016C32.6711 2.41795 35.3289 2.41795 37.4893 3.66016L59.4893 16.3096C61.661 17.5583 62.9999 19.8728 63 22.3779V47.6221C62.9999 50.1272 61.661 52.4417 59.4893 53.6904L37.4893 66.3398C35.3289 67.5821 32.6711 67.5821 30.5107 66.3398L8.51074 53.6904C6.33899 52.4417 5.0001 50.1272 5 47.6221V22.3779C5.0001 19.8728 6.33899 17.5583 8.51074 16.3096L30.5107 3.66016Z" fill="#B3915C" stroke="white" stroke-width="2"/>
-<path d="M34.1899 25.5V45.5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-<path d="M24.095 35H44.095" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+<path d="M30.5107 3.66016C32.6711 2.41795 35.3289 2.41795 37.4893 3.66016L59.4893 16.3096C61.661 17.5583 62.9999 19.8728 63 22.3779V47.6221C62.9999 50.1272 61.661 52.4417 59.4893 53.6904L37.4893 66.3398C35.3289 67.5821 32.6711 67.5821 30.5107 66.3398L8.51074 53.6904C6.33899 52.4417 5.0001 50.1272 5 47.6221V22.3779C5.0001 19.8728 6.33899 17.5583 8.51074 16.3096L30.5107 3.66016Z" fill="#B3915C" stroke="white" strokeWidth="2"/>
+<path d="M34.1899 25.5V45.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+<path d="M24.095 35H44.095" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
 <rect width="46" height="50" transform="translate(11.095 9.5)" fill="url(#pattern0_374_7829)"/>
 </g>
 <defs>
-<filter id="filter0_d_374_7829" x="0" y="0.5" width="68" height="77" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
-<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<filter id="filter0_d_374_7829" x="0" y="0.5" width="68" height="77" filterUnits="userSpaceOnUse" colorInterpolationFilters="sRGB">
+<feFlood floodOpacity="0" result="BackgroundImageFix"/>
 <feColorMatrix in="SourceAlpha" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 127 0" result="hardAlpha"/>
 <feOffset dy="4"/>
 <feGaussianBlur stdDeviation="2"/>

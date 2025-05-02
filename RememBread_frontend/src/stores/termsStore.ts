@@ -1,13 +1,15 @@
 import { create } from "zustand";
 
-export interface TermsState {
-  checkboxes: {
-    all: boolean;
-    term1: boolean;
-    term2: boolean;
-    term3: boolean;
-  };
-  handleSingleCheck: (name: keyof Omit<TermsState["checkboxes"], "all">, checked: boolean) => void;
+interface CheckboxState {
+  all: boolean;
+  term1: boolean;
+  term2: boolean;
+  term3: boolean;
+}
+
+interface TermsState {
+  checkboxes: CheckboxState;
+  handleSingleCheck: (name: keyof Omit<CheckboxState, "all">, checked: boolean) => void;
   handleAllCheck: (checked: boolean) => void;
   isAllTermsChecked: boolean;
 }
