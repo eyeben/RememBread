@@ -65,3 +65,16 @@ export const updateUser = async (body: UpdateUserParams): Promise<UserResponse> 
   }
 };
 
+/**
+ * 유저 삭제
+ * 
+ * 유저 삭제 요청
+ */
+export const deleteUser = async (): Promise<UserResponse> => {
+  try {
+    const response = await http.delete<UserResponse>(USER_END_POINT.DELETE_USER);
+    return response.data;
+  } catch (error) {
+    throw new Error('유저 삭제 중 오류가 발생했습니다.');
+  }
+};

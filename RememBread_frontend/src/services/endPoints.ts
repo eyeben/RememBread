@@ -23,4 +23,5 @@ export const USER_END_POINT = {
     COMPLETE_AGREE: '/users/agree',
     GET_USER: '/users',
     PATCH_USER: '/users',
+    DELETE_USER: '/users',
 }
