@@ -95,52 +95,69 @@ const router = createBrowserRouter([
 
   // 로그인 필요 구간 (protected)
   {
-    element: <ProtectedOutlet />,
+    element: <Layout />,
     children: [
       {
-        index: true,
-        element: <HomePage />,
-        handle: { header: true, footer: true },
-      },
-      {
-        path: "create",
+        element: <ProtectedOutlet />,
         children: [
-          { index: true, element: <CreateFromSelfPage /> },
-          { path: "pdf", element: <CreateFromPDFPage /> },
-          { path: "text", element: <CreateFromTextFPage /> },
-          { path: "image", element: <CreateFromImageFPage /> },
-        ],
-      },
-      {
-        path: "save",
-        element: <SaveCardPage />,
-      },
-      {
-        path: "card-view",
-        children: [
-          { path: "my", element: <IndexCardViewPage /> },
           {
-            path: ":indexCardId",
-            element: <CardDetailPage />,
+            index: true,
+            element: <HomePage />,
+            handle: { header: true, footer: true },
+          },
+          {
+            path: "create",
             children: [
-              { path: "study", element: <CardStudyPage /> },
-              { path: "tts", element: <CardTTSPage /> },
-              { path: "test", element: <CardTestPage /> },
+              { index: true, element: <CreateFromSelfPage /> },
+              { path: "pdf", element: <CreateFromPDFPage /> },
+              { path: "text", element: <CreateFromTextFPage /> },
+              { path: "image", element: <CreateFromImageFPage /> },
             ],
           },
+          {
+            path: "save",
+            element: <SaveCardPage />,
+          },
+          {
+            path: "card-view",
+            children: [
+              { 
+                path: "my", 
+                element: <IndexCardViewPage />,
+              },
+              {
+                path: ":indexCardId",
+                element: <CardDetailPage />,
+                children: [
+                  { 
+                    path: "study", 
+                    element: <CardStudyPage />,
+                  },
+                  { 
+                    path: "tts", 
+                    element: <CardTTSPage />,
+                  },
+                  { 
+                    path: "test", 
+                    element: <CardTestPage />,
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
+          {
+            path: "/games",
+            element: <GamesPage />,
+          },
+          {
+            path: "/map",
+            element: <MapPage />,
+          },
         ],
-      },
-      {
-        path: "profile",
-        element: <ProfilePage />,
-      },
-      {
-        path: "/games",
-        element: <GamesPage />,
-      },
-      {
-        path: "/map",
-        element: <MapPage />,
       },
     ],
   },

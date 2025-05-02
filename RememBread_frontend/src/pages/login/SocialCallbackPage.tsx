@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import { socialLogin } from '@/services/authService';
 import { tokenUtils } from '@/lib/queryClient';
@@ -12,8 +12,13 @@ const SocialCallbackPage = () => {
   const code = searchParams.get('code');
   const socialType = window.location.pathname.split('/')[3]; // /account/login/kakao 등에서 kakao 추출
 
+  const isLoginAttempted = useRef(false);
+
   useEffect(() => {
     const handleSocialLogin = async () => {
+      if (isLoginAttempted.current) return;
+      isLoginAttempted.current = true;
+
       if (!code || !socialType) {
         setError('로그인 정보가 올바르지 않습니다.');
         setIsLoading(false);
@@ -48,7 +53,7 @@ const SocialCallbackPage = () => {
     };
 
     handleSocialLogin();
-  }, [code, socialType, navigate]);
+  }, []); // 의존성 배열을 비워서 마운트 시 한 번만 실행되도록 함
 
   if (isLoading) {
     return (
