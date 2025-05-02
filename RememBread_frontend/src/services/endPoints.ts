@@ -1,11 +1,11 @@
 /**
  * 인증 관련 URL
  * 
- * Social Login : /auth/login/{socialType}
+ * 소셜로그인 : /auth/login/{socialType}
  * 
- * Refresh Token : /auth/reissue
+ * 토큰 재발급 : /auth/reissue
  * 
- * Logout : /auth/logout
+ * 로그아웃 : /auth/logout
  */
 export const AUTH_END_POINT = {
     SOCIAL_LOGIN: (socialType: string) => `/auth/login/${socialType}`,
@@ -21,4 +21,8 @@ export const AUTH_END_POINT = {
  */
 export const USER_END_POINT = {
     COMPLETE_AGREE: '/users/agree',
+    GET_USER: '/users',
+    PATCH_USER: '/users',
+    DELETE_USER: '/users',
+    GET_CHARACTERS: '/users/characters',
 }
