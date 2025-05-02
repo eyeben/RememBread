@@ -52,6 +52,8 @@ public class CardSetService {
 
     @Transactional
     public void setHashtag(List<String> hashtags, CardSet cardSet) {
+        cardSetHashtagRepository.deleteAllByCardSet(cardSet);
+        cardSetHashtagRepository.flush();
         for (String name : hashtags) {
             Hashtag hashtag;
             if (!hashtagRepository.existsByName(name)) {
