@@ -2,7 +2,14 @@ import { useState, useEffect } from "react";
 import { getCharacters } from "@/services/userService";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CharacterImage from "@/components/common/CharacterImage";
-import { Character, ImageEditModalProps } from "@/types/profile";
+import { Character } from "@/types/profile";
+
+export interface ImageEditModalProps {
+    isOpen: boolean;
+    onClose: () => void;
+    onSelect: (characterId: number) => void;
+    currentCharacterId: number;
+  } 
 
 const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: ImageEditModalProps) => {
   const [characters, setCharacters] = useState<Character[]>([]);
