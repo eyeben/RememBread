@@ -15,6 +15,9 @@ import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import IndexCardViewPage from "@/pages/indexCardView/IndexCardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import CardDetailPage from "@/pages/indexCardView/CardDetailPage";
+import CardStudyPage from "@/pages/indexCardView/CardStudyPage";
+import CardTTSPage from "@/pages/indexCardView/CardTTSPage";
+import CardTestPage from "@/pages/indexCardView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import { tokenUtils } from '@/lib/queryClient';
 
@@ -116,7 +119,15 @@ const router = createBrowserRouter([
         path: "card-view",
         children: [
           { path: "my", element: <IndexCardViewPage /> },
-          { path: ":indexCardId", element: <CardDetailPage /> },
+          {
+            path: ":indexCardId",
+            element: <CardDetailPage />,
+            children: [
+              { path: "study", element: <CardStudyPage /> },
+              { path: "tts", element: <CardTTSPage /> },
+              { path: "test", element: <CardTestPage /> },
+            ],
+          },
         ],
       },
       {
