@@ -3,6 +3,7 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardCreateRequest;
 import com.remembread.card.dto.request.CardCreateManyRequest;
+import com.remembread.card.dto.request.CardUpdateRequest;
 import com.remembread.card.dto.response.CardGetResponse;
 import com.remembread.card.service.CardService;
 import com.remembread.user.entity.User;
@@ -30,6 +31,16 @@ public class CardController {
     @GetMapping("{cardId}")
     public ApiResponse<CardGetResponse> getCard(@PathVariable Long cardId, @AuthUser User user) {
         return ApiResponse.onSuccess(cardService.getCard(cardId, user.getId()));
+    }
+
+    @PatchMapping("/{cardId}")
+    public ApiResponse<Void> updateCard(
+            @PathVariable Long cardId,
+            @RequestBody CardUpdateRequest request,
+            @AuthUser User user
+    ) {
+        cardService.updateCard(cardId, request, user);
+        return ApiResponse.onSuccess(null);
     }
 
 }
