@@ -5,11 +5,11 @@ import { indexCardSet } from "@/types/indexCard";
 import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
-import { DummyBreadList } from "@/components/indexCardView/DummyBreadList";
+import { DummyBreadSetList } from "@/components/indexCardView/DummyBreadSetList";
 
-const BreadList = () => {
+const CardSetList = () => {
   const navigate = useNavigate();
-  const breadList: indexCardSet[] = DummyBreadList;
+  const breadList: indexCardSet[] = DummyBreadSetList;
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -82,7 +82,7 @@ const BreadList = () => {
         )}
       </div>
 
-      <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-4 w-full mt-2">
+      <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
         {breadList.map((item) => (
           <div key={item.cardSetId} className="relative hover:cursor-pointer ">
             <div className="absolute top-2 right-5 z-10">
@@ -105,7 +105,9 @@ const BreadList = () => {
             >
               <CardSet className="w-full h-full hover:cursor-pointer" />
               <div className="text-center w-full mt-1">
-                <span className="pc:text-xl text-sm">{item.title}</span>
+                <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
+                  {item.title}
+                </span>
               </div>
             </div>
           </div>
@@ -126,4 +128,4 @@ const BreadList = () => {
   );
 };
 
-export default BreadList;
+export default CardSetList;

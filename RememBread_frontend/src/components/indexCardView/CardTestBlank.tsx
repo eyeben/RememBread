@@ -1,59 +1,58 @@
-import { useEffect, useState } from "react";
-import { indexCardSet } from "@/types/indexCard";
-import { createEmptyCard } from "@/utils/createEmptyCard";
-import Button from "@/components/common/Button";
-import InputBread from "@/components/svgs/breads/InputBread";
+// import { useEffect, useState } from "react";
+// import { indexCardSet } from "@/types/indexCard";
+// import { createEmptyCard } from "@/utils/createEmptyCard";
+// import InputBread from "@/components/svgs/breads/InputBread";
+// import Button from "@/components/common/Button";
+// import {
+//   Carousel,
+//   CarouselContent,
+//   CarouselItem,
+//   CarouselNext,
+//   CarouselPrevious,
+//   type CarouselApi,
+// } from "@/components/ui/carousel";
 
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
+const CardTestBlank = () => {
+  // const [currentIndex, setCurrentIndex] = useState<number>(0);
 
-const CardStudyPage = () => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  // const [isFront, setIsFront] = useState<boolean>(true);
+  // const [isRotating, setIsRotating] = useState<boolean>(false);
+  // const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
-  const [isFront, setIsFront] = useState<boolean>(true);
-  const [isRotating, setIsRotating] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
+  // const [cardSet, setCardSet] = useState<indexCardSet>({
+  //   folderId: Number(0),
+  //   hashTags: [],
+  //   breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
+  // });
 
-  const [cardSet, setCardSet] = useState<indexCardSet>({
-    folderId: Number(0),
-    hashTags: [],
-    breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
-  });
+  // const [api, setApi] = useState<CarouselApi>();
 
-  const [api, setApi] = useState<CarouselApi>();
+  // useEffect(() => {
+  //   if (!api) {
+  //     return;
+  //   }
 
-  useEffect(() => {
-    if (!api) {
-      return;
-    }
+  //   setCurrentIndex(api.selectedScrollSnap() + 1);
 
-    setCurrentIndex(api.selectedScrollSnap() + 1);
+  //   api.on("select", () => {
+  //     setCurrentIndex(api.selectedScrollSnap() + 1);
+  //   });
+  // }, [api]);
 
-    api.on("select", () => {
-      setCurrentIndex(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
+  // const handleFlip = () => {
+  //   setIsFront((prev) => !prev);
 
-  const handleFlip = () => {
-    setIsFront((prev) => !prev);
+  //   setIsButtonDisabled(true);
 
-    setIsButtonDisabled(true);
-
-    setTimeout(() => {
-      setIsRotating(!isRotating);
-      setIsButtonDisabled(false);
-    }, 310);
-  };
+  //   setTimeout(() => {
+  //     setIsRotating(!isRotating);
+  //     setIsButtonDisabled(false);
+  //   }, 310);
+  // };
 
   return (
     <div className="flex flex-col justify-between w-full text-center gap-4">
-      <Button
+      {/* <Button
         className="text-primary-500 text-2xl font-bold m-5 py-5"
         variant="primary-outline"
         onClick={handleFlip}
@@ -117,9 +116,10 @@ const CardStudyPage = () => {
         </CarouselContent>
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
-      </Carousel>
+      </Carousel> */}
+      빈칸 테스트
     </div>
   );
 };
 
-export default CardStudyPage;
+export default CardTestBlank;

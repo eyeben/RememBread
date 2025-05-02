@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
@@ -12,25 +12,27 @@ import CreateFromSelfPage from "@/pages/createIndexCard/CreateFromSelfPage";
 import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
-import IndexCardViewPage from "@/pages/indexCardView/IndexCardViewPage";
+import IndexCardViewPage from "@/pages/indexCardView/CardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import CardDetailPage from "@/pages/indexCardView/CardDetailPage";
 import CardStudyPage from "@/pages/indexCardView/CardStudyPage";
 import CardTTSPage from "@/pages/indexCardView/CardTTSPage";
 import CardTestPage from "@/pages/indexCardView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
-import { tokenUtils } from '@/lib/queryClient';
+import { tokenUtils } from "@/lib/queryClient";
+import CardTestBlank from "@/components/indexCardView/CardTestBlank";
+import CardTestConcept from "@/components/indexCardView/CardTestConcept";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
-  const [redirectPath] = useState<string>('/login');
+  const [redirectPath] = useState<string>("/login");
 
   useEffect(() => {
     const checkAuth = async () => {
       const currentToken = tokenUtils.getToken();
-      
+
       // 토큰이 없는 경우 바로 로그인 페이지로 리다이렉트
       if (!currentToken) {
         setShouldRedirect(true);
@@ -40,12 +42,12 @@ const ProtectedOutlet = () => {
 
       // 토큰이 있는 경우에만 재발급 시도
       const isRefreshed = await tokenUtils.tryRefreshToken();
-      
+
       if (!isRefreshed) {
         tokenUtils.removeToken();
         setShouldRedirect(true);
       }
-      
+
       setIsLoading(false);
     };
 
@@ -133,25 +135,29 @@ const router = createBrowserRouter([
           {
             path: "card-view",
             children: [
-              { 
-                path: "my", 
+              {
+                path: "my",
                 element: <IndexCardViewPage />,
               },
               {
                 path: ":indexCardId",
                 element: <CardDetailPage />,
                 children: [
-                  { 
-                    path: "study", 
+                  {
+                    path: "study",
                     element: <CardStudyPage />,
                   },
-                  { 
-                    path: "tts", 
+                  {
+                    path: "tts",
                     element: <CardTTSPage />,
                   },
-                  { 
-                    path: "test", 
+                  {
+                    path: "test",
                     element: <CardTestPage />,
+                    children: [
+                      { path: "blank", element: <CardTestBlank /> },
+                      { path: "concept", element: <CardTestConcept /> },
+                    ],
                   },
                 ],
               },
@@ -176,4 +182,3 @@ const router = createBrowserRouter([
 ]);
 
 export default router;
-
