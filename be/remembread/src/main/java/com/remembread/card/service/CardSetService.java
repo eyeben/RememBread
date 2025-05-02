@@ -19,6 +19,9 @@ import com.remembread.hashtag.repository.CardSetHashtagRepository;
 import com.remembread.hashtag.repository.HashtagRepository;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -111,9 +114,14 @@ public class CardSetService {
 
 
     @Transactional(readOnly = true)
-    public CardListResponse getCardSetList(Long cardSetId) {
+    public CardListResponse getCardSetList(Long cardSetId, Integer page, Integer size, String order) {
+        Sort sort = order.equalsIgnoreCase("desc") ?
+                Sort.by("number").descending() :
+                Sort.by("number").ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
         CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
-        List<Card> cards = cardRepository.getCardsByCardSet(cardSet);
+        List<Card> cards = cardRepository.findAllByCardSet(cardSet, pageable);
         return CardConverter.toCardListResponse(cards);
     }
 

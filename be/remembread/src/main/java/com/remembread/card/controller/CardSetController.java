@@ -42,8 +42,13 @@ public class CardSetController {
     }
 
     @GetMapping("/{cardSetId}/cards")
-    public ApiResponse<CardListResponse> getCardSetList(@PathVariable Long cardSetId) {
-        CardListResponse response = cardSetService.getCardSetList(cardSetId);
+    public ApiResponse<CardListResponse> getCardSetList(
+            @PathVariable Long cardSetId,
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
+        CardListResponse response = cardSetService.getCardSetList(cardSetId, page, size, order);
         return ApiResponse.onSuccess(response);
     }
 
