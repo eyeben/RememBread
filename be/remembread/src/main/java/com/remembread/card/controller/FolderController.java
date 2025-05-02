@@ -25,6 +25,11 @@ public class FolderController {
         return ApiResponse.onSuccess(null);
     }
 
+    @GetMapping
+    public ApiResponse<SubFolderListResponse> getRootFolderList(@AuthUser User user) {
+        return ApiResponse.onSuccess(folderService.getRootFolderList(user));
+    }
+
     @GetMapping("/{folderId}")
     public ApiResponse<FolderResponse> getFolderInfo(
             @PathVariable Long folderId,
