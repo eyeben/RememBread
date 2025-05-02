@@ -6,10 +6,13 @@ import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
 import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.CardListResponse;
+import com.remembread.card.dto.response.CardSetListGetResponse;
 import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
+import com.remembread.card.enums.CardSetSortType;
+import com.remembread.card.projection.FlatCardSetProjection;
 import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.card.repository.FolderRepository;
@@ -23,7 +26,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
@@ -82,6 +87,8 @@ public class CardSetService {
         response.setIsPublic(cardSet.getIsPublic());
         return response;
     }
+
+    @Transactional
     public void forkCardSet(Long cardSetId, Long folderId, Long userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
         Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
@@ -102,6 +109,11 @@ public class CardSetService {
                 .user(folder.getUser())
                 .build();
         cardSetRepository.save(newCardSet);
+
+        // 포크 수 업데이트
+        cardSet.updateForks(cardSet.getForks()+1);
+        cardSetRepository.save(cardSet);
+
         int num = 1;
         for (Card card : cards) {
             newCards.add(new Card(newCardSet, num++, card.getConcept(), card.getDescription(), card.getConceptImageUrl(), card.getDescriptionImageUrl()));
@@ -130,5 +142,47 @@ public class CardSetService {
     public void deleteCardSet(Long id) {
         CardSet cardSet = cardSetRepository.getReferenceById(id);
         cardSetRepository.delete(cardSet);
+    }
+
+    @Transactional
+    public CardSetListGetResponse getCardSetList(Long folderId, int page, int size, String sort, Long userId) {
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        // 접근 권한이 없는 경우
+        if(!folder.getUser().getId().equals(userId))
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+
+        // 정렬 기준 DB컬럼 기준으로 변환
+        String column = CardSetSortType.getColumnByKor(sort);
+        int offset = page * size;
+        List<FlatCardSetProjection> flatResults = cardSetRepository.getCardSetSorted(folderId, column, size, offset);
+        // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
+        Map<Long, CardSetListGetResponse.CardSet> map = new LinkedHashMap<>();
+
+        for (FlatCardSetProjection row : flatResults) {
+            Long id = row.getCardSetId();
+
+            CardSetListGetResponse.CardSet dto = map.computeIfAbsent(id, k -> {
+                CardSetListGetResponse.CardSet cardSet = new CardSetListGetResponse.CardSet();
+                cardSet.setCardSetId(row.getCardSetId());
+                cardSet.setTitle(row.getTitle());
+                cardSet.setIsLike(false); //TODO: 좋아요 컬럼 추가 후 구현
+                cardSet.setIsPublic(row.getIsPublic());
+                cardSet.setViewCount(row.getViewCount());
+                cardSet.setForkCount(row.getForkCount());
+                cardSet.setTotalCardCount(row.getTotalCardCount());
+                cardSet.setLastViewedCardId(row.getLastViewedCardId());
+                cardSet.setHashTags(new ArrayList<>());
+
+                return cardSet;
+            });
+
+            if (row.getHashtag() != null) {
+                dto.getHashTags().add(row.getHashtag());
+            }
+        }
+
+        CardSetListGetResponse response = new CardSetListGetResponse();
+        response.setCardSets(new ArrayList<>(map.values()));
+        return response;
     }
 }
