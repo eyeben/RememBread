@@ -1,24 +1,28 @@
-import { useState, ChangeEvent } from "react";
+import { ChangeEvent } from "react";
 
-const TestCountInput = () => {
-  const [inputValue, setInputValue] = useState<string>("1");
-
+const TestCountInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setInputValue(e.target.value);
+    onChange(e.target.value); // 입력은 자유롭게 반영
   };
 
   const handleBlur = () => {
-    const num = Number(inputValue);
+    const num = Number(value);
     if (!isNaN(num)) {
       const clamped = Math.max(1, Math.min(100, num));
-      setInputValue(String(clamped));
+      onChange(String(clamped)); // 범위 보정
     } else {
-      setInputValue("1");
+      onChange("1"); // 숫자가 아니면 기본값
     }
   };
 
-  const num = Number(inputValue);
-  const isInvalid = (!isNaN(num) && num > 100) || num <= 0;
+  const num = Number(value);
+  const isInvalid = !isNaN(num) && (num > 100 || num <= 0);
 
   return (
     <div className="flex w-full justify-between items-center pc:gap-12 gap-4 mb-6">
@@ -29,7 +33,7 @@ const TestCountInput = () => {
         id="problemCount"
         type="number"
         inputMode="numeric"
-        value={inputValue}
+        value={value}
         min={1}
         max={100}
         step={1}

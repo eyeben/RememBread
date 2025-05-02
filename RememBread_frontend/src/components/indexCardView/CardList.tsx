@@ -5,11 +5,11 @@ import { indexCardSet } from "@/types/indexCard";
 import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
-import { DummyBreadList } from "@/components/indexCardView/DummyBreadList";
+import { DummyBreadSetList } from "@/components/indexCardView/DummyBreadSetList";
 
-const BreadList = () => {
+const CardList = () => {
   const navigate = useNavigate();
-  const breadList: indexCardSet[] = DummyBreadList;
+  const breadList: indexCardSet[] = DummyBreadSetList;
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
@@ -126,4 +126,4 @@ const BreadList = () => {
   );
 };
 
-export default BreadList;
+export default CardList;

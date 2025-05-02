@@ -6,13 +6,19 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const TestTypeInput = () => {
+const TestTypeInput = ({
+  value,
+  onChange,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+}) => {
   return (
     <div className="flex w-full justify-between items-center pc:gap-12 gap-4 mb-6">
       <label htmlFor="problemType" className="pc:text-xl text-md text-primary-600 font-bold">
         문제 유형
       </label>
-      <Select defaultValue="blank">
+      <Select defaultValue={value} onValueChange={onChange}>
         <SelectTrigger className="flex flex-1 border-primary-700 focus:ring-primary-700 focus:border-primary-700">
           <SelectValue placeholder="Theme" className="data-[state=checked]:text-primary-700 " />
         </SelectTrigger>
