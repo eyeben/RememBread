@@ -17,13 +17,13 @@ public class CardController {
     private final CardService cardService;
 
     @PostMapping("")
-    public ApiResponse<?> createCard(@RequestBody CardCreateRequest request, @AuthUser User user) {
+    public ApiResponse<Void> createCard(@RequestBody CardCreateRequest request, @AuthUser User user) {
         cardService.createCard(request, user.getId());// 로그인 구현 후 변경
         return ApiResponse.onSuccess(null);
     }
 
     @PostMapping("/create-many")
-    public ApiResponse<?> createCardMany(@RequestBody CardCreateManyRequest request, @AuthUser User user) {
+    public ApiResponse<Void> createCardMany(@RequestBody CardCreateManyRequest request, @AuthUser User user) {
         cardService.createCardMany(request, user.getId());
         return ApiResponse.onSuccess(null);
     }
