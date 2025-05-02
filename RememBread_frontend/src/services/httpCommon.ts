@@ -11,9 +11,7 @@ const http = axios.create({
 
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
-    console.log('요청 인터셉터 호출');
     const accessToken = tokenUtils.getToken();
-    console.log('accessToken:', accessToken);
     // refresh token 재발급 요청인 경우에도 헤더 추가
     if (accessToken || config.url?.includes('/auth/reissue')) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -36,6 +34,14 @@ http.interceptors.response.use(
             error.response.data.isSuccess === false
         ) {
             console.log('🚫 Refresh Token 만료 (TOKEN4002): 로그인 페이지로 이동');
+            tokenUtils.removeToken();
+            window.location.href = '/login';
+            return Promise.reject(error);
+        }
+
+        // 토큰 재발급 요청 중 발생한 에러 처리
+        if (originalRequest.url?.includes('/auth/reissue')) {
+            console.log('❌ 토큰 재발급 요청 실패: 로그인 페이지로 이동');
             tokenUtils.removeToken();
             window.location.href = '/login';
             return Promise.reject(error);
@@ -72,5 +78,4 @@ http.interceptors.response.use(
         return Promise.reject(error);
     }
 );
-
 export default http; 
