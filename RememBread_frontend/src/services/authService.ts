@@ -52,6 +52,7 @@ export const refreshToken = async (): Promise<RefreshTokenResponse> => {
     const response = await http.post<RefreshTokenResponse>(AUTH_END_POINT.REFRESH_TOKEN);
     return response.data;
   } catch (error) {
+    console.error('토큰 갱신에 실패했습니다:', error);
     throw new Error('토큰 갱신에 실패했습니다.');
   }
 };
