@@ -1,4 +1,4 @@
-import CardList from "@/components/indexCardView/CardList";
+import CardSetList from "@/components/indexCardView/CardSetList";
 import FolderOrderBar from "@/components/indexCardView/FolderOrderBar";
 import IndexCardSearchBar from "@/components/indexCardView/IndexCardSearchBar";
 
@@ -7,7 +7,7 @@ const IndexCardViewPage = () => {
     <div className="px-3 py-2 pt-2 flex flex-col gap-3">
       <IndexCardSearchBar />
       <FolderOrderBar />
-      <CardList />
+      <CardSetList />
     </div>
   );
 };
