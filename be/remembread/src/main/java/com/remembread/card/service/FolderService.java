@@ -1,5 +1,7 @@
 package com.remembread.card.service;
 
+import com.remembread.apipayload.code.status.ErrorStatus;
+import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.converter.FolderConverter;
 import com.remembread.card.dto.request.FolderCreateRequest;
 import com.remembread.card.dto.response.FolderResponse;
@@ -38,21 +40,33 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
-    public FolderResponse getFolderInfo(Long id) {
-        Folder folder = folderRepository.getReferenceById(id);
+    public FolderResponse getFolderInfo(Long id, User user) {
+        Folder folder = folderRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+        }
         return FolderConverter.toFolderResponse(folder);
     }
 
     @Transactional(readOnly = true)
-    public SubFolderListResponse getSubFolderList(Long id) {
-        Folder folder = folderRepository.getReferenceById(id);
+    public SubFolderListResponse getSubFolderList(Long id, User user) {
+        Folder folder = folderRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+        }
         List<Folder> subFolders = folder.getSubFolders();
         return FolderConverter.toSubFolderListResponse(subFolders);
     }
 
     @Transactional
-    public void updateFolderName(Long id, String name) {
-        Folder folder = folderRepository.getReferenceById(id);
+    public void updateFolderName(Long id, String name, User user) {
+        Folder folder = folderRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+        }
         folder.updateName(name);
         folderRepository.save(folder);
     }

@@ -26,23 +26,30 @@ public class FolderController {
     }
 
     @GetMapping("/{folderId}")
-    public ApiResponse<FolderResponse> getFolderInfo(@PathVariable Long folderId) {
-        FolderResponse response = folderService.getFolderInfo(folderId);
+    public ApiResponse<FolderResponse> getFolderInfo(
+            @PathVariable Long folderId,
+            @AuthUser User user
+    ) {
+        FolderResponse response = folderService.getFolderInfo(folderId, user);
         return ApiResponse.onSuccess(response);
     }
 
     @GetMapping("/{folderId}/sub-folders")
-    public ApiResponse<SubFolderListResponse> getSubFolderList(@PathVariable Long folderId) {
-        SubFolderListResponse response = folderService.getSubFolderList(folderId);
+    public ApiResponse<SubFolderListResponse> getSubFolderList(
+            @PathVariable Long folderId,
+            @AuthUser User user
+    ) {
+        SubFolderListResponse response = folderService.getSubFolderList(folderId, user);
         return ApiResponse.onSuccess(response);
     }
 
     @PatchMapping("/{folderId}")
     public ApiResponse<Void> updateFolder(
             @PathVariable Long folderId,
-            @RequestBody FolderUpdateRequest request
+            @RequestBody FolderUpdateRequest request,
+            @AuthUser User user
     ) {
-        folderService.updateFolderName(folderId, request.getName());
+        folderService.updateFolderName(folderId, request.getName(), user);
         return ApiResponse.onSuccess(null);
     }
 }
