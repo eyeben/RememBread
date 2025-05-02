@@ -102,16 +102,13 @@ public class LoginService {
         boolean isRefreshTokenValid = jwtUtil.validateRefreshToken(refreshToken);
 
         log.info("reissueAccessToken 요청... accessToken: {}, refreshToken: {}", accessToken, refreshToken);
-        log.info("Token 확인... accessToken: {}, refreshToken: {}", isAccessTokenValid, isRefreshTokenValid);
 
         String userId = null;
 
         if (isAccessTokenValid) {
             userId = jwtUtil.getSubject(accessToken);
-            log.info("accessToken 파싱... userId: {}", jwtUtil.getSubject(accessToken));
         } else if (isRefreshTokenValid) {
             userId = jwtUtil.getSubject(refreshToken);
-            log.info("refreshToken 파싱... userId: {}", jwtUtil.getSubject(refreshToken));
         }
 
         if (userId == null) {
