@@ -3,6 +3,7 @@ package com.remembread.card.controller;
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.FolderCreateRequest;
+import com.remembread.card.dto.request.FolderUpdateRequest;
 import com.remembread.card.dto.response.FolderResponse;
 import com.remembread.card.dto.response.SubFolderListResponse;
 import com.remembread.card.service.FolderService;
@@ -34,5 +35,14 @@ public class FolderController {
     public ApiResponse<SubFolderListResponse> getSubFolderList(@PathVariable Long folderId) {
         SubFolderListResponse response = folderService.getSubFolderList(folderId);
         return ApiResponse.onSuccess(response);
+    }
+
+    @PatchMapping("/{folderId}")
+    public ApiResponse<Void> updateFolder(
+            @PathVariable Long folderId,
+            @RequestBody FolderUpdateRequest request
+    ) {
+        folderService.updateFolderName(folderId, request.getName());
+        return ApiResponse.onSuccess(null);
     }
 }
