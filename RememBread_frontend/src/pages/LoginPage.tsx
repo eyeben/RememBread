@@ -78,41 +78,38 @@ const LoginPage = () => {
         <p>sns 계정으로 간편하게 로그인 하세요</p>
       </div>
 
-      <div className="flex flex-col items-center gap-4 w-full max-w-[384px]">
+      <div className="flex flex-col items-center gap-4 w-full max-w-[384px] px-4">
         <Button
           variant="shadow"
-          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
           onClick={() => handleSocialLogin('kakao')}
         >
-          <div className="w-24 flex justify-end">
+          <div className="w-6">
             <KakaoLogo className="w-6 h-6" />
           </div>
-          <span className="w-28 text-center ml-4 font-bold">카카오 로그인</span>
-          <div className="w-20"></div>
+          <span className="flex-1 text-center font-bold">카카오 로그인</span>
         </Button>
 
         <Button
           variant="shadow"
-          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#03C75A] hover:bg-[#02B04E] text-white transition-colors"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#03C75A] hover:bg-[#02B04E] text-white transition-colors border-none"
           onClick={() => handleSocialLogin('naver')}
         >
-          <div className="w-24 flex justify-end">
+          <div className="w-6">
             <NaverLogo className="w-6 h-6" />
           </div>
-          <span className="w-28 text-center ml-4 font-bold">네이버 로그인</span>
-          <div className="w-20"></div>
+          <span className="flex-1 text-center font-bold">네이버 로그인</span>
         </Button>
 
         <Button
           variant="shadow"
-          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#F2F2F2] hover:bg-[#E0E0E0] text-neutral-500 transition-colors"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#F2F2F2] hover:bg-[#E0E0E0] text-neutral-500 transition-colors border-none"
           onClick={() => handleSocialLogin('google')}
         >
-          <div className="w-24 flex justify-end">
+          <div className="w-6">
             <GoogleLogo className="w-6 h-6" />
           </div>
-          <span className="w-28 text-center ml-4 font-bold">구글 로그인</span>
-          <div className="w-20"></div>
+          <span className="flex-1 text-center font-bold">구글 로그인</span>
         </Button>
       </div>
 

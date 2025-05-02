@@ -31,7 +31,7 @@ const SignupTermsPage = () => {
   return (
     <>
       {!isDetailPage && (
-        <div className="flex flex-col items-center min-h-screen p-4">
+        <div className="flex flex-col items-center min-h-screen p-4 overflow-hidden">
           <div className="w-full max-w-md text-center mt-20">
             <WelcomeCroissant className="w-[200px] h-[200px] mx-auto mb-8" />
             <h1 className="text-2xl font-bold mb-1">암기빵이 처음이시군요</h1>

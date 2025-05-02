@@ -57,7 +57,7 @@ const TermDetailPage = () => {
           </div>
         </nav>
       </header>
-      <div className="pt-14 min-h-screen flex flex-col">
+      <div className="pt-14 min-h-screen flex flex-col overflow-hidden">
         <div className="p-6 flex-1">
           <p className="whitespace-pre-line text-sm leading-6">{currentTerm?.content}</p>
         </div>
