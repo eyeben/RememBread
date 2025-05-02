@@ -1,5 +1,5 @@
-import http from './httpCommon';
-import { USER_END_POINT } from './endPoints';
+import http from '@/services/httpCommon';
+import { USER_END_POINT } from '@/services/endPoints';
 
 interface AgreeResponse {
   isSuccess: boolean;

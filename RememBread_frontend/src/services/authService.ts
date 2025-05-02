@@ -1,5 +1,5 @@
-import http from './httpCommon';
-import { AUTH_END_POINT } from './endPoints';
+import http from '@/services/httpCommon';
+import { AUTH_END_POINT } from '@/services/endPoints';
 
 interface SocialLoginParams {
   code: string;
