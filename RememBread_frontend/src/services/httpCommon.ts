@@ -11,7 +11,9 @@ const http = axios.create({
 
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+    console.log('요청 인터셉터 호출');
     const accessToken = tokenUtils.getToken();
+    console.log('accessToken:', accessToken);
     // refresh token 재발급 요청인 경우에도 헤더 추가
     if (accessToken || config.url?.includes('/auth/reissue')) {
         config.headers.Authorization = `Bearer ${accessToken}`;
@@ -33,6 +35,7 @@ http.interceptors.response.use(
             error.response.data.code === 'TOKEN4002' && 
             error.response.data.isSuccess === false
         ) {
+            console.log('🚫 Refresh Token 만료 (TOKEN4002): 로그인 페이지로 이동');
             tokenUtils.removeToken();
             window.location.href = '/login';
             return Promise.reject(error);
@@ -40,22 +43,29 @@ http.interceptors.response.use(
 
         if (
             error.response?.status === 401 &&
-            !originalRequest._retry // 재시도 방지 플래그
+            !originalRequest._retry
         ) {
+            console.log('🔄 401 에러 감지: refresh token으로 재시도');
             originalRequest._retry = true;
             try {
                 const isRefreshed = await tokenUtils.tryRefreshToken();
+                
                 if (isRefreshed) {
-                    // 실패했던 요청 다시 보내기
+                    console.log('✅ 토큰 재발급 성공: 원래 요청 재시도');
                     const newAccessToken = tokenUtils.getToken();
                     originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                    return axios(originalRequest);
+                    return http(originalRequest);
+                } else {
+                    console.log('❌ 토큰 재발급 실패: 로그인 페이지로 이동');
+                    tokenUtils.removeToken();
+                    window.location.href = '/login';
+                    return Promise.reject(error);
                 }
             } catch (refreshError) {
                 console.error('🔒 토큰 재발급 실패:', refreshError);
                 tokenUtils.removeToken();
-                // 로그인 페이지로 이동
                 window.location.href = '/login';
+                return Promise.reject(refreshError);
             }
         }
 
