@@ -52,4 +52,13 @@ public class FolderController {
         folderService.updateFolderName(folderId, request.getName(), user);
         return ApiResponse.onSuccess(null);
     }
+
+    @DeleteMapping("/{folderId}")
+    public ApiResponse<Void> deleteFolder(
+            @PathVariable Long folderId,
+            @AuthUser User user
+    ) {
+        folderService.deleteFolder(folderId, user);
+        return ApiResponse.onSuccess(null);
+    }
 }
