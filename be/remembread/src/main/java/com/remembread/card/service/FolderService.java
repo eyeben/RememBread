@@ -70,4 +70,14 @@ public class FolderService {
         folder.updateName(name);
         folderRepository.save(folder);
     }
+
+    @Transactional
+    public void deleteFolder(Long id, User user) {
+        Folder folder = folderRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        if (!folder.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+        }
+        folderRepository.delete(folder);
+    }
 }
