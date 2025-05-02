@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class UserResponseDto {
     String nickname;
+    Long mainCharacterId;
     String mainCharacterImageUrl;
     Boolean pushEnable;
     SocialLoginType socialLoginType;
