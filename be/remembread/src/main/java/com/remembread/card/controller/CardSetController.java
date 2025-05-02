@@ -3,6 +3,7 @@ package com.remembread.card.controller;
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.service.CardSetService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -24,8 +25,8 @@ public class CardSetController {
     }
 
     @PostMapping("/{cardSetId}/fork")
-    public ApiResponse<?> forkCardSet(@PathVariable Long cardSetId, @RequestBody Long folderId, @AuthUser User user) {
-        cardSetService.forkCardSet(cardSetId, folderId, user.getId());
+    public ApiResponse<?> forkCardSet(@PathVariable Long cardSetId, @RequestBody ForkCardSetRequest request, @AuthUser User user) {
+        cardSetService.forkCardSet(cardSetId, request.getFolderId(), user.getId());
         return ApiResponse.onSuccess(null);
     }
 
