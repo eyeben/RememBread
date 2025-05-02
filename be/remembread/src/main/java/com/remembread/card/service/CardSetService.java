@@ -28,6 +28,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CardSetService {
+
     private final CardRepository cardRepository;
     private final CardSetRepository cardSetRepository;
     private final FolderRepository folderRepository;
@@ -121,5 +122,11 @@ public class CardSetService {
         cardSet.updateIsPublic(request.getIsPublic());
         this.setHashtag(request.getHashtags(), cardSet);
         cardSetRepository.save(cardSet);
+    }
+
+    @Transactional
+    public void deleteCardSet(Long id) {
+        CardSet cardSet = cardSetRepository.getReferenceById(id);
+        cardSetRepository.delete(cardSet);
     }
 }
