@@ -13,7 +13,7 @@ const Profile = () => {
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [pushEnable, setPushEnable] = useState<boolean>(false);
-  const [mainCharacterImageUrl, setMainCharacterImageUrl] = useState<string>("");
+  const [mainCharacterId, setMainCharacterId] = useState<number>(1);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -21,7 +21,7 @@ const Profile = () => {
         const userData = await getUser();
         setName(userData.result.nickname);
         setPushEnable(userData.result.pushEnable);
-        setMainCharacterImageUrl(userData.result.mainCharacterImageUrl);
+        setMainCharacterId(userData.result.mainCharacterId);
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류가 발생했습니다:", error);
       }
@@ -36,11 +36,11 @@ const Profile = () => {
 
   const handleCompleteClick = async () => {
     try {
-      console.log("수정할 데이터", name, pushEnable, mainCharacterImageUrl);
+      console.log("수정할 데이터", name, pushEnable, mainCharacterId);
       await updateUser({
         nickname: name,
         pushEnable: pushEnable,
-        mainCharacterImageUrl: mainCharacterImageUrl
+        mainCharacterId: mainCharacterId
       });
       setIsEditable(false);
     } catch (error) {
@@ -75,14 +75,16 @@ const Profile = () => {
       style={{ minHeight: "calc(100vh - 200px)" }}
     >
       <div className="flex flex-col items-center">
-        {mainCharacterImageUrl ? (
-          <img src={mainCharacterImageUrl} alt="프로필 캐릭터" className="w-60 h-60" />
+        {mainCharacterId !== 1 ? (
+          <img src={`/images/breads/InputBread.png`} alt="프로필 캐릭터" className="w-60 h-60" />
         ) : (
           <DefaultBread className="w-60 h-60" />
         )}
-        <Button className="w-1/2" variant="primary-outline">
-          변경하기
-        </Button>
+        {isEditable && (
+          <Button className="w-1/2" variant="primary-outline">
+            변경하기
+          </Button>
+        )}
       </div>
       <div className="flex flex-col items-center w-full gap-5">
         <Input

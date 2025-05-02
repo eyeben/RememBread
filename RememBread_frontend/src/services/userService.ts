@@ -11,7 +11,7 @@ interface UserResponse {
   message: string;
   result: {
     nickname: string;
-    mainCharacterImageUrl: string;
+    mainCharacterId: number;
     pushEnable: boolean;
     socialLoginType: string;
   };
@@ -20,7 +20,7 @@ interface UserResponse {
 interface UpdateUserParams {
   nickname?: string;
   pushEnable?: boolean;
-  mainCharacterImageUrl?: string;
+  mainCharacterId?: number;
 }
 
 /**
@@ -56,9 +56,9 @@ export const getUser = async (): Promise<UserResponse> => {
  * 
  * 이름, 푸시 알림 설정, 메인 캐릭터 이미지 수정
  */
-export const updateUser = async (params: UpdateUserParams): Promise<UserResponse> => {
+export const updateUser = async (body: UpdateUserParams): Promise<UserResponse> => {
   try {
-    const response = await http.patch<UserResponse>(USER_END_POINT.PATCH_USER, params);
+    const response = await http.patch<UserResponse>(USER_END_POINT.PATCH_USER, body);
     return response.data;
   } catch (error) {
     throw new Error('유저 정보 수정 중 오류가 발생했습니다.');
