@@ -61,10 +61,10 @@ const TermDetailPage = () => {
         <div className="p-6 flex-1">
           <p className="whitespace-pre-line text-sm leading-6">{currentTerm?.content}</p>
         </div>
-        <div className="flex justify-center items-center py-[14px] px-0 mb-24">
+        <div className="flex justify-center items-center py-[14px] px-6 mb-24">
           <Button
             variant={isAgreed ? "primary" : "primary-outline"}
-            className="w-[28rem] py-3"
+            className="w-full max-w-[28rem] py-3"
             onClick={handleAgree}
           >
             동의
