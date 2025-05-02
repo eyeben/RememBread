@@ -38,14 +38,10 @@ export const tokenUtils = {
   // refresh token으로 access token 갱신 시도
   tryRefreshToken: async () => {
     try {
-      console.log('📤 백엔드로 refresh token 요청 전송 중...');
       const response = await refreshToken();
-      console.log('📥 백엔드로부터 새로운 accessToken 수신 성공');
-      console.log('새로운 accessToken:', response);
       tokenUtils.setToken(response.result.accessToken);
       return true;
     } catch (error) {
-      console.error('❌ accessToken 재발급 실패:', error);
       tokenUtils.removeToken();
       return false;
     }

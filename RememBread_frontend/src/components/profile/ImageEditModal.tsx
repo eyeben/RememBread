@@ -1,6 +1,6 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useState, useEffect } from "react";
 import { getCharacters } from "@/services/userService";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import CharacterImage from "@/components/common/CharacterImage";
 
 interface Character {
@@ -37,7 +37,7 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="text-center">캐릭터 선택</DialogTitle>
         </DialogHeader>
@@ -46,11 +46,15 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
             <div
               key={character.id}
               className={`relative cursor-pointer p-4 ${
-                character.isLocked ? "opacity-50" : ""
+                character.isLocked ? "opacity-50" : "hover:bg-neutral-100"
               }`}
               onClick={() => !character.isLocked && onSelect(character.id)}
             >
-              <CharacterImage characterId={character.id} className="w-32 h-32 mx-auto" />
+              <CharacterImage 
+                characterId={character.id} 
+                className="w-32 h-32 mx-auto" 
+                isGrayscale={character.isLocked}
+              />
               <div className="text-center mt-2">{character.name}</div>
               {character.isLocked && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">

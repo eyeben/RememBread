@@ -88,6 +88,7 @@ const Profile = () => {
 
   const handleCharacterSelect = (characterId: number) => {
     setMainCharacterId(characterId);
+    setIsImageModalOpen(false);
   };
 
   return (
