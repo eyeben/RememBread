@@ -49,4 +49,11 @@ public class FolderService {
         List<Folder> subFolders = folder.getSubFolders();
         return FolderConverter.toSubFolderListResponse(subFolders);
     }
+
+    @Transactional
+    public void updateFolderName(Long id, String name) {
+        Folder folder = folderRepository.getReferenceById(id);
+        folder.updateName(name);
+        folderRepository.save(folder);
+    }
 }
