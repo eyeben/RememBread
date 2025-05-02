@@ -1,11 +1,8 @@
 import { useState } from "react";
 import Button from "@/components/common/Button";
-
-interface Folder {
-  id: number;
-  parentFolderId: number | null;
-  name: string;
-}
+import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
+import CreateIndexCardSetDialog from "@/components/dialog/CreateIndexCardSetDialog";
+import { Folder } from "@/types/folder";
 
 const SaveCardPage = () => {
   // 더미 데이터임
@@ -36,13 +33,11 @@ const SaveCardPage = () => {
       <div className="m-5">
         <ul className="list-none">
           <li className="py-2">
-            <Button
-              className={`w-full ${selectedFolder?.id === 0 ? "bg-primary-500 text-white" : ""}`}
-              variant="primary-outline"
-              onClick={() => handleFolderSelect({ id: 0, parentFolderId: 0, name: "새로 만들기" })}
-            >
-              새로 만들기
-            </Button>
+            <CreateFolderDialog />
+          </li>
+
+          <li className="py-2">
+            <CreateIndexCardSetDialog />
           </li>
           {folderData.map((folder) => (
             <li key={folder.id} className="py-2">

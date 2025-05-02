@@ -18,6 +18,9 @@ export default defineConfig({
       workbox: {
         globPatterns: ["**/*.{js,css,html,ico,png,svg}"],
         maximumFileSizeToCacheInBytes: 50 * 1024 * 1024,
+        clientsClaim: true,
+        skipWaiting: true,
+        disableDevLogs: true,
       },
       manifest: {
         name: "암기빵",
