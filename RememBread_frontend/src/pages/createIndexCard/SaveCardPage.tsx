@@ -1,12 +1,8 @@
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { useState } from "react";
 import Button from "@/components/common/Button";
-import HashtagInput from "@/components/common/HashtagInput";
-
-interface Folder {
-  id: number;
-  parentFolderId: number | null;
-  name: string;
-}
+import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
+import CreateIndexCardSetDialog from "@/components/dialog/CreateIndexCardSetDialog";
+import { Folder } from "@/types/folder";
 
 const SaveCardPage = () => {
   // 더미 데이터임
@@ -17,9 +13,6 @@ const SaveCardPage = () => {
     { id: 4, parentFolderId: 2, name: "하위 폴더 1-1" },
   ];
 
-  const [hashtags, setHashtags] = useState<string[]>([]);
-  const [hashtagInput, setHashtagInput] = useState<string>("");
-
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>({
     id: 0,
     parentFolderId: 0,
@@ -28,28 +21,6 @@ const SaveCardPage = () => {
 
   const handleFolderSelect = (folder: Folder) => {
     setSelectedFolder(folder);
-  };
-
-  const handleHashtagInputChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setHashtagInput(event.target.value);
-  };
-
-  const handleAddHashtag = () => {
-    if (hashtagInput.trim() !== "" && !hashtags.includes(hashtagInput.trim())) {
-      setHashtags([...hashtags, hashtagInput.trim()]);
-      setHashtagInput("");
-    }
-  };
-
-  const handleRemoveHashtag = (hashtag: string) => {
-    setHashtags(hashtags.filter((tag) => tag !== hashtag));
-  };
-
-  const handleHashtagInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
-    if (event.key === "Enter") {
-      event.preventDefault();
-      handleAddHashtag();
-    }
   };
 
   return (
@@ -62,13 +33,11 @@ const SaveCardPage = () => {
       <div className="m-5">
         <ul className="list-none">
           <li className="py-2">
-            <Button
-              className={`w-full ${selectedFolder?.id === 0 ? "bg-primary-500 text-white" : ""}`}
-              variant="primary-outline"
-              onClick={() => handleFolderSelect({ id: 0, parentFolderId: 0, name: "새로 만들기" })}
-            >
-              새로 만들기
-            </Button>
+            <CreateFolderDialog />
+          </li>
+
+          <li className="py-2">
+            <CreateIndexCardSetDialog />
           </li>
           {folderData.map((folder) => (
             <li key={folder.id} className="py-2">
@@ -84,17 +53,6 @@ const SaveCardPage = () => {
             </li>
           ))}
         </ul>
-      </div>
-
-      <div className="mx-5">
-        <HashtagInput
-          hashtags={hashtags}
-          hashtagInput={hashtagInput}
-          handleHashtagInputChange={handleHashtagInputChange}
-          handleAddHashtag={handleAddHashtag}
-          handleRemoveHashtag={handleRemoveHashtag}
-          handleHashtagInputKeyDown={handleHashtagInputKeyDown}
-        />
       </div>
 
       <Button className="m-5" variant="primary">

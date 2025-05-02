@@ -1,4 +1,4 @@
-import { useState, ChangeEvent, KeyboardEvent } from "react";
+import { useState, ChangeEvent, Dispatch, KeyboardEvent, SetStateAction } from "react";
 import { X } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
@@ -6,23 +6,41 @@ import { Input } from "@/components/ui/input";
 interface HashtagInputProps {
   hashtags: string[];
   hashtagInput: string;
-  handleAddHashtag: () => void;
-  handleRemoveHashtag: (hashtag: string) => void;
-  handleHashtagInputChange: (event: ChangeEvent<HTMLInputElement>) => void;
-  handleHashtagInputKeyDown: (event: KeyboardEvent<HTMLInputElement>) => void;
+  setHashtags: Dispatch<SetStateAction<string[]>>;
+  setHashtagInput: Dispatch<SetStateAction<string>>;
 }
 
 const HashtagInput = ({
   hashtags,
   hashtagInput,
-  handleAddHashtag,
-  handleRemoveHashtag,
-  handleHashtagInputChange,
-  handleHashtagInputKeyDown,
+  setHashtags,
+  setHashtagInput,
 }: HashtagInputProps) => {
   const maxHashtags = 5;
   const [isInputShaking, setIsInputShaking] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string>("");
+
+  const handleHashtagInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setHashtagInput(event.target.value);
+  };
+
+  const handleAddHashtag = () => {
+    if (hashtagInput.trim() !== "" && !hashtags.includes(hashtagInput.trim())) {
+      setHashtags([...hashtags, hashtagInput.trim()]);
+      setHashtagInput("");
+    }
+  };
+
+  const handleRemoveHashtag = (hashtag: string) => {
+    setHashtags(hashtags.filter((tag) => tag !== hashtag));
+  };
+
+  const handleHashtagInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      handleAddHashtag();
+    }
+  };
 
   const handleAddHashtagWithLimit = () => {
     if (hashtagInput.trim() !== "" && hashtags.length < maxHashtags) {
