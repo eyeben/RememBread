@@ -70,18 +70,18 @@ const LoginPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
-      <div className="text-center mb-20">
-        <h1 className="text-2xl font-bold mb-4">"출근길에 굽는 지식 한 조각"</h1>
-        <DefaultBread className="w-[200px] h-[200px] mx-auto" />
+      <div className="text-center mb-8 sm:mb-20">
+        <h1 className="text-xl sm:text-2xl font-bold mb-4">"출근길에 굽는 지식 한 조각"</h1>
+        <DefaultBread className="w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] mx-auto" />
       </div>
       <div className="text-center mb-2 text-neutral-500">
         <p>sns 계정으로 간편하게 로그인 하세요</p>
       </div>
 
-      <div className="flex flex-col items-center gap-4">
+      <div className="flex flex-col items-center gap-4 w-full max-w-[384px]">
         <Button
           variant="shadow"
-          className="w-96 h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors"
           onClick={() => handleSocialLogin('kakao')}
         >
           <div className="w-24 flex justify-end">
@@ -93,7 +93,7 @@ const LoginPage = () => {
 
         <Button
           variant="shadow"
-          className="w-96 h-12 px-6 flex justify-center items-center gap-2.5 bg-[#03C75A] hover:bg-[#02B04E] text-white transition-colors"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#03C75A] hover:bg-[#02B04E] text-white transition-colors"
           onClick={() => handleSocialLogin('naver')}
         >
           <div className="w-24 flex justify-end">
@@ -105,7 +105,7 @@ const LoginPage = () => {
 
         <Button
           variant="shadow"
-          className="w-96 h-12 px-6 flex justify-center items-center gap-2.5 bg-[#F2F2F2] hover:bg-[#E0E0E0] text-neutral-500 transition-colors"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#F2F2F2] hover:bg-[#E0E0E0] text-neutral-500 transition-colors"
           onClick={() => handleSocialLogin('google')}
         >
           <div className="w-24 flex justify-end">
