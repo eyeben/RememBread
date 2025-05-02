@@ -33,4 +33,8 @@ public class Folder extends BaseEntity {
 
     @Column(length = 25, nullable = false)
     private String name;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
 }

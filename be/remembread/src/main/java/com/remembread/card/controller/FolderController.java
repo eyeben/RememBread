@@ -3,6 +3,7 @@ package com.remembread.card.controller;
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.FolderCreateRequest;
+import com.remembread.card.dto.request.FolderUpdateRequest;
 import com.remembread.card.dto.response.FolderResponse;
 import com.remembread.card.dto.response.SubFolderListResponse;
 import com.remembread.card.service.FolderService;
@@ -24,15 +25,45 @@ public class FolderController {
         return ApiResponse.onSuccess(null);
     }
 
+    @GetMapping
+    public ApiResponse<SubFolderListResponse> getRootFolderList(@AuthUser User user) {
+        return ApiResponse.onSuccess(folderService.getRootFolderList(user));
+    }
+
     @GetMapping("/{folderId}")
-    public ApiResponse<FolderResponse> getFolderInfo(@PathVariable Long folderId) {
-        FolderResponse response = folderService.getFolderInfo(folderId);
+    public ApiResponse<FolderResponse> getFolderInfo(
+            @PathVariable Long folderId,
+            @AuthUser User user
+    ) {
+        FolderResponse response = folderService.getFolderInfo(folderId, user);
         return ApiResponse.onSuccess(response);
     }
 
     @GetMapping("/{folderId}/sub-folders")
-    public ApiResponse<SubFolderListResponse> getSubFolderList(@PathVariable Long folderId) {
-        SubFolderListResponse response = folderService.getSubFolderList(folderId);
+    public ApiResponse<SubFolderListResponse> getSubFolderList(
+            @PathVariable Long folderId,
+            @AuthUser User user
+    ) {
+        SubFolderListResponse response = folderService.getSubFolderList(folderId, user);
         return ApiResponse.onSuccess(response);
+    }
+
+    @PatchMapping("/{folderId}")
+    public ApiResponse<Void> updateFolder(
+            @PathVariable Long folderId,
+            @RequestBody FolderUpdateRequest request,
+            @AuthUser User user
+    ) {
+        folderService.updateFolderName(folderId, request.getName(), user);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @DeleteMapping("/{folderId}")
+    public ApiResponse<Void> deleteFolder(
+            @PathVariable Long folderId,
+            @AuthUser User user
+    ) {
+        folderService.deleteFolder(folderId, user);
+        return ApiResponse.onSuccess(null);
     }
 }
