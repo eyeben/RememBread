@@ -43,4 +43,13 @@ public class CardController {
         return ApiResponse.onSuccess(null);
     }
 
+    @DeleteMapping("/{cardId}")
+    public ApiResponse<Void> deleteCard(
+            @PathVariable Long cardId,
+            @AuthUser User user
+    ) {
+        cardService.deleteCard(cardId, user);
+        return ApiResponse.onSuccess(null);
+    }
+
 }
