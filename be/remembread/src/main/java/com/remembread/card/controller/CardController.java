@@ -3,13 +3,11 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardCreateRequest;
 import com.remembread.card.dto.request.CardCreateManyRequest;
+import com.remembread.card.dto.response.CardGetResponse;
 import com.remembread.card.service.CardService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/cards")
@@ -27,6 +25,11 @@ public class CardController {
     public ApiResponse<?> createCardMany(@RequestBody CardCreateManyRequest request, @AuthUser User user) {
         cardService.createCardMany(request, user.getId());
         return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("{cardId}")
+    public ApiResponse<CardGetResponse> getCard(@PathVariable Long cardId, @AuthUser User user) {
+        return ApiResponse.onSuccess(cardService.getCard(cardId, user.getId()));
     }
 
 }
