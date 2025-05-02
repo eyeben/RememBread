@@ -34,14 +34,10 @@ const CardDetailPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center py-10 gap-4">
-      <div className="flex justify-between items-center w-full gap-4">
-        <p className="w-1/4 text-sm text-neutral-500"></p>
+      <div className="flex justify-center items-center w-full">
         <h1 className="flex flex-1 justify-center pc:text-3xl text-xl font-semibold">
-          카드 상세 보기
+          {card.cardSetId}번 카드 상세 보기
         </h1>
-        <p className="w-1/4 pc:text-sm text-xxs text-neutral-500">
-          현재 선택한 카드 ID: {card.cardSetId}
-        </p>
       </div>
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
