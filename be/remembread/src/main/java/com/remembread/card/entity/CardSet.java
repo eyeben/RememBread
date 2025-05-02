@@ -51,4 +51,12 @@ public class CardSet extends BaseEntity {
     @Column(nullable = false)
     @Builder.Default
     private Integer forks = 0;
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateIsPublic(Boolean isPublic) {
+        this.isPublic = isPublic;
+    }
 }
