@@ -13,11 +13,14 @@ import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.card.repository.FolderRepository;
 import com.remembread.user.entity.User;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Service
@@ -26,6 +29,9 @@ public class CardService {
     private final CardRepository cardRepository;
     private final CardSetRepository cardSetRepository;
     private final FolderRepository folderRepository;
+
+    @PersistenceContext
+    private final EntityManager em;
 
     public void createCard(CardCreateRequest request, Long userId) {
         CardSet cardSet = cardSetRepository.findById(request.getCardSetId()).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
@@ -108,7 +114,44 @@ public class CardService {
         cardRepository.delete(card);
     }
 
-    public CardListInfiniteResponse getCardsInfinite(Long cardId, boolean isDownward, int size, Long id) {
-        return null;
+    public List<CardListInfiniteResponse> getCardsInfinite(Long cardId, boolean isDownward, int size, Long userId) {
+        Card card = cardRepository.findById(cardId).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+        CardSet cardSet = card.getCardSet();
+        if (!cardSet.getUser().getId().equals(userId))
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+
+        int cursorNumber = card.getNumber();
+        Long cardSetId = cardSet.getId();
+        String operator = isDownward ? ">" : "<";
+        String order = isDownward ? "ASC" : "DESC";
+
+        String sql = """
+        SELECT * FROM cards
+        WHERE card_set_id = :cardSetId
+        AND number %s :cursorNumber
+        ORDER BY number %s
+        LIMIT :size
+    """.formatted(operator, order);
+
+        List<Card> result = em.createNativeQuery(sql, Card.class)
+                .setParameter("cardSetId", cardSetId)
+                .setParameter("cursorNumber", cursorNumber)
+                .setParameter("size", size)
+                .getResultList();
+
+        // 위 방향일 경우 reverse (번호 큰 것부터 정렬했기 때문)
+        if (!isDownward) {
+            Collections.reverse(result);
+        }
+
+        return result.stream()
+                .map(c -> new CardListInfiniteResponse(
+                        c.getId(),
+                        c.getNumber(),
+                        c.getConcept(),
+                        c.getDescription()
+                ))
+                .toList();
     }
 }
