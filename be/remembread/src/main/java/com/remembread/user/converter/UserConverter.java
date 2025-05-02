@@ -8,7 +8,8 @@ public class UserConverter {
     public static UserResponseDto toUserResponseDto(User user) {
         return UserResponseDto.builder()
                 .nickname(user.getNickname())
-                .mainCharacterImageUrl("")
+                .mainCharacterId(user.getMainCharacter().getId())
+                .mainCharacterImageUrl(user.getMainCharacter().getImageUrl())
                 .pushEnable(user.getPushEnable())
                 .socialLoginType(user.getSocialLoginType())
                 .build();
