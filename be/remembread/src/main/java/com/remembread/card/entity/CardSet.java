@@ -55,7 +55,7 @@ public class CardSet extends BaseEntity {
     public void updateName(String name) {
         this.name = name;
     }
-
+    public void updateForks(Integer forks) {this.forks = forks;}
     public void updateIsPublic(Boolean isPublic) {
         this.isPublic = isPublic;
     }

@@ -4,14 +4,17 @@ import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardCreateManyRequest;
 import com.remembread.card.dto.request.CardCreateRequest;
+import com.remembread.card.dto.request.CardUpdateRequest;
 import com.remembread.card.dto.response.CardGetResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.card.repository.FolderRepository;
+import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -79,5 +82,28 @@ public class CardService {
                 .conceptUrl(card.getConceptImageUrl())
                 .descriptionUrl(card.getDescriptionImageUrl())
                 .build();
+    }
+
+    @Transactional
+    public void updateCard(Long cardId, CardUpdateRequest request, User user) {
+        Card card = cardRepository.findById(cardId).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+        CardSet cardSet = card.getCardSet();
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+        card.update(request);
+        cardRepository.save(card);
+    }
+
+    @Transactional
+    public void deleteCard(Long cardId, User user) {
+        Card card = cardRepository.findById(cardId).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+        CardSet cardSet = card.getCardSet();
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+        cardRepository.delete(card);
     }
 }

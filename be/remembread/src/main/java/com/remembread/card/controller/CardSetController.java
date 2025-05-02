@@ -5,10 +5,13 @@ import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardSetCreateRequest;
 import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.CardListResponse;
+import com.remembread.card.dto.response.CardSetListGetResponse;
 import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.service.CardSetService;
 import com.remembread.user.entity.User;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,15 +32,18 @@ public class CardSetController {
     }
 
     @PostMapping("/{cardSetId}/fork")
-    public ApiResponse<?> forkCardSet(@PathVariable Long cardSetId, @RequestBody ForkCardSetRequest request, @AuthUser User user) {
+    public ApiResponse<Void> forkCardSet(@PathVariable Long cardSetId, @RequestBody ForkCardSetRequest request, @AuthUser User user) {
         cardSetService.forkCardSet(cardSetId, request.getFolderId(), user.getId());
         return ApiResponse.onSuccess(null);
     }
 
 
     @GetMapping("/{cardSetId}")
-    public ApiResponse<CardSetResponse> getCardSetInfo(@PathVariable Long cardSetId) {
-        CardSetResponse response = cardSetService.getCardSetInfo(cardSetId);
+    public ApiResponse<CardSetResponse> getCardSetInfo(
+            @PathVariable Long cardSetId,
+            @AuthUser User user
+    ) {
+        CardSetResponse response = cardSetService.getCardSetInfo(cardSetId, user);
         return ApiResponse.onSuccess(response);
     }
 
@@ -46,24 +52,39 @@ public class CardSetController {
             @PathVariable Long cardSetId,
             @RequestParam Integer page,
             @RequestParam Integer size,
-            @RequestParam(defaultValue = "asc") String order
+            @RequestParam(defaultValue = "asc") String order,
+            @AuthUser User user
     ) {
-        CardListResponse response = cardSetService.getCardSetList(cardSetId, page, size, order);
+        CardListResponse response = cardSetService.getCardSetList(cardSetId, page, size, order, user);
         return ApiResponse.onSuccess(response);
     }
 
     @PatchMapping("/{cardSetId}")
     public ApiResponse<Void> updateCardSet(
             @PathVariable Long cardSetId,
-            @RequestBody CardSetUpdateRequest request
+            @RequestBody CardSetUpdateRequest request,
+            @AuthUser User user
     ) {
-        cardSetService.updateCardSetInfo(cardSetId, request);
+        cardSetService.updateCardSetInfo(cardSetId, request, user);
         return ApiResponse.onSuccess(null);
     }
 
     @DeleteMapping("/{cardSetId}")
-    public ApiResponse<Void> deleteCardSet(@PathVariable Long cardSetId) {
-        cardSetService.deleteCardSet(cardSetId);
+    public ApiResponse<Void> deleteCardSet(
+            @PathVariable Long cardSetId,
+            @AuthUser User user
+            ) {
+        cardSetService.deleteCardSet(cardSetId, user);
         return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/lists")
+    @Operation(summary = "카드셋 목록 조회", description = "폴더 ID를 기준으로 카드셋 목록을 페이징 조회합니다.")
+public ApiResponse<CardSetListGetResponse> getCardSetLists(@Parameter(description = "카드셋을 조회할 폴더 ID", example = "1", required = true) @RequestParam Long folderId,
+                                                           @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
+                                                           @Parameter(description = "페이지당 항목 수", example = "10") @RequestParam(defaultValue = "10") int size,
+                                                           @Parameter(description = "정렬 기준 (예: 최신, 조회수, 포크)", example = "최신") @RequestParam(defaultValue = "최신") String sort,
+                                                           @AuthUser User user) {
+    return ApiResponse.onSuccess(cardSetService.getCardSetList(folderId, page, size, sort, user.getId()));
     }
 }

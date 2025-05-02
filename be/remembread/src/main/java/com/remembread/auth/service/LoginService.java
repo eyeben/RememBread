@@ -53,14 +53,18 @@ public class LoginService {
             case KAKAO -> {
                 KakaoUserInfo userInfo = kakaoOAuthProvider.getUserInfo(code);
                 socialLoginId = userInfo.getSocialLoginId();
-                nickname = userInfo.getNickname() + socialLoginId.substring(0, 4);
+                nickname = userInfo.getNickname();
+                nickname = nickname.length() < 6 ? nickname : nickname.substring(0, 6);
+                nickname += socialLoginId.substring(0, 4);
             }
             case NAVER -> {
                 NaverUserInfo userInfo = naverOAuthProvider.getUserInfo(code);
                 socialLoginId = userInfo.getSocialLoginId();
 
                 try {
-                    nickname = generateNickname(userInfo.getNickname(), socialLoginId);
+                    nickname = userInfo.getNickname();
+                    nickname = nickname.length() < 6 ? nickname : nickname.substring(0, 6);
+                    nickname = generateNickname(nickname, socialLoginId);
                 } catch (Exception e) {
                     throw new GeneralException(ErrorStatus._INTERNAL_SERVER_ERROR);
                 }
@@ -68,7 +72,9 @@ public class LoginService {
             case GOOGLE -> {
                 GoogleUserInfo userInfo = googleOAuthProvider.getUserInfo(code);
                 socialLoginId = userInfo.getSocialLoginId();
-                nickname = userInfo.getNickname() + socialLoginId.substring(0, 4);
+                nickname = userInfo.getNickname();
+                nickname = nickname.length() < 6 ? nickname : nickname.substring(0, 6);
+                nickname += socialLoginId.substring(0, 4);
             }
             default -> throw new GeneralException(ErrorStatus.INVALID_SOCIAL_PROVIDER);
         }
