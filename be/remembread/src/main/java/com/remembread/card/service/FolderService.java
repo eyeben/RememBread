@@ -40,6 +40,12 @@ public class FolderService {
     }
 
     @Transactional(readOnly = true)
+    public SubFolderListResponse getRootFolderList(User user) {
+        List<Folder> folders = folderRepository.findByUserAndUpperFolderIsNull(user);
+        return FolderConverter.toSubFolderListResponse(folders);
+    }
+
+    @Transactional(readOnly = true)
     public FolderResponse getFolderInfo(Long id, User user) {
         Folder folder = folderRepository.findById(id).orElseThrow(() ->
                 new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
