@@ -6,6 +6,7 @@ const CardDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { card } = location.state;
+  // const card = location.state?.card;
 
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));

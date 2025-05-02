@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
 import Layout from "@/components/common/Layout";
 import HomePage from "@/pages/HomePage";
@@ -12,14 +12,16 @@ import CreateFromSelfPage from "@/pages/createIndexCard/CreateFromSelfPage";
 import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
-import IndexCardViewPage from "@/pages/indexCardView/IndexCardViewPage";
+import IndexCardViewPage from "@/pages/indexCardView/CardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import CardDetailPage from "@/pages/indexCardView/CardDetailPage";
-import CardStudyPage from "@/pages/indexCardView/CardStudyPage";
+import CardStudyPage from "@/components/indexCardView/CardTestBlank";
 import CardTTSPage from "@/pages/indexCardView/CardTTSPage";
 import CardTestPage from "@/pages/indexCardView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
-import { tokenUtils } from '@/lib/queryClient';
+import { tokenUtils } from "@/lib/queryClient";
+import CardTestBlank from "@/components/indexCardView/CardTestBlank";
+import CardTestConcept from "@/components/indexCardView/CardTestConcept";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -29,11 +31,13 @@ const ProtectedOutlet = () => {
     const checkAuth = async () => {
       // accessToken이 없거나 신선하지 않은 경우에만 refresh token으로 갱신 시도
       if (!tokenUtils.getToken()) {
-        console.log('accessToken이 없거나 신선하지 않습니다. refresh token으로 갱신을 시도합니다.');
+        console.log("accessToken이 없거나 신선하지 않습니다. refresh token으로 갱신을 시도합니다.");
         const isRefreshed = await tokenUtils.tryRefreshToken();
-        
+
         if (!isRefreshed) {
-          console.log('refresh token으로도 accessToken을 받아오지 못했습니다. 로그인 페이지로 이동합니다.');
+          console.log(
+            "refresh token으로도 accessToken을 받아오지 못했습니다. 로그인 페이지로 이동합니다.",
+          );
           tokenUtils.removeToken();
         }
       }
@@ -121,25 +125,29 @@ const router = createBrowserRouter([
           {
             path: "card-view",
             children: [
-              { 
-                path: "my", 
+              {
+                path: "my",
                 element: <IndexCardViewPage />,
               },
               {
                 path: ":indexCardId",
                 element: <CardDetailPage />,
                 children: [
-                  { 
-                    path: "study", 
+                  {
+                    path: "study",
                     element: <CardStudyPage />,
                   },
-                  { 
-                    path: "tts", 
+                  {
+                    path: "tts",
                     element: <CardTTSPage />,
                   },
-                  { 
-                    path: "test", 
+                  {
+                    path: "test",
                     element: <CardTestPage />,
+                    children: [
+                      { path: "blank", element: <CardTestBlank /> },
+                      { path: "concept", element: <CardTestConcept /> },
+                    ],
                   },
                 ],
               },
