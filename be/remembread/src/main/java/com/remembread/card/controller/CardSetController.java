@@ -3,6 +3,7 @@ package com.remembread.card.controller;
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.response.CardListResponse;
 import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.service.CardSetService;
@@ -35,6 +36,12 @@ public class CardSetController {
     @GetMapping("/{cardSetId}")
     public ApiResponse<CardSetResponse> getCardSetInfo(@PathVariable Long cardSetId) {
         CardSetResponse response = cardSetService.getCardSetInfo(cardSetId);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @GetMapping("/{cardSetId}/cards")
+    public ApiResponse<CardListResponse> getCardSetList(@PathVariable Long cardSetId) {
+        CardListResponse response = cardSetService.getCardSetList(cardSetId);
         return ApiResponse.onSuccess(response);
     }
 }
