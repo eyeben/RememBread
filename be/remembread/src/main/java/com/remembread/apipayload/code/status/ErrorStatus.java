@@ -29,14 +29,22 @@ public enum ErrorStatus implements BaseErrorCode {
     // 캐릭터 관련 에러
     NOT_FOUND_CHARACTER(HttpStatus.BAD_REQUEST , "CHARACTER4001", "요청 ID에 해당하는 캐릭터가 존재하지 않습니다."),
 
-    //폴터 관련 에러
+    // 폴터 관련 에러
     FOLDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOLDER4004", "폴더가 존재하지 않습니다."),
     FOLDER_FORBIDDEN(HttpStatus.BAD_REQUEST, "FOLDER4003", "폴더의 주인이 아닙니다."),
 
-    //카드셋 관련 에러
-    CARDSET_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOLDER4004", "폴더가 존재하지 않습니다."),
-    CARDSET_FORBIDDEN(HttpStatus.BAD_REQUEST, "FOLDER4003", "폴더의 주인이 아닙니다."),
+    // 카드셋 관련 에러
+    CARDSET_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARDSET4004", "폴더가 존재하지 않습니다."),
+    CARDSET_FORBIDDEN(HttpStatus.BAD_REQUEST, "CARDSET4003", "폴더의 주인이 아닙니다."),
+    CARDSET_NOT_PUBLIC(HttpStatus.BAD_REQUEST, "CARDSET4003", "이 카드는 볼 수 었습니다."),
+
+    // 카드 관련 에러
+    CARD_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARD4004", "카드가 존재하지 않습니다."),
+    CARD_FORBIDDEN(HttpStatus.BAD_REQUEST, "CARD4003", "카드의 주인이 아닙니다."),
+
+
     ;
+
 
 
 
