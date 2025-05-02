@@ -12,6 +12,11 @@ build:
   script:
     - cd RememBread_frontend
     - rm -rf node_modules package-lock.json
+    - echo "VITE_APP_BASE_URL=${VITE_APP_BASE_URL}" >> .env
+    - echo "VITE_KAKAO_CLIENT_ID=${VITE_KAKAO_CLIENT_ID}" >> .env
+    - echo "VITE_NAVER_CLIENT_ID=${VITE_NAVER_CLIENT_ID}" >> .env
+    - echo "VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}" >> .env
+    - echo "VITE_FRONT_BASE_URL=${VITE_FRONT_BASE_URL}" >> .env
     - npm install
     - npm run build
   artifacts:
