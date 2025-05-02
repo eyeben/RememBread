@@ -33,7 +33,7 @@ public class JwtUtil {
     //===토큰 생성===//
 
     public UserTokens createLoginToken(Boolean isAgreedTerms, String id) {
-        String refreshToken = createToken("", refreshTokenExpiry);
+        String refreshToken = createToken(id, refreshTokenExpiry);
         String accessToken = createToken(id, accessTokenExpiry);
         return new UserTokens(isAgreedTerms, id, refreshToken, accessToken);
     }
