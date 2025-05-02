@@ -1,8 +1,12 @@
 package com.remembread.card.service;
 
+import com.remembread.card.converter.CardConverter;
 import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.request.CardSetUpdateRequest;
+import com.remembread.card.dto.response.CardListResponse;
+import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
@@ -15,6 +19,9 @@ import com.remembread.hashtag.repository.CardSetHashtagRepository;
 import com.remembread.hashtag.repository.HashtagRepository;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,9 +31,11 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class CardSetService {
+
     private final CardRepository cardRepository;
     private final CardSetRepository cardSetRepository;
     private final FolderRepository folderRepository;
+
     private final HashtagRepository hashtagRepository;
     private final CardSetHashtagRepository cardSetHashtagRepository;
 
@@ -46,6 +55,8 @@ public class CardSetService {
 
     @Transactional
     public void setHashtag(List<String> hashtags, CardSet cardSet) {
+        cardSetHashtagRepository.deleteAllByCardSet(cardSet);
+        cardSetHashtagRepository.flush();
         for (String name : hashtags) {
             Hashtag hashtag;
             if (!hashtagRepository.existsByName(name)) {
@@ -62,6 +73,17 @@ public class CardSetService {
                     .build();
             cardSetHashtagRepository.saveAndFlush(cardSetHashtag);
         }
+    }
+
+    @Transactional(readOnly = true)
+    public CardSetResponse getCardSetInfo(Long id) {
+        CardSet cardSet = cardSetRepository.getReferenceById(id);
+        CardSetResponse response = new CardSetResponse();
+        List<String> hashtags = hashtagRepository.findAllNamesByCardSetId(cardSet.getId());
+        response.setName(cardSet.getName());
+        response.setHashtags(hashtags);
+        response.setIsPublic(cardSet.getIsPublic());
+        return response;
     }
     public void forkCardSet(Long cardSetId, Long folderId, Long userId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
@@ -90,4 +112,31 @@ public class CardSetService {
         cardRepository.saveAll(newCards);
     }
 
+
+    @Transactional(readOnly = true)
+    public CardListResponse getCardSetList(Long cardSetId, Integer page, Integer size, String order) {
+        Sort sort = order.equalsIgnoreCase("desc") ?
+                Sort.by("number").descending() :
+                Sort.by("number").ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
+        List<Card> cards = cardRepository.findAllByCardSet(cardSet, pageable);
+        return CardConverter.toCardListResponse(cards);
+    }
+
+    @Transactional
+    public void updateCardSetInfo(Long cardSetId, CardSetUpdateRequest request) {
+        CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
+        cardSet.updateName(request.getName());
+        cardSet.updateIsPublic(request.getIsPublic());
+        this.setHashtag(request.getHashtags(), cardSet);
+        cardSetRepository.save(cardSet);
+    }
+
+    @Transactional
+    public void deleteCardSet(Long id) {
+        CardSet cardSet = cardSetRepository.getReferenceById(id);
+        cardSetRepository.delete(cardSet);
+    }
 }

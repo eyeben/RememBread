@@ -3,6 +3,9 @@ package com.remembread.card.controller;
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.request.CardSetUpdateRequest;
+import com.remembread.card.dto.response.CardListResponse;
+import com.remembread.card.dto.response.CardSetResponse;
 import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.service.CardSetService;
 import com.remembread.user.entity.User;
@@ -13,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/card-sets")
 @RequiredArgsConstructor
 public class CardSetController {
+
     private final CardSetService cardSetService;
 
     @PostMapping
@@ -30,4 +34,36 @@ public class CardSetController {
         return ApiResponse.onSuccess(null);
     }
 
+
+    @GetMapping("/{cardSetId}")
+    public ApiResponse<CardSetResponse> getCardSetInfo(@PathVariable Long cardSetId) {
+        CardSetResponse response = cardSetService.getCardSetInfo(cardSetId);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @GetMapping("/{cardSetId}/cards")
+    public ApiResponse<CardListResponse> getCardSetList(
+            @PathVariable Long cardSetId,
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam(defaultValue = "asc") String order
+    ) {
+        CardListResponse response = cardSetService.getCardSetList(cardSetId, page, size, order);
+        return ApiResponse.onSuccess(response);
+    }
+
+    @PatchMapping("/{cardSetId}")
+    public ApiResponse<Void> updateCardSet(
+            @PathVariable Long cardSetId,
+            @RequestBody CardSetUpdateRequest request
+    ) {
+        cardSetService.updateCardSetInfo(cardSetId, request);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @DeleteMapping("/{cardSetId}")
+    public ApiResponse<Void> deleteCardSet(@PathVariable Long cardSetId) {
+        cardSetService.deleteCardSet(cardSetId);
+        return ApiResponse.onSuccess(null);
+    }
 }
