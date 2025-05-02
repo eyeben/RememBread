@@ -39,29 +39,42 @@ public class CardSetController {
 
 
     @GetMapping("/{cardSetId}")
-    public ApiResponse<CardSetResponse> getCardSetInfo(@PathVariable Long cardSetId) {
-        CardSetResponse response = cardSetService.getCardSetInfo(cardSetId);
+    public ApiResponse<CardSetResponse> getCardSetInfo(
+            @PathVariable Long cardSetId,
+            @AuthUser User user
+    ) {
+        CardSetResponse response = cardSetService.getCardSetInfo(cardSetId, user);
         return ApiResponse.onSuccess(response);
     }
 
     @GetMapping("/{cardSetId}/cards")
-    public ApiResponse<CardListResponse> getCardSetList(@PathVariable Long cardSetId) {
-        CardListResponse response = cardSetService.getCardSetList(cardSetId);
+    public ApiResponse<CardListResponse> getCardSetList(
+            @PathVariable Long cardSetId,
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @RequestParam(defaultValue = "asc") String order,
+            @AuthUser User user
+    ) {
+        CardListResponse response = cardSetService.getCardSetList(cardSetId, page, size, order, user);
         return ApiResponse.onSuccess(response);
     }
 
     @PatchMapping("/{cardSetId}")
     public ApiResponse<Void> updateCardSet(
             @PathVariable Long cardSetId,
-            @RequestBody CardSetUpdateRequest request
+            @RequestBody CardSetUpdateRequest request,
+            @AuthUser User user
     ) {
-        cardSetService.updateCardSetInfo(cardSetId, request);
+        cardSetService.updateCardSetInfo(cardSetId, request, user);
         return ApiResponse.onSuccess(null);
     }
 
     @DeleteMapping("/{cardSetId}")
-    public ApiResponse<Void> deleteCardSet(@PathVariable Long cardSetId) {
-        cardSetService.deleteCardSet(cardSetId);
+    public ApiResponse<Void> deleteCardSet(
+            @PathVariable Long cardSetId,
+            @AuthUser User user
+            ) {
+        cardSetService.deleteCardSet(cardSetId, user);
         return ApiResponse.onSuccess(null);
     }
 

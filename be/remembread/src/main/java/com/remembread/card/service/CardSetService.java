@@ -22,6 +22,9 @@ import com.remembread.hashtag.repository.CardSetHashtagRepository;
 import com.remembread.hashtag.repository.HashtagRepository;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -121,17 +124,44 @@ public class CardSetService {
         cardRepository.saveAll(newCards);
     }
 
+    @Transactional(readOnly = true)
+    public CardSetResponse getCardSetInfo(Long id, User user) {
+        CardSet cardSet = cardSetRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+        if (!cardSet.getIsPublic() && !cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARDSET_NOT_PUBLIC);
+        }
+        CardSetResponse response = new CardSetResponse();
+        List<String> hashtags = hashtagRepository.findAllNamesByCardSetId(cardSet.getId());
+        response.setName(cardSet.getName());
+        response.setHashtags(hashtags);
+        response.setIsPublic(cardSet.getIsPublic());
+        return response;
+    }
 
     @Transactional(readOnly = true)
-    public CardListResponse getCardSetList(Long cardSetId) {
-        CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
-        List<Card> cards = cardRepository.getCardsByCardSet(cardSet);
+    public CardListResponse getCardSetList(Long id, Integer page, Integer size, String order, User user) {
+        CardSet cardSet = cardSetRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+        if (!cardSet.getIsPublic() && !cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARDSET_NOT_PUBLIC);
+        }
+        Sort sort = order.equalsIgnoreCase("desc") ?
+                Sort.by("number").descending() :
+                Sort.by("number").ascending();
+
+        Pageable pageable = PageRequest.of(page, size, sort);
+        List<Card> cards = cardRepository.findAllByCardSet(cardSet, pageable);
         return CardConverter.toCardListResponse(cards);
     }
 
     @Transactional
-    public void updateCardSetInfo(Long cardSetId, CardSetUpdateRequest request) {
-        CardSet cardSet = cardSetRepository.getReferenceById(cardSetId);
+    public void updateCardSetInfo(Long id, CardSetUpdateRequest request, User user) {
+        CardSet cardSet = cardSetRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+        }
         cardSet.updateName(request.getName());
         cardSet.updateIsPublic(request.getIsPublic());
         this.setHashtag(request.getHashtags(), cardSet);
@@ -139,8 +169,12 @@ public class CardSetService {
     }
 
     @Transactional
-    public void deleteCardSet(Long id) {
-        CardSet cardSet = cardSetRepository.getReferenceById(id);
+    public void deleteCardSet(Long id, User user) {
+        CardSet cardSet = cardSetRepository.findById(id).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+        }
         cardSetRepository.delete(cardSet);
     }
 

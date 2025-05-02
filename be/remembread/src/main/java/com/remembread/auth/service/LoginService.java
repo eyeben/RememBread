@@ -95,11 +95,14 @@ public class LoginService {
         return nickname + suffix;
     }
 
+    @Transactional(readOnly = true)
     public UserTokens reissueAccessToken(String refreshToken, String authHeader) {
         String accessToken = authHeader.split(" ")[1];
 
         boolean isAccessTokenValid = jwtUtil.validateAccessToken(accessToken);
         boolean isRefreshTokenValid = jwtUtil.validateRefreshToken(refreshToken);
+
+        log.info("reissueAccessToken 요청... accessToken: {}, refreshToken: {}", accessToken, refreshToken);
 
         String userId = null;
 
@@ -108,8 +111,6 @@ public class LoginService {
         } else if (isRefreshTokenValid) {
             userId = jwtUtil.getSubject(refreshToken);
         }
-
-        log.info("reissueAccessToken 요청... accessToken: {}, refreshToken: {}", accessToken, refreshToken);
 
         if (userId == null) {
             throw new GeneralException(ErrorStatus.FAILED_TO_VALIDATE_TOKEN);
@@ -122,7 +123,10 @@ public class LoginService {
 
         String reissuedAccessToken = isAccessTokenValid ? accessToken : jwtUtil.reissueAccessToken(userId);
 
-        return new UserTokens(false, userId, null, reissuedAccessToken);
+        Boolean isAgreedTerms = userRepository.findById(Long.parseLong(userId))
+                .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_USER_ID)).getIsAgreedTerms();
+
+        return new UserTokens(isAgreedTerms, userId, refreshToken, reissuedAccessToken);
     }
 
     public Long logout(User user) {
