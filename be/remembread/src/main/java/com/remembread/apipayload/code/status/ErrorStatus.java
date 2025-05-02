@@ -22,9 +22,9 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_SOCIAL_PROVIDER(HttpStatus.BAD_REQUEST , "LOGIN4004", "유효하지 않은 소셜 로그인 공급자입니다."),
 
     // 토큰 관련 에러
-    INVALID_REFRESH_TOKEN(HttpStatus.BAD_REQUEST , "TOKEN4001", "유효하지 않은 Refresh Token입니다."),
-    FAILED_TO_VALIDATE_TOKEN(HttpStatus.BAD_REQUEST , "TOKEN4002", "토큰 검증에 실패했습니다."),
-    INVALID_ACCESS_TOKEN(HttpStatus.BAD_REQUEST , "TOKEN4003", "유효하지 않은 Access Token입니다."),
+    INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED , "TOKEN4001", "유효하지 않은 Refresh Token입니다."),
+    FAILED_TO_VALIDATE_TOKEN(HttpStatus.UNAUTHORIZED , "TOKEN4002", "토큰 검증에 실패했습니다."),
+    INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED , "TOKEN4003", "유효하지 않은 Access Token입니다."),
 
     // 캐릭터 관련 에러
     NOT_FOUND_CHARACTER(HttpStatus.BAD_REQUEST , "CHARACTER4001", "요청 ID에 해당하는 캐릭터가 존재하지 않습니다."),
