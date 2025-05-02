@@ -25,7 +25,7 @@ import { tokenUtils } from '@/lib/queryClient';
 const ProtectedOutlet = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
-  const [redirectPath, setRedirectPath] = useState<string>('/login');
+  const [redirectPath] = useState<string>('/login');
 
   useEffect(() => {
     const checkAuth = async () => {
