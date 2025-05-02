@@ -93,5 +93,17 @@ public class CardService {
             throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
         }
         card.update(request);
+        cardRepository.save(card);
+    }
+
+    @Transactional
+    public void deleteCard(Long cardId, User user) {
+        Card card = cardRepository.findById(cardId).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+        CardSet cardSet = card.getCardSet();
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+        cardRepository.delete(card);
     }
 }
