@@ -7,6 +7,7 @@ import Button from "@/components/common/Button";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import ImageEditModal from "@/components/profile/ImageEditModal";
 
 const Profile = () => {
   const navigate = useNavigate();
@@ -14,6 +15,7 @@ const Profile = () => {
   const [name, setName] = useState<string>("");
   const [pushEnable, setPushEnable] = useState<boolean>(false);
   const [mainCharacterId, setMainCharacterId] = useState<number>(1);
+  const [isImageModalOpen, setIsImageModalOpen] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -44,6 +46,7 @@ const Profile = () => {
       });
       setIsEditable(false);
     } catch (error) {
+      console.log("error", error);
       console.error("유저 정보 수정 중 오류가 발생했습니다:", error);
     }
   };
@@ -69,6 +72,14 @@ const Profile = () => {
     }
   };
 
+  const handleImageEdit = () => {
+    setIsImageModalOpen(true);
+  };
+
+  const handleCharacterSelect = (characterId: number) => {
+    setMainCharacterId(characterId);
+  };
+
   return (
     <div
       className="flex flex-col justify-between items-center"
@@ -81,7 +92,7 @@ const Profile = () => {
           <DefaultBread className="w-60 h-60" />
         )}
         {isEditable && (
-          <Button className="w-1/2" variant="primary-outline">
+          <Button className="w-1/2" variant="primary-outline" onClick={handleImageEdit}>
             변경하기
           </Button>
         )}
@@ -120,6 +131,13 @@ const Profile = () => {
       >
         로그아웃
       </a>
+
+      <ImageEditModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onSelect={handleCharacterSelect}
+        currentCharacterId={mainCharacterId}
+      />
     </div>
   );
 };
