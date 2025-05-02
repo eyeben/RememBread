@@ -5,8 +5,8 @@ import TagRow from "@/components/indexCardView/TagRow";
 const CardDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { card } = location.state;
-  // const card = location.state?.card;
+  // const { card } = location.state;
+  const card = location.state?.card;
 
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));
@@ -15,7 +15,7 @@ const CardDetailPage = () => {
   // state가 없다면 목록으로 복귀
   useEffect(() => {
     if (!card) {
-      navigate("/card-view", { replace: true });
+      navigate("/card-view/my", { replace: true });
     }
   }, [card, navigate]);
 

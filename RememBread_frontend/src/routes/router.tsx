@@ -15,7 +15,7 @@ import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import IndexCardViewPage from "@/pages/indexCardView/CardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import CardDetailPage from "@/pages/indexCardView/CardDetailPage";
-import CardStudyPage from "@/components/indexCardView/CardTestBlank";
+import CardStudyPage from "@/pages/indexCardView/CardStudyPage";
 import CardTTSPage from "@/pages/indexCardView/CardTTSPage";
 import CardTestPage from "@/pages/indexCardView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
