@@ -1,4 +1,5 @@
 import { ChangeEvent } from "react";
+import { Input } from "@/components/ui/input";
 
 const TestCountInput = ({
   value,
@@ -8,16 +9,16 @@ const TestCountInput = ({
   onChange: (value: string) => void;
 }) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    onChange(e.target.value); // 입력은 자유롭게 반영
+    onChange(e.target.value);
   };
 
   const handleBlur = () => {
     const num = Number(value);
     if (!isNaN(num)) {
       const clamped = Math.max(1, Math.min(100, num));
-      onChange(String(clamped)); // 범위 보정
+      onChange(String(clamped));
     } else {
-      onChange("1"); // 숫자가 아니면 기본값
+      onChange("1");
     }
   };
 
@@ -29,7 +30,7 @@ const TestCountInput = ({
       <label htmlFor="problemCount" className="pc:text-xl text-md text-primary-600 font-bold">
         문제 개수
       </label>
-      <input
+      <Input
         id="problemCount"
         type="number"
         inputMode="numeric"
@@ -39,12 +40,11 @@ const TestCountInput = ({
         step={1}
         onChange={handleChange}
         onBlur={handleBlur}
-        className={`flex flex-1 rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2
-          ${
-            isInvalid
-              ? "border-negative-500 focus:ring-negative-500"
-              : "border-primary-700 focus:ring-primary-700"
-          }`}
+        className={`flex-1 ${
+          isInvalid
+            ? "border-negative-500 focus-visible:ring-negative-500"
+            : "border-primary-700 focus-visible:ring-primary-700"
+        }`}
       />
     </div>
   );
