@@ -6,6 +6,7 @@ import com.remembread.card.dto.request.CardCreateManyRequest;
 import com.remembread.card.dto.request.CardCreateRequest;
 import com.remembread.card.dto.request.CardUpdateRequest;
 import com.remembread.card.dto.response.CardGetResponse;
+import com.remembread.card.dto.response.CardListInfiniteResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.repository.CardRepository;
@@ -105,5 +106,9 @@ public class CardService {
             throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
         }
         cardRepository.delete(card);
+    }
+
+    public CardListInfiniteResponse getCardsInfinite(Long cardId, boolean isDownward, int size, Long id) {
+        return null;
     }
 }
