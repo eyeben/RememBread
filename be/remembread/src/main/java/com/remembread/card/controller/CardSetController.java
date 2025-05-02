@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/card-sets")
 @RequiredArgsConstructor
 public class CardSetController {
+
     private final CardSetService cardSetService;
 
     @PostMapping
@@ -52,6 +53,12 @@ public class CardSetController {
             @RequestBody CardSetUpdateRequest request
     ) {
         cardSetService.updateCardSetInfo(cardSetId, request);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @DeleteMapping("/{cardSetId}")
+    public ApiResponse<Void> deleteCardSet(@PathVariable Long cardSetId) {
+        cardSetService.deleteCardSet(cardSetId);
         return ApiResponse.onSuccess(null);
     }
 }
