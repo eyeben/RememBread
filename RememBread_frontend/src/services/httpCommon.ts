@@ -12,10 +12,13 @@ const http = axios.create({
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const accessToken = tokenUtils.getToken();
-    // refresh token 재발급 요청인 경우에도 헤더 추가
-    if (accessToken || config.url?.includes('/auth/reissue')) {
-        config.headers.Authorization = `Bearer ${accessToken}`;
-    }
+    
+    // headers가 undefined일 수 있으므로 기본값 설정
+    config.headers = config.headers || {};
+    
+    // accessToken이 있으면 Bearer 토큰으로 설정, 없으면 빈 문자열로 설정
+    config.headers['Authorization'] = accessToken ? `Bearer ${accessToken}` : 'Bearer idonthaveaccesstoken';
+    
     return config;
 });
 
@@ -25,29 +28,48 @@ http.interceptors.response.use(
     async (error: AxiosError) => {
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
+        // TOKEN4002 에러 처리
+        if (error.response?.data && 
+            typeof error.response.data === 'object' && 
+            'code' in error.response.data &&
+            'isSuccess' in error.response.data &&
+            error.response.data.code === 'TOKEN4002' && 
+            error.response.data.isSuccess === false
+        ) {
+            tokenUtils.removeToken();
+            return Promise.reject(error);
+        }
+
+        // 토큰 재발급 요청 중 발생한 에러 처리
+        if (originalRequest.url?.includes('/auth/reissue')) {
+            tokenUtils.removeToken();
+            return Promise.reject(error);
+        }
+
         if (
             error.response?.status === 401 &&
-            !originalRequest._retry // 재시도 방지 플래그
+            !originalRequest._retry
         ) {
             originalRequest._retry = true;
             try {
                 const isRefreshed = await tokenUtils.tryRefreshToken();
+                
                 if (isRefreshed) {
-                    // 실패했던 요청 다시 보내기
                     const newAccessToken = tokenUtils.getToken();
-                    originalRequest.headers.Authorization = `Bearer ${newAccessToken}`;
-                    return axios(originalRequest);
+                    originalRequest.headers = originalRequest.headers || {};
+                    originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    return http(originalRequest);
+                } else {
+                    tokenUtils.removeToken();
+                    return Promise.reject(error);
                 }
             } catch (refreshError) {
-                console.error('🔒 토큰 재발급 실패:', refreshError);
                 tokenUtils.removeToken();
-                // 로그인 페이지로 이동
-                window.location.href = '/login';
+                return Promise.reject(refreshError);
             }
         }
 
         return Promise.reject(error);
     }
 );
-
 export default http; 
