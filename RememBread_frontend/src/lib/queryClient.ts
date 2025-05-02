@@ -20,14 +20,8 @@ export const tokenUtils = {
   // access token 가져오기
   getToken: () => {
     const token = queryClient.getQueryData<string | null>([ACCESS_TOKEN_KEY]);
-    const timestamp = queryClient.getQueryData<number | null>([TOKEN_TIMESTAMP_KEY]);
-    const currentTime = Date.now();
-    
-    if (token && timestamp && (currentTime - timestamp) < 1000 * 60 * 10) {
-      return token;
-    }
-    
-    return null;
+    console.log('현재 accessToken:', token);
+    return token;
   },
 
   // access token 설정
@@ -48,7 +42,8 @@ export const tokenUtils = {
       console.log('📤 백엔드로 refresh token 요청 전송 중...');
       const response = await refreshToken();
       console.log('📥 백엔드로부터 새로운 accessToken 수신 성공');
-      tokenUtils.setToken(response.accessToken);
+      console.log('새로운 accessToken:', response);
+      tokenUtils.setToken(response.result.accessToken);
       return true;
     } catch (error) {
       console.error('❌ accessToken 재발급 실패:', error);

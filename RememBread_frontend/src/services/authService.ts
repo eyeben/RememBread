@@ -18,7 +18,14 @@ interface SocialLoginResponse {
 }
 
 interface RefreshTokenResponse {
-  accessToken: string;
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    accessToken: string;
+    isAgreedTerms: boolean;
+    userId: string;
+  };
 }
 
 interface LogoutResponse {

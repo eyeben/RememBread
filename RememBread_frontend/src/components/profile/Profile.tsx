@@ -4,7 +4,7 @@ import { getUser, updateUser, deleteUser } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
 import Button from "@/components/common/Button";
-import DefaultBread from "@/components/svgs/breads/DefaultBread";
+import CharacterImage from "@/components/common/CharacterImage";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import ImageEditModal from "@/components/profile/ImageEditModal";
@@ -96,11 +96,7 @@ const Profile = () => {
       style={{ minHeight: "calc(100vh - 200px)" }}
     >
       <div className="flex flex-col items-center">
-        {mainCharacterId !== 1 ? (
-          <img src={`/images/breads/InputBread.png`} alt="프로필 캐릭터" className="w-60 h-60" />
-        ) : (
-          <DefaultBread className="w-60 h-60" />
-        )}
+        <CharacterImage characterId={mainCharacterId} />
         {isEditable && (
           <Button className="w-1/2" variant="primary-outline" onClick={handleImageEdit}>
             변경하기

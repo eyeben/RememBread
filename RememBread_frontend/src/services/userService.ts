@@ -23,6 +23,17 @@ interface UpdateUserParams {
   mainCharacterId?: number;
 }
 
+interface CharacterResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    id: number;
+    name: string;
+    isLocked: boolean;
+  }[];
+}
+
 /**
  * 약관 동의 완료 확인용
  * 
@@ -76,5 +87,19 @@ export const deleteUser = async (): Promise<UserResponse> => {
     return response.data;
   } catch (error) {
     throw new Error('유저 삭제 중 오류가 발생했습니다.');
+  }
+};
+
+/**
+ * 캐릭터 목록 조회
+ * 
+ * 사용 가능한 캐릭터 목록을 조회
+ */
+export const getCharacters = async (): Promise<CharacterResponse> => {
+  try {
+    const response = await http.get<CharacterResponse>(USER_END_POINT.GET_CHARACTERS);
+    return response.data;
+  } catch (error) {
+    throw new Error('캐릭터 목록을 불러오는 중 오류가 발생했습니다.');
   }
 };

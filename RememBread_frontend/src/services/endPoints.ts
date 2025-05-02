@@ -24,4 +24,5 @@ export const USER_END_POINT = {
     GET_USER: '/users',
     PATCH_USER: '/users',
     DELETE_USER: '/users',
+    GET_CHARACTERS: '/users/characters',
 }

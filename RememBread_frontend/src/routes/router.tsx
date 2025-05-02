@@ -24,20 +24,30 @@ import { tokenUtils } from '@/lib/queryClient';
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
+  const [redirectPath, setRedirectPath] = useState<string>('/login');
 
   useEffect(() => {
     const checkAuth = async () => {
-      // accessToken이 없거나 신선하지 않은 경우에만 refresh token으로 갱신 시도
-      if (!tokenUtils.getToken()) {
-        console.log('accessToken이 없거나 신선하지 않습니다. refresh token으로 갱신을 시도합니다.');
+      const currentToken = tokenUtils.getToken();
+      
+      // 토큰이 없는 경우에만 재발급 시도
+      if (!currentToken) {
+        console.log('accessToken이 없습니다. refresh token으로 갱신을 시도합니다.');
         const isRefreshed = await tokenUtils.tryRefreshToken();
         
-        if (!isRefreshed) {
-          console.log('refresh token으로도 accessToken을 받아오지 못했습니다. 로그인 페이지로 이동합니다.');
+        if (isRefreshed) {
+          console.log('토큰 재발급에 성공했습니다.');
+          setIsLoading(false);
+        } else {
+          console.log('토큰 재발급에 실패했습니다. 로그인 페이지로 이동합니다.');
           tokenUtils.removeToken();
+          setRedirectPath('/login');
+          setShouldRedirect(true);
         }
+      } else {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkAuth();
@@ -54,7 +64,11 @@ const ProtectedOutlet = () => {
     );
   }
 
-  return tokenUtils.getToken() ? <Outlet /> : <Navigate to="/login" replace />;
+  if (shouldRedirect) {
+    return <Navigate to={redirectPath} replace />;
+  }
+
+  return <Outlet />;
 };
 
 // 로그인 라우트 컴포넌트
