@@ -1,16 +1,35 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import Button from "@/components/common/Button";
 import KakaoLogo from "@/components/svgs/login/KakaoLogo";
 import NaverLogo from "@/components/svgs/login/NaverLogo";
 import GoogleLogo from "@/components/svgs/login/GoogleLogo";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
+import { tokenUtils } from '@/lib/queryClient';
 
 const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
+  const [isLoading, setIsLoading] = useState<boolean>(true);
  
   useEffect(() => {
+    // 토큰 재발급 시도
+    const tryRefreshToken = async () => {
+      const currentToken = tokenUtils.getToken();
+      if (!currentToken) {
+        const isRefreshed = await tokenUtils.tryRefreshToken();
+        if (isRefreshed) {
+          navigate('/card-view/my');
+        } else {
+          setIsLoading(false);
+        }
+      } else {
+        navigate('/card-view/my');
+      }
+    };
+
+    tryRefreshToken();
+
     // state로 전달된 에러 메시지가 있다면 alert로 표시
     if (location.state?.message) {
       alert(`[${location.state.socialType} 로그인 실패]\n${location.state.message}`);
@@ -18,6 +37,17 @@ const LoginPage = () => {
       navigate(location.pathname, { replace: true });
     }
   }, [location]);
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-lg">로딩 중...</p>
+        </div>
+      </div>
+    );
+  }
 
   const FRONT_BASE_URL = import.meta.env.VITE_FRONT_BASE_URL || 'http://localhost:5173'
 

@@ -20,7 +20,6 @@ export const tokenUtils = {
   // access token 가져오기
   getToken: () => {
     const token = queryClient.getQueryData<string | null>([ACCESS_TOKEN_KEY]);
-    console.log('현재 accessToken:', token);
     return token;
   },
 

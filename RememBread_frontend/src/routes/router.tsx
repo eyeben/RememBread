@@ -33,14 +33,11 @@ const ProtectedOutlet = () => {
       
       // 토큰이 없는 경우에만 재발급 시도
       if (!currentToken) {
-        console.log('accessToken이 없습니다. refresh token으로 갱신을 시도합니다.');
         const isRefreshed = await tokenUtils.tryRefreshToken();
         
         if (isRefreshed) {
-          console.log('토큰 재발급에 성공했습니다.');
           setIsLoading(false);
         } else {
-          console.log('토큰 재발급에 실패했습니다. 로그인 페이지로 이동합니다.');
           tokenUtils.removeToken();
           setRedirectPath('/login');
           setShouldRedirect(true);
