@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUser, updateUser } from "@/services/userService";
+import { getUser, updateUser, deleteUser } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
 import Button from "@/components/common/Button";
@@ -72,6 +72,16 @@ const Profile = () => {
     }
   };
 
+  const handleWithdrawal = async () => {
+    try {
+      await deleteUser();
+      tokenUtils.removeToken();
+      navigate('/login');
+    } catch (error) {
+      console.error('회원탈퇴 중 오류가 발생했습니다:', error);
+    }
+  };
+
   const handleImageEdit = () => {
     setIsImageModalOpen(true);
   };
@@ -127,9 +137,9 @@ const Profile = () => {
 
       <a 
         className="text-lg text-red-500 mb-6 underline cursor-pointer" 
-        onClick={handleLogout}
+        onClick={isEditable ? handleWithdrawal : handleLogout}
       >
-        로그아웃
+        {isEditable ? '회원탈퇴' : '로그아웃'}
       </a>
 
       <ImageEditModal
