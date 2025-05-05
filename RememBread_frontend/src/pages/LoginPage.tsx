@@ -69,7 +69,7 @@ const LoginPage = () => {
   }
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="flex flex-col items-center justify-center min-h-screen p-4 no-scrollbar">
       <div className="text-center mb-8 sm:mb-20">
         <h1 className="text-xl sm:text-2xl font-bold mb-4">"출근길에 굽는 지식 한 조각"</h1>
         <DefaultBread className="w-[150px] h-[150px] sm:w-[200px] sm:h-[200px] mx-auto" />

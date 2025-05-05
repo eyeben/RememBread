@@ -57,7 +57,7 @@ const SocialCallbackPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen no-scrollbar">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-lg">로그인 처리 중...</p>
@@ -68,7 +68,7 @@ const SocialCallbackPage = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen overflow-hidden">
+      <div className="flex items-center justify-center min-h-screen no-scrollbar">
         <div className="text-center">
           <p className="text-lg text-red-500">{error}</p>
         </div>

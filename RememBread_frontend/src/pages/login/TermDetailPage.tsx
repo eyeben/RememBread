@@ -46,7 +46,7 @@ const TermDetailPage = () => {
   };
 
   return (
-    <div className="w-full max-w-[600px] mx-auto pc:border-x">
+    <div className="w-full max-w-[600px] mx-auto pc:border-x no-scrollbar">
       <header className="fixed top-0 left-0 right-0 w-full max-w-[600px] h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-50">
         <nav className="h-full mx-auto">
           <div className="flex items-center w-full h-full px-5">
@@ -57,7 +57,7 @@ const TermDetailPage = () => {
           </div>
         </nav>
       </header>
-      <div className="pt-14 min-h-screen flex flex-col overflow-hidden">
+      <div className="pt-14 min-h-screen flex flex-col">
         <div className="p-6 flex-1">
           <p className="whitespace-pre-line text-sm leading-6">{currentTerm?.content}</p>
         </div>
