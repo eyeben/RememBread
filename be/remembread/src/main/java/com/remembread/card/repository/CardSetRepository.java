@@ -1,5 +1,6 @@
 package com.remembread.card.repository;
 
+import com.remembread.card.dto.response.CardSetSearchResponse;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.projection.FlatCardSetProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -36,6 +37,72 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     List<FlatCardSetProjection> getCardSetSorted(
             @Param("folderId") Long folderId,
             @Param("column") String column,
+            @Param("size") int size,
+            @Param("offset") int offset
+    );
+
+    @Query(value = """
+    SELECT cs.id AS cardSetId, cs.name AS title, cs.views AS viewCount, cs.forks AS forkCount
+    FROM card_sets cs
+    WHERE cs.is_public = true
+        AND cs.name ILIKE %:query%
+    ORDER BY
+        CASE 
+            WHEN :sortColumn = 'created_at' THEN cs.created_at
+            WHEN :sortColumn = 'views' THEN cs.views
+            WHEN :sortColumn = 'forks' THEN cs.forks
+            WHEN :sortColumn = 'name' THEN cs.name
+        END DESC
+    LIMIT :size OFFSET :offset
+    """, nativeQuery = true)
+    List<CardSetSearchResponse.CardSet> searchByTitle(
+            @Param("query") String query,
+            @Param("sortColumn") String sortColumn,
+            @Param("size") int size,
+            @Param("offset") int offset
+    );
+
+    @Query(value = """
+    SELECT cs.id AS cardSetId, cs.name AS title, cs.views AS viewCount, cs.forks AS forkCount
+    FROM card_sets cs
+    JOIN users u ON cs.user_id = u.id
+    WHERE cs.is_public = true
+        AND u.nickname ILIKE %:query%
+    ORDER BY
+        CASE 
+            WHEN :sortColumn = 'created_at' THEN cs.created_at
+            WHEN :sortColumn = 'views' THEN cs.views
+            WHEN :sortColumn = 'forks' THEN cs.forks
+            WHEN :sortColumn = 'name' THEN cs.name
+        END DESC
+    LIMIT :size OFFSET :offset
+    """, nativeQuery = true)
+    List<CardSetSearchResponse.CardSet> searchByAuthor(
+            @Param("query") String query,
+            @Param("sortColumn") String sortColumn,
+            @Param("size") int size,
+            @Param("offset") int offset
+    );
+
+    @Query(value = """
+    SELECT cs.id AS cardSetId, cs.name AS title, cs.views AS viewCount, cs.forks AS forkCount
+    FROM card_sets cs
+    JOIN card_set_hashtags csh ON cs.id = csh.card_set_id
+    JOIN hashtags h ON csh.hashtag_id = h.id
+    WHERE cs.is_public = true
+        AND h.name ILIKE %:query%
+    ORDER BY
+        CASE 
+            WHEN :sortColumn = 'created_at' THEN cs.created_at
+            WHEN :sortColumn = 'views' THEN cs.views
+            WHEN :sortColumn = 'forks' THEN cs.forks
+            WHEN :sortColumn = 'name' THEN cs.name
+        END DESC
+    LIMIT :size OFFSET :offset
+    """, nativeQuery = true)
+    List<CardSetSearchResponse.CardSet> searchByHashtag(
+            @Param("query") String query,
+            @Param("sortColumn") String sortColumn,
             @Param("size") int size,
             @Param("offset") int offset
     );

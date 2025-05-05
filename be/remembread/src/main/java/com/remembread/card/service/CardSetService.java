@@ -8,10 +8,12 @@ import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.CardListResponse;
 import com.remembread.card.dto.response.CardSetListGetResponse;
 import com.remembread.card.dto.response.CardSetResponse;
+import com.remembread.card.dto.response.CardSetSearchResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
 import com.remembread.card.enums.CardSetSortType;
+import com.remembread.card.enums.SearchCategory;
 import com.remembread.card.projection.FlatCardSetProjection;
 import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
@@ -217,6 +219,28 @@ public class CardSetService {
 
         CardSetListGetResponse response = new CardSetListGetResponse();
         response.setCardSets(new ArrayList<>(map.values()));
+        return response;
+    }
+
+    public CardSetSearchResponse searchCardSets(SearchCategory searchCategory, String query, int page, int size, CardSetSortType cardSetSortType) {
+        int offset = page * size;
+        String sortColumn = cardSetSortType.getColumn();
+        CardSetSearchResponse response = new CardSetSearchResponse();
+        switch (searchCategory) {
+            case 제목 -> {
+                cardSetRepository.searchByTitle(query, sortColumn, offset, size);
+                break;
+            }
+            case 작성자 -> {
+                cardSetRepository.searchByAuthor(query, sortColumn, offset, size);
+                break;
+            }
+            case 해시태그 -> {
+                cardSetRepository.searchByHashtag(query, sortColumn, offset, size);
+                break;
+            }
+            default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
+        }
         return response;
     }
 }
