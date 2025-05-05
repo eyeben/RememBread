@@ -83,7 +83,7 @@ public class CardSetController {
 public ApiResponse<CardSetListGetResponse> getCardSetLists(@Parameter(description = "카드셋을 조회할 폴더 ID", example = "1", required = true) @RequestParam Long folderId,
                                                            @Parameter(description = "페이지 번호 (0부터 시작)", example = "0") @RequestParam(defaultValue = "0") int page,
                                                            @Parameter(description = "페이지당 항목 수", example = "10") @RequestParam(defaultValue = "10") int size,
-                                                           @Parameter(description = "정렬 기준 (예: 최신, 조회수, 포크)", example = "최신") @RequestParam(defaultValue = "최신") String sort,
+                                                           @Parameter(description = "정렬 기준 (예: 최신순, 인기순, 포크순)", example = "최신순") @RequestParam(defaultValue = "최신순") String sort,
                                                            @AuthUser User user) {
     return ApiResponse.onSuccess(cardSetService.getCardSetList(folderId, page, size, sort, user.getId()));
     }
