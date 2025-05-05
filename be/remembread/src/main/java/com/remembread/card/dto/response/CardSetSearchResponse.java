@@ -1,5 +1,6 @@
 package com.remembread.card.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -10,6 +11,7 @@ public class CardSetSearchResponse {
     List<CardSet> cardSets = new ArrayList<CardSet>();
 
     @Data
+    @AllArgsConstructor
     public static class CardSet {
         Long cardSetId;
         String title;

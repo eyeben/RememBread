@@ -47,17 +47,13 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     WHERE cs.is_public = true
         AND cs.name ILIKE %:query%
     ORDER BY
-        CASE 
-            WHEN :sortColumn = 'created_at' THEN cs.created_at
-            WHEN :sortColumn = 'views' THEN cs.views
-            WHEN :sortColumn = 'forks' THEN cs.forks
-            WHEN :sortColumn = 'name' THEN cs.name
-        END DESC
-    LIMIT :size OFFSET :offset
+        CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
+        CASE WHEN :column = 'views' THEN cs.views END DESC,
+        CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByTitle(
             @Param("query") String query,
-            @Param("sortColumn") String sortColumn,
+            @Param("column") String column,
             @Param("size") int size,
             @Param("offset") int offset
     );
@@ -69,40 +65,41 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     WHERE cs.is_public = true
         AND u.nickname ILIKE %:query%
     ORDER BY
-        CASE 
-            WHEN :sortColumn = 'created_at' THEN cs.created_at
-            WHEN :sortColumn = 'views' THEN cs.views
-            WHEN :sortColumn = 'forks' THEN cs.forks
-            WHEN :sortColumn = 'name' THEN cs.name
-        END DESC
+        CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
+        CASE WHEN :column = 'views' THEN cs.views END DESC,
+        CASE WHEN :column = 'forks' THEN cs.forks END DESC 
     LIMIT :size OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByAuthor(
             @Param("query") String query,
-            @Param("sortColumn") String sortColumn,
+            @Param("column") String column,
             @Param("size") int size,
             @Param("offset") int offset
     );
 
     @Query(value = """
-    SELECT cs.id AS cardSetId, cs.name AS title, cs.views AS viewCount, cs.forks AS forkCount
+    SELECT 
+        cs.id AS cardSetId,
+        cs.name AS title,
+        cs.views AS viewCount,
+        cs.forks AS forkCount
     FROM card_sets cs
-    JOIN card_set_hashtags csh ON cs.id = csh.card_set_id
-    JOIN hashtags h ON csh.hashtag_id = h.id
     WHERE cs.is_public = true
-        AND h.name ILIKE %:query%
+      AND cs.id IN (
+          SELECT csh.card_set_id
+          FROM card_set_hashtags csh
+          JOIN hashtags h ON csh.hashtag_id = h.id
+          WHERE h.name ILIKE %:query%
+      )
     ORDER BY
-        CASE 
-            WHEN :sortColumn = 'created_at' THEN cs.created_at
-            WHEN :sortColumn = 'views' THEN cs.views
-            WHEN :sortColumn = 'forks' THEN cs.forks
-            WHEN :sortColumn = 'name' THEN cs.name
-        END DESC
+        CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
+        CASE WHEN :column = 'views' THEN cs.views END DESC,
+        CASE WHEN :column = 'forks' THEN cs.forks END DESC
     LIMIT :size OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByHashtag(
             @Param("query") String query,
-            @Param("sortColumn") String sortColumn,
+            @Param("column") String column,
             @Param("size") int size,
             @Param("offset") int offset
     );

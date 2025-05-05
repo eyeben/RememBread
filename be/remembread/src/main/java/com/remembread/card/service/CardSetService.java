@@ -226,10 +226,14 @@ public class CardSetService {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
         CardSetSearchResponse response = new CardSetSearchResponse();
+        System.out.println(query);
+        System.out.println(sortColumn);
+        System.out.println(offset);
+        System.out.println(size);
         switch (searchCategory) {
-            case 제목 -> cardSetRepository.searchByTitle(query, sortColumn, offset, size);
-            case 작성자 -> cardSetRepository.searchByAuthor(query, sortColumn, offset, size);
-            case 해시태그 -> cardSetRepository.searchByHashtag(query, sortColumn, offset, size);
+            case 제목 -> response.setCardSets(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
+            case 작성자 -> response.setCardSets(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
+            case 해시태그 -> response.setCardSets(cardSetRepository.searchByHashtag(query, sortColumn, size, offset));
             default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
         }
 
