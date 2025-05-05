@@ -227,20 +227,12 @@ public class CardSetService {
         String sortColumn = cardSetSortType.getColumn();
         CardSetSearchResponse response = new CardSetSearchResponse();
         switch (searchCategory) {
-            case 제목 -> {
-                cardSetRepository.searchByTitle(query, sortColumn, offset, size);
-                break;
-            }
-            case 작성자 -> {
-                cardSetRepository.searchByAuthor(query, sortColumn, offset, size);
-                break;
-            }
-            case 해시태그 -> {
-                cardSetRepository.searchByHashtag(query, sortColumn, offset, size);
-                break;
-            }
+            case 제목 -> cardSetRepository.searchByTitle(query, sortColumn, offset, size);
+            case 작성자 -> cardSetRepository.searchByAuthor(query, sortColumn, offset, size);
+            case 해시태그 -> cardSetRepository.searchByHashtag(query, sortColumn, offset, size);
             default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
         }
+
         return response;
     }
 }
