@@ -1,16 +1,20 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import CustomButton from "@/components/common/CustomButton";
 import Timer from "@/components/common/Timer";
 import GameResultModal from "@/components/game/GameResultModal";
+import useGameStore from "@/store/gameStore";
 
 const MemoryGamePage = () => {
+  const navigate = useNavigate();
+  const { setMemoryScore } = useGameStore();
   // 임시로 랜덤 숫자와 빵 이모지 배열
   const [showQuiz, setShowQuiz] = useState(true);
   const numbers = [4, 9];
   const breads = ["🥖", "🍞"];
   const [userInput, setUserInput] = useState<(string|number)[]>([]);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
-  const [score, setScore] = useState(0);
+  const [score, setLocalScore] = useState(0);
 
   // 정답 배열
   const answer = [...numbers, ...breads];
@@ -35,11 +39,16 @@ const MemoryGamePage = () => {
       const isCorrect = next.every((v, i) => v === answer[i]);
       if (isCorrect) {
         setResultModalType("success");
-        setScore((prev) => prev + 1);
+        setLocalScore((prev) => prev + 1);
       } else {
         setResultModalType("fail");
       }
     }
+  };
+
+  const handleTimeEnd = () => {
+    setMemoryScore(score);
+    navigate("/games/result");
   };
 
   return (
@@ -47,7 +56,7 @@ const MemoryGamePage = () => {
       <div className="mb-4 text-2xl font-bold text-primary-700 flex items-center gap-2">
         <span>숫자와 빵을 기억하자!</span>
         <span className="ml-2 text-2xl text-neutral-500">
-          <Timer initial={60}>{(v) => `${v}초`}</Timer>
+          <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
         </span>
       </div>
       <div className="w-full max-w-[376px] h-[107px] flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-4 py-4 mb-8 text-white text-3xl font-bold">
@@ -84,9 +93,10 @@ const MemoryGamePage = () => {
         {[1,2,3,4,5,6,7,8,9,'🍞','🥖','🥐'].map((item, idx) => (
           <CustomButton
             key={idx}
-            className="w-[88px] h-[64px] sm:w-[112px] sm:h-[86px] flex-shrink-0 rounded-[20px] bg-primary-300 shadow flex items-center justify-center text-3xl font-bold text-neutral-700 hover:bg-[#e0c9a3] transition p-0 sm:px-2 sm:py-2"
+            className="w-[88px] h-[64px] sm:w-[112px] sm:h-[86px] flex-shrink-0 rounded-[20px] bg-primary-300 shadow flex items-center justify-center text-3xl font-bold text-neutral-700 hover:bg-primary-400 transition p-0 sm:px-2 sm:py-2 disabled:opacity-100"
             variant="default"
             onClick={() => handleInput(item)}
+            disabled={showQuiz}
           >
             {item}
           </CustomButton>
