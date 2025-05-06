@@ -2,6 +2,7 @@ package com.remembread.card.entity;
 
 import com.remembread.card.dto.request.CardUpdateRequest;
 import com.remembread.common.entity.BaseEntity;
+import com.remembread.study.dto.CardCache;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -68,5 +69,12 @@ public class Card extends BaseEntity {
         if (request.getDescription() != null) this.description = request.getDescription();
         if (request.getConceptImageUrl() != null) this.conceptImageUrl = request.getConceptImageUrl();
         if (request.getDescriptionImageUrl() != null) this.descriptionImageUrl = request.getDescriptionImageUrl();
+    }
+
+    public void update(CardCache cardCache) {
+        this.correctCount = cardCache.getCorrectCount();
+        this.solvedCount = cardCache.getSolvedCount();
+        this.retentionRate = cardCache.getRetentionRate();
+        this.stability = cardCache.getStability();
     }
 }
