@@ -24,6 +24,7 @@ import CardTestBlank from "@/components/indexCardView/CardTestBlank";
 import CardTestConcept from "@/components/indexCardView/CardTestConcept";
 import GameModePage from "@/pages/games/GameModePage";
 import GamesHomePage from "@/pages/games/GamesHomePage";
+import MemoryGamePage from "@/pages/games/MemoryGamePage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -180,6 +181,10 @@ const router = createBrowserRouter([
               {
                 path: "game-mode",
                 element: <GameModePage />,
+              },
+              {
+                path: "memory",
+                element: <MemoryGamePage />,
               },
             ],
           },
