@@ -5,18 +5,20 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
 public class RedisService {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final RedisTemplate<String, Object> redisTemplate;
 
-    public void setValue(String key, String value) {
+    public void setValue(String key, Object value) {
         redisTemplate.opsForValue().set(key, value);
     }
 
-    public void setValue(String key, String value, Duration ttl) {
+    public void setValue(String key, Object value, Duration ttl) {
         redisTemplate.opsForValue().set(key, value, ttl);
     }
 
@@ -31,4 +33,37 @@ public class RedisService {
     public boolean hasKey(String key) {
         return Boolean.TRUE.equals(redisTemplate.hasKey(key));
     }
+
+    public void addToZSet(String key, Object value, double score) {
+        redisTemplate.opsForZSet().add(key, value, score);
+    }
+
+    public Set<Object> getZSetRange(String key, long start, long end) {
+        return redisTemplate.opsForZSet().range(key, start, end);
+    }
+
+    public void removeFromZSet(String key, Object value) {
+        redisTemplate.opsForZSet().remove(key, value);
+    }
+
+    public void putHash(String key, String hashKey, Object value) {
+        redisTemplate.opsForHash().put(key, hashKey, value);
+    }
+
+    public void putAllHash(String key, Map<String, Object> hash) {
+        redisTemplate.opsForHash().putAll(key, hash);
+    }
+
+    public Object getHash(String key, String hashKey) {
+        return redisTemplate.opsForHash().get(key, hashKey);
+    }
+
+    public Map<Object, Object> getHashMap(String key) {
+        return redisTemplate.opsForHash().entries(key);
+    }
+
+    public void removeHash(String key, Object hashKey) {
+        redisTemplate.opsForHash().delete(key, hashKey);
+    }
+
 }
