@@ -1,4 +1,4 @@
-package com.remembread.study.dto;
+package com.remembread.study.dto.request;
 
 import com.remembread.study.enums.StudyMode;
 import lombok.Data;

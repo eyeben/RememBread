@@ -12,7 +12,7 @@ import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.common.service.RedisService;
 import com.remembread.study.dto.CardCache;
-import com.remembread.study.dto.StudyStartRequest;
+import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.repository.CardStudyLogRepository;
 import com.remembread.study.repository.StudySessionRepository;
 import com.remembread.user.entity.User;

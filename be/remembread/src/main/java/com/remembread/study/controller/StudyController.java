@@ -2,7 +2,7 @@ package com.remembread.study.controller;
 
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
-import com.remembread.study.dto.StudyStartRequest;
+import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.service.StudyService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
