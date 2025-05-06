@@ -3,6 +3,7 @@ package com.remembread.card.converter;
 import com.remembread.card.dto.response.CardListResponse;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.card.entity.Card;
+import com.remembread.study.dto.CardCache;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,4 +31,21 @@ public class CardConverter {
         cardListResponse.setCards(cardResponses);
         return cardListResponse;
     }
+
+    public static CardCache toCardCache(Card card) {
+        CardCache cardCache = new CardCache();
+        cardCache.setId(card.getId());
+        cardCache.setCardSetId(cardCache.getCardSetId());
+        cardCache.setNumber(card.getNumber());
+        cardCache.setConcept(card.getConcept());
+        cardCache.setDescription(card.getDescription());
+        cardCache.setCorrectCount(card.getCorrectCount());
+        cardCache.setSolvedCount(card.getSolvedCount());
+        cardCache.setRetentionRate(card.getRetentionRate());
+        cardCache.setStability(card.getStability());
+        cardCache.setConceptImageUrl(card.getConceptImageUrl());
+        cardCache.setDescriptionImageUrl(card.getDescriptionImageUrl());
+        return cardCache;
+    }
+
 }
