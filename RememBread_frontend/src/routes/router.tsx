@@ -22,6 +22,8 @@ import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import { tokenUtils } from "@/lib/queryClient";
 import CardTestBlank from "@/components/indexCardView/CardTestBlank";
 import CardTestConcept from "@/components/indexCardView/CardTestConcept";
+import GameModePage from "@/pages/games/GameModePage";
+import GamesHomePage from "@/pages/games/GamesHomePage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -168,8 +170,18 @@ const router = createBrowserRouter([
             element: <ProfilePage />,
           },
           {
-            path: "/games",
+            path: "games",
             element: <GamesPage />,
+            children: [
+              {
+                index: true,
+                element: <GamesHomePage />,
+              },
+              {
+                path: "game-mode",
+                element: <GameModePage />,
+              },
+            ],
           },
           {
             path: "/map",
