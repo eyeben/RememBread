@@ -20,10 +20,11 @@ const GameModePage = () => {
           onClick={() => navigate("/games/memory")}
         />
         <CustomButton
-          icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}
           title="가격비교"
           description="가격이 더 비싼 빵은?"
           variant="primary"
+          icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}
+          onClick={() => navigate("/games/compare")}
         />
         <CustomButton
           icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}

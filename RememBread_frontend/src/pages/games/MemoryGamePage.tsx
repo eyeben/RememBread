@@ -48,7 +48,7 @@ const MemoryGamePage = () => {
 
   const handleTimeEnd = () => {
     setMemoryScore(score);
-    navigate("/games/result");
+    navigate("/games/result", { state: { game: "memory" } });
   };
 
   return (

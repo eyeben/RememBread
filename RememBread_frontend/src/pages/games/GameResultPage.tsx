@@ -1,12 +1,16 @@
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import useGameStore from "@/store/gameStore";
 import ClearBread from "@/components/svgs/breads/ClearBread";
 import FailBread from "@/components/svgs/breads/FailBread";
 
 const GameResultPage = () => {
   const navigate = useNavigate();
-  const { memoryScore } = useGameStore();
-  const isSuccess = memoryScore >= 70; // 70점 이상을 성공으로 간주
+  const location = useLocation();
+  const { memoryScore, compareScore, resetMemoryScore, resetCompareScore } = useGameStore();
+  // location.state?.game 값이 "memory" 또는 "compare"로 전달됨
+  const gameType = location.state?.game || "memory";
+  const score = gameType === "memory" ? memoryScore : compareScore;
+  const isSuccess = score >= 70; // 70점 이상을 성공으로 간주
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4">
@@ -23,18 +27,30 @@ const GameResultPage = () => {
       </h1>
       
       <div className="text-xl mb-8">
-        최종 점수: <span className="font-bold">{memoryScore}점</span>
+        최종 점수: <span className="font-bold">{score}점</span>
       </div>
 
       <div className="flex gap-4">
         <button
-          onClick={() => navigate("/games/memory")}
+          onClick={() => {
+            if (gameType === "memory") {
+              resetMemoryScore();
+              navigate("/games/memory");
+            } else if (gameType === "compare") {
+              resetCompareScore();
+              navigate("/games/compare");
+            }
+          }}
           className="px-6 py-2 bg-primary-500 text-white rounded-lg hover:bg-primary-600"
         >
           다시하기
         </button>
         <button
-          onClick={() => navigate("/games")}
+          onClick={() => {
+            resetMemoryScore();
+            resetCompareScore();
+            navigate("/games");
+          }}
           className="px-6 py-2 bg-neutral-200 text-neutral-700 rounded-lg hover:bg-neutral-300"
         >
           게임 목록으로
