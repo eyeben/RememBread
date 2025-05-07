@@ -3,9 +3,12 @@ import CardViewHeader from "@/components/indexCardView/CardViewHeader";
 import CardSetList from "@/components/indexCardView/CardSetList";
 import FolderOrderBar from "@/components/indexCardView/FolderOrderBar";
 import IndexCardSearchBar from "@/components/indexCardView/IndexCardSearchBar";
+import { useLocation } from "react-router-dom";
 
 const IndexCardViewPage = () => {
-  const [isEditing, setIsEditing] = useState(false);
+  const location = useLocation();
+  const isMyPage = location.pathname.includes("/my");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const toggleEditing = () => {
     setIsEditing((prev) => !prev);

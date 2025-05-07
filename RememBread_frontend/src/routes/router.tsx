@@ -140,6 +140,10 @@ const router = createBrowserRouter([
                 element: <IndexCardViewPage />,
               },
               {
+                path: "search",
+                element: <IndexCardViewPage />,
+              },
+              {
                 path: ":indexCardId",
                 element: <CardDetailPage />,
                 children: [
