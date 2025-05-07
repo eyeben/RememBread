@@ -7,11 +7,15 @@ import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 
-const CardSetList = () => {
+interface CardSetListProps {
+  isEditing: boolean;
+  toggleEditing: () => void;
+}
+
+const CardSetList = ({ isEditing, toggleEditing }: CardSetListProps) => {
   const navigate = useNavigate();
 
   const [cardSetList, setcardSetList] = useState<indexCardSet[]>([]);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
@@ -37,11 +41,6 @@ const CardSetList = () => {
     setSelectedItems((prev) =>
       prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
     );
-  };
-
-  const toggleEditing = () => {
-    setIsEditing((prev) => !prev);
-    setSelectedItems([]);
   };
 
   const handleCardClick = (cardSetId: number) => {
@@ -74,14 +73,6 @@ const CardSetList = () => {
             이동
           </Button>
         )}
-
-        <Button
-          className="w-1/2 hover:bg-primary-100"
-          variant="primary-outline"
-          onClick={toggleEditing}
-        >
-          {isEditing ? "편집 완료" : "편집하기"}
-        </Button>
 
         {isEditing ? (
           <Button

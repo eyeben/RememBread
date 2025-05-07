@@ -1,11 +1,16 @@
 import FolderStructor from "@/components/indexCardView/FolderStructor";
-import OrderSelector from "@/components/indexCardView/OrderSelector";
+import CardSetEditButton from "@/components/indexCardView/CardSetEditButton";
 
-const FolderOrderBar = () => {
+interface FolderOrderBarProps {
+  isEditing: boolean;
+  toggleEditing: () => void;
+}
+
+const FolderOrderBar = ({ isEditing, toggleEditing }: FolderOrderBarProps) => {
   return (
     <div className="flex justify-between items-center w-full px-3 h-10">
       <FolderStructor />
-      <OrderSelector />
+      <CardSetEditButton isEditing={isEditing} onToggle={toggleEditing} />
     </div>
   );
 };
