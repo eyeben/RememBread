@@ -37,3 +37,16 @@ export const getCardSetList = async (
     throw new Error("카드셋 목록 조회 중 오류가 발생했습니다.");
   }
 };
+
+// 카드셋 간단 조회
+export const getCardSetSimple = async (folderId: number) => {
+  try {
+    const response = await http.get("/card-sets/lists-simple", {
+      params: { folderId },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("API 호출 에러:", error);
+    throw new Error("카드셋 간단 조회 중 오류가 발생했습니다.");
+  }
+};
