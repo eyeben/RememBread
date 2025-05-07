@@ -24,22 +24,22 @@ const CardSet = ({ className }: SVGProps) => {
 </radialGradient>
 <radialGradient id="paint1_radial_40_12213" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(113.984 19.3663) rotate(-36.8699) scale(11.3914 7.17815)">
 <stop offset="0.029" stopColor="#FBD8A9"/>
-<stop offset="1" stopColor="#FBD8A9" stop-opacity="0"/>
+<stop offset="1" stopColor="#FBD8A9" stopOpacity="0"/>
 </radialGradient>
 <radialGradient id="paint2_radial_40_12213" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(87.7606 46.2156) rotate(-28) scale(17.3348 12.1817)">
 <stop offset="0.097" stopColor="#FDE5BF"/>
-<stop offset="0.37" stopColor="#FCE1B9" stop-opacity="0.742"/>
-<stop offset="0.716" stopColor="#FAD8A9" stop-opacity="0.416"/>
-<stop offset="0.843" stopColor="#FCE0B6" stop-opacity="0.211"/>
-<stop offset="0.974" stopColor="#FDE5BF" stop-opacity="0"/>
+<stop offset="0.37" stopColor="#FCE1B9" stopOpacity="0.742"/>
+<stop offset="0.716" stopColor="#FAD8A9" stopOpacity="0.416"/>
+<stop offset="0.843" stopColor="#FCE0B6" stopOpacity="0.211"/>
+<stop offset="0.974" stopColor="#FDE5BF" stopOpacity="0"/>
 </radialGradient>
 <radialGradient id="paint3_radial_40_12213" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(55.9474 83.974) rotate(-43.0363) scale(15.6472 13.7691)">
 <stop offset="0.188" stopColor="#FBD8A9"/>
-<stop offset="0.977" stopColor="#FBD8A9" stop-opacity="0"/>
+<stop offset="0.977" stopColor="#FBD8A9" stopOpacity="0"/>
 </radialGradient>
 <radialGradient id="paint4_radial_40_12213" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(27.9178 114.975) rotate(-42.327) scale(19.4252 10.8766)">
 <stop stopColor="#FDE5BF"/>
-<stop offset="1" stopColor="#FDE5BF" stop-opacity="0"/>
+<stop offset="1" stopColor="#FDE5BF" stopOpacity="0"/>
 </radialGradient>
 </defs>
 </svg>
