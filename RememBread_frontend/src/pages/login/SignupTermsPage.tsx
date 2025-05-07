@@ -74,7 +74,7 @@ const SignupTermsPage = () => {
 
             <Button
               variant={isAllTermsChecked ? "primary" : "primary-outline"}
-              className="w-[28rem] py-3"
+              className="w-full max-w-[28rem] py-3"
               disabled={!isAllTermsChecked}
               onClick={handleNextClick}
             >

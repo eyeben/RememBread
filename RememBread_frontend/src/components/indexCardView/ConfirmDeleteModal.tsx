@@ -25,9 +25,7 @@ const ConfirmDeleteModal = ({ open, message, onConfirm, onCancel }: ConfirmModal
         <AlertDialogContent className="w-[80%] rounded-md" aria-describedby="delete-desc">
           <AlertDialogHeader>
             <AlertDialogTitle className="text-center">{message}</AlertDialogTitle>
-            <AlertDialogDescription className="text-center text-sm text-gray-500">
-              {/* 이 작업은 되돌릴 수 없습니다. */}
-            </AlertDialogDescription>
+            <AlertDialogDescription className="text-center text-sm text-gray-500"></AlertDialogDescription>
             <VisuallyHidden>
               <p id="delete-desc">이 작업은 되돌릴 수 없습니다.</p>
             </VisuallyHidden>
