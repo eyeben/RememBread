@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
@@ -14,6 +15,7 @@ import {
 } from "@/components/ui/carousel";
 
 const CreateFromSelfPage = () => {
+  const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
 
   const [isFront, setIsFront] = useState<boolean>(true);
@@ -122,7 +124,7 @@ const CreateFromSelfPage = () => {
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
 
-      <Button className="my-5 mx-5" variant="primary">
+      <Button className="my-5 mx-5" variant="primary" onClick={() => navigate("/save")}>
         생성
       </Button>
     </div>
