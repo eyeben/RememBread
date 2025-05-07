@@ -5,10 +5,7 @@ import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
 import com.remembread.card.dto.request.CardSetUpdateRequest;
-import com.remembread.card.dto.response.CardListResponse;
-import com.remembread.card.dto.response.CardSetListGetResponse;
-import com.remembread.card.dto.response.CardSetResponse;
-import com.remembread.card.dto.response.CardSetSearchResponse;
+import com.remembread.card.dto.response.*;
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
@@ -226,10 +223,7 @@ public class CardSetService {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
         CardSetSearchResponse response = new CardSetSearchResponse();
-        System.out.println(query);
-        System.out.println(sortColumn);
-        System.out.println(offset);
-        System.out.println(size);
+
         switch (searchCategory) {
             case 제목 -> response.setCardSets(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
             case 작성자 -> response.setCardSets(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
@@ -238,5 +232,14 @@ public class CardSetService {
         }
 
         return response;
+    }
+
+    public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, Long userId) {
+        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        // 접근 권한이 없는 경우
+        if(!folder.getUser().getId().equals(userId))
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+
+        return new CardSetSimpleListGetResponse(cardSetRepository.findByFolderIdOrderByName(folderId));
     }
 }

@@ -36,7 +36,7 @@ public enum ErrorStatus implements BaseErrorCode {
     // 카드셋 관련 에러
     CARDSET_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARDSET4004", "카드셋이 존재하지 않습니다."),
     CARDSET_FORBIDDEN(HttpStatus.BAD_REQUEST, "CARDSET4003", "카드셋에 접근 권한이 없습니다."),
-    CARDSET_NOT_PUBLIC(HttpStatus.BAD_REQUEST, "CARDSET4003", "이 카드셋은 볼 수 었습니다."),
+    CARDSET_NOT_PUBLIC(HttpStatus.BAD_REQUEST, "CARDSET4003", "이 카드셋은 볼 수 없습니다."),
 
     // 카드 관련 에러
     CARD_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARD4004", "카드가 존재하지 않습니다."),
