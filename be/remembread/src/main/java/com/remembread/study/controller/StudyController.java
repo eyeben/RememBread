@@ -2,6 +2,7 @@ package com.remembread.study.controller;
 
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
+import com.remembread.card.dto.response.CardResponse;
 import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.service.StudyService;
@@ -16,13 +17,12 @@ public class StudyController {
     private final StudyService studyService;
 
     @PostMapping("/{cardSetId}/start")
-    public ApiResponse<Void> startStudySession(
+    public ApiResponse<CardResponse> startStudySession(
             @PathVariable("cardSetId") Long cardSetId,
             StudyStartRequest request,
             @AuthUser User user
             ) {
-        studyService.startStudySession(cardSetId, request, user);
-        return ApiResponse.onSuccess(null);
+        return ApiResponse.onSuccess(studyService.startStudySession(cardSetId, request, user));
     }
 
     @PostMapping("/{cardSetId}/stop")
