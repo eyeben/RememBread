@@ -45,7 +45,7 @@ const CardDetailPage = () => {
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
           <TagRow tags={card.hashTags} />
-          <CardDetailList />
+          <CardDetailList cardSetId={card.cardSetId} />
 
           <CardDetailButtons
             onStudyClick={handleStudyClick}
