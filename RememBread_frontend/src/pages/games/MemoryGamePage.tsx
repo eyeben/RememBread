@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import CustomButton from "@/components/common/CustomButton";
 import Timer from "@/components/common/Timer";
 import GameResultModal from "@/components/game/GameResultModal";
-import useGameStore from "@/store/gameStore";
+import useGameStore from "@/stores/gameStore";
 
 const MemoryGamePage = () => {
   const navigate = useNavigate();

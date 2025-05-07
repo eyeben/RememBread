@@ -1,5 +1,5 @@
 import { useNavigate, useLocation } from "react-router-dom";
-import useGameStore from "@/store/gameStore";
+import useGameStore from "@/stores/gameStore";
 import ClearBread from "@/components/svgs/breads/ClearBread";
 
 const GameResultPage = () => {

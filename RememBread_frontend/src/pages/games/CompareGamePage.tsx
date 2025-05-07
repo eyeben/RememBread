@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import Timer from "@/components/common/Timer";
 import GameResultModal from "@/components/game/GameResultModal";
 import QuizContainer from "@/components/game/QuizContainer";
-import useGameStore from "@/store/gameStore";
+import useGameStore from "@/stores/gameStore";
 import Bread from "@/components/svgs/game/Bread";
 import Baguette from "@/components/svgs/game/Baguette";
 import Croissant from "@/components/svgs/game/Croissant";

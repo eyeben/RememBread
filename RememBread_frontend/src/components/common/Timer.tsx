@@ -10,11 +10,17 @@ const Timer = ({ initial, onEnd, children }: TimerProps) => {
   const [value, setValue] = useState(initial);
   const intervalRef = useRef<number | undefined>(undefined);
   const onEndRef = useRef(onEnd);
+  const initialRef = useRef(initial);
 
   // onEnd가 변경될 때마다 ref 업데이트
   useEffect(() => {
     onEndRef.current = onEnd;
   }, [onEnd]);
+
+  // initial이 변경될 때마다 ref 업데이트
+  useEffect(() => {
+    initialRef.current = initial;
+  }, [initial]);
 
   const clearTimer = useCallback(() => {
     if (intervalRef.current) {
@@ -28,7 +34,7 @@ const Timer = ({ initial, onEnd, children }: TimerProps) => {
     clearTimer();
     
     // 초기값 설정
-    setValue(initial);
+    setValue(initialRef.current);
 
     // 새 타이머 시작
     intervalRef.current = setInterval(() => {
@@ -43,7 +49,7 @@ const Timer = ({ initial, onEnd, children }: TimerProps) => {
     }, 1000);
 
     return clearTimer;
-  }, [initial, clearTimer]);
+  }, [clearTimer]);
 
   return <>{children ? children(value) : value}</>;
 };
