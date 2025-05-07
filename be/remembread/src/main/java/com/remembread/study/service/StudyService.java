@@ -12,8 +12,10 @@ import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.common.service.RedisService;
 import com.remembread.study.dto.CardCache;
+import com.remembread.study.dto.request.AnswerResultRequest;
 import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
+import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.repository.CardStudyLogRepository;
 import com.remembread.study.repository.StudySessionRepository;
 import com.remembread.user.entity.User;
@@ -25,6 +27,8 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +42,11 @@ public class StudyService {
     private final RedisTemplate<String, Object> redisTemplate;
     @Value("${spring.application.name}")
     private String redisPrefix;
+
+    private static final Double S_MAX = 100.0;
+    private static final Double S_MIN = 0.04;
+    private static final Double INCREASE_RATE = 1.5;
+    private static final Double DECREASE_RATE = 0.9;
 
     private final StudySessionRepository studySessionRepository;
     private final CardStudyLogRepository cardStudyLogRepository;
@@ -112,6 +121,70 @@ public class StudyService {
             redisService.deleteValue((String) cardJson);
         }
         redisService.deleteValue(redisPrefix + "::study::" + user.getId() + "::sorted-set::");
+    }
+
+    public RemainingCardCountResponse submitAnswer(Long cardSetId, Long cardId, AnswerResultRequest request, User user) {
+        String zSetKey = redisPrefix + "::study::" + user.getId() + "::sorted-set::";
+        String cardKey = redisPrefix + "::study::" + user.getId() + "::card::" + cardId;
+        if (!redisService.hasKey(cardKey)) {
+            throw new GeneralException(ErrorStatus.CARDCACHE_NOT_FOUND);
+        }
+
+        LocalDateTime lastViewedTime = LocalDateTime.parse((CharSequence) redisService.getHash(cardKey, "lastViewedTime"));
+
+        Double t = ChronoUnit.SECONDS.between(lastViewedTime, LocalDateTime.now()) / 86400.;
+        Double R = (Double) redisService.getHash(cardKey, "retentionRate");
+        Double S = (Double) redisService.getHash(cardKey, "stability");
+
+        redisService.putHash(cardKey, "lastViewedTime", LocalDateTime.now());
+
+        redisService.incrementHash(cardKey, "solvedCount", 1L);
+
+        if (request.getIsCorrect()) {
+            redisService.incrementHash(cardKey, "correctCount", 1L);
+            S = Math.min(S * INCREASE_RATE, S_MAX);
+        } else {
+            S = Math.max(S * DECREASE_RATE, S_MIN);
+        }
+
+        R = (Double) Math.exp(-t / S);
+
+        redisService.putHash(cardKey, "retentionRate", R);
+        redisService.putHash(cardKey, "stability", S);
+
+        if (0.9 <= R) {
+            redisService.removeFromZSet(zSetKey, cardKey);
+        } else {
+            redisService.addToZSet(zSetKey, cardKey, R);
+        }
+
+        RemainingCardCountResponse response = new RemainingCardCountResponse();
+        response.setRemainingCardCount(redisService.getZSetSize(zSetKey));
+
+        return response;
+    }
+
+    public CardResponse getNextCard(Long cardSetId, User user) {
+        String zSetKey = redisPrefix + "::study::" + user.getId() + "::sorted-set::";
+        if (redisService.getZSetSize(zSetKey).equals(0L)) {
+            throw new GeneralException(ErrorStatus.CARDCACHE_NOT_FOUND);
+        }
+        CardResponse response = new CardResponse();
+        Set<Object> cards = redisService.getZSetReverseRange(zSetKey, 0, 0);
+        Map<Object, Object> hash = Map.of();
+        for (Object cardJson : cards) {
+            hash = redisService.getHashMap((String) cardJson);
+        }
+//        System.out.println(hash);
+
+        CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
+        response.setNumber(cardCache.getNumber());
+        response.setConcept(cardCache.getConcept());
+        response.setDescription(cardCache.getDescription());
+        response.setConceptImageUrl(cardCache.getConceptImageUrl());
+        response.setDescriptionImageUrl(cardCache.getDescriptionImageUrl());
+
+        return response;
     }
 
 }

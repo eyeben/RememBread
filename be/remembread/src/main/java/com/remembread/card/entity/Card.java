@@ -40,10 +40,10 @@ public class Card extends BaseEntity {
     private Integer solvedCount = 0;
 
     @Column(name = "retention_rate", nullable = false)
-    private Float retentionRate = 0f;
+    private Double retentionRate = 0.0;
 
     @Column(nullable = false)
-    private Float stability = 1f;
+    private Double stability = 1.0;
 
     @Column(name = "last_correct_at")
     private LocalDateTime lastCorrectAt;

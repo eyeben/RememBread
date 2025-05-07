@@ -5,6 +5,8 @@ import com.remembread.card.dto.response.CardResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.study.dto.CardCache;
 
+import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,6 +47,8 @@ public class CardConverter {
         cardCache.setStability(card.getStability());
         cardCache.setConceptImageUrl(card.getConceptImageUrl());
         cardCache.setDescriptionImageUrl(card.getDescriptionImageUrl());
+        cardCache.setLastViewedTime(card.getUpdatedAt());
+
         return cardCache;
     }
 
