@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getUser } from "@/services/userService";
 import CharacterImage from "@/components/common/CharacterImage";
 import Game from "@/components/svgs/footer/Game";
@@ -58,17 +59,25 @@ const gameHistoryData = [
 ];
 
 const GameHistory = () => {
+  const navigate = useNavigate();
   const [profile, setProfile] = useState<{ nickname: string; mainCharacterId: number } | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    getUser().then((data) => {
-      setProfile({
-        nickname: data.result.nickname,
-        mainCharacterId: data.result.mainCharacterId,
-      });
-      setLoading(false);
-    });
+    const fetchUserData = async () => {
+      try {
+        const data = await getUser();
+        setProfile({
+          nickname: data.result.nickname,
+          mainCharacterId: data.result.mainCharacterId,
+        });
+        setLoading(false);
+      } catch (error) {
+        console.error("유저 정보를 불러오는 중 오류가 발생했습니다:", error);
+        navigate("/login")
+      }
+    };
+    fetchUserData();
   }, []);
 
   if (loading) {
