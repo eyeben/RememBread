@@ -1,6 +1,7 @@
 package com.remembread.card.repository;
 
 import com.remembread.card.dto.response.CardSetSearchResponse;
+import com.remembread.card.dto.response.CardSetSimpleListGetResponse;
 import com.remembread.card.entity.CardSet;
 import com.remembread.card.projection.FlatCardSetProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -103,4 +104,16 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             @Param("size") int size,
             @Param("offset") int offset
     );
+
+    @Query("""
+    SELECT new com.remembread.card.dto.response.CardSetSimpleListGetResponse$CardSet(
+        cs.id,
+        cs.name
+    )
+    FROM CardSet cs
+    WHERE cs.folder.id = :folderId
+    ORDER BY cs.name ASC
+""")
+    List<CardSetSimpleListGetResponse.CardSet> findByFolderIdOrderByName(@Param("folderId") Long folderId);
+
 }
