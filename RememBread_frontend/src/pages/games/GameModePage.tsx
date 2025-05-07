@@ -12,7 +12,7 @@ const GameModePage = () => {
   return (
     <div className="fixed inset-0 flex flex-col items-center justify-center pt-14 pb-16 px-4">
       <SpeechBubble text="오늘도 열심히 해봐요!" />
-      <div className="flex flex-col items-center mt-4 mb-4">
+      <div className="flex flex-col items-center mt-4">
         <Game className="w-36 h-36" />
       </div>
       <div className="w-full flex flex-col gap-3 max-w-[384px]">
