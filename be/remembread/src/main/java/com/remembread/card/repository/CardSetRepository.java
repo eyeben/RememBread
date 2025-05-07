@@ -64,7 +64,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     FROM card_sets cs
     JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
-        AND u.nickname ILIKE %:query%
+        AND u.nickname ILIKE :query
     ORDER BY
         CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
         CASE WHEN :column = 'views' THEN cs.views END DESC,
@@ -90,7 +90,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
           SELECT csh.card_set_id
           FROM card_set_hashtags csh
           JOIN hashtags h ON csh.hashtag_id = h.id
-          WHERE h.name ILIKE %:query%
+          WHERE h.name ILIKE :query
       )
     ORDER BY
         CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
