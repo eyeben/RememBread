@@ -1,7 +1,11 @@
+import { useNavigate } from "react-router-dom";
 import SpeechBubble from "@/components/common/SpeechBubble";
 import CustomButton from "@/components/common/CustomButton";
 import Game from "@/components/svgs/footer/Game";
-import { useNavigate } from "react-router-dom";
+import Bread from "@/components/svgs/game/Bread";
+import Baguette from "@/components/svgs/game/Baguette";
+import Croissant from "@/components/svgs/game/Croissant";
+import Bread2 from "@/components/svgs/game/Bread2";
 
 const GameModePage = () => {
   const navigate = useNavigate();
@@ -16,27 +20,27 @@ const GameModePage = () => {
           title="순간기억"
           description="숫자와 빵을 기억하자"
           variant="primary"
-          icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}
+          icon={<Bread className="w-11 h-11 flex-shrink-0 ml-4" />}
           onClick={() => navigate("/games/memory")}
         />
         <CustomButton
           title="가격비교"
           description="가격이 더 비싼 빵은?"
           variant="primary"
-          icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}
+          icon={<Baguette className="w-11 h-11 flex-shrink-0 ml-4" />}
           onClick={() => navigate("/games/compare")}
         />
         <CustomButton
-          icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}
           title="무게계산"
           description="가장 무거운 빵은 뭘까?"
           variant="primary"
+          icon={<Croissant className="w-11 h-11 flex-shrink-0 ml-4" />}
         />
         <CustomButton
-          icon={<Game className="w-11 h-11 flex-shrink-0 ml-4" />}
           title="빵 탐정"
           description="무슨 빵일까?"
           variant="primary"
+          icon={<Bread2 className="w-11 h-11 flex-shrink-0 ml-4" />}
         />
       </div>
     </div>
