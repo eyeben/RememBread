@@ -1,4 +1,4 @@
-import { useEffect, useState, ReactNode, useRef } from "react";
+import { useEffect, useState, ReactNode, useRef, useCallback } from "react";
 
 interface TimerProps {
   initial: number;
@@ -16,13 +16,25 @@ const Timer = ({ initial, onEnd, children }: TimerProps) => {
     onEndRef.current = onEnd;
   }, [onEnd]);
 
+  const clearTimer = useCallback(() => {
+    if (intervalRef.current) {
+      clearInterval(intervalRef.current);
+      intervalRef.current = undefined;
+    }
+  }, []);
+
   useEffect(() => {
-    intervalRef.current = window.setInterval(() => {
+    // 이전 타이머 정리
+    clearTimer();
+    
+    // 초기값 설정
+    setValue(initial);
+
+    // 새 타이머 시작
+    intervalRef.current = setInterval(() => {
       setValue((prev) => {
         if (prev <= 1) {
-          if (intervalRef.current) {
-            window.clearInterval(intervalRef.current);
-          }
+          clearTimer();
           onEndRef.current?.();
           return 0;
         }
@@ -30,12 +42,8 @@ const Timer = ({ initial, onEnd, children }: TimerProps) => {
       });
     }, 1000);
 
-    return () => {
-      if (intervalRef.current) {
-        window.clearInterval(intervalRef.current);
-      }
-    };
-  }, []); // 컴포넌트 마운트 시에만 실행
+    return clearTimer;
+  }, [initial, clearTimer]);
 
   return <>{children ? children(value) : value}</>;
 };

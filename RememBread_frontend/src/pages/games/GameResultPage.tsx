@@ -1,30 +1,23 @@
 import { useNavigate, useLocation } from "react-router-dom";
 import useGameStore from "@/store/gameStore";
 import ClearBread from "@/components/svgs/breads/ClearBread";
-import FailBread from "@/components/svgs/breads/FailBread";
 
 const GameResultPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { memoryScore, compareScore, resetMemoryScore, resetCompareScore } = useGameStore();
-  // location.state?.game 값이 "memory" 또는 "compare"로 전달됨
   const gameType = location.state?.game || "memory";
   const score = gameType === "memory" ? memoryScore : compareScore;
-  const isSuccess = score >= 70; // 70점 이상을 성공으로 간주
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen p-4">
+    <div className="fixed inset-0 flex flex-col items-center justify-center p-4">
+      <h1 className="text-3xl font-bold mb-4">
+        {gameType === "memory" ? "순간기억" : "가격비교"}
+      </h1>
       <div className="mb-8">
-        {isSuccess ? (
-          <ClearBread className="w-32 h-32" />
-        ) : (
-          <FailBread className="w-32 h-32" />
-        )}
+        <ClearBread className="w-64 h-64" />
       </div>
       
-      <h1 className="text-2xl font-bold mb-4">
-        {isSuccess ? "축하합니다!" : "다시 도전해보세요!"}
-      </h1>
       
       <div className="text-xl mb-8">
         최종 점수: <span className="font-bold">{score}점</span>
