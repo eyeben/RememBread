@@ -197,7 +197,7 @@ public class CardSetService {
             CardSetListGetResponse.CardSet dto = map.computeIfAbsent(id, k -> {
                 CardSetListGetResponse.CardSet cardSet = new CardSetListGetResponse.CardSet();
                 cardSet.setCardSetId(row.getCardSetId());
-                cardSet.setTitle(row.getTitle());
+                cardSet.setName(row.getTitle());
                 cardSet.setIsLike(false); //TODO: 좋아요 컬럼 추가 후 구현
                 cardSet.setIsPublic(row.getIsPublic());
                 cardSet.setViewCount(row.getViewCount());

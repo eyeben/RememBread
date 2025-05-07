@@ -11,7 +11,7 @@ public class CardSetListGetResponse {
     @Data
     public static class CardSet {
         private Long cardSetId;
-        private String title;
+        private String name;
         private Boolean isLike;
         private Boolean isPublic;
         private Integer viewCount;
