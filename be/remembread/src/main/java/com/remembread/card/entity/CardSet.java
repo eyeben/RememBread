@@ -59,4 +59,7 @@ public class CardSet extends BaseEntity {
     public void updateIsPublic(Boolean isPublic) {
         this.isPublic = isPublic;
     }
+    public void updateLastViewedCard(Card lastViewedCard) {
+        this.lastViewedCard = lastViewedCard;
+    }
 }
