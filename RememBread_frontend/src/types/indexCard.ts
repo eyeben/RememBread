@@ -24,8 +24,8 @@ export interface indexCardSet {
   correctCardCnt?: number;
   solvedCardCnt?: number;
   isPublic?: number;
-  viewCnt?: number;
-  forkCnt?: number;
+  viewCount?: number;
+  forkCount?: number;
   isLike?: boolean;
   totalCardCnt?: number;
   hashTags?: string[];
