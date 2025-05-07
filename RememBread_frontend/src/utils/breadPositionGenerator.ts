@@ -3,13 +3,16 @@ interface Position {
   top: number;
 }
 
-interface GridPosition {
-  x: number;
-  y: number;
-}
-
 const randomPosition = (max: number, size: number): number => {
-  return Math.random() * (max - size);
+  // 이미지 크기를 고려하여 실제 사용 가능한 영역 계산
+  const usableArea = max - size;
+  return Math.floor(Math.random() * usableArea);
+};
+
+const calculateDistance = (pos1: Position, pos2: Position): number => {
+  const dx = pos1.left - pos2.left;
+  const dy = pos1.top - pos2.top;
+  return Math.sqrt(dx * dx + dy * dy);
 };
 
 export const generateBreadPositions = (
@@ -17,61 +20,69 @@ export const generateBreadPositions = (
   containerWidth: number,
   containerHeight: number,
   imgSize: number,
-  minSpacing: number,
   padding: number
 ): Position[] => {
   const positions: Position[] = [];
-  const gridSize = imgSize + minSpacing;
-  const maxX = Math.floor((containerWidth - padding * 2) / gridSize);
-  const maxY = Math.floor((containerHeight - padding * 2) / gridSize);
-  const totalCells = maxX * maxY;
+  const minDistance = imgSize * 1;
 
-  // 가능한 모든 위치를 그리드로 생성
-  const availablePositions: GridPosition[] = [];
-  for (let x = 0; x < maxX; x++) {
-    for (let y = 0; y < maxY; y++) {
-      availablePositions.push({ x, y });
+  // 이미지가 컨테이너 밖으로 나가지 않도록 범위 보정
+  const minLeft = padding + imgSize / 2;
+  const maxLeft = containerWidth - padding - imgSize / 2;
+  const minTop = padding + imgSize / 2;
+  const maxTop = containerHeight - padding - imgSize / 2;
+
+  // 격자 기반 위치 생성 (성능 최적화)
+  const gridCols = Math.max(1, Math.floor((maxLeft - minLeft) / minDistance));
+  const gridRows = Math.max(1, Math.floor((maxTop - minTop) / minDistance));
+  const gridPositions: Position[] = [];
+
+  for (let row = 0; row < gridRows; row++) {
+    for (let col = 0; col < gridCols; col++) {
+      gridPositions.push({
+        left: minLeft + (col * minDistance),
+        top: minTop + (row * minDistance)
+      });
     }
   }
 
-  // 위치를 무작위로 섞기
-  for (let i = availablePositions.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [availablePositions[i], availablePositions[j]] = [availablePositions[j], availablePositions[i]];
+  // 격자 위치를 랜덤하게 섞기
+  const shuffledPositions = [...gridPositions].sort(() => Math.random() - 0.5);
+
+  // 격자 기반으로 우선 배치
+  for (let i = 0; i < Math.min(count, shuffledPositions.length); i++) {
+    positions.push(shuffledPositions[i]);
   }
 
-  // 필요한 만큼의 위치 선택
-  for (let i = 0; i < Math.min(count, totalCells); i++) {
-    const { x, y } = availablePositions[i];
-    const left = padding + x * gridSize + (Math.random() * (gridSize - imgSize));
-    const top = padding + y * gridSize + (Math.random() * (gridSize - imgSize));
-    positions.push({ left, top });
-  }
+  // 남은 빵만 랜덤 후보 방식(후보 수 10개)으로 배치
+  while (positions.length < count) {
+    const candidateCount = 10;
+    let bestPosition = null;
+    let maxMinDistance = -1;
 
-  // 추가 위치가 필요한 경우 (그리드보다 많은 빵이 필요한 경우)
-  if (count > totalCells) {
-    for (let i = totalCells; i < count; i++) {
-      let left: number, top: number;
-      let attempts = 0;
-      const maxAttempts = 200;
+    for (let i = 0; i < candidateCount; i++) {
+      const left = Math.random() * (maxLeft - minLeft) + minLeft;
+      const top = Math.random() * (maxTop - minTop) + minTop;
+      const candidate = { left, top };
 
-      do {
-        left = randomPosition(containerWidth - imgSize - padding * 2, imgSize) + padding;
-        top = randomPosition(containerHeight - imgSize - padding * 2, imgSize) + padding;
-        attempts++;
-
-        // 이전 위치들과 겹치는지 확인
-        const isOverlapping = positions.some(pos => {
-          const dx = Math.abs(pos.left - left);
-          const dy = Math.abs(pos.top - top);
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          return distance < imgSize + minSpacing;
-        });
-
-        if (!isOverlapping || attempts >= maxAttempts) break;
-      } while (true);
-
-      positions.push({ left, top });
+      // 기존 위치들과의 최소 거리 계산
+      let minDist = Infinity;
+      for (const pos of positions) {
+        const dist = calculateDistance(candidate, pos);
+        if (dist < minDist) minDist = dist;
+        if (minDist < minDistance * 0.5) break;
+      }
+      if (positions.length === 0) {
+        bestPosition = candidate;
+        break;
+      }
+      if (minDist > maxMinDistance) {
+        maxMinDistance = minDist;
+        bestPosition = candidate;
+        if (minDist > minDistance * 1.5) break;
+      }
+    }
+    if (bestPosition) {
+      positions.push(bestPosition);
     }
   }
 

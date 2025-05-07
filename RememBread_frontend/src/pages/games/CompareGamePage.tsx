@@ -7,6 +7,7 @@ import useGameStore from "@/stores/gameStore";
 import Bread from "@/components/svgs/game/Bread";
 import Baguette from "@/components/svgs/game/Baguette";
 import Croissant from "@/components/svgs/game/Croissant";
+import { generateNewBreadPrices, initialBreads } from "@/utils/breadPriceGenerator";
 
 interface Bread {
   name: string;
@@ -22,12 +23,41 @@ function getRandomBreads(breads: Bread[], count: number) {
   return arr;
 }
 
-function getNewQuiz(breads: Bread[]) {
-  const topCount = Math.floor(Math.random() * 2) + 3;
-  const bottomCount = Math.floor(Math.random() * 2) + 2;
+function getNewQuiz(breads: Bread[], score: number) {
+  let topCount, bottomCount;
+  let topBreads, bottomBreads;
+  let topSum, bottomSum;
+  
+  do {
+    if (score < 3) {
+      // 처음 3문제: 1~3개
+      topCount = Math.floor(Math.random() * 3) + 1;
+      bottomCount = Math.floor(Math.random() * 3) + 1;
+    } else if (score < 6) {
+      // 3~5문제: 3~5개
+      topCount = Math.floor(Math.random() * 3) + 3;
+      bottomCount = Math.floor(Math.random() * 3) + 3;
+    } else if (score < 9) {
+      // 6문제 이상: 5~7개
+      topCount = Math.floor(Math.random() * 3) + 5;
+      bottomCount = Math.floor(Math.random() * 3) + 5;
+    } else {
+      // 9문제 이상: 7~9개
+      topCount = Math.floor(Math.random() * 3) + 7;
+      bottomCount = Math.floor(Math.random() * 3) + 7;
+    }
+
+    
+    topBreads = getRandomBreads(breads, topCount);
+    bottomBreads = getRandomBreads(breads, bottomCount);
+    
+    topSum = topBreads.reduce((acc, cur) => acc + cur.price, 0);
+    bottomSum = bottomBreads.reduce((acc, cur) => acc + cur.price, 0);
+  } while (topSum === bottomSum);
+  
   return {
-    top: getRandomBreads(breads, topCount),
-    bottom: getRandomBreads(breads, bottomCount)
+    top: topBreads,
+    bottom: bottomBreads
   };
 }
 
@@ -37,14 +67,15 @@ const CompareGamePage = () => {
   const [userInput, setUserInput] = useState<string | null>(null);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
   const [score, setLocalScore] = useState(0);
+  const [breads, setBreads] = useState<Bread[]>(initialBreads);
+  const [quiz, setQuiz] = useState(() => getNewQuiz(breads, 0));
 
-  const breads = [
-    { name: "식빵", price: 2000, type: "bread" },
-    { name: "바게트", price: 3000, type: "baguette" },
-    { name: "크로와상", price: 5000, type: "croissant" }
-  ];
-
-  const [quiz, setQuiz] = useState(() => getNewQuiz(breads));
+  // 페이지 접속 시 한 번만 가격 변경
+  useEffect(() => {
+    const newBreads = generateNewBreadPrices(breads);
+    setBreads(newBreads);
+    setQuiz(getNewQuiz(newBreads, 0));
+  }, []);
 
   useEffect(() => {
     if (!resultModalType) return;
@@ -67,6 +98,12 @@ const CompareGamePage = () => {
   const handleTimeEnd = () => {
     setCompareScore(score);
     navigate("/games/result", { state: { game: "compare" } });
+  };
+
+  const handleNextQuiz = () => {
+    setResultModalType(null);
+    setUserInput(null);
+    setQuiz(getNewQuiz(breads, score));
   };
 
   const renderBread = (type: string) => {
@@ -94,10 +131,10 @@ const CompareGamePage = () => {
         <div className="flex flex-row items-center justify-center w-full gap-12">
           {breads.map((bread, idx) => (
             <div key={idx} className="flex flex-col items-center justify-center">
-              <div className="w-16 h-16 mb-1 flex items-center justify-center">
+              <div className="w-16 h-16 mt-3 flex items-center justify-center">
                 {renderBread(bread.type)}
               </div>
-              <span className="text-md mt-1">{bread.price}원</span>
+              <span className="text-lg">{bread.price} 원</span>
             </div>
           ))}
         </div>
@@ -109,11 +146,7 @@ const CompareGamePage = () => {
       <GameResultModal
         open={!!resultModalType}
         type={resultModalType === "success" ? "success" : "fail"}
-        onClose={() => {
-          setResultModalType(null);
-          setUserInput(null);
-          setQuiz(getNewQuiz(breads));
-        }}
+        onClose={handleNextQuiz}
       />
     </div>
   );

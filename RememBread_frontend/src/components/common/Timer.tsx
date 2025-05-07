@@ -41,7 +41,9 @@ const Timer = ({ initial, onEnd, children }: TimerProps) => {
       setValue((prev) => {
         if (prev <= 1) {
           clearTimer();
-          onEndRef.current?.();
+          setTimeout(() => {
+            onEndRef.current?.();
+          }, 0);
           return 0;
         }
         return prev - 1;
