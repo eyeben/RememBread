@@ -18,7 +18,7 @@ const IndexCardSearchBar = () => {
   return (
     <div className="flex gap-4 h-full">
       <div
-        className={`flex items-center border px-4 py-2 w-full gap-2 rounded-md ${
+        className={`flex items-center border px-3 py-2 w-full gap-2 rounded-md ${
           isLimitExceeded ? "border-negative-500" : "border-neutral-300"
         }`}
       >
