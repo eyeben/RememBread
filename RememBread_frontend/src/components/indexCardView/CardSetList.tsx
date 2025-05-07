@@ -10,7 +10,7 @@ import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 const CardSetList = () => {
   const navigate = useNavigate();
 
-  const [breadList, setBreadList] = useState<indexCardSet[]>([]);
+  const [cardSetList, setcardSetList] = useState<indexCardSet[]>([]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
@@ -24,7 +24,7 @@ const CardSetList = () => {
           size: 12,
           sort: "최신순",
         });
-        setBreadList(response.result.cardSets);
+        setcardSetList(response.result.cardSets);
       } catch (error) {
         console.error("카드셋 목록 불러오기 실패:", error);
       }
@@ -48,7 +48,7 @@ const CardSetList = () => {
     if (isEditing) {
       toggleItem(cardSetId);
     } else {
-      const selectedCard = breadList.find((item) => item.cardSetId === cardSetId);
+      const selectedCard = cardSetList.find((item) => item.cardSetId === cardSetId);
       navigate(`/card-view/${cardSetId}`, {
         state: { card: selectedCard },
       });
@@ -102,7 +102,7 @@ const CardSetList = () => {
       </div>
 
       <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
-        {breadList.map((item) => (
+        {cardSetList.map((item) => (
           <div key={item.cardSetId} className="relative hover:cursor-pointer">
             <div className="absolute top-2 right-5 z-10">
               <Star
