@@ -81,7 +81,7 @@ const CardSetList = ({ isEditing }: CardSetListProps) => {
               <div className="text-center w-full">
                 <div className="text-center w-full">
                   <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
-                    {item.title}
+                    {item.name || "제목 없음"}
                   </span>
                 </div>
                 <div className="flex justify-end items-center w-full gap-2">

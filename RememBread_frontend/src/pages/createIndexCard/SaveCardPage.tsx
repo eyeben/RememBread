@@ -162,7 +162,7 @@ const SaveCardPage = () => {
                   e.stopPropagation();
                 }}
               >
-                🍞 {cardSet.title}
+                🍞 {cardSet.name}
               </span>
             ))}
         </span>
@@ -188,7 +188,7 @@ const SaveCardPage = () => {
         <div className="flex justify-between mx-5 text-left items-center">
           <p>
             현재 경로: {folderPath}
-            {selectedCardSet?.title}
+            {selectedCardSet?.name}
           </p>
           <div>
             <CreateIndexCardSetDialog />

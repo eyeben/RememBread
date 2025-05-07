@@ -44,7 +44,12 @@ const CardDetailPage = () => {
       </div>
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <TagRow tags={card.hashTags} />
+          <TagRow
+            cardSetId={card.cardSetId}
+            tags={card.hashTags || []}
+            name={card.name}
+            isPublic={card.isPublic}
+          />
           <CardDetailList cardSetId={card.cardSetId} />
 
           <CardDetailButtons

@@ -20,7 +20,7 @@ export interface indexCardSet {
   userId?: number;
   folderId?: number;
   lastViewCardId?: number;
-  title: string;
+  name?: string;
   correctCardCnt?: number;
   solvedCardCnt?: number;
   isPublic?: number;
