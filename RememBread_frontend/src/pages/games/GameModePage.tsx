@@ -19,27 +19,27 @@ const GameModePage = () => {
         <CustomButton
           title="순간기억"
           description="숫자와 빵을 기억하자"
-          variant="primary"
+          className="bg-primary-100"
           icon={<Bread className="w-11 h-11 flex-shrink-0 ml-4" />}
           onClick={() => navigate("/games/memory")}
         />
         <CustomButton
           title="가격비교"
           description="가격이 더 비싼 빵은?"
-          variant="primary"
+          className="bg-primary-100"
           icon={<Baguette className="w-11 h-11 flex-shrink-0 ml-4" />}
           onClick={() => navigate("/games/compare")}
         />
         <CustomButton
           title="무게계산"
           description="가장 무거운 빵은 뭘까?"
-          variant="primary"
+          className="bg-primary-100"
           icon={<Croissant className="w-11 h-11 flex-shrink-0 ml-4" />}
         />
         <CustomButton
           title="빵 탐정"
           description="무슨 빵일까?"
-          variant="primary"
+          className="bg-primary-100"
           icon={<Bread2 className="w-11 h-11 flex-shrink-0 ml-4" />}
         />
       </div>
