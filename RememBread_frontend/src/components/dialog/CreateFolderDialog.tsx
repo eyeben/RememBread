@@ -20,7 +20,7 @@ interface CreateFolderDialogProps {
 }
 
 const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDialogProps) => {
-  const [folderName, setFolderName] = useState("새로운 폴더");
+  const [folderName, setFolderName] = useState<string>("");
 
   const handleCreateFolder = () => {
     postFolder(folderName, selectedFolderId);
@@ -44,6 +44,7 @@ const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDi
             <Input
               id="name"
               value={folderName}
+              placeholder="새로운 폴더"
               onChange={(e) => setFolderName(e.target.value)}
               className="col-span-3"
             />

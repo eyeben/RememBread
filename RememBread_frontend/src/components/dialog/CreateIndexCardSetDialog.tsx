@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 const CreateIndexCardSetDialog = () => {
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState<string>("");
+  const [cardSetName, setCardSetName] = useState<string>("");
 
   return (
     <Dialog>
@@ -32,7 +33,13 @@ const CreateIndexCardSetDialog = () => {
           <div className="grid grid-cols-4 items-center gap-4">
             <span>빵 이름</span>
 
-            <Input id="name" value="새로운 빵" className="col-span-3" />
+            <Input
+              id="name"
+              value={cardSetName}
+              placeholder="새로운 빵"
+              onChange={(e) => setCardSetName(e.target.value)}
+              className="col-span-3"
+            />
           </div>
         </div>
 
