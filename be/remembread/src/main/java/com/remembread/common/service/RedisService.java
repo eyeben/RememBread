@@ -42,8 +42,16 @@ public class RedisService {
         return redisTemplate.opsForZSet().range(key, start, end);
     }
 
+    public Set<Object> getZSetReverseRange(String key, long start, long end) {
+        return redisTemplate.opsForZSet().reverseRange(key, start, end);
+    }
+
     public void removeFromZSet(String key, Object value) {
         redisTemplate.opsForZSet().remove(key, value);
+    }
+
+    public Long getZSetSize(String key) {
+        return redisTemplate.opsForZSet().size(key);
     }
 
     public void putHash(String key, String hashKey, Object value) {
