@@ -42,8 +42,8 @@ const LoginPage = () => {
     return (
       <div className="flex items-center justify-center min-h-screen">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-lg">로딩 중...</p>
+          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
+          <p className="text-base sm:text-lg">로딩 중...</p>
         </div>
       </div>
     );
@@ -78,16 +78,16 @@ const LoginPage = () => {
         <p>sns 계정으로 간편하게 로그인 하세요</p>
       </div>
 
-      <div className="flex flex-col items-center gap-4 w-full max-w-[384px] px-4">
+      <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[384px] px-4">
         <Button
           variant="shadow"
-          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
+          className="w-full h-10 sm:h-12 px-4 sm:px-6 flex justify-center items-center gap-2 sm:gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
           onClick={() => handleSocialLogin('kakao')}
         >
-          <div className="w-6">
-            <KakaoLogo className="w-6 h-6" />
+          <div className="w-5 sm:w-6">
+            <KakaoLogo className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
-          <span className="flex-1 text-center font-bold">카카오 로그인</span>
+          <span className="flex-1 text-center text-sm sm:text-base font-bold">카카오 로그인</span>
         </Button>
 
         <Button
