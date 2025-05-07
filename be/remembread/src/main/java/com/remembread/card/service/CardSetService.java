@@ -219,10 +219,21 @@ public class CardSetService {
         return response;
     }
 
-    public CardSetSearchResponse searchCardSets(SearchCategory searchCategory, String query, int page, int size, CardSetSortType cardSetSortType) {
+    public CardSetSearchResponse searchCardSets(String query, int page, int size, CardSetSortType cardSetSortType) {
+        SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
         CardSetSearchResponse response = new CardSetSearchResponse();
+
+        if(!query.isEmpty() && query.charAt(0) == '#'){
+            query = query.substring(1);
+            searchCategory = SearchCategory.해시태그;
+        }
+        else if(!query.isEmpty() && query.charAt(0) == '@'){
+            query = query.substring(1);
+            searchCategory = SearchCategory.작성자;
+        }
+
 
         switch (searchCategory) {
             case 제목 -> response.setCardSets(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
