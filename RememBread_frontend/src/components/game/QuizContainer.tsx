@@ -1,5 +1,4 @@
-import { useEffect, useState } from "react";
-import { generateBreadPositions } from "@/utils/breadPositionGenerator";
+import { useMemo } from "react";
 import Bread from "@/components/svgs/game/Bread";
 import Baguette from "@/components/svgs/game/Baguette";
 import Croissant from "@/components/svgs/game/Croissant";
@@ -15,24 +14,27 @@ interface QuizContainerProps {
   onClick: () => void;
 }
 
+const GRID_COLS = 4; // 가로(열)
+const GRID_ROWS = 3; // 세로(행)
+const TOTAL_CELLS = GRID_COLS * GRID_ROWS;
+
 const QuizContainer = ({ breads, onClick }: QuizContainerProps) => {
-  const [positions, setPositions] = useState<{left: number; top: number}[]>([]);
-
-  useEffect(() => {
-    const imgSize = 48; // w-12 h-12로 줄임
-    const containerWidth = 384; // sm:w-96
-    const containerHeight = 208 + imgSize / 2; // 하단까지 배치되도록 높이 증가
-    const padding = 16; // 여백
-
-    setPositions(
-      generateBreadPositions(
-        breads.length,
-        containerWidth,
-        containerHeight,
-        imgSize,
-        padding
-      )
-    );
+  // breads 배열을 그리드에 랜덤하게 배치할 인덱스 선정
+  const grid = useMemo(() => {
+    // 0~15 인덱스 배열 생성 후 셔플
+    const indices = Array.from({ length: TOTAL_CELLS }, (_, i) => i);
+    for (let i = indices.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [indices[i], indices[j]] = [indices[j], indices[i]];
+    }
+    // 빵 개수만큼 앞에서부터 인덱스 선택
+    const breadIndices = indices.slice(0, breads.length);
+    // 그리드 배열 생성 (빵이 들어갈 칸에만 breads 데이터 할당)
+    const gridArr = Array(TOTAL_CELLS).fill(null);
+    breadIndices.forEach((cellIdx, i) => {
+      gridArr[cellIdx] = breads[i];
+    });
+    return gridArr;
   }, [breads]);
 
   const renderBread = (type: string) => {
@@ -50,22 +52,16 @@ const QuizContainer = ({ breads, onClick }: QuizContainerProps) => {
 
   return (
     <div
-      className="w-full sm:w-96 h-44 sm:h-52 flex-shrink-0 bg-neutral-50 rounded-xl border border-neutral-300 relative cursor-pointer overflow-hidden"
+      className="w-full sm:w-96 h-52 flex-shrink-0 bg-neutral-50 rounded-xl border border-neutral-300 relative cursor-pointer overflow-hidden flex items-center justify-center"
       onClick={onClick}
     >
-      {breads.map((bread, idx) => (
-        <div
-          key={idx}
-          className="absolute w-12 h-12 transition-all duration-200 ease-in-out"
-          style={{
-            left: `${positions[idx]?.left}px`,
-            top: `${positions[idx]?.top}px`,
-            transform: 'translate(-50%, -50%)'
-          }}
-        >
-          {renderBread(bread.type)}
-        </div>
-      ))}
+      <div className={`grid grid-cols-${GRID_COLS} grid-rows-${GRID_ROWS} gap-2 w-full h-full p-4`}>
+        {grid.map((bread, idx) => (
+          <div key={idx} className="flex items-center justify-center w-full h-full">
+            {bread ? renderBread(bread.type) : null}
+          </div>
+        ))}
+      </div>
     </div>
   );
 };
