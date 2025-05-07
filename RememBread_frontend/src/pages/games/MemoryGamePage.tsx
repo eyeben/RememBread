@@ -8,16 +8,30 @@ import useGameStore from "@/store/gameStore";
 const MemoryGamePage = () => {
   const navigate = useNavigate();
   const { setMemoryScore } = useGameStore();
-  // 임시로 랜덤 숫자와 빵 이모지 배열
   const [showQuiz, setShowQuiz] = useState(true);
-  const numbers = [4, 9];
-  const breads = ["🥖", "🍞"];
+  const [difficulty, setDifficulty] = useState(3); // 초기 난이도 3개
+  const [score, setLocalScore] = useState(0);
   const [userInput, setUserInput] = useState<(string|number)[]>([]);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
-  const [score, setLocalScore] = useState(0);
+  const [successCount, setSuccessCount] = useState(0); // 현재 난이도에서의 성공 횟수
+  
+  // 사용 가능한 모든 아이템
+  const allItems = [1,2,3,4,5,6,7,8,9,'🍞','🥖','🥐'];
+  
+  // 현재 난이도에 맞는 랜덤 조합 생성
+  const generateRandomCombination = (count: number) => {
+    const shuffled = [...allItems].sort(() => Math.random() - 0.5);
+    return shuffled.slice(0, count);
+  };
 
-  // 정답 배열
-  const answer = [...numbers, ...breads];
+  const [answer, setAnswer] = useState<(string|number)[]>([]);
+
+  // 난이도가 변경되거나 게임이 시작될 때 새로운 조합 생성
+  useEffect(() => {
+    setAnswer(generateRandomCombination(difficulty));
+    setShowQuiz(true);
+    setSuccessCount(0); // 난이도가 변경될 때 성공 횟수 초기화
+  }, [difficulty]);
 
   useEffect(() => {
     if (!showQuiz) return;
@@ -27,7 +41,6 @@ const MemoryGamePage = () => {
 
   useEffect(() => {
     if (!resultModalType) return;
-    // 모달 닫힘은 GameResultModal에서 onClose로 처리
   }, [resultModalType]);
 
   // 버튼 클릭 핸들러
@@ -40,8 +53,20 @@ const MemoryGamePage = () => {
       if (isCorrect) {
         setResultModalType("success");
         setLocalScore((prev) => prev + 1);
+        const newSuccessCount = successCount + 1;
+        setSuccessCount(newSuccessCount);
+        
+        // 3번 성공하면 난이도 증가
+        if (newSuccessCount >= 3 && difficulty < 10) {
+          // 난이도 증가는 모달이 닫힐 때 처리
+        } else {
+          // 같은 난이도에서 새로운 문제 출제
+          setAnswer(generateRandomCombination(difficulty));
+        }
       } else {
         setResultModalType("fail");
+        // 실패 시에도 새로운 문제 출제
+        setAnswer(generateRandomCombination(difficulty));
       }
     }
   };
@@ -62,11 +87,8 @@ const MemoryGamePage = () => {
       <div className="w-full max-w-[376px] h-[107px] flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-4 py-4 mb-8 text-white text-3xl font-bold">
         {showQuiz ? (
           <>
-            {numbers.map((num, idx) => (
-              <span key={idx}>{num}</span>
-            ))}
-            {breads.map((bread, idx) => (
-              <span key={idx}>{bread}</span>
+            {answer.map((item, idx) => (
+              <span key={idx}>{item}</span>
             ))}
           </>
         ) : (
@@ -90,11 +112,10 @@ const MemoryGamePage = () => {
         )}
       </div>
       <div className="w-full max-w-[376px] mx-auto mt-8 grid grid-cols-3 gap-4 sm:gap-6">
-        {[1,2,3,4,5,6,7,8,9,'🍞','🥖','🥐'].map((item, idx) => (
+        {allItems.map((item, idx) => (
           <CustomButton
             key={idx}
-            className="w-[88px] h-[64px] sm:w-[112px] sm:h-[86px] flex-shrink-0 rounded-[20px] bg-primary-300 shadow flex items-center justify-center text-3xl font-bold text-neutral-700 hover:bg-primary-400 transition p-0 sm:px-2 sm:py-2 disabled:opacity-100"
-            variant="default"
+            className="w-[88px] h-[64px] sm:w-[112px] sm:h-[86px] flex-shrink-0 rounded-[20px] bg-primary-300 shadow flex items-center justify-center text-3xl font-bold text-neutral-700 p-0 sm:px-2 sm:py-2 disabled:opacity-100"
             onClick={() => handleInput(item)}
             disabled={showQuiz}
           >
@@ -109,6 +130,14 @@ const MemoryGamePage = () => {
           setResultModalType(null);
           setUserInput([]);
           setShowQuiz(true);
+          
+          // 3번 성공했고 최대 난이도가 아닌 경우 난이도 증가
+          if (successCount >= 3 && difficulty < 10) {
+            setDifficulty(prev => prev + 1);
+          } else {
+            // 난이도가 변경되지 않는 경우에만 새로운 문제 출제
+            setAnswer(generateRandomCombination(difficulty));
+          }
         }}
       />
     </div>
