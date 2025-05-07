@@ -45,29 +45,20 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
         boolean required = authUserAnnotation.required();
 
         try {
-            //refresh-token 추출
-            Cookie[] cookies = request.getCookies();
-            if (cookies == null) {
-                if (required) throw new GeneralException(ErrorStatus.INVALID_REFRESH_TOKEN);
+            //access token 추출
+            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                if (required) throw new GeneralException(ErrorStatus.INVALID_ACCESS_TOKEN);
                 return null;
             }
 
-            String refreshToken = Arrays.stream(cookies)
-                    .filter(cookie -> cookie.getName().equals("refresh-token"))
-                    .findFirst()
-                    .orElseThrow(() -> new GeneralException(ErrorStatus.INVALID_REFRESH_TOKEN))
-                    .getValue();
-
-            //access token 추출
-            String authHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
             String accessToken = authHeader.split(" ")[1];
             log.info("AuthUserArgumentResolver access token={}", accessToken);
 
             //검증
-            boolean isAccessTokenValid = jwtUtil.validateAccessToken(accessToken);
-            boolean isRefreshTokenValid = jwtUtil.validateRefreshToken(refreshToken);
-            if (!isAccessTokenValid || !isRefreshTokenValid) {
-                throw new GeneralException(ErrorStatus.FAILED_TO_VALIDATE_TOKEN);
+            if (!jwtUtil.validateAccessToken(accessToken)) {
+                if (required) throw new GeneralException(ErrorStatus.FAILED_TO_VALIDATE_TOKEN);
+                return null;
             }
 
             //Access Token으로 정보 추출
