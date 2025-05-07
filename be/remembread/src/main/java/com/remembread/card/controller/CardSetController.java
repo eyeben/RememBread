@@ -90,15 +90,14 @@ public class CardSetController {
 
     @GetMapping("/search")
     @Operation(summary = "빵 묶음 검색 (상대방꺼 포함)", description = "조건 설정 후 검색")
-    public ApiResponse<CardSetSearchResponse> searchCardSets(@Parameter(description = "’작성자’, ‘해시태그’, ‘제목’ 중 하나", example = "해시태그", required = true) @RequestParam SearchCategory searchCategory,
-                                                             @Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "정보처리기사") String query,
+    public ApiResponse<CardSetSearchResponse> searchCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "정보처리기사") String query,
                                                              @Parameter(description = "페이지 번호 (0부터 시작)", example = "0", required = true) @RequestParam(defaultValue = "0") int page,
                                                              @Parameter(description = "한페이지당 보여주는 카드셋 개수", example = "10", required = true) @RequestParam(defaultValue = "10") int size,
                                                              @Parameter(description = "‘인기순’, ‘포크순’, ‘최신순’ 중 하나", example = "최신순", required = true) @RequestParam(defaultValue = "최신순") CardSetSortType cardSetSortType,
                                                              @AuthUser User user){
 
 
-        return ApiResponse.onSuccess(cardSetService.searchCardSets(searchCategory, query, page, size, cardSetSortType));
+        return ApiResponse.onSuccess(cardSetService.searchCardSets(query, page, size, cardSetSortType));
     }
 
     @GetMapping("/lists-simple")
