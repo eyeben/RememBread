@@ -3,12 +3,6 @@ interface Position {
   top: number;
 }
 
-const randomPosition = (max: number, size: number): number => {
-  // 이미지 크기를 고려하여 실제 사용 가능한 영역 계산
-  const usableArea = max - size;
-  return Math.floor(Math.random() * usableArea);
-};
-
 const calculateDistance = (pos1: Position, pos2: Position): number => {
   const dx = pos1.left - pos2.left;
   const dy = pos1.top - pos2.top;
