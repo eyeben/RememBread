@@ -1,19 +1,36 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
+import { getCardSetList } from "@/services/cardSet";
 import Button from "@/components/common/Button";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
-import { DummyBreadSetList } from "@/components/indexCardView/DummyBreadSetList";
 
 const CardSetList = () => {
   const navigate = useNavigate();
-  const breadList: indexCardSet[] = DummyBreadSetList;
 
+  const [breadList, setBreadList] = useState<indexCardSet[]>([]);
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await getCardSetList({
+          folderId: 3,
+          page: 0,
+          size: 12,
+          sort: "최신순",
+        });
+        setBreadList(response.result.cardSets);
+      } catch (error) {
+        console.error("카드셋 목록 불러오기 실패:", error);
+      }
+    };
+    fetchData();
+  }, []);
 
   const toggleItem = (id: number) => {
     if (!isEditing) return;
@@ -27,12 +44,12 @@ const CardSetList = () => {
     setSelectedItems([]);
   };
 
-  const handleCardClick = (folderId: number) => {
+  const handleCardClick = (cardSetId: number) => {
     if (isEditing) {
-      toggleItem(folderId);
+      toggleItem(cardSetId);
     } else {
-      const selectedCard = breadList.find((item) => item.cardSetId === folderId);
-      navigate(`/card-view/${folderId}`, {
+      const selectedCard = breadList.find((item) => item.cardSetId === cardSetId);
+      navigate(`/card-view/${cardSetId}`, {
         state: { card: selectedCard },
       });
     }
@@ -57,6 +74,7 @@ const CardSetList = () => {
             이동
           </Button>
         )}
+
         <Button
           className="w-1/2 hover:bg-primary-100"
           variant="primary-outline"
@@ -64,6 +82,7 @@ const CardSetList = () => {
         >
           {isEditing ? "편집 완료" : "편집하기"}
         </Button>
+
         {isEditing ? (
           <Button
             className="w-1/10"
@@ -84,7 +103,7 @@ const CardSetList = () => {
 
       <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
         {breadList.map((item) => (
-          <div key={item.cardSetId} className="relative hover:cursor-pointer ">
+          <div key={item.cardSetId} className="relative hover:cursor-pointer">
             <div className="absolute top-2 right-5 z-10">
               <Star
                 fill={item.isLike ? "#FDE407" : "none"}
@@ -95,13 +114,13 @@ const CardSetList = () => {
             <div
               onClick={() => handleCardClick(item.cardSetId)}
               className={`rounded-md box-border border-2 p-1 h-32 flex flex-col justify-between items-center
-                  ${isEditing ? "cursor-pointer" : ""}
-                  ${
-                    selectedItems.includes(item.cardSetId)
-                      ? "border-primary-700 bg-primary-100"
-                      : "border-transparent"
-                  }
-                `}
+                ${isEditing ? "cursor-pointer" : ""}
+                ${
+                  selectedItems.includes(item.cardSetId)
+                    ? "border-primary-700 bg-primary-100"
+                    : "border-transparent"
+                }
+              `}
             >
               <CardSet className="w-full h-full hover:cursor-pointer" />
               <div className="text-center w-full mt-1">
@@ -118,9 +137,7 @@ const CardSetList = () => {
         <ConfirmDeleteModal
           open={showDeleteModal}
           message="정말 삭제하시겠습니까?"
-          onConfirm={() => {
-            setShowDeleteModal(false);
-          }}
+          onConfirm={() => setShowDeleteModal(false)}
           onCancel={() => setShowDeleteModal(false)}
         />
       )}
