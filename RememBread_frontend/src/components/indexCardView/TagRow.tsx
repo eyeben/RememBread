@@ -1,16 +1,17 @@
 import { ChangeEvent, useState, KeyboardEvent } from "react";
 import { Save, Tags } from "lucide-react";
-import { updateCardSet } from "@/services/cardSet"; // PATCH API 함수
-import { indexCardSet } from "@/types/indexCard";
+import { updateCardSet } from "@/services/cardSet";
 
 interface TagRowProps {
   tags: string[];
   cardSetId: number;
+  isEditing: boolean;
   name?: string;
   isPublic?: number;
+  onToggleEditing: () => void;
 }
 
-const TagRow = ({ tags, cardSetId, name = "", isPublic = 1 }: TagRowProps) => {
+const TagRow = ({ tags, cardSetId, name = "", isPublic = 1, onToggleEditing }: TagRowProps) => {
   const [isInputVisible, setIsInputVisible] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [localTags, setLocalTags] = useState<string[]>(tags);
@@ -18,20 +19,19 @@ const TagRow = ({ tags, cardSetId, name = "", isPublic = 1 }: TagRowProps) => {
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
+
+    const blockedChars = /[@#!$%*]/;
     if (newValue.includes(" ")) return;
-    if (newValue.length <= 10) setInputValue(newValue);
+    if (blockedChars.test(newValue)) return;
+
+    if (newValue.length <= 10) {
+      setInputValue(newValue);
+    }
   };
 
   const isLimitExceeded = inputValue.length >= 10;
 
-  const handleAddTag = async () => {
-    if (!inputValue.trim()) return;
-
-    const newTags = [...localTags, inputValue.trim()];
-    setLocalTags(newTags);
-    setInputValue("");
-    setIsInputVisible(false);
-
+  const updateTagsOnServer = async (newTags: string[]) => {
     try {
       setIsLoading(true);
       await updateCardSet({
@@ -42,10 +42,26 @@ const TagRow = ({ tags, cardSetId, name = "", isPublic = 1 }: TagRowProps) => {
       });
     } catch (error) {
       console.error("태그 수정 실패:", error);
-      // 실패 시 태그 롤백할 수도 있음
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleAddTag = async () => {
+    if (!inputValue.trim()) return;
+
+    const newTags = [...localTags, inputValue.trim()];
+    setLocalTags(newTags);
+    setInputValue("");
+    setIsInputVisible(false);
+
+    await updateTagsOnServer(newTags);
+  };
+
+  const handleRemoveTag = async (tagToRemove: string) => {
+    const newTags = localTags.filter((tag) => tag !== tagToRemove);
+    setLocalTags(newTags);
+    await updateTagsOnServer(newTags);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -63,7 +79,14 @@ const TagRow = ({ tags, cardSetId, name = "", isPublic = 1 }: TagRowProps) => {
         <Save
           className="min-w-[20px] hover:cursor-pointer text-primary-700"
           size={20}
-          onClick={handleAddTag}
+          onClick={async () => {
+            if (inputValue.trim()) {
+              await handleAddTag();
+            } else {
+              setIsInputVisible(false);
+            }
+            onToggleEditing();
+          }}
         />
       ) : (
         <Tags
@@ -90,7 +113,9 @@ const TagRow = ({ tags, cardSetId, name = "", isPublic = 1 }: TagRowProps) => {
       {localTags.map((tag, idx) => (
         <span
           key={idx}
-          className="bg-primary-700 h-full text-white border-primary-700 rounded-full px-3 py-1 text-sm whitespace-nowrap"
+          onClick={() => handleRemoveTag(tag)}
+          className="bg-primary-700 h-full text-white border-primary-700 rounded-full px-3 py-1 text-sm whitespace-nowrap hover:bg-red-600 hover:line-through hover:cursor-pointer transition-all duration-200"
+          title="클릭 시 삭제"
         >
           #{tag}
         </span>
