@@ -74,4 +74,12 @@ public class RedisService {
         redisTemplate.opsForHash().delete(key, hashKey);
     }
 
+    public void incrementHash(String key, Object hashKey, Long delta) {
+        redisTemplate.opsForHash().increment(key, hashKey, delta);
+    }
+
+    public void decrementHash(String key, Object hashKey, Double delta) {
+        redisTemplate.opsForHash().increment(key, hashKey, delta);
+    }
+
 }
