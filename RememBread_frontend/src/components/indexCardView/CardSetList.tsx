@@ -3,15 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
 import { getCardSetList } from "@/services/cardSet";
-import Button from "@/components/common/Button";
-import CardSet from "@/components/svgs/indexCardView/CardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
+import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
+import CardSet from "@/components/svgs/indexCardView/CardSet";
 
-const CardSetList = () => {
+interface CardSetListProps {
+  isEditing: boolean;
+  toggleEditing: () => void;
+}
+
+const CardSetList = ({ isEditing }: CardSetListProps) => {
   const navigate = useNavigate();
 
   const [cardSetList, setcardSetList] = useState<indexCardSet[]>([]);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
 
@@ -39,11 +43,6 @@ const CardSetList = () => {
     );
   };
 
-  const toggleEditing = () => {
-    setIsEditing((prev) => !prev);
-    setSelectedItems([]);
-  };
-
   const handleCardClick = (cardSetId: number) => {
     if (isEditing) {
       toggleItem(cardSetId);
@@ -57,54 +56,10 @@ const CardSetList = () => {
 
   return (
     <div className="flex flex-col items-center w-full px-2">
-      <div className="flex justify-between items-center w-full px-4">
-        {isEditing ? (
-          <Button
-            className="w-1/10"
-            variant="negative-outline"
-            onClick={() => setShowDeleteModal(true)}
-          >
-            이동
-          </Button>
-        ) : (
-          <Button
-            className="w-1/10 invisible opacity-0 pointer-events-none"
-            variant="negative-outline"
-          >
-            이동
-          </Button>
-        )}
-
-        <Button
-          className="w-1/2 hover:bg-primary-100"
-          variant="primary-outline"
-          onClick={toggleEditing}
-        >
-          {isEditing ? "편집 완료" : "편집하기"}
-        </Button>
-
-        {isEditing ? (
-          <Button
-            className="w-1/10"
-            variant="negative-outline"
-            onClick={() => setShowDeleteModal(true)}
-          >
-            삭제
-          </Button>
-        ) : (
-          <Button
-            className="w-1/10 invisible opacity-0 pointer-events-none"
-            variant="negative-outline"
-          >
-            삭제
-          </Button>
-        )}
-      </div>
-
       <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
         {cardSetList.map((item) => (
           <div key={item.cardSetId} className="relative hover:cursor-pointer">
-            <div className="absolute top-2 right-5 z-10">
+            <div className="absolute top-2 right-2 z-10">
               <Star
                 fill={item.isLike ? "#FDE407" : "none"}
                 className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
@@ -113,7 +68,7 @@ const CardSetList = () => {
 
             <div
               onClick={() => handleCardClick(item.cardSetId)}
-              className={`rounded-md box-border border-2 p-1 h-32 flex flex-col justify-between items-center
+              className={`rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
                 ${isEditing ? "cursor-pointer" : ""}
                 ${
                   selectedItems.includes(item.cardSetId)
@@ -123,10 +78,15 @@ const CardSetList = () => {
               `}
             >
               <CardSet className="w-full h-full hover:cursor-pointer" />
-              <div className="text-center w-full mt-1">
-                <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
-                  {item.title}
-                </span>
+              <div className="text-center w-full">
+                <div className="text-center w-full">
+                  <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
+                    {item.title}
+                  </span>
+                </div>
+                <div className="flex justify-end items-center w-full gap-2">
+                  <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
+                </div>
               </div>
             </div>
           </div>

@@ -9,7 +9,7 @@ import {
 const OrderSelector = () => {
   return (
     <Select defaultValue="latest">
-      <SelectTrigger className="w-[100px] border-primary-700 focus:ring-primary-700 focus:border-primary-700">
+      <SelectTrigger className="w-1/8 pc:px-3 px-2 border-primary-700 focus:ring-primary-700 focus:border-primary-700 h-full">
         <SelectValue placeholder="Theme" className="data-[state=checked]:text-primary-700 " />
       </SelectTrigger>
       <SelectContent>
