@@ -81,12 +81,12 @@ const GameHistory = () => {
       <div className="flex flex-col items-center mt-4 mb-6">
         <CharacterImage characterId={profile!.mainCharacterId} className="w-24 h-24 mb-2" />
         <div className="text-lg font-bold mb-2">{profile?.nickname}</div>
-        <div className="w-full h-1 bg-primary-300 mb-2" />
+        <div className="w-full h-1.5 bg-primary-300 mb-2" />
       </div>
       {/* 게임 히스토리 리스트 */}
       <div className="w-full px-4">
         {gameHistoryData.map((item, idx) => (
-          <div key={idx} className="flex items-center py-3 border-b-2 border-primary-300 last:border-b-0">
+          <div key={idx} className="flex items-center py-3 border-t-2 border-primary-300 last:border-b-0">
             <Game className="w-10 h-10 mr-4" />
             <div className="flex-1">
               <div className="text-xs text-neutral-400 mb-1">{item.date}</div>
