@@ -42,6 +42,9 @@ public enum ErrorStatus implements BaseErrorCode {
     CARD_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARD4004", "카드가 존재하지 않습니다."),
     CARD_FORBIDDEN(HttpStatus.BAD_REQUEST, "CARD4003", "카드에 접근 권한이 없습니다."),
 
+
+    CARDCACHE_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARDCACHE4004", "캐시된 카드가 존재하지 않습니다."),
+
     //이넘 에러
     ENUM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ENUM4004", "enum값이 존재하지 않습니다."),
     ;
