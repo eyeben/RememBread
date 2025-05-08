@@ -11,8 +11,6 @@ const CardDetailPage = () => {
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
 
-  const toggleEditing = () => setIsEditing((prev) => !prev);
-
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));
   const isTestRoute = Boolean(useMatch("/card-view/:indexCardId/test"));
