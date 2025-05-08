@@ -4,8 +4,9 @@ import { getCardSetSimple } from "@/services/cardSet";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { Folder } from "@/types/folder";
 import { indexCardSet } from "@/types/indexCard";
-import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { Drawer, DrawerTrigger, DrawerContent } from "@/components/ui/drawer";
 import { Command, CommandItem, CommandGroup } from "@/components/ui/command";
+
 const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => void }) => {
   type FolderTreeItem = Folder & {
     children?: FolderTreeItem[];
@@ -18,6 +19,13 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
   const [folderPath, setFolderPath] = useState<string>("");
   const [selectedFolder, setSelectedFolder] = useState<FolderTreeItem | null>(null);
   const [selectedCardSet, setSelectedCardSet] = useState<indexCardSet | null>(null);
+  const [open, setOpen] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (selectedFolder) {
+      console.log("현재 선택된 폴더 ID:", selectedFolder.id);
+    }
+  }, [selectedFolder]);
 
   const fetchRootFolders = async () => {
     try {
@@ -102,7 +110,7 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
   const getOptions = (): Opt[] => {
     const opts: Opt[] = [];
 
-    const traverse = (nodes: FolderTreeItem[], depth: number = 0) => {
+    const traverse = (nodes: FolderTreeItem[], depth = 0) => {
       nodes.forEach((node) => {
         opts.push({
           value: `folder-${node.id}`,
@@ -157,8 +165,8 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
 
   return (
     <div className="flex flex-col flex-1">
-      <Popover>
-        <PopoverTrigger asChild>
+      <Drawer open={open} onOpenChange={setOpen}>
+        <DrawerTrigger asChild>
           <button className="h-8 w-full text-left border-b border-gray-200 py-1 cursor-pointer">
             <ul className="flex items-center whitespace-nowrap space-x-1 h-full">
               {folderPath || selectedCardSet ? (
@@ -186,42 +194,51 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
               )}
             </ul>
           </button>
-        </PopoverTrigger>
+        </DrawerTrigger>
 
-        <PopoverContent className="w-[400px] max-h-80 overflow-y-auto">
-          <Command>
-            <CommandGroup heading="폴더 & 카드셋">
-              {options.map((opt) => {
-                const selectedValue = selectedCardSet
-                  ? `set-${selectedCardSet.cardSetId}`
-                  : selectedFolder
-                  ? `folder-${selectedFolder.id}`
-                  : null;
+        <DrawerContent
+          className="w-full max-w-[590px] mx-auto px-4 pb-6 shadow-lg border-t border-gray-200"
+          style={{
+            maxHeight: "600px",
+            backgroundColor: "white",
+            overflow: "hidden", // DrawerContent 자체에는 스크롤 없음
+          }}
+        >
+          <div className="overflow-y-auto max-h-[calc(80vh-48px)]">
+            <Command>
+              <CommandGroup heading="폴더">
+                {options.map((opt) => {
+                  const selectedValue = selectedCardSet
+                    ? `set-${selectedCardSet.cardSetId}`
+                    : selectedFolder
+                    ? `folder-${selectedFolder.id}`
+                    : null;
 
-                const isSelected = opt.value === selectedValue;
+                  const isSelected = opt.value === selectedValue;
 
-                return (
-                  <CommandItem
-                    key={opt.value}
-                    onSelect={() => onSelectChange(opt.value)}
-                    className="!font-normal !text-black aria-selected:!font-normal data-[selected]:!font-normal hover:cursor-pointer"
-                  >
-                    <div
-                      className="flex items-center"
-                      style={{ paddingLeft: `${opt.depth * 16}px` }}
+                  return (
+                    <CommandItem
+                      key={opt.value}
+                      onSelect={() => onSelectChange(opt.value)}
+                      className="!font-normal !text-black hover:cursor-pointer"
                     >
-                      {opt.depth > 0 && <span className="mr-1 text-gray-400">ㄴ</span>}
-                      <span className={isSelected ? "text-primary-700" : "text-black"}>
-                        {opt.label}
-                      </span>
-                    </div>
-                  </CommandItem>
-                );
-              })}
-            </CommandGroup>
-          </Command>
-        </PopoverContent>
-      </Popover>
+                      <div
+                        className="flex items-center"
+                        style={{ paddingLeft: `${opt.depth * 16}px` }}
+                      >
+                        {opt.depth > 0 && <span className="mr-1 text-gray-400">ㄴ</span>}
+                        <span className={isSelected ? "text-primary-700" : "text-black"}>
+                          {opt.label}
+                        </span>
+                      </div>
+                    </CommandItem>
+                  );
+                })}
+              </CommandGroup>
+            </Command>
+          </div>
+        </DrawerContent>
+      </Drawer>
     </div>
   );
 };
