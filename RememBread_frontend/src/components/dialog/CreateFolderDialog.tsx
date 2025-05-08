@@ -1,7 +1,10 @@
+import { useState } from "react";
 import Button from "@/components/common/Button";
+import { postFolder } from "@/services/folder";
 
 import {
   Dialog,
+  DialogClose,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -11,7 +14,19 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 
-const CreateFolderDialog = () => {
+interface CreateFolderDialogProps {
+  selectedFolderId: number | null;
+  onCreateFolder: () => void;
+}
+
+const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDialogProps) => {
+  const [folderName, setFolderName] = useState<string>("");
+
+  const handleCreateFolder = () => {
+    postFolder(folderName, selectedFolderId);
+    onCreateFolder();
+  };
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,13 +41,21 @@ const CreateFolderDialog = () => {
           <div className="grid grid-cols-5 items-center gap-4">
             <span className="col-span-2">폴더 이름</span>
 
-            <Input id="name" value="새로운 폴더" className="col-span-3" />
+            <Input
+              id="name"
+              value={folderName}
+              placeholder="새로운 폴더"
+              onChange={(e) => setFolderName(e.target.value)}
+              className="col-span-3"
+            />
           </div>
         </div>
         <DialogFooter>
-          <Button variant="primary" className="w-full">
-            폴더 생성
-          </Button>
+          <DialogClose>
+            <Button variant="primary" className="w-full" onClick={handleCreateFolder}>
+              폴더 생성
+            </Button>
+          </DialogClose>
         </DialogFooter>
       </DialogContent>
     </Dialog>

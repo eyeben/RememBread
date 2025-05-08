@@ -112,11 +112,8 @@ const Profile = () => {
   };
 
   return (
-    <div
-      className="flex flex-col justify-between items-center"
-      style={{ minHeight: "calc(100vh - 200px)" }}
-    >
-      <div className="flex flex-col items-center">
+    <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto">
         <CharacterImage characterId={mainCharacterId} />
         {isEditable && (
           <Button className="w-1/2" variant="primary-outline" onClick={handleImageEdit}>
@@ -153,7 +150,7 @@ const Profile = () => {
       )}
 
       <a 
-        className="text-lg text-red-500 mb-6 underline cursor-pointer" 
+        className="text-lg text-red-500 mb-6 underline cursor-pointer mt-4" 
         onClick={isEditable ? handleWithdrawal : handleLogout}
       >
         {isEditable ? '회원탈퇴' : '로그아웃'}
