@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Outlet, useLocation, useMatch, useNavigate } from "react-router-dom";
 import TagRow from "@/components/indexCardView/TagRow";
 import CardDetailList from "@/components/indexCardView/CardDetailList";
@@ -7,14 +7,14 @@ import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
 const CardDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  // const { card } = location.state;
   const card = location.state?.card;
+
+  const [isEditing, setIsEditing] = useState<boolean>(false);
 
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));
   const isTestRoute = Boolean(useMatch("/card-view/:indexCardId/test"));
 
-  // state가 없다면 목록으로 복귀
   useEffect(() => {
     if (!card) {
       navigate("/card-view/my", { replace: true });
@@ -42,9 +42,17 @@ const CardDetailPage = () => {
           {card.cardSetId}번 카드 상세 보기
         </h1>
       </div>
+
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <TagRow tags={card.hashTags} />
+          <TagRow
+            tags={card.hashTags ?? []}
+            cardSetId={card.cardSetId}
+            name={card.name}
+            isPublic={card.isPublic}
+            isEditing={isEditing}
+            setEditing={setIsEditing}
+          />
           <CardDetailList cardSetId={card.cardSetId} />
 
           <CardDetailButtons

@@ -26,6 +26,7 @@ interface CreateIndexCardSetDialogProps {
 const CreateIndexCardSetDialog = ({ selectedFolder }: CreateIndexCardSetDialogProps) => {
   const navigate = useNavigate();
   const cardSet = useCardStore((state) => state.cardSet);
+  const resetCardSet = useCardStore((state) => state.resetCardSet);
 
   const [hashtags, setHashtags] = useState<string[]>([]);
   const [hashtagInput, setHashtagInput] = useState<string>("");
@@ -48,6 +49,8 @@ const CreateIndexCardSetDialog = ({ selectedFolder }: CreateIndexCardSetDialogPr
       console.error("카드셋 생성 실패:", error);
       return;
     } finally {
+      // 카드셋 초기화
+      resetCardSet();
       navigate("/card-view/my");
     }
   };
