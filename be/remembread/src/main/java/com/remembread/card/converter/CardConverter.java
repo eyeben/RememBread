@@ -14,6 +14,7 @@ public class CardConverter {
 
     public static CardResponse toCardResponse(Card card) {
         CardResponse cardResponse = new CardResponse();
+        cardResponse.setCardId(card.getId());
         cardResponse.setNumber(card.getNumber());
         cardResponse.setConcept(card.getConcept());
         cardResponse.setDescription(card.getDescription());
