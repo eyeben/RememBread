@@ -40,10 +40,10 @@ public class Card extends BaseEntity {
     private Integer solvedCount = 0;
 
     @Column(name = "retention_rate", nullable = false)
-    private Float retentionRate = 0f;
+    private Double retentionRate = 0.0;
 
     @Column(nullable = false)
-    private Float stability = 1f;
+    private Double stability = 1.0;
 
     @Column(name = "last_correct_at")
     private LocalDateTime lastCorrectAt;
@@ -72,9 +72,9 @@ public class Card extends BaseEntity {
     }
 
     public void update(CardCache cardCache) {
-        this.correctCount = cardCache.getCorrectCount();
-        this.solvedCount = cardCache.getSolvedCount();
-        this.retentionRate = cardCache.getRetentionRate();
-        this.stability = cardCache.getStability();
+        if (cardCache.getCorrectCount() != null) this.correctCount = cardCache.getCorrectCount();
+        if (cardCache.getSolvedCount() != null) this.solvedCount = cardCache.getSolvedCount();
+        if (cardCache.getRetentionRate() != null) this.retentionRate = cardCache.getRetentionRate();
+        if (cardCache.getStability() != null) this.stability = cardCache.getStability();
     }
 }
