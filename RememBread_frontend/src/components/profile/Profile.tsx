@@ -115,39 +115,46 @@ const Profile = () => {
     <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
       <div className="flex flex-col items-center w-full max-w-md mx-auto">
         <CharacterImage characterId={mainCharacterId} />
-        {isEditable && (
-          <Button className="w-1/2" variant="primary-outline" onClick={handleImageEdit}>
-            변경하기
-          </Button>
-        )}
-      </div>
-      <div className="flex flex-col items-center w-full gap-5">
-        <Input
-          className="w-1/2"
-          type="text"
-          value={nickname}
-          disabled={!isEditable}
-          onChange={handleNameChange}
-        ></Input>
-        <div className="flex w-1/2 justify-between">
-          <div>위치 알람 설정</div>
-          <Switch 
-            checked={pushEnable} 
-            onCheckedChange={handlePushEnableChange}
-            disabled={!isEditable} 
-          />
+        <div className="h-10 mt-4 w-full flex justify-center">
+          {isEditable && (
+            <Button className="min-w-48 w-full max-w-72 h-10" variant="primary-outline" onClick={handleImageEdit}>
+              변경하기
+            </Button>
+          )}
         </div>
       </div>
-
-      {isEditable ? (
-        <Button className="w-1/2" variant="primary" onClick={handleCompleteClick}>
-          완료
-        </Button>
-      ) : (
-        <Button className="w-1/2" variant="primary" onClick={handleEditClick}>
-          수정하기
-        </Button>
-      )}
+      <div className="flex flex-col items-center w-full max-w-md mx-auto gap-5 mt-8">
+        <div className="flex w-full justify-between items-center">
+          <Input
+            className="min-w-48 w-full max-w-72 h-10 mx-auto"
+            type="text"
+            value={nickname}
+            disabled={!isEditable}
+            onChange={handleNameChange}
+          />
+        </div>
+        <div className="flex w-full justify-center items-center">
+          <div className="flex min-w-48 w-full max-w-72 justify-between items-center">
+            <div>위치 알람 설정</div>
+            <Switch 
+              checked={pushEnable} 
+              onCheckedChange={handlePushEnableChange}
+              disabled={!isEditable} 
+            />
+          </div>
+        </div>
+        <div className="w-full flex justify-center">
+          {isEditable ? (
+            <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
+              완료
+            </Button>
+          ) : (
+            <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleEditClick}>
+              수정하기
+            </Button>
+          )}
+        </div>
+      </div>
 
       <a 
         className="text-lg text-red-500 mb-6 underline cursor-pointer mt-4" 

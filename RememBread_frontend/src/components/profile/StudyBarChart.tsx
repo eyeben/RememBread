@@ -1,5 +1,12 @@
 import { useState, useRef } from 'react';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // 더미 데이터 생성 함수
 const getDailyData = () => Array.from({ length: 31 }, (_, i) => ({ day: i + 1, study: Math.floor(Math.random() * 120) }));
@@ -7,16 +14,16 @@ const getWeeklyData = () => Array.from({ length: 12 }, (_, i) => ({ week: `${i +
 const getMonthlyData = () => Array.from({ length: 12 }, (_, i) => ({ month: `${i + 1}월`, study: Math.floor(Math.random() * 2500) }));
 
 const StudyBarChart = () => {
-  const [year, setYear] = useState(2025);
-  const [month, setMonth] = useState(4);
+  const [year, setYear] = useState<number>(2025);
+  const [month, setMonth] = useState<number>(4);
   const [viewType, setViewType] = useState<'day' | 'week' | 'month'>('day');
   // 일별: 15일 슬라이드, 주별: 12주, 월별: 12달
-  const [dayStartIdx, setDayStartIdx] = useState(0); // 일별 슬라이드 인덱스
-  const [weekStartIdx, setWeekStartIdx] = useState(0); // 주별 슬라이드 인덱스(3달치 12주)
+  const [dayStartIdx, setDayStartIdx] = useState<number>(0); // 일별 슬라이드 인덱스
+  const [weekStartIdx, setWeekStartIdx] = useState<number>(0); // 주별 슬라이드 인덱스(3달치 12주)
 
   // 드래그 상태
   const dragStartX = useRef<number | null>(null);
-  const dragging = useRef(false);
+  const dragging = useRef<boolean>(false);
 
   // 데이터 준비
   const dailyData = getDailyData(); // 1~31일 더미
@@ -109,24 +116,28 @@ const StudyBarChart = () => {
   }
 
   return (
-    <div className="w-full h-64 bg-white rounded-xl shadow p-6 relative">
+    <div className="w-full h-80 bg-white rounded-xl p-6 relative">
       <div className="flex justify-between items-center mb-4">
         <div className="text-xl font-bold">
           공부 기록
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
-            <select
-              className="bg-transparent outline-none"
+            <Select
               value={viewType}
-              onChange={e => {
-                setViewType(e.target.value as 'day' | 'week' | 'month');
+              onValueChange={(value) => {
+                setViewType(value as 'day' | 'week' | 'month');
                 setDayStartIdx(0);
                 setWeekStartIdx(0);
               }}
             >
-              <option value="day">일별 기록</option>
-              <option value="week">주별 기록</option>
-              <option value="month">월별 기록</option>
-            </select>
+              <SelectTrigger className="w-[120px] bg-transparent">
+                <SelectValue placeholder="기록 보기" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="day">일별 기록</SelectItem>
+                <SelectItem value="week">주별 기록</SelectItem>
+                <SelectItem value="month">월별 기록</SelectItem>
+              </SelectContent>
+            </Select>
           </span>
         </div>
         <div className="flex items-center gap-2 text-neutral-400 text-base">
@@ -158,7 +169,7 @@ const StudyBarChart = () => {
       >
         <ResponsiveContainer width="100%" height="80%">
           <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={xTickFormatter} interval={0} />
+            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={xTickFormatter} />
             <YAxis tick={{ fontSize: 13 }} axisLine={false} tickLine={false} />
             <Tooltip formatter={(value: number) => `${value}분`} labelFormatter={tooltipLabelFormatter} />
             <Bar dataKey="study" fill="#D2A06E" radius={[4, 4, 0, 0]} barSize={18} />
