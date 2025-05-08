@@ -4,6 +4,7 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.study.dto.request.AnswerResultRequest;
+import com.remembread.study.dto.request.LocationRequest;
 import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
@@ -53,5 +54,15 @@ public class StudyController {
             @AuthUser User user
     ) {
         return ApiResponse.onSuccess(studyService.getNextCard(cardSetId, user));
+    }
+
+    @PostMapping("/{cardSetId}/location")
+    public ApiResponse<Void> addPoint(
+            @PathVariable Long cardSetId,
+            LocationRequest request,
+            @AuthUser User user
+    ) {
+        studyService.addPoint(user, request.getLongitude(), request.getLatitude());
+        return ApiResponse.onSuccess(null);
     }
 }
