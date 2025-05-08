@@ -127,8 +127,6 @@ public class LargeTextService {
 
             stream.subscribe(
                     chunk -> {
-                        System.out.println("chunk = " + chunk);
-
                         for (char c : chunk.toCharArray()) {
                             if (c == '{') {
                                 if (!insideObject.get()) {
