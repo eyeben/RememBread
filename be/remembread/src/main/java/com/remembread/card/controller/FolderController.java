@@ -5,6 +5,7 @@ import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.FolderCreateRequest;
 import com.remembread.card.dto.request.FolderUpdateRequest;
 import com.remembread.card.dto.response.FolderResponse;
+import com.remembread.card.dto.response.FolderRootGetResponse;
 import com.remembread.card.dto.response.SubFolderListResponse;
 import com.remembread.card.service.FolderService;
 import com.remembread.user.entity.User;
@@ -65,5 +66,10 @@ public class FolderController {
     ) {
         folderService.deleteFolder(folderId, user);
         return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/root-folder")
+    public ApiResponse<FolderRootGetResponse> getRootFolderId(@AuthUser User user) {
+        return ApiResponse.onSuccess(folderService.getRootFolderId(user));
     }
 }
