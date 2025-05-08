@@ -32,6 +32,8 @@ public enum ErrorStatus implements BaseErrorCode {
     // 폴터 관련 에러
     FOLDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOLDER4004", "폴더가 존재하지 않습니다."),
     FOLDER_FORBIDDEN(HttpStatus.BAD_REQUEST, "FOLDER4003", "폴더에 접근 권한이 없습니다."),
+    UPPER_FOLDER_NOT_GIVEN(HttpStatus.BAD_REQUEST, "FOLDER4003", "상위폴더를 기입해주세요."),
+    ROOT_FOLDER_CANNOT_BE_MODIFIED(HttpStatus.BAD_REQUEST, "FOLDER4003", "루트 폴더는 수정할 수 없습니다."),
 
     // 카드셋 관련 에러
     CARDSET_NOT_FOUND(HttpStatus.BAD_REQUEST, "CARDSET4004", "카드셋이 존재하지 않습니다."),

@@ -24,9 +24,12 @@ public class FolderService {
     @Transactional
     public void createFolder(FolderCreateRequest request, User user) {
         Folder upper = null;
-        if (request.getUpperFolderId() != null) {
+
+        if (request.getUpperFolderId() != null)
             upper = folderRepository.getReferenceById(request.getUpperFolderId());
-        }
+        else
+            upper = folderRepository.findByUserAndUpperFolderIsNull(user);
+
         Folder folder = Folder.builder()
                 .upperFolder(upper)
                 .subFolders(new ArrayList<Folder>())
@@ -41,7 +44,8 @@ public class FolderService {
 
     @Transactional(readOnly = true)
     public SubFolderListResponse getRootFolderList(User user) {
-        List<Folder> folders = folderRepository.findByUserAndUpperFolderIsNull(user);
+        Folder root = folderRepository.findByUserAndUpperFolderIsNull(user);
+        List<Folder> folders = folderRepository.findAllByUpperFolder(root);
         return FolderConverter.toSubFolderListResponse(folders);
     }
 
@@ -70,6 +74,10 @@ public class FolderService {
     public void updateFolderName(Long id, String name, User user) {
         Folder folder = folderRepository.findById(id).orElseThrow(() ->
                 new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+
+        if(folder.getUpperFolder() == null)
+            throw new GeneralException(ErrorStatus.ROOT_FOLDER_CANNOT_BE_MODIFIED);
+
         if (!folder.getUser().getId().equals(user.getId())) {
             throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
         }
@@ -81,9 +89,17 @@ public class FolderService {
     public void deleteFolder(Long id, User user) {
         Folder folder = folderRepository.findById(id).orElseThrow(() ->
                 new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+
+        if(folder.getUpperFolder() == null)
+            throw new GeneralException(ErrorStatus.ROOT_FOLDER_CANNOT_BE_MODIFIED);
+
         if (!folder.getUser().getId().equals(user.getId())) {
             throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
         }
         folderRepository.delete(folder);
+    }
+
+    public Long getRootFolderId(User user) {
+        return folderRepository.findByUserAndUpperFolderIsNull(user).getId();
     }
 }

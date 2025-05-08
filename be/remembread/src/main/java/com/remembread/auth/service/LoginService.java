@@ -6,6 +6,8 @@ import com.remembread.auth.JwtUtil;
 import com.remembread.auth.entity.RefreshToken;
 import com.remembread.auth.entity.UserTokens;
 import com.remembread.auth.infrastructure.*;
+import com.remembread.card.entity.Folder;
+import com.remembread.card.repository.FolderRepository;
 import com.remembread.common.enums.SocialLoginType;
 import com.remembread.common.service.RedisService;
 import com.remembread.user.entity.Character;
@@ -39,6 +41,7 @@ public class LoginService {
     private final UserRepository userRepository;
     private final CharacterRepository characterRepository;
     private final UserCharacterRepository userCharacterRepository;
+    private final FolderRepository folderRepository;
 
     private final KakaoOAuthProvider kakaoOAuthProvider;
     private final NaverOAuthProvider naverOAuthProvider;
@@ -165,6 +168,13 @@ public class LoginService {
                 .user(user)
                 .character(defaultCharacter)
                 .build());
+        //루트 폴더 생성
+        Folder rootFolder = Folder.builder()
+                .user(user)
+                .name("root")
+                .upperFolder(null)
+                .build();
+        folderRepository.save(rootFolder);
 
         return user;
     }

@@ -66,4 +66,9 @@ public class FolderController {
         folderService.deleteFolder(folderId, user);
         return ApiResponse.onSuccess(null);
     }
+
+    @GetMapping("/root-folder")
+    public ApiResponse<Long> getRootFolderId(@AuthUser User user) {
+        return ApiResponse.onSuccess(folderService.getRootFolderId(user));
+    }
 }
