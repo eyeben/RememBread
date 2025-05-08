@@ -184,21 +184,4 @@ public class OCRService {
         return sb.toString();
     }
 
-    private boolean isProbablyTableCell(Map<String, Object> field) {
-        Map<String, Object> bounding = (Map<String, Object>) field.get("boundingPoly");
-        List<Map<String, Object>> vertices = (List<Map<String, Object>>) bounding.get("vertices");
-
-        int x1 = ((Number) vertices.get(0).get("x")).intValue();
-        int y1 = ((Number) vertices.get(0).get("y")).intValue();
-        int x3 = ((Number) vertices.get(2).get("x")).intValue();
-        int y3 = ((Number) vertices.get(2).get("y")).intValue();
-
-        int width = Math.abs(x3 - x1);
-        int height = Math.abs(y3 - y1);
-        double aspectRatio = width > 0 ? (double) height / width : 0.0;
-
-        // 셀 크기가 작거나 정사각형 형태면 표일 가능성이 높다고 판단
-        return (width < 150 && height < 50) || (aspectRatio > 0.8 && aspectRatio < 1.2);
-    }
-
 }
