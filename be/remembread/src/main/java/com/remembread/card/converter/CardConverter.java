@@ -5,52 +5,49 @@ import com.remembread.card.dto.response.CardResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.study.dto.CardCache;
 
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 
 public class CardConverter {
 
     public static CardResponse toCardResponse(Card card) {
-        CardResponse cardResponse = new CardResponse();
-        cardResponse.setCardId(card.getId());
-        cardResponse.setNumber(card.getNumber());
-        cardResponse.setConcept(card.getConcept());
-        cardResponse.setDescription(card.getDescription());
-        cardResponse.setConceptImageUrl(card.getConceptImageUrl());
-        cardResponse.setDescriptionImageUrl(card.getDescriptionImageUrl());
-        return cardResponse;
+        return CardResponse.builder()
+            .cardId(card.getId())
+            .number(card.getNumber())
+            .concept(card.getConcept())
+            .description(card.getDescription())
+            .conceptImageUrl(card.getConceptImageUrl())
+            .descriptionImageUrl(card.getDescriptionImageUrl())
+            .build();
     }
 
     public static CardListResponse toCardListResponse(List<Card> cards) {
-        CardListResponse cardListResponse = new CardListResponse();
         List<CardResponse> cardResponses = new ArrayList<CardResponse>();
         for (Card card : cards) {
             CardResponse cardResponse = toCardResponse(card);
             cardResponses.add(cardResponse);
         }
-        cardListResponse.setTotal(cards.size());
-        cardListResponse.setCards(cardResponses);
-        return cardListResponse;
+        return CardListResponse.builder()
+                .total(cards.size())
+                .cards(cardResponses)
+                .build();
     }
 
     public static CardCache toCardCache(Card card) {
-        CardCache cardCache = new CardCache();
-        cardCache.setId(card.getId());
-        cardCache.setCardSetId(cardCache.getCardSetId());
-        cardCache.setNumber(card.getNumber());
-        cardCache.setConcept(card.getConcept());
-        cardCache.setDescription(card.getDescription());
-        cardCache.setCorrectCount(card.getCorrectCount());
-        cardCache.setSolvedCount(card.getSolvedCount());
-        cardCache.setRetentionRate(card.getRetentionRate());
-        cardCache.setStability(card.getStability());
-        cardCache.setConceptImageUrl(card.getConceptImageUrl());
-        cardCache.setDescriptionImageUrl(card.getDescriptionImageUrl());
-        cardCache.setLastViewedTime(card.getUpdatedAt());
-
-        return cardCache;
+        return CardCache.builder()
+                .id(card.getId())
+                .cardSetId(card.getCardSet().getId())
+                .number(card.getNumber())
+                .concept(card.getConcept())
+                .description(card.getDescription())
+                .correctCount(card.getCorrectCount())
+                .solvedCount(card.getSolvedCount())
+                .retentionRate(card.getRetentionRate())
+                .stability(card.getStability())
+                .conceptImageUrl(card.getConceptImageUrl())
+                .descriptionImageUrl(card.getDescriptionImageUrl())
+                .lastViewedTime(card.getUpdatedAt())
+                .build();
     }
 
 }

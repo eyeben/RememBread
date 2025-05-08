@@ -72,9 +72,9 @@ public class Card extends BaseEntity {
     }
 
     public void update(CardCache cardCache) {
-        this.correctCount = cardCache.getCorrectCount();
-        this.solvedCount = cardCache.getSolvedCount();
-        this.retentionRate = cardCache.getRetentionRate();
-        this.stability = cardCache.getStability();
+        if (cardCache.getCorrectCount() != null) this.correctCount = cardCache.getCorrectCount();
+        if (cardCache.getSolvedCount() != null) this.solvedCount = cardCache.getSolvedCount();
+        if (cardCache.getRetentionRate() != null) this.retentionRate = cardCache.getRetentionRate();
+        if (cardCache.getStability() != null) this.stability = cardCache.getStability();
     }
 }

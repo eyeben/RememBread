@@ -1,10 +1,13 @@
 package com.remembread.study.dto;
 
-import lombok.Data;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 public class CardCache {
     private Long id;
     private Long cardSetId;
@@ -16,7 +19,11 @@ public class CardCache {
 
     private Integer correctCount;
     private Integer solvedCount;
+    @Setter
     private Double retentionRate;
     private Double stability;
     private LocalDateTime lastViewedTime;
+
+    public void setRetentionRate(Double r) {
+    }
 }

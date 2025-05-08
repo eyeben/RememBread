@@ -106,7 +106,6 @@ public class StudyService {
                 Card card = cardRepository.findById(cardCache.getId()).orElseThrow(() ->
                         new GeneralException(ErrorStatus.CARD_NOT_FOUND));
                 card.update(cardCache);
-                cardRepository.save(card);
             } catch (Exception e) {
                 log.warn("Exception occurred while updating card ", e);
             }
@@ -139,25 +138,25 @@ public class StudyService {
 
         LocalDateTime lastViewedTime = LocalDateTime.parse((CharSequence) redisService.getHash(cardKey, "lastViewedTime"));
 
-        Double t = ChronoUnit.SECONDS.between(lastViewedTime, LocalDateTime.now()) * ALPHA / SECONDS_IN_A_DAY;
-        Double S = (Double) redisService.getHash(cardKey, "stability");
+        Double timeDiff = ChronoUnit.SECONDS.between(lastViewedTime, LocalDateTime.now()) * ALPHA / SECONDS_IN_A_DAY;
+        Double stability = (Double) redisService.getHash(cardKey, "stability");
 
         redisService.putHash(cardKey, "lastViewedTime", LocalDateTime.now());
 
         redisService.incrementHash(cardKey, "solvedCount", 1L);
         if (request.getIsCorrect()) {
             redisService.incrementHash(cardKey, "correctCount", 1L);
-            S = Math.min(S * INCREASE_RATE, S_MAX);
+            stability = Math.min(stability * INCREASE_RATE, S_MAX);
         } else {
-            S = Math.max(S * DECREASE_RATE, S_MIN);
+            stability = Math.max(stability * DECREASE_RATE, S_MIN);
         }
 
-        Double R = (Double) Math.exp(-t / S);
+        Double retentionRate = (Double) Math.exp(-timeDiff / stability);
 
-        redisService.putHash(cardKey, "stability", S);
+        redisService.putHash(cardKey, "stability", stability);
 
         int correctCount = (int) redisService.getHash(cardKey, "correctCount");
-        if (0.9 <= R && 3 <= correctCount) {
+        if (0.9 <= retentionRate && 3 <= correctCount) {
             redisService.removeFromZSet(zSetKey, cardKey);
         }
         updateAllCardCaches(user);
@@ -173,7 +172,7 @@ public class StudyService {
         if (redisService.getZSetSize(zSetKey).equals(0L)) {
             throw new GeneralException(ErrorStatus.CARDCACHE_NOT_FOUND);
         }
-        CardResponse response = new CardResponse();
+
         Set<Object> cards = redisService.getOneZSetReverseRangeByScore(zSetKey, 0.0, 0.9);
         Map<Object, Object> hash = Map.of();
         for (Object cardJson : cards) {
@@ -182,14 +181,15 @@ public class StudyService {
         System.out.println(hash);
 
         CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
-        response.setCardId(cardCache.getId());
-        response.setNumber(cardCache.getNumber());
-        response.setConcept(cardCache.getConcept());
-        response.setDescription(cardCache.getDescription());
-        response.setConceptImageUrl(cardCache.getConceptImageUrl());
-        response.setDescriptionImageUrl(cardCache.getDescriptionImageUrl());
 
-        return response;
+        return CardResponse.builder()
+                .cardId(cardCache.getId())
+                .number(cardCache.getNumber())
+                .concept(cardCache.getConcept())
+                .description(cardCache.getDescription())
+                .conceptImageUrl(cardCache.getConceptImageUrl())
+                .descriptionImageUrl(cardCache.getDescriptionImageUrl())
+                .build();
     }
 
     public void updateAllCardCaches(User user) {
@@ -199,12 +199,12 @@ public class StudyService {
         for (Object cardJson : cards) {
             String cardKey = cardJson + "";
             LocalDateTime lastViewedTime = LocalDateTime.parse((CharSequence) redisService.getHash(cardKey, "lastViewedTime"));
-            Double t = ChronoUnit.SECONDS.between(lastViewedTime, now) * ALPHA / SECONDS_IN_A_DAY;
-            Double S = (Double) redisService.getHash(cardKey, "stability");
-            Double R = Math.exp(-t / S);
-            System.out.println(cardKey + ": " + R);
-            redisService.putHash(cardKey, "retentionRate", R);
-            redisService.addToZSet(zSetKey, cardKey, R);
+            Double timeDiff = ChronoUnit.SECONDS.between(lastViewedTime, now) * ALPHA / SECONDS_IN_A_DAY;
+            Double stability = (Double) redisService.getHash(cardKey, "stability");
+            Double retentionRate = Math.exp(-timeDiff / stability);
+            System.out.println(cardKey + ": " + retentionRate);
+            redisService.putHash(cardKey, "retentionRate", retentionRate);
+            redisService.addToZSet(zSetKey, cardKey, retentionRate);
         }
     }
 
