@@ -1,77 +1,136 @@
 import { ChangeEvent, useState, KeyboardEvent } from "react";
-import { Save, Tags } from "lucide-react";
+import { Save, Tags, X } from "lucide-react";
+import { updateCardSet } from "@/services/cardSet";
 
-const TagRow = ({ tags }: { tags: string[] }) => {
+interface TagRowProps {
+  tags: string[];
+  cardSetId: number;
+  isEditing: boolean;
+  name?: string;
+  isPublic?: number;
+  setEditing: (edit: boolean) => void;
+}
+
+const TagRow = ({
+  tags,
+  isEditing,
+  cardSetId,
+  name = "",
+  isPublic = 1,
+  setEditing,
+}: TagRowProps) => {
   const [isInputVisible, setIsInputVisible] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [localTags, setLocalTags] = useState<string[]>(tags);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
-    if (newValue.includes(" ")) return;
-
-    if (newValue.length <= 10) {
-      setInputValue(newValue);
-    }
+    const blockedChars = /[@#!$%*]/;
+    if (newValue.includes(" ") || blockedChars.test(newValue)) return;
+    if (newValue.length <= 10) setInputValue(newValue);
   };
 
   const isLimitExceeded = inputValue.length >= 10;
 
-  const handleAddTag = () => {
+  const updateTagsOnServer = async (newTags: string[]) => {
+    try {
+      setIsLoading(true);
+      await updateCardSet({
+        cardSetId,
+        name,
+        hashTags: newTags,
+        isPublic,
+      });
+    } catch (error) {
+      console.error("태그 수정 실패:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleAddTag = async () => {
     if (!inputValue.trim()) return;
-    setLocalTags((prev) => [...prev, inputValue.trim()]);
+    const newTags = [...localTags, inputValue.trim()];
+    setLocalTags(newTags);
     setInputValue("");
     setIsInputVisible(false);
+    await updateTagsOnServer(newTags);
+  };
+
+  const handleRemoveTag = async (tagToRemove: string) => {
+    const newTags = localTags.filter((tag) => tag !== tagToRemove);
+    setLocalTags(newTags);
+    await updateTagsOnServer(newTags);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
-      handleAddTag();
-    } else if (e.key === "Escape") {
+    if (e.key === "Enter") handleAddTag();
+    if (e.key === "Escape") {
       setIsInputVisible(false);
       setInputValue("");
     }
   };
+
   return (
-    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full pc:px-8 px-4 py-1 flex items-center gap-2 scrollbar-hide">
+    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full pc:px-8 px-4 py-1 flex items-center gap-2 scrollbar-hide h-10">
       {isInputVisible ? (
         <Save
-          className="min-w-[20px] hover:cursor-pointer text-primary-700"
           size={20}
-          onClick={() => {
-            setIsInputVisible((prev) => !prev);
-            handleAddTag();
+          className="min-w-[20px] hover:cursor-pointer text-primary-700"
+          onClick={async () => {
+            if (inputValue.trim()) {
+              await handleAddTag();
+            }
+            setIsInputVisible(false);
+            setEditing(false);
           }}
         />
       ) : (
         <Tags
-          className="min-w-[20px] hover:cursor-pointer text-primary-700"
           size={20}
-          onClick={() => setIsInputVisible((prev) => !prev)}
+          className="min-w-[20px] hover:cursor-pointer text-primary-700"
+          onClick={() => {
+            setIsInputVisible(true);
+            setEditing(true);
+          }}
         />
       )}
+
       {isInputVisible && (
         <input
           type="text"
-          className={`max-w-[150px] h-full border border-gray-300 rounded-full px-3 py-1 text-sm focus:outline-none  ${
-            isLimitExceeded
-              ? "border-negative-500 focus:ring-2 "
-              : "border-gray-300 focus:ring-2 focus:ring-primary-500"
+          className={`border-2 max-w-[150px] h-8 rounded-full px-3 py-1 text-sm focus:outline-none ${
+            isLimitExceeded ? "border-negative-500 " : "border-primary-500  focus:ring-primary-500"
           }`}
           placeholder="태그를 입력해주세요"
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          autoFocus
+          disabled={isLoading}
         />
       )}
-      {localTags.map((tag, idx) => (
-        <span
-          key={idx}
-          className="bg-primary-700 h-full text-white border-primary-700 rounded-full px-3 py-1 text-sm whitespace-nowrap hover:cursor-pointer"
+
+      {localTags.map((tag) => (
+        <button
+          key={tag}
+          type="button"
+          disabled={!isEditing}
+          onClick={() => handleRemoveTag(tag)}
+          className={`
+            flex items-center h-8 rounded-full px-3 py-1 text-sm text-white transition-all duration-200
+            ${
+              isEditing
+                ? "bg-primary-700 hover:bg-negative-600"
+                : "bg-primary-700 opacity-50 pointer-events-none"
+            }
+          `}
+          aria-label={`${tag} 태그 삭제`}
         >
-          #{tag}
-        </span>
+          <span>#{tag}</span>
+          {/* 편집 모드일 땐 항상 X 아이콘 보이기 */}
+          {isEditing && <X size={12} className="ml-1" />}
+        </button>
       ))}
     </div>
   );
