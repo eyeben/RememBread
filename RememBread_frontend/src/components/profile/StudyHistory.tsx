@@ -4,9 +4,14 @@ import { getUser } from "@/services/userService";
 import CharacterImage from "@/components/common/CharacterImage";
 import StudyBarChart from "@/components/profile/StudyBarChart";
 
+interface profile{
+  nickname: string;
+  mainCharacterId: number;
+}
+
 const StudyHistory = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<{ nickname: string; mainCharacterId: number } | null>(null);
+  const [profile, setProfile] = useState<profile| null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

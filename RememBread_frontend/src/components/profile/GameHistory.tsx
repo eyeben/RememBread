@@ -58,9 +58,14 @@ const gameHistoryData = [
   },
 ];
 
+interface profile{
+  nickname: string;
+  mainCharacterId: number;
+}
+
 const GameHistory = () => {
   const navigate = useNavigate();
-  const [profile, setProfile] = useState<{ nickname: string; mainCharacterId: number } | null>(null);
+  const [profile, setProfile] = useState<profile | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
