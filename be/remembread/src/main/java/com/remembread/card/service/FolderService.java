@@ -5,6 +5,7 @@ import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.converter.FolderConverter;
 import com.remembread.card.dto.request.FolderCreateRequest;
 import com.remembread.card.dto.response.FolderResponse;
+import com.remembread.card.dto.response.FolderRootGetResponse;
 import com.remembread.card.dto.response.SubFolderListResponse;
 import com.remembread.card.entity.Folder;
 import com.remembread.card.repository.FolderRepository;
@@ -99,7 +100,7 @@ public class FolderService {
         folderRepository.delete(folder);
     }
 
-    public Long getRootFolderId(User user) {
-        return folderRepository.findByUserAndUpperFolderIsNull(user).getId();
+    public FolderRootGetResponse getRootFolderId(User user) {
+        return new FolderRootGetResponse(folderRepository.findByUserAndUpperFolderIsNull(user).getId());
     }
 }
