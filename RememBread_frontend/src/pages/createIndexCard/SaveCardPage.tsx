@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import Button from "@/components/common/Button";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
+import MergeCardAlertDialog from "@/components/dialog/MergeCardAlertDialog";
 import CreateIndexCardSetDialog from "@/components/dialog/CreateIndexCardSetDialog";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { getCardSetSimple } from "@/services/cardSet";
@@ -110,6 +110,11 @@ const SaveCardPage = () => {
 
       const updatedFolders = updateFolders(folders);
       setFolders(updatedFolders);
+    } else {
+      setFolders([]);
+
+      // 루트 폴더 요청
+      await fetchRootFolders();
     }
   };
 
@@ -188,10 +193,10 @@ const SaveCardPage = () => {
         <div className="flex justify-between mx-5 text-left items-center">
           <p>
             현재 경로: {folderPath}
-            {selectedCardSet?.name}
+            {selectedCardSet && " > "}
+            {selectedCardSet?.title}
           </p>
           <div>
-            <CreateIndexCardSetDialog />
             <CreateFolderDialog
               selectedFolderId={selectedFolder?.id ?? null}
               onCreateFolder={CreateFolder}
@@ -199,15 +204,17 @@ const SaveCardPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-start items-start m-5">
+        <div className="flex flex-col justify-start items-start m-5">
           {/* 폴더 트리 렌더링 */}
           {renderFolderTree(folders)}
         </div>
       </div>
 
-      <Button className="m-5" variant="primary">
-        저장하기
-      </Button>
+      {selectedCardSet ? (
+        <MergeCardAlertDialog selectedCardSet={selectedCardSet} />
+      ) : selectedFolder ? (
+        <CreateIndexCardSetDialog selectedFolder={selectedFolder} />
+      ) : null}
     </div>
   );
 };

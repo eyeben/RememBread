@@ -116,7 +116,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <HomePage />,
+            element: <IndexCardViewPage />,
             handle: { header: true, footer: true },
           },
           {

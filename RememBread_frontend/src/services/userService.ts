@@ -12,6 +12,7 @@ interface UserResponse {
   result: {
     nickname: string;
     mainCharacterId: number;
+    mainCharacterImageUrl: string;
     pushEnable: boolean;
     socialLoginType: string;
   };

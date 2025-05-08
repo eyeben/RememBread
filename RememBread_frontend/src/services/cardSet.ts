@@ -52,6 +52,31 @@ export const getCardSetSimple = async (folderId: number) => {
   }
 };
 
+export interface PostCardSetParams {
+  folderId: number;
+  name: string;
+  hashtags: string[];
+  isPublic: boolean;
+}
+
+export interface DeleteCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: object;
+}
+
+// 카드셋 생성
+export const postCardSet = async (cardSetData: PostCardSetParams) => {
+  try {
+    const response = await http.post("/card-sets", cardSetData);
+    return response.data;
+  } catch (error) {
+    console.error("API 호출 에러:", error);
+    throw new Error("카드셋 생성 중 오류가 발생했습니다.");
+  }
+};
+
 export const updateCardSet = async (cardSet: indexCardSet): Promise<UpdateCardSetResponse> => {
   try {
     const payload = {
@@ -68,5 +93,16 @@ export const updateCardSet = async (cardSet: indexCardSet): Promise<UpdateCardSe
   } catch (error) {
     console.error("카드셋 수정 중 오류:", error);
     throw new Error("카드셋 수정 요청 실패");
+  }
+};
+
+// 카드셋 삭제
+export const deleteCardSet = async (cardSetId: number): Promise<DeleteCardSetResponse> => {
+  try {
+    const response = await http.delete<DeleteCardSetResponse>(`/card-sets/${cardSetId}`);
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 삭제 중 오류:", error);
+    throw new Error("카드셋 삭제 요청에 실패했습니다.");
   }
 };
