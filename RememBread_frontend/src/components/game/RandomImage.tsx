@@ -1,10 +1,22 @@
 import { useState, useEffect } from 'react';
-import DefaultBread from '@/components/svgs/breads/DefaultBread';
-import Bread from '@/components/svgs/game/Bread';
-import Bread2 from '@/components/svgs/game/Bread2';
-import Baguette from '@/components/svgs/game/Baguette';
-import Croissant from '@/components/svgs/game/Croissant';
+// import DefaultBread from '@/components/svgs/breads/DefaultBread';
+// import Bread from '@/components/svgs/game/Bread';
+// import Bread2 from '@/components/svgs/game/Bread2';
+// import Baguette from '@/components/svgs/game/Baguette';
+// import Croissant from '@/components/svgs/game/Croissant';
 import styles from '@/styles/gameStyle.module.css';
+
+// PNG 이미지 import
+import muffin from '@/components/svgs/game/detect/머핀.png';
+import pretzel from '@/components/svgs/game/detect/프레첼.png';
+import saltBread from '@/components/svgs/game/detect/소금빵.png';
+import creamBread from '@/components/svgs/game/detect/크림빵.png';
+import redBeanBread from '@/components/svgs/game/detect/단팥빵.png';
+import whiteBread from '@/components/svgs/game/detect/식빵.png';
+import bagel from '@/components/svgs/game/detect/베이글.png';
+import ciabatta from '@/components/svgs/game/detect/치아바타.png';
+import croissant from '@/components/svgs/game/detect/크루아상.png';
+import baguette from '@/components/svgs/game/detect/바게트.png';
 
 interface RandomImageProps {
   onImageSelect?: (imageName: string) => void;
@@ -13,7 +25,7 @@ interface RandomImageProps {
 // 이 페이지는 랜덤 이미지를 반환하는 페이지
 const RandomImage = ({ onImageSelect }: RandomImageProps) => {
   const [randomNumber, setRandomNumber] = useState<number>(1);
-  const [randomImage, setRandomImage] = useState<React.ReactNode>(<DefaultBread className="w-full h-full" />);
+  const [randomImage, setRandomImage] = useState<string>(muffin);
   const [blurValue, setBlurValue] = useState<number>(40);
   const [scaleValue, setScaleValue] = useState<number>(10000);
   const [timeLeft, setTimeLeft] = useState<number>(10);
@@ -25,29 +37,23 @@ const RandomImage = ({ onImageSelect }: RandomImageProps) => {
     const RandomNumber = Math.floor(Math.random() * 2) + 1;
     setRandomNumber(RandomNumber);
     
-    // 1-5 사이의 랜덤 숫자 생성
-    const RandomImageNumber = Math.floor(Math.random() * 5) + 1;
-    
-    // 랜덤 이미지 선택
     const images = [
-      { component: <DefaultBread className="w-full h-full" />, name: 'DefaultBread' },
-      { component: <Bread className="w-full h-full" />, name: 'Bread' },
-      { component: <Bread2 className="w-full h-full" />, name: 'Bread2' },
-      { component: <Baguette className="w-full h-full" />, name: 'Baguette' },
-      { component: <Croissant className="w-full h-full" />, name: 'Croissant' }
+      { src: muffin, name: '머핀' },
+      { src: pretzel, name: '프레첼' },
+      { src: saltBread, name: '소금빵' },
+      { src: creamBread, name: '크림빵' },
+      { src: redBeanBread, name: '단팥빵' },
+      { src: whiteBread, name: '식빵' },
+      { src: bagel, name: '베이글' },
+      { src: ciabatta, name: '치아바타' },
+      { src: croissant, name: '크루아상' },
+      { src: baguette, name: '바게트' }
     ];
     
-    // 랜덤 transformOrigin 설정
-    // const origins = [
-    //   'left top', 'center top', 'right top',
-    //   'left center', 'center center', 'right center',
-    //   'left bottom', 'center bottom', 'right bottom'
-    // ];
-    // const randomOrigin = origins[Math.floor(Math.random() * origins.length)];
-    // setTransformOrigin(randomOrigin);
-    
-    const selectedImage = images[RandomImageNumber - 1];
-    setRandomImage(selectedImage.component);
+    // 랜덤 이미지 선택
+    const RandomImageNumber = Math.floor(Math.random() * images.length);
+    const selectedImage = images[RandomImageNumber];
+    setRandomImage(selectedImage.src);
     if (onImageSelect) {
       onImageSelect(selectedImage.name);
     }
@@ -66,7 +72,7 @@ const RandomImage = ({ onImageSelect }: RandomImageProps) => {
         setTimeLeft(prev => prev - 1);
         
         if (randomNumber === 1) {
-          setBlurValue(prev => Math.max(0, prev - 4));
+          setBlurValue(prev => Math.max(0, prev - 5));
         } else if (randomNumber === 2) {
           setScaleValue(prev => Math.max(1000, prev - 1000)); // 1초당 10배씩 감소
         }
@@ -94,7 +100,7 @@ const RandomImage = ({ onImageSelect }: RandomImageProps) => {
         }
       >
         <div className="w-full h-full" style={{ position: 'relative' }}>
-          {randomImage}
+          <img src={randomImage} alt="랜덤 빵 이미지" className="w-full h-full object-contain" />
         </div>
       </div>
     </div>
