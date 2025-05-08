@@ -99,7 +99,7 @@ const StudyBarChart = () => {
   if (viewType === 'week') {
     chartData = visibleWeeklyData;
     xKey = 'week';
-    xTickFormatter = (v: any) => v;
+    xTickFormatter = (v: any) => `${v}`;
     tooltipLabelFormatter = (label: any) => label;
   } else if (viewType === 'month') {
     chartData = monthlyData;
@@ -158,7 +158,7 @@ const StudyBarChart = () => {
       >
         <ResponsiveContainer width="100%" height="80%">
           <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
-            <XAxis dataKey={xKey} tick={{ fontSize: 13 }} axisLine={false} tickLine={false} tickFormatter={xTickFormatter} />
+            <XAxis dataKey={xKey} tick={{ fontSize: 12 }} axisLine={false} tickLine={false} tickFormatter={xTickFormatter} interval={0} />
             <YAxis tick={{ fontSize: 13 }} axisLine={false} tickLine={false} />
             <Tooltip formatter={(value: number) => `${value}분`} labelFormatter={tooltipLabelFormatter} />
             <Bar dataKey="study" fill="#D2A06E" radius={[4, 4, 0, 0]} barSize={18} />
