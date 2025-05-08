@@ -43,18 +43,7 @@ public class TextService {
         }
     }
 
-    private String stripMarkdownCodeBlock(String content) {
-        if (content == null) return "";
-
-        // ```json 또는 ``` 제거
-        return content
-                .replaceAll("^```json\\s*", "")  // 시작 부분 ```json
-                .replaceAll("^```\\s*", "")      // 시작 부분 ``` (json이 없어도)
-                .replaceAll("\\s*```$", "")      // 끝 부분 ```
-                .trim();
-    }
-
-    public Flux<CardResponse> createCardListStream(String text) {
+    public Flux<CardResponse> createCardListStream(String text, AtomicInteger index) {
         String systemPrompt = "너는 사용자가 입력한 텍스트를 주제별로 나눠 JSON 배열로 정리하는 역할을 해. 각 항목은 concept과 description으로 구성돼야 하고, description에는 concept 단어가 그대로 들어가면 안 돼.";
 
         String userPrompt = """
@@ -68,8 +57,6 @@ public class TextService {
             텍스트:
             %s
             """.formatted(text);
-
-        AtomicInteger index = new AtomicInteger(1);
 
         return gptService.askStream(systemPrompt, userPrompt)
                 .filter(line -> {

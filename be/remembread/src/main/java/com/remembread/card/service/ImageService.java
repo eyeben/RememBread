@@ -9,6 +9,7 @@ import org.springframework.web.multipart.MultipartFile;
 import reactor.core.publisher.Flux;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Slf4j
 @Service
@@ -19,9 +20,12 @@ public class ImageService {
     private final TextService textService;
 
     public Flux<CardResponse> createCardListStream(List<MultipartFile> images) {
+        AtomicInteger globalIndex = new AtomicInteger(1);
+
         return Flux.fromIterable(images)
-                .map(ocrService::convert)               // 이미지 하나 → 텍스트 추출
-                .doOnNext(text -> log.info("converted text: {}", text))
-                .flatMap(textService::createCardListStream); // 텍스트 → 카드 Flux
+                .concatMap(image -> {
+                    String text = ocrService.convert(image);
+                    return textService.createCardListStream(text, globalIndex); // 공유된 index로 넘김
+                });
     }
 }
