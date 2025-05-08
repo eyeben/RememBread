@@ -1,7 +1,7 @@
 export interface indexCard {
-  id: number;
-  cardSetId: number;
-  number: number;
+  id?: number;
+  cardSetId?: number;
+  number?: number;
   concept: string;
   description: string;
   correctCount?: number;

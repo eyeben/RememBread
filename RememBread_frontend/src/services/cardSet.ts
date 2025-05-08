@@ -50,3 +50,21 @@ export const getCardSetSimple = async (folderId: number) => {
     throw new Error("카드셋 간단 조회 중 오류가 발생했습니다.");
   }
 };
+
+export interface PostCardSetParams {
+  folderId: number;
+  name: string;
+  hashtags: string[];
+  isPublic: boolean;
+}
+
+// 카드셋 생성
+export const postCardSet = async (cardSetData: PostCardSetParams) => {
+  try {
+    const response = await http.post("/card-sets", cardSetData);
+    return response.data;
+  } catch (error) {
+    console.error("API 호출 에러:", error);
+    throw new Error("카드셋 생성 중 오류가 발생했습니다.");
+  }
+};

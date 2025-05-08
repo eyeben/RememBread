@@ -1,9 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
-import { indexCardSet } from "@/types/indexCard";
 import { createEmptyCard } from "@/utils/createEmptyCard";
 import {
   Carousel,
@@ -13,6 +12,7 @@ import {
   CarouselPrevious,
   type CarouselApi,
 } from "@/components/ui/carousel";
+import { useCardStore } from "@/stores/cardStore";
 
 const CreateFromSelfPage = () => {
   const navigate = useNavigate();
@@ -22,11 +22,8 @@ const CreateFromSelfPage = () => {
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
 
-  const [cardSet, setCardSet] = useState<indexCardSet>({
-    folderId: BigInt(0),
-    hashTags: [],
-    breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
-  });
+  const { cardSet, setCardSet } = useCardStore();
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
 
   const [api, setApi] = useState<CarouselApi>();
 
@@ -53,6 +50,32 @@ const CreateFromSelfPage = () => {
     }, 310);
   };
 
+  const handleAddCard = () => {
+    const newCardLength = cardSet.length;
+    const updated = [...cardSet, createEmptyCard()];
+    setCardSet(updated);
+
+    setTimeout(() => {
+      api?.scrollTo(newCardLength);
+    }, 10);
+  };
+
+  const handeleSaveCard = () => {
+    navigate("/save");
+  };
+
+  const handleConceptChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
+    const updatedConcept = e.target.value;
+    const updatedCards = [...cardSet];
+
+    updatedCards[index] = {
+      ...updatedCards[index],
+      concept: updatedConcept,
+    };
+
+    setCardSet(updatedCards);
+  };
+
   return (
     <div
       className="flex flex-col justify-between w-full text-center"
@@ -68,7 +91,7 @@ const CreateFromSelfPage = () => {
       </Button>
 
       <div className="">
-        {currentIndex} / {cardSet.breads.length}
+        {currentIndex} / {cardSet.length}
       </div>
 
       <Carousel
@@ -80,7 +103,7 @@ const CreateFromSelfPage = () => {
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
         <CarouselContent className="aspect-square">
-          {cardSet.breads.map((bread, index) => (
+          {cardSet.map((indexCard, index) => (
             <CarouselItem key={index} className={`relative`}>
               <div className="relative w-full h-full">
                 <div
@@ -91,24 +114,41 @@ const CreateFromSelfPage = () => {
                   <InputBread className="w-full h-full aspect-square" />
 
                   {!isRotating ? (
-                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
-                      {bread?.concept || "제목 없음"}
-                    </div>
+                    editingIndex === index ? (
+                      <input
+                        autoFocus
+                        type="text"
+                        value={indexCard.concept}
+                        onChange={(e) => handleConceptChange(e, index)}
+                        onBlur={() => setEditingIndex(null)}
+                        onKeyDown={(e) => {
+                          if (e.key === "Enter") {
+                            setEditingIndex(null);
+                          }
+                        }}
+                        className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
+                      />
+                    ) : (
+                      <div
+                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold cursor-text"
+                        onClick={() => setEditingIndex(index)}
+                      >
+                        {indexCard.concept || "제목 없음"}
+                      </div>
+                    )
                   ) : (
                     <textarea
                       className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                      value={bread?.description}
+                      value={indexCard.description}
                       placeholder="여기에 텍스트를 입력하세요"
                       onChange={(e) => {
                         const updatedDescription = e.target.value;
-                        setCardSet((prev) => {
-                          const newBreads = [...prev.breads];
-                          newBreads[index] = {
-                            ...newBreads[index],
-                            description: updatedDescription,
-                          };
-                          return { ...prev, breads: newBreads };
-                        });
+                        const updatedCards = [...cardSet];
+                        updatedCards[index] = {
+                          ...updatedCards[index],
+                          description: updatedDescription,
+                        };
+                        setCardSet(updatedCards);
                       }}
                       style={{
                         scrollbarWidth: "none",
@@ -121,10 +161,28 @@ const CreateFromSelfPage = () => {
           ))}
         </CarouselContent>
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
-        <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+
+        {currentIndex === cardSet.length && (
+          <div
+            className="absolute flex justify-center items-center rounded-full font-bold top-0 right-0 mx-5 w-10 h-10 bg-primary-500 text-700 pc:hidden"
+            onClick={handleAddCard}
+          >
+            +
+          </div>
+        )}
+
+        {currentIndex === cardSet.length ? (
+          <CarouselNext
+            className="hidden bg-primary-500 text-700 pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10 disabled:pointer-events-auto"
+            onClick={handleAddCard}
+            disabled={false}
+          />
+        ) : (
+          <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+        )}
       </Carousel>
 
-      <Button className="my-5 mx-5" variant="primary" onClick={() => navigate("/save")}>
+      <Button className="my-5 mx-5" variant="primary" onClick={handeleSaveCard}>
         생성
       </Button>
     </div>
