@@ -1,6 +1,7 @@
-package com.remembread.card.service;
+package com.remembread.card.facade;
 
 import com.remembread.card.dto.response.CardResponse;
+import com.remembread.card.service.TextService;
 import com.remembread.common.service.OCRService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -14,7 +15,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class ImageService {
+public class ImageFacadeService {
 
     private final OCRService ocrService;
     private final TextService textService;
