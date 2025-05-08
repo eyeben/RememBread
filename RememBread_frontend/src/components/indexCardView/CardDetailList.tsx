@@ -40,7 +40,7 @@ const CardDetailList: React.FC<CardDetailListProps> = ({ cardSetId, highlightInd
     if (!window.confirm("삭제하시겠습니까?")) return;
     try {
       await Promise.all(selectedIds.map((id) => deleteCard(id)));
-      setCards((prev) => prev.filter((c) => !selectedIds.includes(c.id!)));
+      setCards((prev) => prev.filter((c) => !selectedIds.includes(c.cardId)));
       setSelectedIds([]);
     } catch (e) {
       console.error("삭제 실패:", e);
@@ -65,11 +65,11 @@ const CardDetailList: React.FC<CardDetailListProps> = ({ cardSetId, highlightInd
       {/* 카드 리스트 */}
       <div className="flex flex-col gap-2">
         {cards.map((card, idx) => {
-          const isSelected = card.id !== undefined && selectedIds.includes(card.id);
+          const isSelected = card.cardId !== undefined && selectedIds.includes(card.cardId);
           return (
             <div
-              key={card.id ?? idx}
-              onContextMenu={(e) => handleContextMenu(e, card.id)}
+              key={card.cardId ?? idx}
+              onContextMenu={(e) => handleContextMenu(e, card.cardId)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer
                 ${
                   isSelected
