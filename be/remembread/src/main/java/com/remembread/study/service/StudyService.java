@@ -22,17 +22,13 @@ import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Limit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 @Slf4j
 @Service
@@ -45,8 +41,10 @@ public class StudyService {
 
     private static final Double S_MAX = 100.0;
     private static final Double S_MIN = 0.04;
-    private static final Double INCREASE_RATE = 1.5;
-    private static final Double DECREASE_RATE = 0.9;
+    private static final Double INCREASE_RATE = 1.4;
+    private static final Double DECREASE_RATE = 0.7;
+    private static final Double SECONDS_IN_A_DAY = 86400.0;
+    private static final Double ALPHA = 50.0;
 
     private final StudySessionRepository studySessionRepository;
     private final CardStudyLogRepository cardStudyLogRepository;
@@ -63,27 +61,32 @@ public class StudyService {
         if (!cardSet.getUser().getId().equals(user.getId())) {
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
         }
-        List<Card> cards = cardRepository.findAllByCardSetOrderByRetentionRate(cardSet, Limit.of(request.getCount()));
         this.deleteStudySession(user);
 
-        redisService.setValue(redisPrefix + "::study-mode::" + user.getId(), request.getMode().toString());
+        List<Card> cards = cardRepository.findAllByCardSet(cardSet);
+        List<CardCache> cardCaches = new ArrayList<>();
         for (Card card : cards) {
-            CardCache cardCache = CardConverter.toCardCache(card);
-            redisService.addToZSet(
-                    redisPrefix + "::study::" + user.getId() + "::sorted-set::",
-                    redisPrefix + "::study::" + user.getId() + "::card::" + cardCache.getId(),
-                    cardCache.getRetentionRate()
-            );
-            Map<String, Object> hash = objectMapper.convertValue(
-                    cardCache,
-                    new TypeReference<HashMap<String, Object>>() {});
-            redisService.putAllHash(
-                    redisPrefix + "::study::" + user.getId() + "::card::" + cardCache.getId(),
-                    hash
-            );
+            cardCaches.add(CardConverter.toCardCache(card));
         }
 
-        return CardConverter.toCardResponse(cards.get(0));
+        LocalDateTime now = LocalDateTime.now();
+        cardCaches.sort(Comparator.comparingDouble(card -> {
+            Double R = Math.exp(-(ChronoUnit.SECONDS.between(card.getLastViewedTime(), now) * ALPHA / SECONDS_IN_A_DAY) / card.getStability());
+            card.setRetentionRate(R);
+            return Math.abs(0.9 - R) + (0.9 <= R ? 1:0);
+        }));
+        redisService.setValue(redisPrefix + "::study-mode::" + user.getId(), request.getMode().toString());
+        String zSetKey = redisPrefix + "::study::" + user.getId() + "::sorted-set::";
+        for (CardCache cardCache : cardCaches) {
+            if (request.getCount() <= redisService.getZSetSize(zSetKey)) break;
+            String cardKey = redisPrefix + "::study::" + user.getId() + "::card::" + cardCache.getId();
+            redisService.addToZSet(zSetKey, cardKey, cardCache.getRetentionRate());
+            Map<String, Object> hash = objectMapper.convertValue(cardCache, new TypeReference<HashMap<String, Object>>() {});
+            redisService.putAllHash(cardKey, hash);
+            redisService.putHash(cardKey, "lastViewedTime", now);
+        }
+
+        return getNextCard(cardSetId, user);
     }
 
     @Transactional
@@ -97,12 +100,16 @@ public class StudyService {
         Set<Object> cards = redisService.getZSetRange(
                 redisPrefix + "::study::" + user.getId() + "::sorted-set::", 0, -1);
         for (Object cardJson : cards) {
-            Map<Object, Object> hash = redisService.getHashMap((String) cardJson);
-            CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
-            Card card = cardRepository.findById(cardCache.getId()).orElseThrow(() ->
-                    new GeneralException(ErrorStatus.CARD_NOT_FOUND));
-            card.update(cardCache);
-            cardRepository.save(card);
+            try {
+                Map<Object, Object> hash = redisService.getHashMap((String) cardJson);
+                CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
+                Card card = cardRepository.findById(cardCache.getId()).orElseThrow(() ->
+                        new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+                card.update(cardCache);
+                cardRepository.save(card);
+            } catch (Exception e) {
+                log.warn("Exception occurred while updating card ", e);
+            }
         }
 
         Card lastCard = cardRepository.findById(request.getLastCardId()).orElseThrow(() ->
@@ -132,14 +139,12 @@ public class StudyService {
 
         LocalDateTime lastViewedTime = LocalDateTime.parse((CharSequence) redisService.getHash(cardKey, "lastViewedTime"));
 
-        Double t = ChronoUnit.SECONDS.between(lastViewedTime, LocalDateTime.now()) / 86400.;
-        Double R = (Double) redisService.getHash(cardKey, "retentionRate");
+        Double t = ChronoUnit.SECONDS.between(lastViewedTime, LocalDateTime.now()) * ALPHA / SECONDS_IN_A_DAY;
         Double S = (Double) redisService.getHash(cardKey, "stability");
 
         redisService.putHash(cardKey, "lastViewedTime", LocalDateTime.now());
 
         redisService.incrementHash(cardKey, "solvedCount", 1L);
-
         if (request.getIsCorrect()) {
             redisService.incrementHash(cardKey, "correctCount", 1L);
             S = Math.min(S * INCREASE_RATE, S_MAX);
@@ -147,16 +152,15 @@ public class StudyService {
             S = Math.max(S * DECREASE_RATE, S_MIN);
         }
 
-        R = (Double) Math.exp(-t / S);
+        Double R = (Double) Math.exp(-t / S);
 
-        redisService.putHash(cardKey, "retentionRate", R);
         redisService.putHash(cardKey, "stability", S);
 
-        if (0.9 <= R) {
+        int correctCount = (int) redisService.getHash(cardKey, "correctCount");
+        if (0.9 <= R && 3 <= correctCount) {
             redisService.removeFromZSet(zSetKey, cardKey);
-        } else {
-            redisService.addToZSet(zSetKey, cardKey, R);
         }
+        updateAllCardCaches(user);
 
         RemainingCardCountResponse response = new RemainingCardCountResponse();
         response.setRemainingCardCount(redisService.getZSetSize(zSetKey));
@@ -170,14 +174,15 @@ public class StudyService {
             throw new GeneralException(ErrorStatus.CARDCACHE_NOT_FOUND);
         }
         CardResponse response = new CardResponse();
-        Set<Object> cards = redisService.getZSetReverseRange(zSetKey, 0, 0);
+        Set<Object> cards = redisService.getOneZSetReverseRangeByScore(zSetKey, 0.0, 0.9);
         Map<Object, Object> hash = Map.of();
         for (Object cardJson : cards) {
             hash = redisService.getHashMap((String) cardJson);
         }
-//        System.out.println(hash);
+        System.out.println(hash);
 
         CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
+        response.setCardId(cardCache.getId());
         response.setNumber(cardCache.getNumber());
         response.setConcept(cardCache.getConcept());
         response.setDescription(cardCache.getDescription());
@@ -185,6 +190,22 @@ public class StudyService {
         response.setDescriptionImageUrl(cardCache.getDescriptionImageUrl());
 
         return response;
+    }
+
+    public void updateAllCardCaches(User user) {
+        String zSetKey = redisPrefix + "::study::" + user.getId() + "::sorted-set::";
+        Set<Object> cards = redisService.getZSetRange(zSetKey, 0, -1);
+        LocalDateTime now = LocalDateTime.now();
+        for (Object cardJson : cards) {
+            String cardKey = cardJson + "";
+            LocalDateTime lastViewedTime = LocalDateTime.parse((CharSequence) redisService.getHash(cardKey, "lastViewedTime"));
+            Double t = ChronoUnit.SECONDS.between(lastViewedTime, now) * ALPHA / SECONDS_IN_A_DAY;
+            Double S = (Double) redisService.getHash(cardKey, "stability");
+            Double R = Math.exp(-t / S);
+            System.out.println(cardKey + ": " + R);
+            redisService.putHash(cardKey, "retentionRate", R);
+            redisService.addToZSet(zSetKey, cardKey, R);
+        }
     }
 
 }
