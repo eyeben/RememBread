@@ -45,3 +45,14 @@ export const postCards = async (cardSetId: number, cards: indexCard[]) => {
     throw new Error("카드 병합 실패");
   }
 };
+
+// 카드 삭제하기
+export const deleteCard = async (cardId: number) => {
+  try {
+    const { data } = await http.delete(`/cards/${cardId}`);
+    return data;
+  } catch (error) {
+    console.error("카드 삭제 중 오류:", error);
+    throw new Error("카드 삭제에 실패했습니다.");
+  }
+};
