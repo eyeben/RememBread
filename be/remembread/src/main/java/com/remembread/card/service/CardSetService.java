@@ -91,16 +91,20 @@ public class CardSetService {
     }
 
     @Transactional
-    public void forkCardSet(Long cardSetId, Long folderId, Long userId) {
+    public void forkCardSet(Long cardSetId, Long folderId, User user) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
-        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+        Folder folder = null;
+        if(folderId == null)
+            folder = folderRepository.findByUserAndUpperFolderIsNull(user);
+        else
+            folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
 
         // 공개한 카드셋이 아닌 경우
         if (!cardSet.getIsPublic())
             throw new GeneralException(ErrorStatus.CARDSET_NOT_PUBLIC);
 
         // 폴더 주인이 유저가 아닌 경우
-        if(!folder.getUser().getId().equals(userId))
+        if(!folder.getUser().getId().equals(user.getId()))
             throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
 
         List<Card> cards = cardRepository.findAllByCardSet(cardSet);
@@ -178,10 +182,15 @@ public class CardSetService {
     }
 
     @Transactional
-    public CardSetListGetResponse getCardSetList(Long folderId, int page, int size, String sort, Long userId) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+    public CardSetListGetResponse getCardSetList(Long folderId, int page, int size, String sort, User user ) {
+        Folder folder = null;
+        if(folderId == null)
+            folder = folderRepository.findByUserAndUpperFolderIsNull(user);
+        else
+            folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+
         // 접근 권한이 없는 경우
-        if(!folder.getUser().getId().equals(userId))
+        if(!folder.getUser().getId().equals(user.getId()))
             throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
 
         // 정렬 기준 DB컬럼 기준으로 변환
@@ -245,10 +254,15 @@ public class CardSetService {
         return response;
     }
 
-    public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, Long userId) {
-        Folder folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+    public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, User user) {
+        Folder folder = null;
+        if(folderId == null)
+            folder = folderRepository.findByUserAndUpperFolderIsNull(user);
+        else
+            folder = folderRepository.findById(folderId).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+
         // 접근 권한이 없는 경우
-        if(!folder.getUser().getId().equals(userId))
+        if(!folder.getUser().getId().equals(user.getId()))
             throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
 
         return new CardSetSimpleListGetResponse(cardSetRepository.findByFolderIdOrderByName(folderId));
