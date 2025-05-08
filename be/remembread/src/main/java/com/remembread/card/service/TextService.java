@@ -69,7 +69,7 @@ public class TextService {
             %s
             """.formatted(text);
 
-        AtomicInteger index = new AtomicInteger();
+        AtomicInteger index = new AtomicInteger(1);
 
         return gptService.askStream(systemPrompt, userPrompt)
                 .filter(line -> {
