@@ -53,7 +53,7 @@ const CardDetailPage = () => {
             name={card.name}
             isPublic={card.isPublic}
             isEditing={isEditing}
-            onToggleEditing={toggleEditing}
+            setEditing={setIsEditing}
           />
           <CardDetailList cardSetId={card.cardSetId} />
 
