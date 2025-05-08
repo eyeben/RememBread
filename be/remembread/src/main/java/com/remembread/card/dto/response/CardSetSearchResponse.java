@@ -14,7 +14,7 @@ public class CardSetSearchResponse {
     @AllArgsConstructor
     public static class CardSet {
         Long cardSetId;
-        String title;
+        String name;
         Integer viewCount;
         Integer forkCount;
     }
