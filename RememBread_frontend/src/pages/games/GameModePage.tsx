@@ -41,6 +41,7 @@ const GameModePage = () => {
           description="무슨 빵일까?"
           className="bg-primary-100"
           icon={<Bread2 className="w-11 h-11 flex-shrink-0 ml-4" />}
+          onClick={() => navigate("/games/detective")}
         />
       </div>
     </div>

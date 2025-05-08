@@ -27,6 +27,7 @@ import GamesHomePage from "@/pages/games/GamesHomePage";
 import MemoryGamePage from "@/pages/games/MemoryGamePage";
 import GameResultPage from "@/pages/games/GameResultPage";
 import CompareGamePage from "@/pages/games/CompareGamePage";
+import GameDetectivePage from "@/pages/games/GameDetectivePage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -191,6 +192,10 @@ const router = createBrowserRouter([
               {
                 path: "compare",
                 element: <CompareGamePage />,
+              },
+              {
+                path: "detective",
+                element: <GameDetectivePage />,
               },
               {
                 path: "result",
