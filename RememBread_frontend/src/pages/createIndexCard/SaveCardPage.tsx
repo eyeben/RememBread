@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import Button from "@/components/common/Button";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
 import CreateIndexCardSetDialog from "@/components/dialog/CreateIndexCardSetDialog";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { getCardSetSimple } from "@/services/cardSet";
 import { indexCardSet } from "@/types/indexCard";
 import { Folder } from "@/types/folder";
+import MergeCardAlertDialog from "@/components/dialog/MergeCardAlertDialog";
 
 type FolderTreeItem = Folder & {
   children?: FolderTreeItem[];
@@ -191,7 +191,6 @@ const SaveCardPage = () => {
             {selectedCardSet?.name}
           </p>
           <div>
-            <CreateIndexCardSetDialog />
             <CreateFolderDialog
               selectedFolderId={selectedFolder?.id ?? null}
               onCreateFolder={CreateFolder}
@@ -205,9 +204,11 @@ const SaveCardPage = () => {
         </div>
       </div>
 
-      <Button className="m-5" variant="primary">
-        저장하기
-      </Button>
+      {selectedCardSet ? (
+        <MergeCardAlertDialog selectedCardSet={selectedCardSet} />
+      ) : selectedFolder ? (
+        <CreateIndexCardSetDialog selectedFolder={selectedFolder} />
+      ) : null}
     </div>
   );
 };
