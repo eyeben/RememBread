@@ -22,8 +22,8 @@ interface CreateFolderDialogProps {
 const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState<string>("");
 
-  const handleCreateFolder = () => {
-    postFolder(folderName, selectedFolderId);
+  const handleCreateFolder = async () => {
+    await postFolder(folderName, selectedFolderId);
     onCreateFolder();
   };
 

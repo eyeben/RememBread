@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
+import MergeCardAlertDialog from "@/components/dialog/MergeCardAlertDialog";
 import CreateIndexCardSetDialog from "@/components/dialog/CreateIndexCardSetDialog";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { getCardSetSimple } from "@/services/cardSet";
 import { indexCardSet } from "@/types/indexCard";
 import { Folder } from "@/types/folder";
-import MergeCardAlertDialog from "@/components/dialog/MergeCardAlertDialog";
 
 type FolderTreeItem = Folder & {
   children?: FolderTreeItem[];
@@ -110,6 +110,11 @@ const SaveCardPage = () => {
 
       const updatedFolders = updateFolders(folders);
       setFolders(updatedFolders);
+    } else {
+      setFolders([]);
+
+      // 루트 폴더 요청
+      await fetchRootFolders();
     }
   };
 
@@ -188,7 +193,8 @@ const SaveCardPage = () => {
         <div className="flex justify-between mx-5 text-left items-center">
           <p>
             현재 경로: {folderPath}
-            {selectedCardSet?.name}
+            {selectedCardSet && " > "}
+            {selectedCardSet?.title}
           </p>
           <div>
             <CreateFolderDialog
@@ -198,7 +204,7 @@ const SaveCardPage = () => {
           </div>
         </div>
 
-        <div className="flex justify-start items-start m-5">
+        <div className="flex flex-col justify-start items-start m-5">
           {/* 폴더 트리 렌더링 */}
           {renderFolderTree(folders)}
         </div>
