@@ -24,8 +24,12 @@ public class StudySession {
     private User user;
 
     @Column(name = "studied_at", nullable = false)
-    private LocalDateTime studiedAt = LocalDateTime.now();
+    private LocalDateTime studiedAt;
 
     @Column(columnDefinition = "geometry(LINESTRING, 4326)")
     private LineString route;
+
+    public void addRoute(LineString route) {
+        this.route = route;
+    }
 }
