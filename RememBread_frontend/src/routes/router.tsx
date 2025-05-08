@@ -116,7 +116,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <HomePage />,
+            element: <IndexCardViewPage />,
             handle: { header: true, footer: true },
           },
           {
@@ -137,6 +137,10 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "my",
+                element: <IndexCardViewPage />,
+              },
+              {
+                path: "search",
                 element: <IndexCardViewPage />,
               },
               {

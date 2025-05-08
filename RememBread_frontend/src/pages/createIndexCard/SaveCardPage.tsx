@@ -167,7 +167,7 @@ const SaveCardPage = () => {
                   e.stopPropagation();
                 }}
               >
-                🍞 {cardSet.title}
+                🍞 {cardSet.name}
               </span>
             ))}
         </span>
