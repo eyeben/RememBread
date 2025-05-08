@@ -11,6 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 import reactor.core.publisher.Flux;
 
+import java.util.concurrent.atomic.AtomicInteger;
+
 @RestController
 @RequestMapping("/cards/text")
 @RequiredArgsConstructor
@@ -27,6 +29,7 @@ public class TextController {
     @PostMapping(value = "/large", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @Operation(summary = "대량 텍스트로 생성 스트림 API", description = "대량 텍스트 입력 시 주제별로 하나씩 스트림 방식으로 반환하는 API 입니다.")
     public Flux<CardResponse> streamCards(@AuthUser User user, @RequestBody String text) {
-        return TextService.createCardListStream(text);
+        AtomicInteger globalIndex = new AtomicInteger(1);
+        return TextService.createCardListStream(text, globalIndex);
     }
 }

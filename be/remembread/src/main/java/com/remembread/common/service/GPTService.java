@@ -23,7 +23,7 @@ public class GPTService {
     private static final String OPENAI_API_URL = "https://api.openai.com/v1/chat/completions";
     private static final String OPENAI_MODEL = "gpt-4o";
 
-    public GPTService(@Value("${chatgpt.openai.api.key}") String apiKey) {
+    public GPTService() {
         this.restTemplate = new RestTemplate();
         this.objectMapper = new ObjectMapper();
     }
