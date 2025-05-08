@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Timer from "@/components/common/Timer";
 import GameResultModal from "@/components/game/GameResultModal";
+import StartModal from "@/components/game/StartModal";
 import QuizContainer from "@/components/game/QuizContainer";
 import useGameStore from "@/stores/gameStore";
 import Bread from "@/components/svgs/game/Bread";
@@ -64,18 +65,28 @@ function getNewQuiz(breads: Bread[], score: number) {
 const CompareGamePage = () => {
   const navigate = useNavigate();
   const { setCompareScore } = useGameStore();
+  const [isGameStarted, setIsGameStarted] = useState(false);
   const [userInput, setUserInput] = useState<string | null>(null);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
   const [score, setLocalScore] = useState(0);
   const [breads, setBreads] = useState<Bread[]>(initialBreads);
   const [quiz, setQuiz] = useState(() => getNewQuiz(breads, 0));
 
-  // 페이지 접속 시 한 번만 가격 변경
-  useEffect(() => {
+  // 게임 시작 시 초기화
+  const handleGameStart = () => {
+    setIsGameStarted(true);
     const newBreads = generateNewBreadPrices(breads);
     setBreads(newBreads);
     setQuiz(getNewQuiz(newBreads, 0));
-  }, []);
+  };
+
+  // 페이지 접속 시 한 번만 가격 변경
+  useEffect(() => {
+    if (!isGameStarted) return;
+    const newBreads = generateNewBreadPrices(breads);
+    setBreads(newBreads);
+    setQuiz(getNewQuiz(newBreads, 0));
+  }, [isGameStarted]);
 
   useEffect(() => {
     if (!resultModalType) return;
@@ -121,33 +132,39 @@ const CompareGamePage = () => {
 
   return (
     <div className="fixed inset-0 min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-16 pb-16 overflow-hidden">
-      <div className="mb-4 text-2xl font-bold text-primary-700 flex items-center gap-2">
-        <span>가격이 더 비싼 빵은?</span>
-        <span className="ml-2 text-2xl text-neutral-500">
-          <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
-        </span>
-      </div>
-      <div className="w-full max-w-96 h-28 flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-8 py-4 mb-8 text-white text-3xl font-bold">
-        <div className="flex flex-row items-center justify-center w-full gap-12">
-          {breads.map((bread, idx) => (
-            <div key={idx} className="flex flex-col items-center justify-center">
-              <div className="w-16 h-16 mt-3 flex items-center justify-center">
-                {renderBread(bread.type)}
-              </div>
-              <span className="text-lg">{bread.price} 원</span>
+      {!isGameStarted ? (
+        <StartModal onCountdownEnd={handleGameStart} />
+      ) : (
+        <>
+          <div className="mb-4 text-2xl font-bold text-primary-700 flex items-center gap-2">
+            <span>가격이 더 비싼 빵은?</span>
+            <span className="ml-2 text-2xl text-neutral-500">
+              <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
+            </span>
+          </div>
+          <div className="w-full max-w-96 h-28 flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-8 py-4 mb-8 text-white text-3xl font-bold">
+            <div className="flex flex-row items-center justify-center w-full gap-12">
+              {breads.map((bread, idx) => (
+                <div key={idx} className="flex flex-col items-center justify-center">
+                  <div className="w-16 h-16 mt-3 flex items-center justify-center">
+                    {renderBread(bread.type)}
+                  </div>
+                  <span className="text-lg">{bread.price} 원</span>
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </div>
-      <div className="w-full max-w-96 mx-auto mt-8 flex flex-col gap-6">
-        <QuizContainer breads={quiz.top} onClick={() => handleInput("top")} />
-        <QuizContainer breads={quiz.bottom} onClick={() => handleInput("bottom")} />
-      </div>
-      <GameResultModal
-        open={!!resultModalType}
-        type={resultModalType === "success" ? "success" : "fail"}
-        onClose={handleNextQuiz}
-      />
+          </div>
+          <div className="w-full max-w-96 mx-auto mt-8 flex flex-col gap-6">
+            <QuizContainer breads={quiz.top} onClick={() => handleInput("top")} />
+            <QuizContainer breads={quiz.bottom} onClick={() => handleInput("bottom")} />
+          </div>
+          <GameResultModal
+            open={!!resultModalType}
+            type={resultModalType === "success" ? "success" : "fail"}
+            onClose={handleNextQuiz}
+          />
+        </>
+      )}
     </div>
   );
 };
