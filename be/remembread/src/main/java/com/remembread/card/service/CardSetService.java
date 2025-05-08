@@ -253,4 +253,15 @@ public class CardSetService {
 
         return new CardSetSimpleListGetResponse(cardSetRepository.findByFolderIdOrderByName(folderId));
     }
+
+    public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
+        int offset = page * size;
+        String sortColumn = cardSetSortType.getColumn();
+        CardSetSearchResponse response = new CardSetSearchResponse();
+
+        response.setCardSets(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
+
+        return response;
+
+    }
 }
