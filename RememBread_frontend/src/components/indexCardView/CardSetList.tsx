@@ -1,8 +1,8 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
-import { getCardSetList } from "@/services/cardSet";
+import { getCardSetList, deleteCardSet } from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
@@ -15,20 +15,21 @@ interface CardSetListProps {
 const CardSetList = ({ isEditing }: CardSetListProps) => {
   const navigate = useNavigate();
 
-  const [cardSetList, setcardSetList] = useState<indexCardSet[]>([]);
+  const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await getCardSetList({
-          folderId: 3,
+        const res = await getCardSetList({
+          folderId: 16,
           page: 0,
           size: 12,
           sort: "최신순",
         });
-        setcardSetList(response.result.cardSets);
+        setCardSetList(res.result.cardSets);
       } catch (error) {
         console.error("카드셋 목록 불러오기 실패:", error);
       }
@@ -36,10 +37,10 @@ const CardSetList = ({ isEditing }: CardSetListProps) => {
     fetchData();
   }, []);
 
-  const toggleItem = (id: number) => {
+  const toggleItem = (cardSetId: number) => {
     if (!isEditing) return;
     setSelectedItems((prev) =>
-      prev.includes(id) ? prev.filter((item) => item !== id) : [...prev, id],
+      prev.includes(cardSetId) ? prev.filter((id) => id !== cardSetId) : [...prev, cardSetId],
     );
   };
 
@@ -48,60 +49,106 @@ const CardSetList = ({ isEditing }: CardSetListProps) => {
       toggleItem(cardSetId);
     } else {
       const selectedCard = cardSetList.find((item) => item.cardSetId === cardSetId);
-      navigate(`/card-view/${cardSetId}`, {
-        state: { card: selectedCard },
-      });
+      navigate(`/card-view/${cardSetId}`, { state: { card: selectedCard } });
+    }
+  };
+
+  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, cardSetId: number) => {
+    if (!selectedItems.includes(cardSetId)) {
+      e.preventDefault();
+      return;
+    }
+    setIsDragging(true);
+  };
+  const handleDragEnd = () => {
+    setIsDragging(false);
+  };
+
+  const handleDropZoneDrop = () => {
+    setIsDragging(false);
+    setShowDeleteModal(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    try {
+      await Promise.all(selectedItems.map((id) => deleteCardSet(id)));
+      setCardSetList((prev) => prev.filter((c) => !selectedItems.includes(c.cardSetId)));
+      setSelectedItems([]);
+    } catch (error) {
+      console.error("삭제 에러:", error);
+    } finally {
+      setShowDeleteModal(false);
     }
   };
 
   return (
-    <div className="flex flex-col items-center w-full px-2">
-      <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
-        {cardSetList.map((item) => (
-          <div key={item.cardSetId} className="relative hover:cursor-pointer">
-            <div className="absolute top-2 right-2 z-10">
-              <Star
-                fill={item.isLike ? "#FDE407" : "none"}
-                className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
-              />
-            </div>
+    <>
+      {/* 카드 그리드 */}
+      <div className="flex flex-col items-center w-full px-2">
+        <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
+          {cardSetList.map((item) => (
+            <div key={item.cardSetId} className="relative">
+              <div className="absolute top-2 right-2 z-10">
+                <Star
+                  fill={item.isLike ? "#FDE407" : "none"}
+                  className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
+                />
+              </div>
 
-            <div
-              onClick={() => handleCardClick(item.cardSetId)}
-              className={`rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
-                ${isEditing ? "cursor-pointer" : ""}
-                ${
-                  selectedItems.includes(item.cardSetId)
-                    ? "border-primary-700 bg-primary-100"
-                    : "border-transparent"
-                }
-              `}
-            >
-              <CardSet className="w-full h-full hover:cursor-pointer" />
-              <div className="text-center w-full">
+              <div
+                draggable={isEditing && selectedItems.includes(item.cardSetId)}
+                onDragStart={(e) => handleDragStart(e, item.cardSetId)}
+                onDragEnd={handleDragEnd}
+                onClick={() => handleCardClick(item.cardSetId)}
+                className={`
+                  rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
+                  ${isEditing ? "cursor-pointer" : ""}
+                  ${
+                    selectedItems.includes(item.cardSetId)
+                      ? "border-primary-700 bg-primary-100"
+                      : "border-transparent"
+                  }
+                `}
+              >
+                <CardSet className="w-full h-full hover:cursor-pointer" />
                 <div className="text-center w-full">
                   <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
                     {item.name || "제목 없음"}
                   </span>
-                </div>
-                <div className="flex justify-end items-center w-full gap-2">
-                  <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
+                  <div className="flex justify-end items-center w-full gap-2">
+                    <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
 
+      {/* 드래그 중일 때만 보이는 휴지통 드롭존 (하단 탭 위에 띄우기) */}
+      {isEditing && selectedItems.length > 0 && isDragging && (
+        <div
+          className="fixed left-0 right-0 flex justify-center items-center py-2"
+          style={{ bottom: "56px" }}
+          onDragOver={(e) => e.preventDefault()}
+          onDrop={handleDropZoneDrop}
+        >
+          <div className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/80 shadow pointer-events-auto">
+            <Trash2 size={28} />
+          </div>
+        </div>
+      )}
+
+      {/* 삭제 확인 모달 */}
       {showDeleteModal && (
         <ConfirmDeleteModal
           open={showDeleteModal}
-          message="정말 삭제하시겠습니까?"
-          onConfirm={() => setShowDeleteModal(false)}
+          message="선택한 카드셋을 삭제하시겠습니까?"
+          onConfirm={handleDeleteConfirm}
           onCancel={() => setShowDeleteModal(false)}
         />
       )}
-    </div>
+    </>
   );
 };
 

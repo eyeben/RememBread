@@ -7,7 +7,7 @@ interface CardSetEditButtonProps {
 
 const CardSetEditButton = ({ isEditing, onToggle }: CardSetEditButtonProps) => {
   return (
-    <Button className="w-1/2 hover:bg-primary-100" variant="primary-outline" onClick={onToggle}>
+    <Button className="w-1/8 hover:bg-primary-100" variant="primary-outline" onClick={onToggle}>
       {isEditing ? "편집 완료" : "편집하기"}
     </Button>
   );
