@@ -43,7 +43,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     );
 
     @Query(value = """
-    SELECT cs.id AS cardSetId, cs.name AS title, cs.views AS viewCount, cs.forks AS forkCount
+    SELECT cs.id AS cardSetId, cs.name AS name, cs.views AS viewCount, cs.forks AS forkCount
     FROM card_sets cs
     WHERE cs.is_public = true
         AND cs.name ILIKE %:query%
@@ -60,7 +60,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     );
 
     @Query(value = """
-    SELECT cs.id AS cardSetId, cs.name AS title, cs.views AS viewCount, cs.forks AS forkCount
+    SELECT cs.id AS cardSetId, cs.name AS name, cs.views AS viewCount, cs.forks AS forkCount
     FROM card_sets cs
     JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
@@ -81,7 +81,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     @Query(value = """
     SELECT 
         cs.id AS cardSetId,
-        cs.name AS title,
+        cs.name AS name,
         cs.views AS viewCount,
         cs.forks AS forkCount
     FROM card_sets cs
@@ -105,15 +105,14 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             @Param("offset") int offset
     );
 
-    @Query("""
-    SELECT new com.remembread.card.dto.response.CardSetSimpleListGetResponse$CardSet(
-        cs.id,
-        cs.name
-    )
-    FROM CardSet cs
-    WHERE cs.folder.id = :folderId
+    @Query(value = """
+    SELECT 
+        cs.id AS cardSetId,
+        cs.name AS title
+    FROM card_sets cs
+    WHERE cs.folder_id = :folderId
     ORDER BY cs.name ASC
-""")
+    """, nativeQuery = true)
     List<CardSetSimpleListGetResponse.CardSet> findByFolderIdOrderByName(@Param("folderId") Long folderId);
 
 }
