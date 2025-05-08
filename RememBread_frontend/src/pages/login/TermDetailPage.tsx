@@ -46,29 +46,31 @@ const TermDetailPage = () => {
   };
 
   return (
-    <div className="w-full max-w-[600px] mx-auto pc:border-x">
-      <header className="fixed top-0 left-0 right-0 w-full max-w-[600px] h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-50">
+    <div className="w-full max-w-[600px] mx-auto pc:border-x no-scrollbar">
+      <header className="sticky top-0 left-0 right-0 w-full max-w-[600px] h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-50">
         <nav className="h-full mx-auto">
-          <div className="flex items-center w-full h-full px-5">
-            <button onClick={handleBack} className="absolute left-5">
+          <div className="flex items-center w-full h-full px-4 sm:px-5">
+            <button onClick={handleBack} className="absolute left-4 sm:left-5 text-lg sm:text-xl">
               &lt;
             </button>
-            <h1 className="w-full text-center text-lg font-bold">{currentTerm?.title}</h1>
+            <h1 className="w-full text-center text-base sm:text-lg font-bold">{currentTerm?.title}</h1>
           </div>
         </nav>
       </header>
-      <div className="pt-14 min-h-screen flex flex-col">
-        <div className="p-6 flex-1">
-          <p className="whitespace-pre-line text-sm leading-6">{currentTerm?.content}</p>
-        </div>
-        <div className="flex justify-center items-center py-[14px] px-0 mb-24">
-          <Button
-            variant={isAgreed ? "primary" : "primary-outline"}
-            className="w-[28rem] py-3"
-            onClick={handleAgree}
-          >
-            동의
-          </Button>
+      <div className="flex flex-col min-h-[calc(100vh-3.5rem)]">
+        <div className="flex-1">
+          <div className="p-4 sm:p-6">
+            <p className="whitespace-pre-line text-xs sm:text-sm leading-6 mb-8">{currentTerm?.content}</p>
+            <div className="flex justify-center items-center py-3 sm:py-[14px]">
+              <Button
+                variant={isAgreed ? "primary" : "primary-outline"}
+                className="w-full max-w-[28rem] py-2.5 sm:py-3 text-sm sm:text-base"
+                onClick={handleAgree}
+              >
+                동의
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>

@@ -1,11 +1,8 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
-import { indexCard, indexCardSet } from "@/types/indexCard";
-import { getCardsByCardSet } from "@/services/card";
+import { indexCardSet } from "@/types/indexCard";
 import { createEmptyCard } from "@/utils/createEmptyCard";
-import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
-
+import Button from "@/components/common/Button";
 import {
   Carousel,
   CarouselContent,
@@ -15,39 +12,28 @@ import {
   type CarouselApi,
 } from "@/components/ui/carousel";
 
-const CardStudyPage = () => {
-  const navigate = useNavigate();
-  const location = useLocation();
-  const cardSet: indexCardSet | undefined = location.state?.card;
-
+const CardTestConcept = () => {
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-  const [cards, setCards] = useState<indexCard[]>([]);
+
+  const [cardSet, setCardSet] = useState<indexCardSet>({
+    folderId: Number(0),
+    hashTags: [],
+    breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
+  });
+
   const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
-    if (!cardSet?.cardSetId) {
-      navigate("/card-view/my", { replace: true });
+    if (!api) {
       return;
     }
 
-    const fetchCards = async () => {
-      try {
-        const res = await getCardsByCardSet(cardSet.cardSetId, 0, 100, "asc");
-        setCards(res.result.cards);
-      } catch (error) {
-        console.error("카드 불러오기 실패:", error);
-      }
-    };
-
-    fetchCards();
-  }, [cardSet?.cardSetId, navigate]);
-
-  useEffect(() => {
-    if (!api) return;
     setCurrentIndex(api.selectedScrollSnap() + 1);
+
     api.on("select", () => {
       setCurrentIndex(api.selectedScrollSnap() + 1);
     });
@@ -55,7 +41,9 @@ const CardStudyPage = () => {
 
   const handleFlip = () => {
     setIsFront((prev) => !prev);
+
     setIsButtonDisabled(true);
+
     setTimeout(() => {
       setIsRotating(!isRotating);
       setIsButtonDisabled(false);
@@ -64,7 +52,7 @@ const CardStudyPage = () => {
 
   return (
     <div className="flex flex-col justify-between w-full text-center gap-4">
-      <Button
+      {/* <Button
         className="text-primary-500 text-2xl font-bold m-5 py-5"
         variant="primary-outline"
         onClick={handleFlip}
@@ -73,8 +61,8 @@ const CardStudyPage = () => {
         {!isFront ? "concept" : "description"}
       </Button>
 
-      <div>
-        {currentIndex} / {cards.length}
+      <div className="">
+        {currentIndex} / {cardSet.breads.length}
       </div>
 
       <Carousel
@@ -86,8 +74,8 @@ const CardStudyPage = () => {
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
         <CarouselContent className="aspect-square">
-          {cards.map((card, index) => (
-            <CarouselItem key={card.id ?? index} className="relative">
+          {cardSet.breads.map((bread, index) => (
+            <CarouselItem key={index} className={`relative`}>
               <div className="relative w-full h-full">
                 <div
                   className={`relative transition-transform duration-1000 ${
@@ -98,22 +86,27 @@ const CardStudyPage = () => {
 
                   {!isRotating ? (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
-                      {card.concept || "제목 없음"}
+                      {bread?.concept || "제목 없음"}
                     </div>
                   ) : (
                     <textarea
                       className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                      value={card.description}
+                      value={bread?.description}
                       placeholder="여기에 텍스트를 입력하세요"
                       onChange={(e) => {
-                        const updated = [...cards];
-                        updated[index] = {
-                          ...updated[index],
-                          description: e.target.value,
-                        };
-                        setCards(updated);
+                        const updatedDescription = e.target.value;
+                        setCardSet((prev) => {
+                          const newBreads = [...prev.breads];
+                          newBreads[index] = {
+                            ...newBreads[index],
+                            description: updatedDescription,
+                          };
+                          return { ...prev, breads: newBreads };
+                        });
                       }}
-                      style={{ scrollbarWidth: "none" }}
+                      style={{
+                        scrollbarWidth: "none",
+                      }}
                     />
                   )}
                 </div>
@@ -123,9 +116,10 @@ const CardStudyPage = () => {
         </CarouselContent>
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
-      </Carousel>
+      </Carousel> */}
+      개념테스트 페이지임
     </div>
   );
 };
 
-export default CardStudyPage;
+export default CardTestConcept;

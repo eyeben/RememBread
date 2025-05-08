@@ -1,6 +1,6 @@
 import { indexCardSet } from "@/types/indexCard";
 
-export const DummyBreadList: indexCardSet[] = [
+export const DummyBreadSetList: indexCardSet[] = [
   {
     cardSetId: 1,
     title: "정보처리기사 1회차",

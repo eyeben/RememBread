@@ -1,51 +1,38 @@
-import { useState } from "react";
-import { List } from "lucide-react";
-import { ButtonUI } from "@/components/ui/button";
-import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Command, CommandGroup, CommandItem } from "@/components/ui/command";
-
-const sortOptions = [
-  { label: "최신순", value: "latest" },
-  { label: "인기순", value: "popular" },
-  { label: "장발장순", value: "jean-valjean" },
-];
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 const OrderSelector = () => {
-  const [selectedSort, setSelectedSort] = useState<string>("최신순");
-  const [open, setOpen] = useState<boolean>(false);
-
   return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <PopoverTrigger asChild>
-        <ButtonUI
-          variant="outline"
-          className="rounded-full w-24 px-3 py-1 h-auto text-sm bg-neutral-50 border-none hover:bg-neutral-100 flex justify-start items-center gap-2 "
+    <Select defaultValue="latest">
+      <SelectTrigger className="w-[100px] border-primary-700 focus:ring-primary-700 focus:border-primary-700">
+        <SelectValue placeholder="Theme" className="data-[state=checked]:text-primary-700 " />
+      </SelectTrigger>
+      <SelectContent>
+        <SelectItem
+          value="latest"
+          className="data-[state=checked]:text-primary-700 data-[state=checked]:font-semibold"
         >
-          <div className="w-4 h-4 flex items-center justify-center">
-            <List className="w-4 h-4 text-neutral-400" />
-          </div>
-          <span className="flex flex-1 items-center justify-center">{selectedSort}</span>
-        </ButtonUI>
-      </PopoverTrigger>
-      <PopoverContent className="max-w-24 p-0 ">
-        <Command>
-          <CommandGroup>
-            {sortOptions.map((option) => (
-              <CommandItem
-                className="hover:cursor-pointer"
-                key={option.value}
-                onSelect={() => {
-                  setSelectedSort(option.label);
-                  setOpen(false);
-                }}
-              >
-                {option.label}
-              </CommandItem>
-            ))}
-          </CommandGroup>
-        </Command>
-      </PopoverContent>
-    </Popover>
+          최신순
+        </SelectItem>
+        <SelectItem
+          value="popularity"
+          className="data-[state=checked]:text-primary-700 data-[state=checked]:font-semibold"
+        >
+          인기순
+        </SelectItem>
+        <SelectItem
+          value="fork"
+          className="data-[state=checked]:text-primary-700 data-[state=checked]:font-semibold"
+        >
+          포크순
+        </SelectItem>
+      </SelectContent>
+    </Select>
   );
 };
 

@@ -31,16 +31,16 @@ const SignupTermsPage = () => {
   return (
     <>
       {!isDetailPage && (
-        <div className="flex flex-col items-center min-h-screen p-4">
-          <div className="w-full max-w-md text-center mt-20">
-            <WelcomeCroissant className="w-[200px] h-[200px] mx-auto mb-8" />
-            <h1 className="text-2xl font-bold mb-1">암기빵이 처음이시군요</h1>
-            <p className="text-2xl font-bold mb-16">
+        <div className="flex flex-col items-center min-h-screen p-4 no-scrollbar">
+          <div className="w-full max-w-md text-center mt-10 sm:mt-20">
+            <WelcomeCroissant className="w-1/2 aspect-square mx-auto mb-6 sm:mb-8" />
+            <h1 className="text-xl sm:text-2xl font-bold mb-1">암기빵이 처음이시군요</h1>
+            <p className="text-xl sm:text-2xl font-bold mb-10 sm:mb-16">
               <span className="text-primary-500">약관내용에</span>
               <span className="text-black"> 동의해주세요</span>
             </p>
 
-            <div className="rounded-lg mb-28">
+            <div className="rounded-lg mb-16 sm:mb-28">
               <label className="flex items-center gap-2 mb-4 rounded-lg">
                 <input
                   type="checkbox"
@@ -48,7 +48,7 @@ const SignupTermsPage = () => {
                   checked={checkboxes.all}
                   onChange={(e) => handleAllCheck(e.target.checked)}
                 />
-                <span className="text-lg">약관 전체 동의</span>
+                <span className="text-base sm:text-lg">약관 전체 동의</span>
               </label>
               <div className="space-y-4 text-left">
                 <TermItem
@@ -74,7 +74,7 @@ const SignupTermsPage = () => {
 
             <Button
               variant={isAllTermsChecked ? "primary" : "primary-outline"}
-              className="w-[28rem] py-3"
+              className="w-full max-w-[28rem] py-3"
               disabled={!isAllTermsChecked}
               onClick={handleNextClick}
             >
