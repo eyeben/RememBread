@@ -33,7 +33,7 @@ public class CardSetController {
 
     @PostMapping("/{cardSetId}/fork")
     public ApiResponse<Void> forkCardSet(@PathVariable Long cardSetId, @RequestBody ForkCardSetRequest request, @AuthUser User user) {
-        cardSetService.forkCardSet(cardSetId, request.getFolderId(), user.getId());
+        cardSetService.forkCardSet(cardSetId, request.getFolderId(), user);
         return ApiResponse.onSuccess(null);
     }
 
@@ -85,7 +85,7 @@ public class CardSetController {
                                                               @Parameter(description = "페이지당 항목 수", example = "10", required = true) @RequestParam(defaultValue = "10") int size,
                                                               @Parameter(description = "정렬 기준 (예: 최신순, 인기순, 포크순)", example = "최신순", required = true) @RequestParam(defaultValue = "최신순") String sort,
                                                               @AuthUser User user) {
-    return ApiResponse.onSuccess(cardSetService.getCardSetList(folderId, page, size, sort, user.getId()));
+    return ApiResponse.onSuccess(cardSetService.getCardSetList(folderId, page, size, sort, user));
     }
 
     @GetMapping("/search")
@@ -102,7 +102,7 @@ public class CardSetController {
     @Operation(summary = "카드셋 목록 조회", description = "폴더 ID를 기준으로 카드셋 목록을 페이징 조회합니다.")
     public ApiResponse<CardSetSimpleListGetResponse> getCardSetSimpleList(@Parameter(description = "카드셋을 조회할 폴더 ID", example = "1", required = true) @RequestParam Long folderId,
                                                                           @AuthUser User user) {
-        return ApiResponse.onSuccess(cardSetService.getCardSetSimpleList(folderId, user.getId()));
+        return ApiResponse.onSuccess(cardSetService.getCardSetSimpleList(folderId, user));
     }
 
     @GetMapping("search-my")
