@@ -1,6 +1,18 @@
 export interface indexCard {
+  id?: number;
+  cardSetId?: number;
+  number?: number;
   concept: string;
   description: string;
+  correctCount?: number;
+  solvedCount?: number;
+  retentionRate?: number;
+  stability?: number;
+  lastCorrectAt?: string | Date;
+  conceptImageUrl?: string;
+  descriptionImageUrl?: string;
+  createdAt?: string | Date;
+  updatedAt?: string | Date;
 }
 
 export interface indexCardSet {
@@ -14,9 +26,9 @@ export interface indexCardSet {
   isPublic?: number;
   viewCnt?: number;
   forkCnt?: number;
-  isLike: boolean;
-  totalCardCnt: number;
-  hashTags: string[];
+  isLike?: boolean;
+  totalCardCnt?: number;
+  hashTags?: string[];
   createdDate?: string | Date;
   updatedDate?: string | Date;
 }

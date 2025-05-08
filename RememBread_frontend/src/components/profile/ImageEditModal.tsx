@@ -18,7 +18,6 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
     const fetchCharacters = async () => {
       try {
         const response = await getCharacters();
-        console.log("캐릭터 목록:", response.result);
         setCharacters(response.result);
       } catch (error) {
         console.error("캐릭터 목록을 불러오는 중 오류가 발생했습니다:", error);
@@ -32,7 +31,7 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[425px]" aria-describedby={undefined}>
+      <DialogContent className="max-w-80 rounded-lg" aria-describedby={undefined}>
         <DialogHeader>
           <DialogTitle className="text-center">캐릭터 선택</DialogTitle>
         </DialogHeader>
@@ -53,11 +52,10 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
               <div className="text-center mt-2">{character.name}</div>
               {character.isLocked && (
                 <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                  <img src="/images/lock.png" alt="잠금" className="w-8 h-8" />
                 </div>
               )}
               {character.id === currentCharacterId && (
-                <div className="absolute top-0 right-0 bg-blue-500 text-white px-2 py-1 rounded">
+                <div className="absolute top-0 right-0 bg-positive-300 text-white px-2 py-1 rounded">
                   선택됨
                 </div>
               )}
