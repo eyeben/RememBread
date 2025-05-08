@@ -46,6 +46,14 @@ public class RedisService {
         return redisTemplate.opsForZSet().reverseRange(key, start, end);
     }
 
+    public Set<Object> getOneZSetReverseRangeByScore(String key, double min, double max) {
+        Set<Object> result = redisTemplate.opsForZSet().reverseRangeByScore(key, min, max, 0, 1);
+        if (result.isEmpty()) {
+            result = redisTemplate.opsForZSet().rangeByScore(key, min, 1, 0, 1);
+        }
+        return result;
+    }
+
     public void removeFromZSet(String key, Object value) {
         redisTemplate.opsForZSet().remove(key, value);
     }
@@ -78,7 +86,7 @@ public class RedisService {
         redisTemplate.opsForHash().increment(key, hashKey, delta);
     }
 
-    public void decrementHash(String key, Object hashKey, Double delta) {
+    public void incrementHash(String key, Object hashKey, Double delta) {
         redisTemplate.opsForHash().increment(key, hashKey, delta);
     }
 
