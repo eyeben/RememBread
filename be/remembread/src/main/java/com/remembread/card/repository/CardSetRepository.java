@@ -108,11 +108,29 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     @Query(value = """
     SELECT 
         cs.id AS cardSetId,
-        cs.name AS title
+        cs.name AS name
     FROM card_sets cs
     WHERE cs.folder_id = :folderId
     ORDER BY cs.name ASC
     """, nativeQuery = true)
     List<CardSetSimpleListGetResponse.CardSet> findByFolderIdOrderByName(@Param("folderId") Long folderId);
+
+    @Query(value = """
+    SELECT cs.id AS cardSetId, cs.name AS name, cs.views AS viewCount, cs.forks AS forkCount
+    FROM card_sets cs
+    WHERE cs.user_id = :userId
+        AND cs.name ILIKE %:query%
+    ORDER BY
+        CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
+        CASE WHEN :column = 'views' THEN cs.views END DESC,
+        CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size OFFSET :offset
+    """, nativeQuery = true)
+    List<CardSetSearchResponse.CardSet> searchMyCardSetByTitle(
+            @Param("userId") long userId,
+            @Param("query") String query,
+            @Param("column") String column,
+            @Param("size") int size,
+            @Param("offset") int offset
+    );
 
 }

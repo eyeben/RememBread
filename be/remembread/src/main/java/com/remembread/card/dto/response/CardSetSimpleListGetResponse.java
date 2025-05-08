@@ -14,6 +14,6 @@ public class CardSetSimpleListGetResponse {
     @AllArgsConstructor
     public static class CardSet{
         Long cardSetId;
-        String title;
+        String name;
     }
 }
