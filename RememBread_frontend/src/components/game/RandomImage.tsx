@@ -6,8 +6,12 @@ import Baguette from '@/components/svgs/game/Baguette';
 import Croissant from '@/components/svgs/game/Croissant';
 import styles from '@/styles/gameStyle.module.css';
 
+interface RandomImageProps {
+  onImageSelect?: (imageName: string) => void;
+}
+
 // 이 페이지는 랜덤 이미지를 반환하는 페이지
-const RandomImage = () => {
+const RandomImage = ({ onImageSelect }: RandomImageProps) => {
   const [randomNumber, setRandomNumber] = useState<number>(1);
   const [randomImage, setRandomImage] = useState<React.ReactNode>(<DefaultBread className="w-full h-full" />);
   const [blurValue, setBlurValue] = useState<number>(40);
@@ -26,11 +30,11 @@ const RandomImage = () => {
     
     // 랜덤 이미지 선택
     const images = [
-      <DefaultBread className="w-full h-full" />,
-      <Bread className="w-full h-full" />,
-      <Bread2 className="w-full h-full" />,
-      <Baguette className="w-full h-full" />,
-      <Croissant className="w-full h-full" />
+      { component: <DefaultBread className="w-full h-full" />, name: 'DefaultBread' },
+      { component: <Bread className="w-full h-full" />, name: 'Bread' },
+      { component: <Bread2 className="w-full h-full" />, name: 'Bread2' },
+      { component: <Baguette className="w-full h-full" />, name: 'Baguette' },
+      { component: <Croissant className="w-full h-full" />, name: 'Croissant' }
     ];
     
     // 랜덤 transformOrigin 설정
@@ -42,11 +46,16 @@ const RandomImage = () => {
     // const randomOrigin = origins[Math.floor(Math.random() * origins.length)];
     // setTransformOrigin(randomOrigin);
     
-    setRandomImage(images[RandomImageNumber - 1]);
+    const selectedImage = images[RandomImageNumber - 1];
+    setRandomImage(selectedImage.component);
+    if (onImageSelect) {
+      onImageSelect(selectedImage.name);
+    }
+    
     setBlurValue(40); // blur 값 초기화
     setScaleValue(10000); // scale 값 초기화
     setTimeLeft(10); // 타이머 초기화
-  }, []);
+  }, [onImageSelect]);
 
   // 타이머와 blur 효과를 위한 useEffect
   useEffect(() => {

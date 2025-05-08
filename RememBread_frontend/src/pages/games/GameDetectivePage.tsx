@@ -1,14 +1,67 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Button from '@/components/common/Button';
 import Timer from '@/components/common/Timer';
 import RandomImage from '@/components/game/RandomImage';
+import { breadNames, imageToName } from '@/data/breadData';
+import useGameStore from '@/stores/gameStore';
+import GameResultModal from '@/components/game/GameResultModal';
 
 const GameDetectivePage = () => {
-  const [problemNumber, setProblemNumber] = useState(1);
+  const navigate = useNavigate();
+  const { setDetectiveScore } = useGameStore();
+  const [problemNumber, setProblemNumber] = useState<number>(1);
+  const [currentImage, setCurrentImage] = useState<string>('');
+  const [answers, setAnswers] = useState<string[]>([]);
+  const [score, setScore] = useState<number>(0);
+  const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
+
+  // 랜덤한 답안 생성
+  const generateAnswers = (correctAnswer: string) => {
+    // 정답을 제외한 빵 이름들
+    const otherBreads = breadNames.filter(name => name !== correctAnswer);
+    
+    // 3개의 랜덤한 답안 선택
+    const randomAnswers = [...otherBreads]
+      .sort(() => Math.random() - 0.5)
+      .slice(0, 3);
+    
+    // 정답을 포함한 4개의 답안 생성
+    const allAnswers = [...randomAnswers, correctAnswer];
+    
+    // 답안 순서 섞기
+    return allAnswers.sort(() => Math.random() - 0.5);
+  };
+
+  // 이미지가 변경될 때마다 답안 생성
+  useEffect(() => {
+    if (currentImage) {
+      const correctAnswer = imageToName[currentImage];
+      if (correctAnswer) {
+        setAnswers(generateAnswers(correctAnswer));
+      }
+    }
+  }, [currentImage]);
 
   // 사용자가 정답을 누르면
+  const handleAnswer = (selectedAnswer: string) => {
+    const correctAnswer = imageToName[currentImage];
+    if (selectedAnswer === correctAnswer) {
+      setScore(prev => prev + 1);
+      setResultModalType("success");
+    } else {
+      setResultModalType("fail");
+    }
+  };
+
   const handleNextProblem = () => {
+    setResultModalType(null);
     setProblemNumber(prev => prev + 1);
+  };
+
+  const handleTimeEnd = () => {
+    setDetectiveScore(score);
+    navigate("/games/result", { state: { game: "detective" } });
   };
 
   return (
@@ -20,6 +73,7 @@ const GameDetectivePage = () => {
           <span className="text-2xl text-neutral-500">
             <Timer
               initial={60}
+              onEnd={handleTimeEnd}
             >
               {(time) => `${time}초`}
             </Timer>
@@ -31,18 +85,31 @@ const GameDetectivePage = () => {
           <div className="w-full h-full">
             <RandomImage 
               key={problemNumber}
+              onImageSelect={setCurrentImage}
             />
           </div>
         </div>
 
         {/* 하단: 선택지 버튼 */}
         <div className="w-full grid grid-cols-2 gap-4 pb-10">
-          <Button variant="primary" className="py-7 text-lg" onClick={handleNextProblem}>바게트</Button>
-          <Button variant="primary" className="py-7 text-lg" onClick={handleNextProblem}>밤식빵</Button>
-          <Button variant="primary" className="py-7 text-lg" onClick={handleNextProblem}>케이크</Button>
-          <Button variant="primary" className="py-7 text-lg" onClick={handleNextProblem}>타르트</Button>
+          {answers.map((answer, index) => (
+            <Button 
+              key={index}
+              variant="primary" 
+              className="py-7 text-lg" 
+              onClick={() => handleAnswer(answer)}
+            >
+              {answer}
+            </Button>
+          ))}
         </div>
       </div>
+
+      <GameResultModal
+        open={!!resultModalType}
+        type={resultModalType === "success" ? "success" : "fail"}
+        onClose={handleNextProblem}
+      />
     </div>
   );
 };
