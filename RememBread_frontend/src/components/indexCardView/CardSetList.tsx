@@ -9,10 +9,11 @@ import CardSet from "@/components/svgs/indexCardView/CardSet";
 
 interface CardSetListProps {
   isEditing: boolean;
+  folderId: number;
   toggleEditing: () => void;
 }
 
-const CardSetList = ({ isEditing }: CardSetListProps) => {
+const CardSetList = ({ isEditing, folderId }: CardSetListProps) => {
   const navigate = useNavigate();
 
   const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
@@ -24,7 +25,7 @@ const CardSetList = ({ isEditing }: CardSetListProps) => {
     const fetchData = async () => {
       try {
         const res = await getCardSetList({
-          folderId: 16,
+          folderId,
           page: 0,
           size: 12,
           sort: "최신순",
@@ -35,7 +36,7 @@ const CardSetList = ({ isEditing }: CardSetListProps) => {
       }
     };
     fetchData();
-  }, []);
+  }, [folderId]);
 
   const toggleItem = (cardSetId: number) => {
     if (!isEditing) return;
