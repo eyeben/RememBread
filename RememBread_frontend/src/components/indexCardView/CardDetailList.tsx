@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, MouseEvent, FC } from "react";
 import { indexCard } from "@/types/indexCard";
 import { getCardsByCardSet, deleteCard } from "@/services/card";
 
@@ -7,7 +7,7 @@ interface CardDetailListProps {
   highlightIndex?: number;
 }
 
-const CardDetailList: React.FC<CardDetailListProps> = ({ cardSetId, highlightIndex = -1 }) => {
+const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps) => {
   const [cards, setCards] = useState<indexCard[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -24,7 +24,7 @@ const CardDetailList: React.FC<CardDetailListProps> = ({ cardSetId, highlightInd
   }, [cardSetId]);
 
   // 우클릭으로 선택 토글
-  const handleContextMenu = (e: React.MouseEvent<HTMLDivElement>, cardId?: number) => {
+  const handleContextMenu = (e: MouseEvent<HTMLDivElement>, cardId?: number) => {
     e.preventDefault();
     console.log("오른쪽 클릭된 카드 ID:", cardId);
     if (!cardId) return;

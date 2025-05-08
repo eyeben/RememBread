@@ -165,7 +165,7 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
 
   return (
     <div className="flex flex-col flex-1">
-      <Drawer open={open} onOpenChange={setOpen}>
+      <Drawer>
         <DrawerTrigger asChild>
           <button className="h-8 w-full text-left border-b border-gray-200 py-1 cursor-pointer">
             <ul className="flex items-center whitespace-nowrap space-x-1 h-full">

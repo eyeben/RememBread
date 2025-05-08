@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
@@ -54,7 +54,7 @@ const CardSetList = ({ isEditing, folderId }: CardSetListProps) => {
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLDivElement>, cardSetId: number) => {
+  const handleDragStart = (e: DragEvent<HTMLDivElement>, cardSetId: number) => {
     if (!selectedItems.includes(cardSetId)) {
       e.preventDefault();
       return;
