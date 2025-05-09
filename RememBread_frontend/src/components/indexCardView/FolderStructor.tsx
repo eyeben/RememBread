@@ -168,36 +168,66 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
     }
   };
 
+  const renderPathItems = () => {
+    const items = [...folderPath.split(" > "), selectedCardSet?.name].filter(Boolean);
+
+    // 아무것도 선택되지 않았을 때
+    if (items.length === 0) {
+      return (
+        <li className="flex items-center space-x-1 text-gray-400">
+          <FolderOpen className="w-4 h-4 text-gray-300" />
+          <span className="text-sm italic">폴더를 선택해주세요</span>
+        </li>
+      );
+    }
+
+    if (items.length <= 3) {
+      return items.map((name, idx) => {
+        const isLast = idx === items.length - 1;
+        return (
+          <li key={idx} className="flex items-center space-x-1">
+            <FolderOpen className="w-4 h-4 text-gray-400 shrink-0" />
+            <span className={`text-sm ${isLast ? "text-primary-700" : "text-gray-600"}`}>
+              {name}
+            </span>
+            {idx < items.length - 1 && <span className="text-gray-400">{">"}</span>}
+          </li>
+        );
+      });
+    }
+
+    // 4개 이상이면 중간 생략
+    return (
+      <>
+        <li className="flex items-center space-x-1">
+          <FolderOpen className="w-4 h-4 text-gray-400 shrink-0" />
+          <span className="text-sm text-gray-600">{items[0]}</span>
+          <span className="text-gray-400">{">"}</span>
+        </li>
+        <li className="text-gray-400 text-sm px-1">...</li>
+        <li className="flex items-center space-x-1">
+          <FolderOpen className="w-4 h-4 text-gray-400 shrink-0" />
+          <span className="text-sm text-gray-600">{items[items.length - 2]}</span>
+          <span className="text-gray-400">{">"}</span>
+        </li>
+        <li className="flex items-center space-x-1">
+          <FolderOpen className="w-4 h-4 text-gray-400 shrink-0" />
+          <span className="text-sm text-primary-700">{items[items.length - 1]}</span>
+        </li>
+      </>
+    );
+  };
+
   return (
     <div className="flex flex-col flex-1">
       <Drawer>
         <DrawerTrigger asChild>
-          <button className="h-8 w-full text-left border-b border-gray-200 py-1 cursor-pointer">
-            <ul className="flex items-center whitespace-nowrap space-x-1 h-full">
-              {folderPath || selectedCardSet ? (
-                [...folderPath.split(" > "), selectedCardSet?.name]
-                  .filter(Boolean)
-                  .map((name, idx, arr) => {
-                    const isLast = idx === arr.length - 1;
-                    return (
-                      <li key={idx} className="flex items-center space-x-1">
-                        <FolderOpen className="w-4 h-4 text-gray-400" />
-                        <span
-                          className={`text-sm ${isLast ? "text-primary-700" : "text-gray-600"}`}
-                        >
-                          {name}
-                        </span>
-                        {idx < arr.length - 1 && <span className="text-gray-400">{">"}</span>}
-                      </li>
-                    );
-                  })
-              ) : (
-                <li className="flex items-center space-x-1 text-gray-400">
-                  <FolderOpen className="w-4 h-4 text-gray-300" />
-                  <span className="text-sm italic">폴더를 선택해주세요</span>
-                </li>
-              )}
-            </ul>
+          <button className="h-8 w-full text-left border-b border-gray-200 py-1 cursor-pointer overflow-hidden">
+            <div className="w-full overflow-hidden whitespace-nowrap">
+              <ul className="flex items-center space-x-1 h-full overflow-hidden whitespace-nowrap">
+                {renderPathItems()}
+              </ul>
+            </div>
           </button>
         </DrawerTrigger>
 

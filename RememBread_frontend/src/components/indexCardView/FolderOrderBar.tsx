@@ -10,7 +10,9 @@ interface FolderOrderBarProps {
 const FolderOrderBar = ({ isEditing, toggleEditing, onSelectFolder }: FolderOrderBarProps) => {
   return (
     <div className="flex justify-between items-center w-full px-2 h-10 gap-4">
-      <FolderStructor onSelectFolder={onSelectFolder} />
+      <div className="flex-1 min-w-0">
+        <FolderStructor onSelectFolder={onSelectFolder} />
+      </div>
       <CardSetEditButton isEditing={isEditing} onToggle={toggleEditing} />
     </div>
   );
