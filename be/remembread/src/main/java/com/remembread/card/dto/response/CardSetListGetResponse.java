@@ -1,12 +1,13 @@
 package com.remembread.card.dto.response;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class CardSetListGetResponse {
     private List<CardSet> cardSets;
 

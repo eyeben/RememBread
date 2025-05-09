@@ -20,19 +20,24 @@ import com.remembread.hashtag.repository.CardSetHashtagRepository;
 import com.remembread.hashtag.repository.HashtagRepository;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @Service
-@RequiredArgsConstructor
 public class CardSetService {
 
     private final CardRepository cardRepository;
@@ -41,6 +46,24 @@ public class CardSetService {
 
     private final HashtagRepository hashtagRepository;
     private final CardSetHashtagRepository cardSetHashtagRepository;
+
+    private final RedisTemplate<String, String> redisTemplate;
+
+    public CardSetService(
+            CardRepository cardRepository,
+            CardSetRepository cardSetRepository,
+            FolderRepository folderRepository,
+            HashtagRepository hashtagRepository,
+            CardSetHashtagRepository cardSetHashtagRepository,
+            @Qualifier("viewCountRedisTemplate") RedisTemplate<String, String> redisTemplate
+    ) {
+        this.cardRepository = cardRepository;
+        this.cardSetRepository = cardSetRepository;
+        this.folderRepository = folderRepository;
+        this.hashtagRepository = hashtagRepository;
+        this.cardSetHashtagRepository = cardSetHashtagRepository;
+        this.redisTemplate = redisTemplate;
+    }
 
     @Transactional
     public CardSetCreateResponse createCardSet(CardSetCreateRequest request, User user) {
@@ -142,7 +165,7 @@ public class CardSetService {
         return response;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CardListResponse getCardSetList(Long id, Integer page, Integer size, String order, User user) {
         CardSet cardSet = cardSetRepository.findById(id).orElseThrow(() ->
                 new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
@@ -155,6 +178,11 @@ public class CardSetService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
         List<Card> cards = cardRepository.findAllByCardSet(cardSet, pageable);
+
+        // 자기 카드셋 아니면 조회수 로직 수행
+        if(!user.getId().equals(cardSet.getUser().getId()))
+            updateViews(user.getId(), cardSet.getId());
+
         return CardConverter.toCardListResponse(cards);
     }
 
@@ -197,7 +225,7 @@ public class CardSetService {
         String column = CardSetSortType.getColumnByKor(sort);
         int offset = page * size;
         // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
-// 1. flat 결과 가져오기
+        // 1. flat 결과 가져오기
         List<CardSetFlatDto> flatResults = cardSetRepository.getCardSetSorted(folderId, column, size, offset);
 
         // 2. 중복 제거 + 해시태그 병합
@@ -212,7 +240,7 @@ public class CardSetService {
                             .name(row.getName())
                             .isLike(row.getIsLike())
                             .isPublic(row.getIsPublic())
-                            .viewCount(row.getViewCount())
+                            .viewCount(row.getViewCount() + getCachedCardSetViewCount(row.getCardSetId())) // 캐시값도 고려
                             .forkCount(row.getForkCount())
                             .totalCardCount(row.getTotalCardCount())
                             .lastViewedCardId(row.getLastViewedCardId())
@@ -229,9 +257,7 @@ public class CardSetService {
         }
 
         // 3. 최종 응답 구성
-        CardSetListGetResponse response = new CardSetListGetResponse();
-        response.setCardSets(new ArrayList<>(map.values()));
-        return response;
+        return new CardSetListGetResponse(new ArrayList<>(map.values()));
     }
 
     @Transactional(readOnly = true)
@@ -239,7 +265,6 @@ public class CardSetService {
         SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
-        CardSetSearchResponse response = new CardSetSearchResponse();
 
         if(!query.isEmpty() && query.charAt(0) == '#'){
             query = query.substring(1);
@@ -250,20 +275,24 @@ public class CardSetService {
             searchCategory = SearchCategory.작성자;
         }
 
-
+        CardSetSearchResponse response;
         switch (searchCategory) {
-            case 제목 -> response.setCardSets(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
-            case 작성자 -> response.setCardSets(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
-            case 해시태그 -> response.setCardSets(cardSetRepository.searchByHashtag(query, sortColumn, size, offset));
+            case 제목 -> response = new CardSetSearchResponse(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
+            case 작성자 -> response = new CardSetSearchResponse(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
+            case 해시태그 -> response = new CardSetSearchResponse(cardSetRepository.searchByHashtag(query, sortColumn, size, offset));
             default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
         }
+
+        // 캐시된 애들 조회수 추가
+        for(CardSetSearchResponse.CardSet itm: response.getCardSets())
+            itm.updateViewCount(itm.getViewCount() + getCachedCardSetViewCount(itm.getCardSetId()));
 
         return response;
     }
 
     @Transactional(readOnly = true)
     public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, User user) {
-        Folder folder = null;
+        Folder folder;
         if(folderId == null)
             folder = folderRepository.findByUserAndUpperFolderIsNull(user);
         else
@@ -280,12 +309,13 @@ public class CardSetService {
     public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
-        CardSetSearchResponse response = new CardSetSearchResponse();
+        CardSetSearchResponse response = new CardSetSearchResponse(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
 
-        response.setCardSets(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
+        // 캐시된 애들 조회수 추가
+        for(CardSetSearchResponse.CardSet itm: response.getCardSets())
+            itm.updateViewCount(itm.getViewCount() + getCachedCardSetViewCount(itm.getCardSetId()));
 
         return response;
-
     }
 
     @Transactional
@@ -326,7 +356,7 @@ public class CardSetService {
                             .name(row.getName())
                             .isLike(row.getIsLike())
                             .isPublic(row.getIsPublic())
-                            .viewCount(row.getViewCount())
+                            .viewCount(row.getViewCount() + getCachedCardSetViewCount(row.getCardSetId()))// 캐시된 조회수 추가
                             .forkCount(row.getForkCount())
                             .totalCardCount(row.getTotalCardCount())
                             .lastViewedCardId(row.getLastViewedCardId())
@@ -341,9 +371,30 @@ public class CardSetService {
                 dto.getHashTags().add(tag);
             }
         }
+        return new CardSetListGetResponse(new ArrayList<>(map.values()));
+    }
 
-        CardSetListGetResponse response = new CardSetListGetResponse();
-        response.setCardSets(new ArrayList<>(map.values()));
-        return response;
+    private void updateViews(Long userId, Long cardSetId) {
+        String viewedKey = "cardSet:viewed:" + cardSetId;
+        String countKey = "cardSet:viewCount:" + cardSetId;
+        String userKey = String.valueOf(userId); // 또는 userId.toString()
+        // 1. 해당 사용자가 이미 조회했는지 확인
+        Boolean isMember = redisTemplate.opsForSet().isMember(viewedKey, userKey);
+
+        if (Boolean.FALSE.equals(isMember)) {
+            // 2. 조회 기록 저장 (중복 방지용)
+            redisTemplate.opsForSet().add(viewedKey, userKey);
+
+            // 3. TTL 설정 (선택적) – 예: 하루 뒤에 만료
+            redisTemplate.expire(viewedKey, Duration.ofDays(1));
+
+            // 4. 실제 조회수 증가
+            redisTemplate.opsForValue().increment(countKey);
+        }
+    }
+    public Integer getCachedCardSetViewCount(Long cardSetId) {
+        String countKey = "cardSet:viewCount:" + cardSetId;
+        String value = redisTemplate.opsForValue().get(countKey);
+        return value != null ? Integer.parseInt(value) : 0;
     }
 }
