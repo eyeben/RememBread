@@ -7,7 +7,6 @@ import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.*;
 import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.enums.CardSetSortType;
-import com.remembread.card.enums.SearchCategory;
 import com.remembread.card.service.CardSetService;
 import com.remembread.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,12 +22,11 @@ public class CardSetController {
     private final CardSetService cardSetService;
 
     @PostMapping
-    public ApiResponse<Void> createCardSet(
+    public ApiResponse<CardSetCreateResponse> createCardSet(
             @RequestBody CardSetCreateRequest request,
             @AuthUser User user
             ) {
-        cardSetService.createCardSet(request, user);
-        return ApiResponse.onSuccess(null);
+        return ApiResponse.onSuccess(cardSetService.createCardSet(request, user));
     }
 
     @PostMapping("/{cardSetId}/fork")
