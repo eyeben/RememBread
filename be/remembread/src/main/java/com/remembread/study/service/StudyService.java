@@ -11,11 +11,13 @@ import com.remembread.card.entity.CardSet;
 import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.common.service.RedisService;
+import com.remembread.study.converter.StudyConverter;
 import com.remembread.study.dto.CardCache;
 import com.remembread.study.dto.request.AnswerResultRequest;
 import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
+import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.entity.StudySession;
 import com.remembread.study.repository.CardStudyLogRepository;
 import com.remembread.study.repository.StudySessionRepository;
@@ -27,7 +29,8 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.locationtech.jts.geom.LineString;
 import org.locationtech.jts.geom.PrecisionModel;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +43,6 @@ import java.util.*;
 @RequiredArgsConstructor
 public class StudyService {
 
-    private final RedisTemplate<String, Object> redisTemplate;
     @Value("${spring.application.name}")
     private String redisPrefix;
 
@@ -243,6 +245,17 @@ public class StudyService {
             redisService.putHash(cardKey, "retentionRate", retentionRate);
             redisService.addToZSet(zSetKey, cardKey, retentionRate);
         }
+    }
+
+    public RouteResponse getRoutes(Long cardSetId, Integer page, Integer size, User user) {
+        CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(()
+                -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+        }
+        Pageable pageable = PageRequest.of(page, size);
+        List<StudySession> studySessions = studySessionRepository.findByCardSetOrderByStudiedAtDesc(cardSet, pageable);
+        return StudyConverter.toRouteResponse(studySessions);
     }
 
 }
