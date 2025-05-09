@@ -15,13 +15,7 @@ interface MyCardSetListProps {
   toggleEditing: () => void;
 }
 
-const MyCardSetList = ({
-  isEditing,
-  folderId,
-  query,
-  sortType,
-  toggleEditing,
-}: MyCardSetListProps) => {
+const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListProps) => {
   const navigate = useNavigate();
   const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);

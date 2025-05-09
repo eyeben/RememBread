@@ -4,7 +4,13 @@ import { getCardSetSimple } from "@/services/cardSet";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { Folder } from "@/types/folder";
 import { indexCardSet } from "@/types/indexCard";
-import { Drawer, DrawerTrigger, DrawerContent } from "@/components/ui/drawer";
+import {
+  Drawer,
+  DrawerTrigger,
+  DrawerContent,
+  DrawerHeader,
+  DrawerTitle,
+} from "@/components/ui/drawer";
 import { Command, CommandItem, CommandGroup } from "@/components/ui/command";
 
 const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => void }) => {
@@ -19,7 +25,6 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
   const [folderPath, setFolderPath] = useState<string>("");
   const [selectedFolder, setSelectedFolder] = useState<FolderTreeItem | null>(null);
   const [selectedCardSet, setSelectedCardSet] = useState<indexCardSet | null>(null);
-  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (selectedFolder) {
@@ -204,9 +209,12 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
             overflow: "hidden", // DrawerContent 자체에는 스크롤 없음
           }}
         >
+          <DrawerHeader>
+            <DrawerTitle>폴더 선택</DrawerTitle>
+          </DrawerHeader>
           <div className="overflow-y-auto max-h-[calc(80vh-48px)]">
             <Command>
-              <CommandGroup heading="폴더">
+              <CommandGroup>
                 {options.map((opt) => {
                   const selectedValue = selectedCardSet
                     ? `set-${selectedCardSet.cardSetId}`
