@@ -7,13 +7,15 @@ import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 
-interface CardSetListProps {
+interface MyCardSetListProps {
   isEditing: boolean;
   folderId: number;
+  query: string;
+  sortType: "latest" | "popularity" | "fork";
   toggleEditing: () => void;
 }
 
-const CardSetList = ({ isEditing, folderId }: CardSetListProps) => {
+const MyCardSetList = ({ isEditing, folderId }: MyCardSetListProps) => {
   const navigate = useNavigate();
 
   const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
@@ -153,4 +155,4 @@ const CardSetList = ({ isEditing, folderId }: CardSetListProps) => {
   );
 };
 
-export default CardSetList;
+export default MyCardSetList;

@@ -1,11 +1,16 @@
-import { useState, ChangeEvent } from "react";
+import { ChangeEvent } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import OrderSelector from "@/components/indexCardView/OrderSelector";
 
-const CardSetSearchBar = () => {
-  const [query, setQuery] = useState<string>("");
+interface CardSetSearchBarProps {
+  query: string;
+  setQuery: (value: string) => void;
+  sortType: "latest" | "popularity" | "fork";
+  setSortType: (value: "latest" | "popularity" | "fork") => void;
+}
 
+const CardSetSearchBar = ({ query, setQuery, sortType, setSortType }: CardSetSearchBarProps) => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
     if (newValue.length <= 25) {
@@ -31,7 +36,7 @@ const CardSetSearchBar = () => {
           className="w-full text-sm text-neutral-700 placeholder-gray-400 border-0 shadow-none p-0 h-fit focus-visible:ring-0"
         />
       </div>
-      <OrderSelector />
+      <OrderSelector sortType={sortType} setSortType={setSortType} />
     </div>
   );
 };

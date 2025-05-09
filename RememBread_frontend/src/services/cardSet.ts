@@ -11,7 +11,7 @@ interface CardSetListResponse {
 }
 
 interface GetCardSetListParams {
-  folderId: number;
+  folderId?: number;
   page: number;
   size: number;
   sort: string; // '최신순', '인기순', '포크순'
@@ -32,6 +32,22 @@ export interface SearchCardSetParams {
 }
 
 export interface SearchCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    cardSets: indexCardSet[];
+  };
+}
+
+export interface SearchMyCardSetParams {
+  query: string;
+  page: number;
+  size: number;
+  cardSetSortType: "최신순" | "인기순" | "포크순" | "이름순";
+}
+
+export interface SearchMyCardSetResponse {
   isSuccess: boolean;
   code: string;
   message: string;
@@ -135,5 +151,20 @@ export const searchCardSet = async (
   } catch (error) {
     console.error("카드셋 검색 API 오류:", error);
     throw new Error("카드셋 검색 중 오류가 발생했습니다.");
+  }
+};
+
+// 나의 카드셋 조회
+export const searchMyCardSet = async (
+  params: SearchMyCardSetParams,
+): Promise<SearchMyCardSetResponse> => {
+  try {
+    const response = await http.get<SearchMyCardSetResponse>("/card-sets/search-my", {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("내 카드셋 검색 API 오류:", error);
+    throw new Error("내 카드셋 검색 중 오류가 발생했습니다.");
   }
 };
