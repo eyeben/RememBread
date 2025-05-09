@@ -19,11 +19,11 @@ public class CardCache {
 
     private Integer correctCount;
     private Integer solvedCount;
+    private Integer sessionCorrectCount;
+    private Integer sessionSolvedCount;
     @Setter
     private Double retentionRate;
     private Double stability;
     private LocalDateTime lastViewedTime;
 
-    public void setRetentionRate(Double r) {
-    }
 }

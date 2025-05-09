@@ -5,6 +5,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -88,6 +89,14 @@ public class RedisService {
 
     public void incrementHash(String key, Object hashKey, Double delta) {
         redisTemplate.opsForHash().increment(key, hashKey, delta);
+    }
+
+    public void pushList(String key, Object value) {
+        redisTemplate.opsForList().rightPush(key, value);
+    }
+
+    public List<Object> getList(String key) {
+        return redisTemplate.opsForList().range(key, 0, -1);
     }
 
 }
