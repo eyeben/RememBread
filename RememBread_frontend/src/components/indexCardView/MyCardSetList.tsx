@@ -37,11 +37,12 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
           fork: "포크순",
         };
 
-        if (query.trim()) {
+        // folderId === 0이면 getCardSetList 호출 금지
+        if (folderId === 0 || query.trim()) {
           const res = await searchMyCardSet({
             query,
             page: 0,
-            size: 100, // 검색 시 충분히 많이 가져와야 필터링 가능
+            size: 100,
             cardSetSortType: sortMap[sortType],
           });
 

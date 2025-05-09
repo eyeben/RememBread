@@ -20,28 +20,15 @@ const TotalCardSetPage = () => {
           fork: "포크순",
         };
 
-        const sortValue = sortMap[sortType];
+        const params = {
+          query,
+          page: 0,
+          size: 12,
+          cardSetSortType: sortMap[sortType],
+        };
 
-        if (query.trim()) {
-          const params = {
-            query,
-            page: 0,
-            size: 12,
-            cardSetSortType: sortValue,
-          };
-
-          const res = await searchCardSet(params);
-          setCardSetList(res.result.cardSets);
-        } else {
-          const params = {
-            page: 0,
-            size: 12,
-            sort: sortValue,
-          };
-
-          const res = await getCardSetList(params);
-          setCardSetList(res.result.cardSets);
-        }
+        const res = await searchCardSet(params);
+        setCardSetList(res.result.cardSets);
       } catch (e) {
         console.error("카드셋 조회 실패:", e);
       }
