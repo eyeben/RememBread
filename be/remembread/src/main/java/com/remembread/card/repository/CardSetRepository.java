@@ -5,7 +5,6 @@ import com.remembread.card.dto.response.CardSetListGetResponse;
 import com.remembread.card.dto.response.CardSetSearchResponse;
 import com.remembread.card.dto.response.CardSetSimpleListGetResponse;
 import com.remembread.card.entity.CardSet;
-import com.remembread.card.projection.FlatCardSetProjection;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -21,7 +20,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.is_like AS isLike,
         cs.views AS viewCount,
         cs.forks AS forkCount,
-        COUNT(c.id) AS totalCardCount,
+        CAST(COUNT(c.id) AS INTEGER) AS totalCardCount,
         cs.last_viewed_card_id AS lastViewedCardId,
         h.name AS hashTag
     FROM card_sets cs
@@ -143,14 +142,15 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.is_like AS isLike,
         cs.views AS viewCount,
         cs.forks AS forkCount,
-        COUNT(c.id) AS totalCardCount,
+        CAST(COUNT(c.id) AS INTEGER) AS totalCardCount,
         cs.last_viewed_card_id AS lastViewedCardId,
         h.name AS hashTag
     FROM card_sets cs
     LEFT JOIN cards c ON cs.id = c.card_set_id
     LEFT JOIN card_set_hashtags csh ON cs.id = csh.card_set_id
     LEFT JOIN hashtags h ON csh.hashtag_id = h.id
-    WHERE cs.user_id = :userId
+    WHERE
+        cs.user_id = :userId AND cs.is_like = true
     GROUP BY 
         cs.id, cs.name, cs.is_public, cs.views, cs.forks, cs.last_viewed_card_id, h.name
     ORDER BY 

@@ -1,9 +1,12 @@
 package com.remembread.card.dto.response;
 
 
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
 public class CardSetFlatDto {
     private Long cardSetId;
     private String name;

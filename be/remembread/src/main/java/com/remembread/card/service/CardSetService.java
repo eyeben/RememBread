@@ -11,7 +11,6 @@ import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
 import com.remembread.card.enums.CardSetSortType;
 import com.remembread.card.enums.SearchCategory;
-import com.remembread.card.projection.FlatCardSetProjection;
 import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.card.repository.FolderRepository;
@@ -234,6 +233,7 @@ public class CardSetService {
         return response;
     }
 
+    @Transactional
     public CardSetSearchResponse searchCardSets(String query, int page, int size, CardSetSortType cardSetSortType) {
         SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
@@ -260,6 +260,7 @@ public class CardSetService {
         return response;
     }
 
+    @Transactional
     public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, User user) {
         Folder folder = null;
         if(folderId == null)
@@ -274,6 +275,7 @@ public class CardSetService {
         return new CardSetSimpleListGetResponse(cardSetRepository.findByFolderIdOrderByName(folderId));
     }
 
+    @Transactional
     public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
@@ -285,6 +287,7 @@ public class CardSetService {
 
     }
 
+    @Transactional
     public void likeCardSet(Long cardSetId, User user) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
 
@@ -301,8 +304,10 @@ public class CardSetService {
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
 
         cardSet.updateIsLike(false);
+        cardSetRepository.save(cardSet);
     }
 
+    @Transactional
     public CardSetListGetResponse getLikeCardSets(Integer page, Integer size, CardSetSortType cardSetSortType, User user) {
         // 정렬 기준 DB컬럼 기준으로 변환
         String column = cardSetSortType.getColumn();
