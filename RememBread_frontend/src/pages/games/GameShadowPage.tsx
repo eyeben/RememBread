@@ -54,49 +54,6 @@ const GameShadowPage = () => {
   const controls1 = useAnimation();
   const controls2 = useAnimation();
 
-  const animateRandom = async (controls: any, initialPos: { x: number, y: number }) => {
-    const randomPos = getRandomPos();
-    await controls.start({
-      x: randomPos.x,
-      y: randomPos.y,
-      transition: {
-        duration: 2,
-        ease: "easeInOut",
-      }
-    });
-  };
-
-  const startAnimation = () => {
-    const animate = async () => {
-      const randomPos1 = getRandomPos();
-      const randomPos2 = getRandomPos();
-      
-      await Promise.all([
-        controls1.start({
-          x: randomPos1.x,
-          y: randomPos1.y,
-          transition: {
-            duration: 2,
-            ease: "easeInOut",
-          }
-        }),
-        controls2.start({
-          x: randomPos2.x,
-          y: randomPos2.y,
-          transition: {
-            duration: 2,
-            ease: "easeInOut",
-          }
-        })
-      ]);
-
-      if (isGameStarted) {
-        requestAnimationFrame(animate);
-      }
-    };
-    animate();
-  };
-
   const generateNewProblem = () => {
     setRandomIdx(getTwoRandomIndices());
     const newPos1 = getRandomPos();
@@ -109,18 +66,38 @@ const GameShadowPage = () => {
   useEffect(() => {
     if (isGameStarted) {
       generateNewProblem();
-      startAnimation();
+      
+      const animate = async () => {
+        const randomPos1 = getRandomPos();
+        const randomPos2 = getRandomPos();
+        
+        await Promise.all([
+          controls1.start({
+            x: randomPos1.x,
+            y: randomPos1.y,
+            transition: {
+              duration: 2,
+              ease: "easeInOut",
+            }
+          }),
+          controls2.start({
+            x: randomPos2.x,
+            y: randomPos2.y,
+            transition: {
+              duration: 2,
+              ease: "easeInOut",
+            }
+          })
+        ]);
+
+        if (isGameStarted) {
+          requestAnimationFrame(animate);
+        }
+      };
+
+      animate();
     }
   }, [isGameStarted]);
-
-  const handleGameStart = () => {
-    setIsGameStarted(true);
-  };
-
-  const handleTimeEnd = () => {
-    setShadowScore(score);
-    navigate("/games/result", { state: { game: "shadow" } });
-  };
 
   const handleAnswer = (selectedIdx: number) => {
     if (randomIdx.includes(selectedIdx) && !solvedBreads.includes(selectedIdx)) {
@@ -154,6 +131,15 @@ const GameShadowPage = () => {
       
       return () => clearTimeout(timer);
     }
+  };
+
+  const handleGameStart = () => {
+    setIsGameStarted(true);
+  };
+
+  const handleTimeEnd = () => {
+    setShadowScore(score);
+    navigate("/games/result", { state: { game: "shadow" } });
   };
 
   const Svg1 = svgList[randomIdx[0]];
