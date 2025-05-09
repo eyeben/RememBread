@@ -20,6 +20,7 @@ public enum ErrorStatus implements BaseErrorCode {
     UNABLE_TO_GET_ACCESS_TOKEN(HttpStatus.BAD_REQUEST , "LOGIN4002", "소셜 로그인 공급자로부터 인증 토큰을 받아올 수 없습니다."),
     NOT_FOUND_USER_ID(HttpStatus.BAD_REQUEST , "LOGIN4003", "요청 ID에 해당하는 유저가 존재하지 않습니다."),
     INVALID_SOCIAL_PROVIDER(HttpStatus.BAD_REQUEST , "LOGIN4004", "유효하지 않은 소셜 로그인 공급자입니다."),
+    INVALID_REDIRECT_URI(HttpStatus.BAD_REQUEST , "LOGIN4005", "유효하지 않은 Redirect URI입니다."),
 
     // 토큰 관련 에러
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED , "TOKEN4001", "유효하지 않은 Refresh Token입니다."),

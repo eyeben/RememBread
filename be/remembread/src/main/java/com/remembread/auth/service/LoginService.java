@@ -45,20 +45,20 @@ public class LoginService {
     private final GoogleOAuthProvider googleOAuthProvider;
 
     @Transactional
-    public UserTokens login(String code, SocialLoginType socialLoginType) {
+    public UserTokens login(String code, SocialLoginType socialLoginType, String redirectUri) {
         String socialLoginId = "";
         String nickname = "";
 
         switch (socialLoginType) {
             case KAKAO -> {
-                KakaoUserInfo userInfo = kakaoOAuthProvider.getUserInfo(code);
+                KakaoUserInfo userInfo = kakaoOAuthProvider.getUserInfo(code, redirectUri);
                 socialLoginId = userInfo.getSocialLoginId();
                 nickname = userInfo.getNickname();
                 nickname = nickname.length() < 6 ? nickname : nickname.substring(0, 6);
                 nickname += socialLoginId.substring(0, 4);
             }
             case NAVER -> {
-                NaverUserInfo userInfo = naverOAuthProvider.getUserInfo(code);
+                NaverUserInfo userInfo = naverOAuthProvider.getUserInfo(code, redirectUri);
                 socialLoginId = userInfo.getSocialLoginId();
 
                 try {
@@ -70,7 +70,7 @@ public class LoginService {
                 }
             }
             case GOOGLE -> {
-                GoogleUserInfo userInfo = googleOAuthProvider.getUserInfo(code);
+                GoogleUserInfo userInfo = googleOAuthProvider.getUserInfo(code, redirectUri);
                 socialLoginId = userInfo.getSocialLoginId();
                 nickname = userInfo.getNickname();
                 nickname = nickname.length() < 6 ? nickname : nickname.substring(0, 6);
