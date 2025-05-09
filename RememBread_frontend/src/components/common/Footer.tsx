@@ -48,7 +48,6 @@ const Footer = () => {
           inactiveIcon={<IndexCardBlack className="w-10 h-10" />}
           label="인덱스 카드"
         />
-
         <FooterItem
           isActive={isActive("/map")}
           onClick={() => handleNavigate("/map")}
@@ -57,7 +56,7 @@ const Footer = () => {
           label="빵길"
         />
         <div
-          className="flex-1 flex flex-col items-center justify-center -mt-9 cursor-pointer"
+          className="flex-1 flex flex-col items-center justify-center cursor-pointer"
           onClick={handleOvenClick}
         >
           <div className="relative w-[60px] h-[69px] flex items-center justify-center">
