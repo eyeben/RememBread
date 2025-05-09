@@ -10,6 +10,9 @@ interface GameState {
   detectiveScore: number;
   setDetectiveScore: (score: number) => void;
   resetDetectiveScore: () => void;
+  shadowScore: number;
+  setShadowScore: (score: number) => void;
+  resetShadowScore: () => void;
 }
 
 const useGameStore = create<GameState>((set) => ({
@@ -22,6 +25,9 @@ const useGameStore = create<GameState>((set) => ({
   detectiveScore: 0,
   setDetectiveScore: (score) => set({ detectiveScore: score }),
   resetDetectiveScore: () => set({ detectiveScore: 0 }),
+  shadowScore: 0,
+  setShadowScore: (score) => set({ shadowScore: score }),
+  resetShadowScore: () => set({ shadowScore: 0 }),
 }));
 
 export default useGameStore; 

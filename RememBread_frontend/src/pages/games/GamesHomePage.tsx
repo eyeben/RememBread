@@ -7,7 +7,7 @@ const GamesHomePage = () => {
   const navigate = useNavigate();
 
   const handleRandomGame = () => {
-    const games = ["/games/memory", "/games/compare", "/games/detective"];
+    const games = ["/games/memory", "/games/compare", "/games/detective", "/games/shadow"];
     const randomIndex = Math.floor(Math.random() * games.length);
     navigate(games[randomIndex]);
   };

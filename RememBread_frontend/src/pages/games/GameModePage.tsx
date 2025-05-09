@@ -31,10 +31,11 @@ const GameModePage = () => {
           onClick={() => navigate("/games/compare")}
         />
         <CustomButton
-          title="무게계산"
-          description="가장 무거운 빵은 뭘까?"
+          title="그림자빵"
+          description="그림자로 변한 빵은?"
           className="bg-primary-100"
           icon={<Croissant className="w-11 h-11 flex-shrink-0 ml-4" />}
+          onClick={() => navigate("/games/shadow")}
         />
         <CustomButton
           title="빵 탐정"
