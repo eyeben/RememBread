@@ -145,8 +145,10 @@ public class LoginService {
 
     @Transactional
     public User findOrCreateUser(String nickname, String socialLoginId, SocialLoginType socialLoginType) {
-        return userRepository.findBySocialLoginId(socialLoginId)
+        User user = userRepository.findBySocialLoginId(socialLoginId)
                 .orElseGet(() -> createUser(nickname, socialLoginId, socialLoginType));
+        user.setLastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+        return user;
     }
 
     @Transactional
@@ -161,7 +163,6 @@ public class LoginService {
                 .mainCharacter(defaultCharacter)
                 .pushEnable(false)
                 .isAgreedTerms(false)
-                .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
                 .build());
 
         userCharacterRepository.save(UserCharacter.builder()
