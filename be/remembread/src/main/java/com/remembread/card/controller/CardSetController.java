@@ -22,12 +22,11 @@ public class CardSetController {
     private final CardSetService cardSetService;
 
     @PostMapping
-    public ApiResponse<Void> createCardSet(
+    public ApiResponse<CardSetCreateResponse> createCardSet(
             @RequestBody CardSetCreateRequest request,
             @AuthUser User user
             ) {
-        cardSetService.createCardSet(request, user);
-        return ApiResponse.onSuccess(null);
+        return ApiResponse.onSuccess(cardSetService.createCardSet(request, user));
     }
 
     @PostMapping("/{cardSetId}/fork")

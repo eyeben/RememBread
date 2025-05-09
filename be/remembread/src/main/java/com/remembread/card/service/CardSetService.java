@@ -43,7 +43,7 @@ public class CardSetService {
     private final CardSetHashtagRepository cardSetHashtagRepository;
 
     @Transactional
-    public void createCardSet(CardSetCreateRequest request, User user) {
+    public CardSetCreateResponse createCardSet(CardSetCreateRequest request, User user) {
         Folder folder = folderRepository.getReferenceById(request.getFolderId());
         CardSet cardSet = CardSet.builder()
                 .user(user)
@@ -54,6 +54,7 @@ public class CardSetService {
         cardSetRepository.saveAndFlush(cardSet);
         List<String> hashtags = request.getHashtags();
         this.setHashtag(hashtags, cardSet);
+        return CardSetCreateResponse.builder().cardSetId(cardSet.getId()).build();
     }
 
     @Transactional
