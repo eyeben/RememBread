@@ -179,7 +179,7 @@ const CreateFromSelfPage = () => {
 
         {cardSet.length > 1 && (
           <div
-            className="absolute flex justify-center items-center rounded-full font-bold top-0 left-0 mx-5 w-10 h-10 bg-neutral-300 text-700 pc:hidden"
+            className="absolute flex justify-center items-center rounded-full font-bold top-0 left-0 mx-5 w-10 h-10 bg-neutral-300 text-700 pc:mx-0 focus-visible:ring-ring focus-visible:ring-1 hover:bg-accent cursor-pointer"
             onClick={handleDeleteCard}
           >
             -
