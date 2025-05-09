@@ -1,7 +1,6 @@
 package com.remembread.card.service;
 
 import com.remembread.card.repository.CardSetRepository;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -25,7 +24,7 @@ public class CardSetBatchService {
         this.redisTemplate = redisTemplate;
     }
 
-    @Scheduled(fixedRate = 1 * 60 * 1000) // 1분마다 수행
+    @Scheduled(fixedRate = 3 * 60 * 1000) // 3분마다 수행
     @Transactional
     public void syncRedisViewCountsToDatabase() {
         Set<String> keys = redisTemplate.keys("cardSet:viewCount:*");
@@ -39,8 +38,6 @@ public class CardSetBatchService {
                 if (countStr != null) {
                     Integer count = Integer.parseInt(countStr);
                     cardSetRepository.increaseViewCount(cardSetId, count);
-
-                    log.info("조회수 동기화 완료 - cardSetId={}, count={}", cardSetId, count);
                 }
 
                 redisTemplate.delete(key);
