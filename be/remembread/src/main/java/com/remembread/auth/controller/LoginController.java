@@ -1,6 +1,8 @@
 package com.remembread.auth.controller;
 
 import com.remembread.apipayload.ApiResponse;
+import com.remembread.apipayload.code.status.ErrorStatus;
+import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.auth.entity.UserTokens;
 import com.remembread.auth.entity.response.AccessTokenResponse;
@@ -29,10 +31,24 @@ public class LoginController {
     public ApiResponse<AccessTokenResponse> socialLogin(
             @PathVariable("provider") String provider,
             @RequestParam("code") String code,
+            @RequestParam(name = "redirect-uri", required = false) String redirectUri,
             HttpServletResponse response
     ) {
+        log.info("redirect-uri: {}", redirectUri);
+
+        if (redirectUri == null) {
+            redirectUri = "http://localhost:8080/auth/login/" + provider.toLowerCase();
+        } else {
+            int lastSlash = redirectUri.lastIndexOf('/');
+            String baseUrl = (lastSlash > -1) ? redirectUri.substring(0, lastSlash) : redirectUri;
+
+            if (!baseUrl.equals("http://localhost:5173/account/login") && !baseUrl.equals("https://remembread.co.kr/account/login")) {
+                throw new GeneralException(ErrorStatus.INVALID_REDIRECT_URI);
+            }
+        }
+
         SocialLoginType loginType = SocialLoginType.valueOf(provider.toUpperCase());
-        UserTokens tokens = loginService.login(code, loginType);
+        UserTokens tokens = loginService.login(code, loginType, redirectUri);
 
         ResponseCookie cookie = ResponseCookie.from("refresh-token", tokens.getRefreshToken())
                 .maxAge(ONE_WEEK_SECONDS)

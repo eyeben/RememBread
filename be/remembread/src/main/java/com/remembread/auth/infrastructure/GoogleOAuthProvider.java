@@ -24,26 +24,26 @@ public class GoogleOAuthProvider {
     private final RestTemplate restTemplate;
     private final String clientId;
     private final String clientSecret;
-    private final String redirectUri;
+//    private final String redirectUri;
     private final String tokenUri;
     private final String userInfoUri;
 
     public GoogleOAuthProvider(
             @Value("${spring.security.oauth2.client.registration.google.client-id}") String clientId,
             @Value("${spring.security.oauth2.client.registration.google.client-secret}") String clientSecret,
-            @Value("${spring.security.oauth2.client.registration.google.redirect-uri}") String redirectUri,
+//            @Value("${spring.security.oauth2.client.registration.google.redirect-uri}") String redirectUri,
             @Value("${spring.security.oauth2.client.provider.google.token-uri}") String tokenUri,
             @Value("${spring.security.oauth2.client.provider.google.user-info-uri}") String userInfoUri) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-        this.redirectUri = redirectUri;
+//        this.redirectUri = redirectUri;
         this.tokenUri = tokenUri;
         this.userInfoUri = userInfoUri;
         this.restTemplate = new RestTemplate();
     }
 
-    public GoogleUserInfo getUserInfo(String code) {
-        String accessToken = fetchAccessToken(code);
+    public GoogleUserInfo getUserInfo(String code, String redirectUri) {
+        String accessToken = fetchAccessToken(code, redirectUri);
 
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
@@ -71,7 +71,7 @@ public class GoogleOAuthProvider {
         throw new GeneralException(ErrorStatus.UNABLE_TO_GET_USER_INFO);
     }
 
-    private String fetchAccessToken(String code) {
+    private String fetchAccessToken(String code, String redirectUri) {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
