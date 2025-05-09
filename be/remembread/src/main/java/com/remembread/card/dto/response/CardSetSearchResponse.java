@@ -18,6 +18,10 @@ public class CardSetSearchResponse {
         String name;
         Integer viewCount;
         Integer forkCount;
+
+        public void updateViewCount(Integer viewCount){this.viewCount = viewCount;}
     }
+
+
 
 }

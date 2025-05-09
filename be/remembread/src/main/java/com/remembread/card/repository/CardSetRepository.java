@@ -6,6 +6,7 @@ import com.remembread.card.dto.response.CardSetSearchResponse;
 import com.remembread.card.dto.response.CardSetSimpleListGetResponse;
 import com.remembread.card.entity.CardSet;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -164,4 +165,9 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             @Param("size") int size,
             @Param("offset") int offset
     );
+
+
+    @Modifying
+    @Query("UPDATE CardSet c SET c.views = c.views + :viewCount WHERE c.id = :cardSetId")
+    void increaseViewCount(@Param("cardSetId") Long cardSetId, @Param("viewCount") Integer viewCount);
 }
