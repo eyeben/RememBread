@@ -60,6 +60,21 @@ const CreateFromSelfPage = () => {
     }, 10);
   };
 
+  const handleDeleteCard = () => {
+    if (cardSet.length === 0 || currentIndex === 0) return;
+
+    const updatedCardSet = [...cardSet];
+    updatedCardSet.splice(currentIndex - 1, 1);
+    setCardSet(updatedCardSet);
+
+    const newIndex = currentIndex === cardSet.length ? currentIndex - 1 : currentIndex;
+    setCurrentIndex(newIndex);
+
+    setTimeout(() => {
+      api?.scrollTo(newIndex - 1);
+    }, 10);
+  };
+
   const handeleSaveCard = () => {
     navigate("/save");
   };
@@ -161,6 +176,15 @@ const CreateFromSelfPage = () => {
           ))}
         </CarouselContent>
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+
+        {cardSet.length > 1 && (
+          <div
+            className="absolute flex justify-center items-center rounded-full font-bold top-0 left-0 mx-5 w-10 h-10 bg-neutral-300 text-700 pc:mx-0 focus-visible:ring-ring focus-visible:ring-1 hover:bg-accent cursor-pointer"
+            onClick={handleDeleteCard}
+          >
+            -
+          </div>
+        )}
 
         {currentIndex === cardSet.length && (
           <div

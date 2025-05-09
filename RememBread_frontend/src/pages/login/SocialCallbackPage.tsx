@@ -11,6 +11,7 @@ const SocialCallbackPage = () => {
 
   const code = searchParams.get('code');
   const socialType = window.location.pathname.split('/')[3]; // /account/login/kakao 등에서 kakao 추출
+  const redirectUri = window.location.origin + window.location.pathname;
 
   const isLoginAttempted = useRef(false);
 
@@ -26,7 +27,7 @@ const SocialCallbackPage = () => {
       }
 
       try {
-        const response = await socialLogin({ code, socialType });
+        const response = await socialLogin({ code, socialType, redirectUri });
         
         // access token을 인메모리에 저장
         tokenUtils.setToken(response.result.accessToken);

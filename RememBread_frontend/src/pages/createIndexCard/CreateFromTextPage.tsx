@@ -1,9 +1,24 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
+import { postCardsByText } from "@/services/card";
 
 const CreateFromTextPage = () => {
+  const navigate = useNavigate();
   const [inputText, setInputText] = useState<string>("");
+
+  const handleCreateCard = async () => {
+    try {
+      postCardsByText(inputText);
+    } catch (error) {
+      console.error("카드 생성 중 오류:", error);
+    } finally {
+      await new Promise((resolve) => setTimeout(resolve, 1500));
+      navigate("/create");
+    }
+  };
 
   return (
     <div
@@ -26,7 +41,7 @@ const CreateFromTextPage = () => {
         <InputBread className="w-full h-full max-w-md aspect-square" />
       </div>
 
-      <Button className="m-5" variant="primary">
+      <Button className="m-5" variant="primary" onClick={handleCreateCard}>
         카드 생성하기
       </Button>
     </div>
