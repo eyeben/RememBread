@@ -81,7 +81,7 @@ const LoginPage = () => {
       <div className="flex flex-col items-center gap-3 sm:gap-4 w-full max-w-[384px] px-4">
         <Button
           variant="shadow"
-          className="w-full h-10 sm:h-12 px-4 sm:px-6 flex justify-center items-center gap-2 sm:gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
+          className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
           onClick={() => handleSocialLogin('kakao')}
         >
           <div className="w-5 sm:w-6">
