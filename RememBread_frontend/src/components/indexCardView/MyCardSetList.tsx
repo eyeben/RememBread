@@ -19,8 +19,8 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
   const navigate = useNavigate();
   const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isEditing) {

@@ -19,8 +19,8 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
   const navigate = useNavigate();
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
+  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   const toggleItem = (cardSetId: number) => {
     if (!isEditing) return;
