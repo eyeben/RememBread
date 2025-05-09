@@ -1,9 +1,9 @@
 package com.remembread.study.dto.request;
 
 import com.remembread.study.enums.StudyMode;
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class StudyStartRequest {
     private Integer count;
     private StudyMode mode;
