@@ -41,8 +41,8 @@ const MergeCardAlertDialog = ({ selectedCardSet }: MergeCardAlertDialogProps) =>
         <AlertDialogHeader>
           <AlertDialogTitle>병합하기</AlertDialogTitle>
           <AlertDialogDescription>
-            <span className="text-primary-500 font-bold">{selectedCardSet.title}</span> 카드셋과
-            현재 카드셋을 병합합니다. <br />
+            <span className="text-primary-500 font-bold">{selectedCardSet.name}</span> 카드셋과 현재
+            카드셋을 병합합니다. <br />
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
