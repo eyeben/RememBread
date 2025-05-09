@@ -44,6 +44,10 @@ public class CardSet extends BaseEntity {
     @Builder.Default
     private Boolean isPublic = true;
 
+    @Column(name = "is_like", nullable = false)
+    @Builder.Default
+    private Boolean isLike = false;
+
     @Column(nullable = false)
     @Builder.Default
     private Integer views = 0;
@@ -62,4 +66,5 @@ public class CardSet extends BaseEntity {
     public void updateLastViewedCard(Card lastViewedCard) {
         this.lastViewedCard = lastViewedCard;
     }
+    public void updateIsLike(Boolean isLike) {this.isLike = isLike;}
 }

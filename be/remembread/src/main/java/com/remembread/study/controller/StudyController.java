@@ -4,9 +4,11 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.study.dto.request.AnswerResultRequest;
+import com.remembread.study.dto.request.LocationRequest;
 import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
+import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.service.StudyService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -53,5 +55,25 @@ public class StudyController {
             @AuthUser User user
     ) {
         return ApiResponse.onSuccess(studyService.getNextCard(cardSetId, user));
+    }
+
+    @PostMapping("/{cardSetId}/location")
+    public ApiResponse<Void> addPoint(
+            @PathVariable Long cardSetId,
+            LocationRequest request,
+            @AuthUser User user
+    ) {
+        studyService.addPoint(user, request.getLongitude(), request.getLatitude());
+        return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/{cardSetId}/routes")
+    public ApiResponse<RouteResponse> getRoutes(
+            @PathVariable Long cardSetId,
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @AuthUser User user
+            ) {
+        return ApiResponse.onSuccess(studyService.getRoutes(cardSetId, page, size, user));
     }
 }

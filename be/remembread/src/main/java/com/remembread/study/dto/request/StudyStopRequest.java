@@ -1,8 +1,8 @@
 package com.remembread.study.dto.request;
 
-import lombok.Data;
+import lombok.Getter;
 
-@Data
+@Getter
 public class StudyStopRequest {
     private Long lastCardId;
     private Double latitude;

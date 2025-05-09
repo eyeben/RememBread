@@ -11,7 +11,6 @@ import com.remembread.card.entity.CardSet;
 import com.remembread.card.entity.Folder;
 import com.remembread.card.enums.CardSetSortType;
 import com.remembread.card.enums.SearchCategory;
-import com.remembread.card.projection.FlatCardSetProjection;
 import com.remembread.card.repository.CardRepository;
 import com.remembread.card.repository.CardSetRepository;
 import com.remembread.card.repository.FolderRepository;
@@ -44,7 +43,7 @@ public class CardSetService {
     private final CardSetHashtagRepository cardSetHashtagRepository;
 
     @Transactional
-    public void createCardSet(CardSetCreateRequest request, User user) {
+    public CardSetCreateResponse createCardSet(CardSetCreateRequest request, User user) {
         Folder folder = folderRepository.getReferenceById(request.getFolderId());
         CardSet cardSet = CardSet.builder()
                 .user(user)
@@ -55,6 +54,7 @@ public class CardSetService {
         cardSetRepository.saveAndFlush(cardSet);
         List<String> hashtags = request.getHashtags();
         this.setHashtag(hashtags, cardSet);
+        return CardSetCreateResponse.builder().cardSetId(cardSet.getId()).build();
     }
 
     @Transactional
@@ -181,9 +181,9 @@ public class CardSetService {
         cardSetRepository.delete(cardSet);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CardSetListGetResponse getCardSetList(Long folderId, int page, int size, String sort, User user ) {
-        Folder folder = null;
+        Folder folder;
         if(folderId == null)
             folder = folderRepository.findByUserAndUpperFolderIsNull(user);
         else
@@ -196,38 +196,45 @@ public class CardSetService {
         // 정렬 기준 DB컬럼 기준으로 변환
         String column = CardSetSortType.getColumnByKor(sort);
         int offset = page * size;
-        List<FlatCardSetProjection> flatResults = cardSetRepository.getCardSetSorted(folderId, column, size, offset);
         // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
+// 1. flat 결과 가져오기
+        List<CardSetFlatDto> flatResults = cardSetRepository.getCardSetSorted(folderId, column, size, offset);
+
+        // 2. 중복 제거 + 해시태그 병합
         Map<Long, CardSetListGetResponse.CardSet> map = new LinkedHashMap<>();
 
-        for (FlatCardSetProjection row : flatResults) {
+        for (CardSetFlatDto row : flatResults) {
             Long id = row.getCardSetId();
 
-            CardSetListGetResponse.CardSet dto = map.computeIfAbsent(id, k -> {
-                CardSetListGetResponse.CardSet cardSet = new CardSetListGetResponse.CardSet();
-                cardSet.setCardSetId(row.getCardSetId());
-                cardSet.setName(row.getTitle());
-                cardSet.setIsLike(false); //TODO: 좋아요 컬럼 추가 후 구현
-                cardSet.setIsPublic(row.getIsPublic());
-                cardSet.setViewCount(row.getViewCount());
-                cardSet.setForkCount(row.getForkCount());
-                cardSet.setTotalCardCount(row.getTotalCardCount());
-                cardSet.setLastViewedCardId(row.getLastViewedCardId());
-                cardSet.setHashTags(new ArrayList<>());
+            CardSetListGetResponse.CardSet dto = map.computeIfAbsent(id, k ->
+                    CardSetListGetResponse.CardSet.builder()
+                            .cardSetId(row.getCardSetId())
+                            .name(row.getName())
+                            .isLike(row.getIsLike())
+                            .isPublic(row.getIsPublic())
+                            .viewCount(row.getViewCount())
+                            .forkCount(row.getForkCount())
+                            .totalCardCount(row.getTotalCardCount())
+                            .lastViewedCardId(row.getLastViewedCardId())
+                            .hashTags(new ArrayList<>())
+                            .build()
+            );
 
-                return cardSet;
-            });
 
-            if (row.getHashtag() != null) {
-                dto.getHashTags().add(row.getHashtag());
+            // 해시태그 누적 (null 체크 + 중복 제거)
+            String tag = row.getHashTag();
+            if (tag != null && !dto.getHashTags().contains(tag)) {
+                dto.getHashTags().add(tag);
             }
         }
 
+        // 3. 최종 응답 구성
         CardSetListGetResponse response = new CardSetListGetResponse();
         response.setCardSets(new ArrayList<>(map.values()));
         return response;
     }
 
+    @Transactional(readOnly = true)
     public CardSetSearchResponse searchCardSets(String query, int page, int size, CardSetSortType cardSetSortType) {
         SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
@@ -254,6 +261,7 @@ public class CardSetService {
         return response;
     }
 
+    @Transactional(readOnly = true)
     public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, User user) {
         Folder folder = null;
         if(folderId == null)
@@ -268,6 +276,7 @@ public class CardSetService {
         return new CardSetSimpleListGetResponse(cardSetRepository.findByFolderIdOrderByName(folderId));
     }
 
+    @Transactional(readOnly = true)
     public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
@@ -277,5 +286,64 @@ public class CardSetService {
 
         return response;
 
+    }
+
+    @Transactional
+    public void likeCardSet(Long cardSetId, User user) {
+        CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+
+        if(!cardSet.getUser().getId().equals(user.getId()))
+            throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+
+        cardSet.updateIsLike(true);
+    }
+
+    @Transactional
+    public void undoLikeCardSet(Long cardSetId, User user) {
+        CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+
+        if(!cardSet.getUser().getId().equals(user.getId()))
+            throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+
+        cardSet.updateIsLike(false);
+    }
+
+    @Transactional(readOnly = true)
+    public CardSetListGetResponse getLikeCardSets(Integer page, Integer size, CardSetSortType cardSetSortType, User user) {
+        // 정렬 기준 DB컬럼 기준으로 변환
+        String column = cardSetSortType.getColumn();
+        int offset = page * size;
+        List<CardSetFlatDto> flatResults = cardSetRepository.getLikeCardSetSorted(user.getId(), column, size, offset);
+        // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
+        Map<Long, CardSetListGetResponse.CardSet> map = new LinkedHashMap<>();
+
+        for (CardSetFlatDto row : flatResults) {
+            Long id = row.getCardSetId();
+
+            CardSetListGetResponse.CardSet dto = map.computeIfAbsent(id, k ->
+                    CardSetListGetResponse.CardSet.builder()
+                            .cardSetId(row.getCardSetId())
+                            .name(row.getName())
+                            .isLike(row.getIsLike())
+                            .isPublic(row.getIsPublic())
+                            .viewCount(row.getViewCount())
+                            .forkCount(row.getForkCount())
+                            .totalCardCount(row.getTotalCardCount())
+                            .lastViewedCardId(row.getLastViewedCardId())
+                            .hashTags(new ArrayList<>())
+                            .build()
+            );
+
+
+            // 해시태그 누적 (null 체크 + 중복 제거)
+            String tag = row.getHashTag();
+            if (tag != null && !dto.getHashTags().contains(tag)) {
+                dto.getHashTags().add(tag);
+            }
+        }
+
+        CardSetListGetResponse response = new CardSetListGetResponse();
+        response.setCardSets(new ArrayList<>(map.values()));
+        return response;
     }
 }

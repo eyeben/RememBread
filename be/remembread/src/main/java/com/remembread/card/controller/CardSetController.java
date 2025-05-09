@@ -7,7 +7,6 @@ import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.*;
 import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.enums.CardSetSortType;
-import com.remembread.card.enums.SearchCategory;
 import com.remembread.card.service.CardSetService;
 import com.remembread.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
@@ -23,12 +22,11 @@ public class CardSetController {
     private final CardSetService cardSetService;
 
     @PostMapping
-    public ApiResponse<Void> createCardSet(
+    public ApiResponse<CardSetCreateResponse> createCardSet(
             @RequestBody CardSetCreateRequest request,
             @AuthUser User user
             ) {
-        cardSetService.createCardSet(request, user);
-        return ApiResponse.onSuccess(null);
+        return ApiResponse.onSuccess(cardSetService.createCardSet(request, user));
     }
 
     @PostMapping("/{cardSetId}/fork")
@@ -90,7 +88,7 @@ public class CardSetController {
 
     @GetMapping("/search")
     @Operation(summary = "빵 묶음 검색 (상대방꺼 포함)", description = "조건 설정 후 검색")
-    public ApiResponse<CardSetSearchResponse> searchCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "정보처리기사") String query,
+    public ApiResponse<CardSetSearchResponse> searchCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "") String query,
                                                              @Parameter(description = "페이지 번호 (0부터 시작)", example = "0", required = true) @RequestParam(defaultValue = "0") int page,
                                                              @Parameter(description = "한페이지당 보여주는 카드셋 개수", example = "10", required = true) @RequestParam(defaultValue = "10") int size,
                                                              @Parameter(description = "‘인기순’, ‘포크순’, ‘최신순’ 중 하나", example = "최신순", required = true) @RequestParam(defaultValue = "최신순") CardSetSortType cardSetSortType,
@@ -107,11 +105,32 @@ public class CardSetController {
 
     @GetMapping("search-my")
     @Operation(summary = "빵 묶음 검색 (자기꺼만)", description = "자기 카드셋 검색")
-    public ApiResponse<CardSetSearchResponse> searchMyCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "정보처리기사") String query,
+    public ApiResponse<CardSetSearchResponse> searchMyCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "") String query,
                                                              @Parameter(description = "페이지 번호 (0부터 시작)", example = "0", required = true) @RequestParam(defaultValue = "0") int page,
                                                              @Parameter(description = "한페이지당 보여주는 카드셋 개수", example = "10", required = true) @RequestParam(defaultValue = "10") int size,
                                                              @Parameter(description = "‘이름순’, ‘최신순’ 중 하나", example = "최신순", required = true) @RequestParam(defaultValue = "최신순") CardSetSortType cardSetSortType,
                                                              @AuthUser User user){
         return ApiResponse.onSuccess(cardSetService.searchMyCardSets(query, page, size, cardSetSortType, user.getId()));
     }
+
+    @PostMapping("/{cardSetId}/like")
+    public ApiResponse<Void> likeCardSet(@PathVariable Long cardSetId, @AuthUser User user) {
+        cardSetService.likeCardSet(cardSetId, user);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @DeleteMapping("/{cardSetId}/like")
+    public ApiResponse<Void> undoLikeCardSet(@PathVariable Long cardSetId, @AuthUser User user) {
+        cardSetService.undoLikeCardSet(cardSetId, user);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/like")
+    public ApiResponse<CardSetListGetResponse> getLikeCardSets(@Parameter Integer page,
+                                          @Parameter Integer size,
+                                          @Parameter CardSetSortType cardSetSortType,
+                                          @AuthUser User user) {
+        return ApiResponse.onSuccess(cardSetService.getLikeCardSets(page, size, cardSetSortType, user));
+    }
+
 }
