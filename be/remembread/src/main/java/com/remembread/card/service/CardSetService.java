@@ -181,7 +181,7 @@ public class CardSetService {
         cardSetRepository.delete(cardSet);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CardSetListGetResponse getCardSetList(Long folderId, int page, int size, String sort, User user ) {
         Folder folder;
         if(folderId == null)
@@ -234,7 +234,7 @@ public class CardSetService {
         return response;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CardSetSearchResponse searchCardSets(String query, int page, int size, CardSetSortType cardSetSortType) {
         SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
@@ -261,7 +261,7 @@ public class CardSetService {
         return response;
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, User user) {
         Folder folder = null;
         if(folderId == null)
@@ -276,7 +276,7 @@ public class CardSetService {
         return new CardSetSimpleListGetResponse(cardSetRepository.findByFolderIdOrderByName(folderId));
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
@@ -298,6 +298,7 @@ public class CardSetService {
         cardSet.updateIsLike(true);
     }
 
+    @Transactional
     public void undoLikeCardSet(Long cardSetId, User user) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
 
@@ -305,10 +306,9 @@ public class CardSetService {
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
 
         cardSet.updateIsLike(false);
-        cardSetRepository.save(cardSet);
     }
 
-    @Transactional
+    @Transactional(readOnly = true)
     public CardSetListGetResponse getLikeCardSets(Integer page, Integer size, CardSetSortType cardSetSortType, User user) {
         // 정렬 기준 DB컬럼 기준으로 변환
         String column = cardSetSortType.getColumn();
