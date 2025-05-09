@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@AllArgsConstructor
 public class CardSetSearchResponse {
     List<CardSet> cardSets = new ArrayList<CardSet>();
 

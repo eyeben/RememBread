@@ -142,7 +142,7 @@ public class CardSetService {
         return response;
     }
 
-    @Transactional(readOnly = true)
+    @Transactional
     public CardListResponse getCardSetList(Long id, Integer page, Integer size, String order, User user) {
         CardSet cardSet = cardSetRepository.findById(id).orElseThrow(() ->
                 new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
@@ -155,6 +155,9 @@ public class CardSetService {
 
         Pageable pageable = PageRequest.of(page, size, sort);
         List<Card> cards = cardRepository.findAllByCardSet(cardSet, pageable);
+
+        //addViews(user.getId(), cardSet.getId());
+
         return CardConverter.toCardListResponse(cards);
     }
 
@@ -197,7 +200,7 @@ public class CardSetService {
         String column = CardSetSortType.getColumnByKor(sort);
         int offset = page * size;
         // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
-// 1. flat 결과 가져오기
+        // 1. flat 결과 가져오기
         List<CardSetFlatDto> flatResults = cardSetRepository.getCardSetSorted(folderId, column, size, offset);
 
         // 2. 중복 제거 + 해시태그 병합
@@ -229,9 +232,7 @@ public class CardSetService {
         }
 
         // 3. 최종 응답 구성
-        CardSetListGetResponse response = new CardSetListGetResponse();
-        response.setCardSets(new ArrayList<>(map.values()));
-        return response;
+        return new CardSetListGetResponse(new ArrayList<>(map.values()));
     }
 
     @Transactional(readOnly = true)
@@ -239,7 +240,6 @@ public class CardSetService {
         SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
-        CardSetSearchResponse response = new CardSetSearchResponse();
 
         if(!query.isEmpty() && query.charAt(0) == '#'){
             query = query.substring(1);
@@ -250,11 +250,11 @@ public class CardSetService {
             searchCategory = SearchCategory.작성자;
         }
 
-
+        CardSetSearchResponse response;
         switch (searchCategory) {
-            case 제목 -> response.setCardSets(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
-            case 작성자 -> response.setCardSets(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
-            case 해시태그 -> response.setCardSets(cardSetRepository.searchByHashtag(query, sortColumn, size, offset));
+            case 제목 -> response = new CardSetSearchResponse(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
+            case 작성자 -> response = new CardSetSearchResponse(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
+            case 해시태그 -> response = new CardSetSearchResponse(cardSetRepository.searchByHashtag(query, sortColumn, size, offset));
             default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
         }
 
@@ -263,7 +263,7 @@ public class CardSetService {
 
     @Transactional(readOnly = true)
     public CardSetSimpleListGetResponse getCardSetSimpleList(Long folderId, User user) {
-        Folder folder = null;
+        Folder folder;
         if(folderId == null)
             folder = folderRepository.findByUserAndUpperFolderIsNull(user);
         else
@@ -280,12 +280,7 @@ public class CardSetService {
     public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
-        CardSetSearchResponse response = new CardSetSearchResponse();
-
-        response.setCardSets(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
-
-        return response;
-
+        return new CardSetSearchResponse(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
     }
 
     @Transactional
@@ -342,8 +337,6 @@ public class CardSetService {
             }
         }
 
-        CardSetListGetResponse response = new CardSetListGetResponse();
-        response.setCardSets(new ArrayList<>(map.values()));
-        return response;
+        return new CardSetListGetResponse(new ArrayList<>(map.values()));
     }
 }
