@@ -1,13 +1,13 @@
-import React, { useEffect, useState, MouseEvent, FC } from "react";
+import { useEffect, useState, MouseEvent } from "react";
 import { indexCard } from "@/types/indexCard";
 import { getCardsByCardSet, deleteCard } from "@/services/card";
 
-interface CardDetailListProps {
+interface CardSetCardlListProps {
   cardSetId: number;
   highlightIndex?: number;
 }
 
-const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps) => {
+const CardSetCardlList = ({ cardSetId, highlightIndex = -1 }: CardSetCardlListProps) => {
   const [cards, setCards] = useState<indexCard[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -92,4 +92,4 @@ const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps)
   );
 };
 
-export default CardDetailList;
+export default CardSetCardlList;

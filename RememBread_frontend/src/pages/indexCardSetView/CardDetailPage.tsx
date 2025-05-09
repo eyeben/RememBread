@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Outlet, useLocation, useMatch, useNavigate } from "react-router-dom";
 import TagRow from "@/components/indexCardView/TagRow";
-import CardDetailList from "@/components/indexCardView/CardDetailList";
+import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
 import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
 
 const CardDetailPage = () => {
@@ -39,7 +39,7 @@ const CardDetailPage = () => {
     <div className="flex flex-col items-center justify-center py-4 gap-4">
       <div className="flex justify-center items-center w-full">
         <h1 className="flex flex-1 justify-center pc:text-3xl text-xl font-semibold">
-          {card.cardSetId}번 카드 상세 보기
+          {card.name}
         </h1>
       </div>
 
@@ -53,7 +53,7 @@ const CardDetailPage = () => {
             isEditing={isEditing}
             setEditing={setIsEditing}
           />
-          <CardDetailList cardSetId={card.cardSetId} />
+          <CardSetCardlList cardSetId={card.cardSetId} />
 
           <CardDetailButtons
             onStudyClick={handleStudyClick}
