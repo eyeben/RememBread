@@ -1,4 +1,4 @@
-import React, { useEffect, useState, DragEvent } from "react";
+import { useEffect, useState, DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";

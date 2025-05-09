@@ -42,12 +42,13 @@ const Footer = () => {
       <FooterModal isOpen={isOvenOpen} onClose={handleCloseModal} />
       <footer className="fixed flex justify-evenly bottom-0 left-0 right-0 w-full max-w-[600px] h-16 mx-auto bg-white pc:border-x border-t border-neutral-200 z-50">
         <FooterItem
-          isActive={isActive("/games")}
-          onClick={() => handleNavigate("/games")}
-          activeIcon={<Game className="w-10 h-10" />}
-          inactiveIcon={<GameBlack className="w-10 h-10" />}
-          label="빵반죽"
+          isActive={isActive("/card-view")}
+          onClick={() => handleNavigate("/card-view/my")}
+          activeIcon={<IndexCard className="w-10 h-10" />}
+          inactiveIcon={<IndexCardBlack className="w-10 h-10" />}
+          label="인덱스 카드"
         />
+
         <FooterItem
           isActive={isActive("/map")}
           onClick={() => handleNavigate("/map")}
@@ -64,11 +65,11 @@ const Footer = () => {
           </div>
         </div>
         <FooterItem
-          isActive={isActive("/card-view")}
-          onClick={() => handleNavigate("/card-view/my")}
-          activeIcon={<IndexCard className="w-10 h-10" />}
-          inactiveIcon={<IndexCardBlack className="w-10 h-10" />}
-          label="인덱스 카드"
+          isActive={isActive("/games")}
+          onClick={() => handleNavigate("/games")}
+          activeIcon={<Game className="w-10 h-10" />}
+          inactiveIcon={<GameBlack className="w-10 h-10" />}
+          label="빵반죽"
         />
         <FooterItem
           isActive={isActive("/profile")}

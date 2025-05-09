@@ -3,7 +3,7 @@ import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import OrderSelector from "@/components/indexCardView/OrderSelector";
 
-const IndexCardSearchBar = () => {
+const CardSetSearchBar = () => {
   const [query, setQuery] = useState<string>("");
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -36,4 +36,4 @@ const IndexCardSearchBar = () => {
   );
 };
 
-export default IndexCardSearchBar;
+export default CardSetSearchBar;

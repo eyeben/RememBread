@@ -24,6 +24,22 @@ interface UpdateCardSetResponse {
   result: object;
 }
 
+export interface SearchCardSetParams {
+  query: string; // 검색어
+  page: number; // 페이지 번호 (0부터 시작)
+  size: number; // 한 페이지당 카드셋 개수
+  cardSetSortType: "최신순" | "인기순" | "포크순";
+}
+
+export interface SearchCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    cardSets: indexCardSet[];
+  };
+}
+
 // 카드셋 목록 조회
 export const getCardSetList = async (
   params: GetCardSetListParams,
@@ -104,5 +120,20 @@ export const deleteCardSet = async (cardSetId: number): Promise<DeleteCardSetRes
   } catch (error) {
     console.error("카드셋 삭제 중 오류:", error);
     throw new Error("카드셋 삭제 요청에 실패했습니다.");
+  }
+};
+
+// 카드셋 전체 조회
+export const searchCardSet = async (
+  params: SearchCardSetParams,
+): Promise<SearchCardSetResponse> => {
+  try {
+    const response = await http.get<SearchCardSetResponse>("/card-sets/search", {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 검색 API 오류:", error);
+    throw new Error("카드셋 검색 중 오류가 발생했습니다.");
   }
 };
