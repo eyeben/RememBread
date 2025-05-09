@@ -194,7 +194,7 @@ const SaveCardPage = () => {
           <p>
             현재 경로: {folderPath}
             {selectedCardSet && " > "}
-            {selectedCardSet?.title}
+            {selectedCardSet?.name}
           </p>
           <div>
             <CreateFolderDialog

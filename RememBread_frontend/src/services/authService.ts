@@ -4,6 +4,7 @@ import { AUTH_END_POINT } from '@/services/endPoints';
 interface SocialLoginParams {
   code: string;
   socialType: string;
+  redirectUri?:string;
 }
 
 interface SocialLoginResponse {
@@ -42,14 +43,16 @@ interface LogoutResponse {
  * socialType : kakao, google, naver
  * code : 소셜 로그인 응답 코드
  */
-export const socialLogin = async ({ code, socialType }: SocialLoginParams): Promise<SocialLoginResponse> => {
+export const socialLogin = async ({ code, socialType, redirectUri }: SocialLoginParams): Promise<SocialLoginResponse> => {
   try {
+    console.log("params: ", redirectUri)
     const response = await http.get<SocialLoginResponse>(
       AUTH_END_POINT.SOCIAL_LOGIN(socialType),
-      { params: { code } }
+      { params: { code, 'redirect-uri': redirectUri } }
     );
     return response.data;
   } catch (error) {
+    console.log("요청 Uri:", AUTH_END_POINT.SOCIAL_LOGIN(socialType), "params: ", { code, redirectUri })
     console.error('소셜 로그인 실패:', error);
     throw new Error('소셜 로그인에 실패했습니다.');
   }
