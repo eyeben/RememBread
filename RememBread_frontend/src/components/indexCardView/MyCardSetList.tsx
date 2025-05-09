@@ -23,6 +23,12 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
   const [isDragging, setIsDragging] = useState(false);
 
   useEffect(() => {
+    if (!isEditing) {
+      setSelectedItems([]);
+    }
+  }, [isEditing]);
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const sortMap: Record<"latest" | "popularity" | "fork", "최신순" | "인기순" | "포크순"> = {
