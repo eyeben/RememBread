@@ -84,10 +84,10 @@ const LoginPage = () => {
           className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
           onClick={() => handleSocialLogin('kakao')}
         >
-          <div className="w-5 sm:w-6">
-            <KakaoLogo className="w-5 h-5 sm:w-6 sm:h-6" />
+          <div className="w-6">
+            <KakaoLogo className="w-6 h-6" />
           </div>
-          <span className="flex-1 text-center text-sm sm:text-base font-bold">카카오 로그인</span>
+          <span className="flex-1 text-center text-md font-bold">카카오 로그인</span>
         </Button>
 
         <Button
@@ -98,7 +98,7 @@ const LoginPage = () => {
           <div className="w-6">
             <NaverLogo className="w-6 h-6" />
           </div>
-          <span className="flex-1 text-center font-bold">네이버 로그인</span>
+          <span className="flex-1 text-center text-md font-bold">네이버 로그인</span>
         </Button>
 
         <Button
@@ -109,7 +109,7 @@ const LoginPage = () => {
           <div className="w-6">
             <GoogleLogo className="w-6 h-6" />
           </div>
-          <span className="flex-1 text-center font-bold">구글 로그인</span>
+          <span className="flex-1 text-center text-md font-bold">구글 로그인</span>
         </Button>
       </div>
 
