@@ -29,7 +29,6 @@ const TotalCardSetPage = () => {
             size: 12,
             cardSetSortType: sortValue,
           };
-          console.log("🔍 searchCardSet params:", params);
 
           const res = await searchCardSet(params);
           setCardSetList(res.result.cardSets);
@@ -39,7 +38,6 @@ const TotalCardSetPage = () => {
             size: 12,
             sort: sortValue,
           };
-          console.log("📁 getCardSetList params:", params);
 
           const res = await getCardSetList(params);
           setCardSetList(res.result.cardSets);

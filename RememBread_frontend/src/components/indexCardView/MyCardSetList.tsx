@@ -2,7 +2,7 @@ import { useEffect, useState, DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
-import { getCardSetList, deleteCardSet } from "@/services/cardSet";
+import { getCardSetList, deleteCardSet, searchMyCardSet } from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
@@ -15,9 +15,14 @@ interface MyCardSetListProps {
   toggleEditing: () => void;
 }
 
-const MyCardSetList = ({ isEditing, folderId }: MyCardSetListProps) => {
+const MyCardSetList = ({
+  isEditing,
+  folderId,
+  query,
+  sortType,
+  toggleEditing,
+}: MyCardSetListProps) => {
   const navigate = useNavigate();
-
   const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -26,19 +31,42 @@ const MyCardSetList = ({ isEditing, folderId }: MyCardSetListProps) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await getCardSetList({
-          folderId,
-          page: 0,
-          size: 12,
-          sort: "최신순",
-        });
-        setCardSetList(res.result.cardSets);
+        const sortMap: Record<"latest" | "popularity" | "fork", "최신순" | "인기순" | "포크순"> = {
+          latest: "최신순",
+          popularity: "인기순",
+          fork: "포크순",
+        };
+
+        if (query.trim()) {
+          const res = await searchMyCardSet({
+            query,
+            page: 0,
+            size: 100, // 검색 시 충분히 많이 가져와야 필터링 가능
+            cardSetSortType: sortMap[sortType],
+          });
+
+          const filtered =
+            folderId !== 0
+              ? res.result.cardSets.filter((c) => c.folderId === folderId)
+              : res.result.cardSets;
+
+          setCardSetList(filtered);
+        } else {
+          const res = await getCardSetList({
+            folderId,
+            page: 0,
+            size: 12,
+            sort: sortMap[sortType],
+          });
+          setCardSetList(res.result.cardSets);
+        }
       } catch (error) {
-        console.error("카드셋 목록 불러오기 실패:", error);
+        console.error("카드셋 목록 조회 실패:", error);
       }
     };
+
     fetchData();
-  }, [folderId]);
+  }, [folderId, query, sortType]);
 
   const toggleItem = (cardSetId: number) => {
     if (!isEditing) return;
@@ -63,6 +91,7 @@ const MyCardSetList = ({ isEditing, folderId }: MyCardSetListProps) => {
     }
     setIsDragging(true);
   };
+
   const handleDragEnd = () => {
     setIsDragging(false);
   };
@@ -128,7 +157,7 @@ const MyCardSetList = ({ isEditing, folderId }: MyCardSetListProps) => {
         </div>
       </div>
 
-      {/* 드래그 중일 때만 보이는 휴지통 드롭존 (하단 탭 위에 띄우기) */}
+      {/* 드래그 중일 때만 보이는 휴지통 드롭존 */}
       {isEditing && selectedItems.length > 0 && isDragging && (
         <div
           className="fixed left-0 right-0 flex justify-center items-center py-2"
