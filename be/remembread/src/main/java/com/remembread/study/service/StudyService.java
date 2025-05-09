@@ -247,6 +247,7 @@ public class StudyService {
         }
     }
 
+    @Transactional(readOnly = true)
     public RouteResponse getRoutes(Long cardSetId, Integer page, Integer size, User user) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(()
                 -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
