@@ -5,7 +5,8 @@ import { indexCardSet } from "@/types/indexCard";
 import { getCardSetList, deleteCardSet, searchMyCardSet } from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
-import CardSet from "@/components/svgs/indexCardView/CardSet";
+import CardSet from "@/components/svgs/indexCardView/CardSet2";
+import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
 
 interface MyCardSetListProps {
   isEditing: boolean;
@@ -143,7 +144,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                   }
                 `}
               >
-                <CardSet className="w-full h-full hover:cursor-pointer" />
+                <CardSet2 className="w-full h-full hover:cursor-pointer" />
                 <div className="text-center w-full">
                   <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
                     {item.name || "제목 없음"}
