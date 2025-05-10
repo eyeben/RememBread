@@ -16,7 +16,7 @@ const CardDetailPage = () => {
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
-  const [hashTags, setHashTags] = useState<string[]>([]);
+  const [hashtags, setHashTags] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
@@ -38,7 +38,7 @@ const CardDetailPage = () => {
       try {
         const { result } = await getCardSetById(cardSetId);
         setName(result.name ?? "");
-        setHashTags(result.hashTags ?? []);
+        setHashTags(result.hashtags ?? []);
         setIsPublic(result.isPublic ? 1 : 0);
       } catch (e) {
         console.error("카드셋 불러오기 실패:", e);
@@ -54,14 +54,14 @@ const CardDetailPage = () => {
   const handleTestClick = () => navigate("test", { state: { card: cardFromState } });
 
   const saveCardSet = async (
-    override?: Partial<{ name: string; hashTags: string[]; isPublic: number }>,
+    override?: Partial<{ name: string; hashtags: string[]; isPublic: number }>,
   ) => {
     setIsLoading(true);
     try {
       await updateCardSet({
         cardSetId,
         name: override?.name ?? name,
-        hashTags: override?.hashTags ?? hashTags,
+        hashtags: override?.hashtags ?? hashtags,
         isPublic: override?.isPublic ?? isPublic,
       });
     } catch (e) {
@@ -75,7 +75,7 @@ const CardDetailPage = () => {
     if (!editedName.trim()) return;
     await saveCardSet({
       name: editedName,
-      hashTags: editedTags,
+      hashtags: editedTags,
       isPublic: editedIsPublic,
     });
     setName(editedName);
@@ -105,7 +105,7 @@ const CardDetailPage = () => {
           <button
             onClick={() => {
               setEditedName(name);
-              setEditedTags(hashTags);
+              setEditedTags(hashtags);
               setEditedIsPublic(isPublic);
               setIsEditing(true);
             }}
@@ -119,11 +119,13 @@ const CardDetailPage = () => {
         <>
           <div className="flex items-center gap-2 px-2 w-full">
             <TagRow
-              tags={isEditing ? editedTags : hashTags}
+              tags={isEditing ? editedTags : hashtags}
               cardSetId={cardSetId}
               isEditing={isEditing}
               setEditing={setIsEditing}
-              onUpdateTags={(newTags) => isEditing && setEditedTags(newTags)}
+              onUpdateTags={(newTags) => {
+                setEditedTags(newTags);
+              }}
             />
 
             {/* 현재 공개 상태 텍스트 */}

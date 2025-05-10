@@ -120,8 +120,8 @@ export const updateCardSet = async (cardSet: indexCardSet): Promise<UpdateCardSe
   try {
     const payload = {
       name: cardSet.name ?? "",
-      hashtags: cardSet.hashTags ?? [],
-      isPublic: !!cardSet.isPublic,
+      hashtags: cardSet.hashtags ?? [],
+      isPublic: Boolean(cardSet.isPublic),
     };
 
     const response = await http.patch<UpdateCardSetResponse>(
