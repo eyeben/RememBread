@@ -232,9 +232,9 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
         </DrawerTrigger>
 
         <DrawerContent
-          className="w-full max-w-[590px] mx-auto px-4 pb-6 shadow-lg border-t border-gray-200"
+          className="w-full max-w-[590px] mx-auto px-1 pb-6 shadow-lg border-t border-gray-200"
           style={{
-            maxHeight: "600px",
+            maxHeight: "450px",
             backgroundColor: "white",
             overflow: "hidden", // DrawerContent 자체에는 스크롤 없음
           }}

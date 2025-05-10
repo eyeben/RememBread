@@ -1,9 +1,7 @@
-import { useState, DragEvent } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, Trash2 } from "lucide-react";
+import { Star } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
-import { deleteCardSet } from "@/services/cardSet";
-import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
 import CardSet from "@/components/svgs/indexCardView/CardSet";
 
@@ -19,8 +17,6 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
   const navigate = useNavigate();
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   if (cardSets === undefined) {
     return (
@@ -49,34 +45,6 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
     }
   };
 
-  const handleDragStart = (e: DragEvent<HTMLDivElement>, cardSetId: number) => {
-    if (!selectedItems.includes(cardSetId)) {
-      e.preventDefault();
-      return;
-    }
-    setIsDragging(true);
-  };
-
-  const handleDragEnd = () => {
-    setIsDragging(false);
-  };
-
-  const handleDropZoneDrop = () => {
-    setIsDragging(false);
-    setShowDeleteModal(true);
-  };
-
-  const handleDeleteConfirm = async () => {
-    try {
-      await Promise.all(selectedItems.map((id) => deleteCardSet(id)));
-      setSelectedItems([]);
-    } catch (error) {
-      console.error("삭제 에러:", error);
-    } finally {
-      setShowDeleteModal(false);
-    }
-  };
-
   return (
     <>
       {/* 카드 그리드 */}
@@ -95,23 +63,20 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
                 </div>
 
                 <div
-                  draggable={isEditing && selectedItems.includes(item.cardSetId)}
-                  onDragStart={(e) => handleDragStart(e, item.cardSetId)}
-                  onDragEnd={handleDragEnd}
                   onClick={() => handleCardClick(item.cardSetId)}
                   className={`
-              rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
-              ${isEditing ? "cursor-pointer" : ""}
-              ${
-                selectedItems.includes(item.cardSetId)
-                  ? "border-primary-700 bg-primary-100"
-                  : "border-transparent"
-              }
-            `}
+                    rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
+                    ${isEditing ? "cursor-pointer" : ""}
+                    ${
+                      selectedItems.includes(item.cardSetId)
+                        ? "border-primary-700 bg-primary-100"
+                        : "border-transparent"
+                    }
+                  `}
                 >
                   <CardSet className="w-full h-full hover:cursor-pointer" />
                   <div className="text-center w-full">
-                    <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
+                    <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
                       {item.name || "제목 없음"}
                     </span>
                     <div className="flex justify-end items-center w-full gap-2">
@@ -124,30 +89,6 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
           </div>
         )}
       </div>
-
-      {/* 드래그 중일 때만 보이는 휴지통 드롭존 */}
-      {isEditing && selectedItems.length > 0 && isDragging && (
-        <div
-          className="fixed left-0 right-0 flex justify-center items-center py-2"
-          style={{ bottom: "56px" }}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDropZoneDrop}
-        >
-          <div className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/80 shadow pointer-events-auto">
-            <Trash2 size={28} />
-          </div>
-        </div>
-      )}
-
-      {/* 삭제 확인 모달 */}
-      {showDeleteModal && (
-        <ConfirmDeleteModal
-          open={showDeleteModal}
-          message="선택한 카드셋을 삭제하시겠습니까?"
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => setShowDeleteModal(false)}
-        />
-      )}
     </>
   );
 };

@@ -1,28 +1,16 @@
 import { ChangeEvent, useState, KeyboardEvent } from "react";
-import { Save, Tags, X } from "lucide-react";
-import { updateCardSet } from "@/services/cardSet";
+import { X } from "lucide-react";
 
 interface TagRowProps {
   tags: string[];
   cardSetId: number;
   isEditing: boolean;
-  name?: string;
-  isPublic?: number;
   setEditing: (edit: boolean) => void;
+  onUpdateTags: (newTags: string[]) => void;
 }
 
-const TagRow = ({
-  tags,
-  isEditing,
-  cardSetId,
-  name = "",
-  isPublic = 1,
-  setEditing,
-}: TagRowProps) => {
-  const [isInputVisible, setIsInputVisible] = useState<boolean>(false);
+const TagRow = ({ tags, isEditing, onUpdateTags }: TagRowProps) => {
   const [inputValue, setInputValue] = useState<string>("");
-  const [localTags, setLocalTags] = useState<string[]>(tags);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -33,102 +21,54 @@ const TagRow = ({
 
   const isLimitExceeded = inputValue.length >= 10;
 
-  const updateTagsOnServer = async (newTags: string[]) => {
-    try {
-      setIsLoading(true);
-      await updateCardSet({
-        cardSetId,
-        name,
-        hashTags: newTags,
-        isPublic,
-      });
-    } catch (error) {
-      console.error("태그 수정 실패:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddTag = async () => {
+  const handleAddTag = () => {
     if (!inputValue.trim()) return;
-    const newTags = [...localTags, inputValue.trim()];
-    setLocalTags(newTags);
+    if (tags.includes(inputValue.trim())) return; // 중복 방지
+    const newTags = [...tags, inputValue.trim()];
+    onUpdateTags(newTags);
     setInputValue("");
-    setIsInputVisible(false);
-    await updateTagsOnServer(newTags);
   };
 
-  const handleRemoveTag = async (tagToRemove: string) => {
-    const newTags = localTags.filter((tag) => tag !== tagToRemove);
-    setLocalTags(newTags);
-    await updateTagsOnServer(newTags);
+  const handleRemoveTag = (tagToRemove: string) => {
+    const newTags = tags.filter((tag) => tag !== tagToRemove);
+    onUpdateTags(newTags);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleAddTag();
-    if (e.key === "Escape") {
-      setIsInputVisible(false);
-      setInputValue("");
-    }
+    if (e.key === "Escape") setInputValue("");
   };
 
   return (
-    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full pc:px-8 px-4 py-1 flex items-center gap-2 scrollbar-hide h-10">
-      {isInputVisible ? (
-        <Save
-          size={20}
-          className="min-w-[20px] hover:cursor-pointer text-primary-700"
-          onClick={async () => {
-            if (inputValue.trim()) {
-              await handleAddTag();
-            }
-            setIsInputVisible(false);
-            setEditing(false);
-          }}
-        />
-      ) : (
-        <Tags
-          size={20}
-          className="min-w-[20px] hover:cursor-pointer text-primary-700"
-          onClick={() => {
-            setIsInputVisible(true);
-            setEditing(true);
-          }}
-        />
-      )}
+    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full px-4 py-1 flex items-center gap-2 scrollbar-hide h-10">
+      {/* 입력창 */}
+      <input
+        type="text"
+        className={`border-2 max-w-[150px] h-8 rounded-full px-3 py-1 text-sm focus:outline-none transition-colors ${
+          isLimitExceeded ? "border-negative-500" : "border-primary-500 focus:ring-primary-500"
+        } ${isEditing ? "" : "opacity-50 pointer-events-none"}`}
+        placeholder="태그를 입력해주세요"
+        value={inputValue}
+        onChange={handleChange}
+        onKeyDown={handleKeyDown}
+        disabled={!isEditing}
+      />
 
-      {isInputVisible && (
-        <input
-          type="text"
-          className={`border-2 max-w-[150px] h-8 rounded-full px-3 py-1 text-sm focus:outline-none ${
-            isLimitExceeded ? "border-negative-500 " : "border-primary-500  focus:ring-primary-500"
-          }`}
-          placeholder="태그를 입력해주세요"
-          value={inputValue}
-          onChange={handleChange}
-          onKeyDown={handleKeyDown}
-          disabled={isLoading}
-        />
-      )}
-
-      {localTags.map((tag) => (
+      {/* 태그 목록 */}
+      {tags.map((tag) => (
         <button
           key={tag}
           type="button"
           disabled={!isEditing}
           onClick={() => handleRemoveTag(tag)}
-          className={`
-            flex items-center h-8 rounded-full px-3 py-1 text-sm text-white transition-all duration-200
-            ${
-              isEditing
-                ? "bg-primary-700 hover:bg-negative-600"
-                : "bg-primary-700 opacity-50 pointer-events-none"
-            }
-          `}
+          className={`flex items-center h-8 rounded-full px-3 py-1 text-sm text-white transition-all duration-200 ${
+            isEditing
+              ? "bg-primary-700 hover:bg-negative-600"
+              : "bg-primary-700 opacity-50 pointer-events-none"
+          }`}
           aria-label={`${tag} 태그 삭제`}
         >
           <span>#{tag}</span>
-          {/* 편집 모드일 땐 항상 X 아이콘 보이기 */}
           {isEditing && <X size={12} className="ml-1" />}
         </button>
       ))}

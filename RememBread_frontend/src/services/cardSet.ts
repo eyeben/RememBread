@@ -56,6 +56,13 @@ export interface SearchMyCardSetResponse {
   };
 }
 
+export interface GetCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: indexCardSet;
+}
+
 // 카드셋 목록 조회
 export const getCardSetList = async (
   params: GetCardSetListParams,
@@ -166,5 +173,16 @@ export const searchMyCardSet = async (
   } catch (error) {
     console.error("내 카드셋 검색 API 오류:", error);
     throw new Error("내 카드셋 검색 중 오류가 발생했습니다.");
+  }
+};
+
+// 카드셋 상세 조회
+export const getCardSetById = async (cardSetId: number): Promise<GetCardSetResponse> => {
+  try {
+    const response = await http.get<GetCardSetResponse>(`/card-sets/${cardSetId}`);
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 단건 조회 중 오류:", error);
+    throw new Error("카드셋 조회 요청에 실패했습니다.");
   }
 };

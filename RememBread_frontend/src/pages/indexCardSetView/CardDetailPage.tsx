@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
-import { Outlet, useLocation, useMatch, useNavigate } from "react-router-dom";
+import { Outlet, useLocation, useMatch, useNavigate, useParams } from "react-router-dom";
+import { Save, Tags } from "lucide-react";
+import { updateCardSet, getCardSetById } from "@/services/cardSet";
+import { Switch } from "@/components/ui/switch";
 import TagRow from "@/components/indexCardView/TagRow";
 import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
 import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
@@ -7,53 +10,145 @@ import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
 const CardDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const card = location.state?.card;
+  const { indexCardId } = useParams();
+  const cardSetId = Number(indexCardId);
+  const cardFromState = location.state?.card;
 
   const [isEditing, setIsEditing] = useState<boolean>(false);
+  const [name, setName] = useState<string>("");
+  const [hashTags, setHashTags] = useState<string[]>([]);
+  const [isPublic, setIsPublic] = useState<number>(1);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const [editedName, setEditedName] = useState<string>("");
+  const [editedTags, setEditedTags] = useState<string[]>([]);
+  const [editedIsPublic, setEditedIsPublic] = useState<number>(1);
 
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));
   const isTestRoute = Boolean(useMatch("/card-view/:indexCardId/test"));
 
   useEffect(() => {
-    if (!card) {
+    if (!cardSetId || isNaN(cardSetId)) {
       navigate("/card-view/my", { replace: true });
+      return;
     }
-  }, [card, navigate]);
 
-  if (!card) return null;
+    const fetchCardSet = async () => {
+      try {
+        const { result } = await getCardSetById(cardSetId);
+        setName(result.name ?? "");
+        setHashTags(result.hashTags ?? []);
+        setIsPublic(result.isPublic ? 1 : 0);
+      } catch (e) {
+        console.error("카드셋 불러오기 실패:", e);
+        navigate("/card-view/my", { replace: true });
+      }
+    };
 
-  const handleStudyClick = () => {
-    navigate("study", { state: { card } });
+    fetchCardSet();
+  }, [cardSetId, navigate]);
+
+  const handleStudyClick = () => navigate("study", { state: { card: cardFromState } });
+  const handleTTSClick = () => navigate("tts", { state: { card: cardFromState } });
+  const handleTestClick = () => navigate("test", { state: { card: cardFromState } });
+
+  const saveCardSet = async (
+    override?: Partial<{ name: string; hashTags: string[]; isPublic: number }>,
+  ) => {
+    setIsLoading(true);
+    try {
+      await updateCardSet({
+        cardSetId,
+        name: override?.name ?? name,
+        hashTags: override?.hashTags ?? hashTags,
+        isPublic: override?.isPublic ?? isPublic,
+      });
+    } catch (e) {
+      console.error("카드셋 수정 실패:", e);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
-  const handleTTSClick = () => {
-    navigate("tts", { state: { card } });
-  };
-
-  const handleTestClick = () => {
-    navigate("test", { state: { card } });
+  const handleSave = async () => {
+    if (!editedName.trim()) return;
+    await saveCardSet({
+      name: editedName,
+      hashTags: editedTags,
+      isPublic: editedIsPublic,
+    });
+    setName(editedName);
+    setHashTags(editedTags);
+    setIsPublic(editedIsPublic);
+    setIsEditing(false);
   };
 
   return (
     <div className="flex flex-col items-center justify-center py-4 gap-4">
-      <div className="flex justify-center items-center w-full">
-        <h1 className="flex flex-1 justify-center pc:text-3xl text-xl font-semibold">
-          {card.name}
-        </h1>
+      {/* 이름 수정 영역 + 편집 버튼 */}
+      <div className="flex justify-center items-center w-full gap-2 px-4">
+        <input
+          type="text"
+          value={isEditing ? editedName : name}
+          onChange={(e) => isEditing && setEditedName(e.target.value)}
+          className="text-xl pc:text-3xl font-semibold text-center border-b focus:outline-none w-full max-w-xl"
+          maxLength={30}
+          readOnly={!isEditing}
+        />
+
+        {isEditing ? (
+          <button onClick={handleSave} disabled={isLoading} aria-label="저장">
+            <Save size={20} className="text-primary-700 hover:cursor-pointer transition-opacity" />
+          </button>
+        ) : (
+          <button
+            onClick={() => {
+              setEditedName(name);
+              setEditedTags(hashTags);
+              setEditedIsPublic(isPublic);
+              setIsEditing(true);
+            }}
+          >
+            <Tags size={20} className="text-primary-700 hover:cursor-pointer transition-opacity" />
+          </button>
+        )}
       </div>
 
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <TagRow
-            tags={card.hashTags ?? []}
-            cardSetId={card.cardSetId}
-            name={card.name}
-            isPublic={card.isPublic}
-            isEditing={isEditing}
-            setEditing={setIsEditing}
-          />
-          <CardSetCardlList cardSetId={card.cardSetId} />
+          <div className="flex items-center gap-2 px-2 w-full">
+            <TagRow
+              tags={isEditing ? editedTags : hashTags}
+              cardSetId={cardSetId}
+              isEditing={isEditing}
+              setEditing={setIsEditing}
+              onUpdateTags={(newTags) => isEditing && setEditedTags(newTags)}
+            />
+
+            {/* 현재 공개 상태 텍스트 */}
+            <div className="text-xs text-muted-foreground whitespace-nowrap ">
+              <span className="font-semibold">{isPublic === 1 ? "공개" : "비공개"}</span>
+            </div>
+
+            {/* 공개 여부 스위치 */}
+            <div className="flex items-center gap-2 pr-2">
+              <Switch
+                checked={isPublic === 1}
+                onCheckedChange={async (checked) => {
+                  const newIsPublic = checked ? 1 : 0;
+                  setIsPublic(newIsPublic);
+                  try {
+                    await saveCardSet({ isPublic: newIsPublic });
+                  } catch (e) {
+                    setIsPublic((prev) => (prev === 1 ? 0 : 1));
+                  }
+                }}
+              />
+            </div>
+          </div>
+
+          <CardSetCardlList cardSetId={cardSetId} />
 
           <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 pc:w-[598px]">
             <CardDetailButtons

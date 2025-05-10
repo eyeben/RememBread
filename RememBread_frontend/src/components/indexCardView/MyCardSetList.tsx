@@ -145,7 +145,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
               >
                 <CardSet className="w-full h-full hover:cursor-pointer" />
                 <div className="text-center w-full">
-                  <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
+                  <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
                     {item.name || "제목 없음"}
                   </span>
                   <div className="flex justify-end items-center w-full gap-2">
