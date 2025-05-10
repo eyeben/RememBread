@@ -127,26 +127,26 @@ const CardDetailPage = () => {
                 setEditedTags(newTags);
               }}
             />
-
             {/* 현재 공개 상태 텍스트 */}
-            <div className="text-xs text-muted-foreground whitespace-nowrap ">
-              <span className="font-semibold">{isPublic === 1 ? "공개" : "비공개"}</span>
-            </div>
+            <div className="flex text-center gap-2 items-center w-[80px]">
+              <div className="text-xs text-muted-foreground whitespace-nowrap ">
+                <span className="font-semibold">
+                  {(isEditing ? editedIsPublic : isPublic) === 1 ? "공개" : "비공개"}
+                </span>
+              </div>
 
-            {/* 공개 여부 스위치 */}
-            <div className="flex items-center gap-2 pr-2">
-              <Switch
-                checked={isPublic === 1}
-                onCheckedChange={async (checked) => {
-                  const newIsPublic = checked ? 1 : 0;
-                  setIsPublic(newIsPublic);
-                  try {
-                    await saveCardSet({ isPublic: newIsPublic });
-                  } catch (e) {
-                    setIsPublic((prev) => (prev === 1 ? 0 : 1));
-                  }
-                }}
-              />
+              <div className="flex items-center gap-2 pr-2">
+                <Switch
+                  checked={(isEditing ? editedIsPublic : isPublic) === 1}
+                  onCheckedChange={(checked) => {
+                    if (isEditing) {
+                      const newIsPublic = checked ? 1 : 0;
+                      setEditedIsPublic(newIsPublic);
+                    }
+                  }}
+                  disabled={!isEditing}
+                />
+              </div>
             </div>
           </div>
 
