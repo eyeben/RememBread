@@ -55,11 +55,13 @@ const CardDetailPage = () => {
           />
           <CardSetCardlList cardSetId={card.cardSetId} />
 
-          <CardDetailButtons
-            onStudyClick={handleStudyClick}
-            onTTSClick={handleTTSClick}
-            onTestClick={handleTestClick}
-          />
+          <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 pc:w-[598px]">
+            <CardDetailButtons
+              onStudyClick={handleStudyClick}
+              onTTSClick={handleTTSClick}
+              onTestClick={handleTestClick}
+            />
+          </div>
         </>
       )}
 

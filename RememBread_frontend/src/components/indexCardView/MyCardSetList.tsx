@@ -150,7 +150,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                   </span>
                   <div className="flex justify-end items-center w-full gap-2">
                     <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
-                    {/* {item.updatedDate} */}
+                    {/* {item.viewCount} */}
                   </div>
                 </div>
               </div>
