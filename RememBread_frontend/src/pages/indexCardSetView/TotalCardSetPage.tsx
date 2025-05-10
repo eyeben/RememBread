@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCardSetList, searchCardSet } from "@/services/cardSet";
+import { searchCardSet } from "@/services/cardSet";
 import { indexCardSet } from "@/types/indexCard";
 import CardViewHeader from "@/components/indexCardView/CardViewHeader";
 import TotalCardSetList from "@/components/indexCardView/TotalCardSetList";
@@ -9,7 +9,7 @@ const TotalCardSetPage = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [sortType, setSortType] = useState<"latest" | "popularity" | "fork">("latest");
-  const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
+  const [cardSetList, setCardSetList] = useState<indexCardSet[] | undefined>(undefined);
 
   useEffect(() => {
     const fetchCardSets = async () => {
