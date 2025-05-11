@@ -24,6 +24,11 @@ public class CardStudyLog {
     @JoinColumn(name = "card_id", nullable = false)
     private Card card;
 
-    @Column(name = "attempt_count", nullable = false)
-    private Integer attemptCount = 0;
+    @Column(name = "correct_count", nullable = false)
+    @Builder.Default
+    private Integer correctCount = 0;
+
+    @Column(name = "solved_count", nullable = false)
+    @Builder.Default
+    private Integer solvedCount = 0;
 }
