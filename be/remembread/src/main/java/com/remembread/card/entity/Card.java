@@ -34,15 +34,19 @@ public class Card extends BaseEntity {
     private String description;
 
     @Column(name = "correct_count", nullable = false)
+    @Builder.Default
     private Integer correctCount = 0;
 
     @Column(name = "solved_count", nullable = false)
+    @Builder.Default
     private Integer solvedCount = 0;
 
     @Column(name = "retention_rate", nullable = false)
+    @Builder.Default
     private Double retentionRate = 0.0;
 
     @Column(nullable = false)
+    @Builder.Default
     private Double stability = 1.0;
 
     @Column(name = "last_correct_at")
