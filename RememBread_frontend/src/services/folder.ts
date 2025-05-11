@@ -1,5 +1,20 @@
 import http from "@/services/httpCommon";
 
+interface Folder {
+  id: number;
+  name: string;
+}
+
+interface GetMyFoldersResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+    total: number;
+    subFolders: Folder[];
+  };
+}
+
 // 루트 폴더 조회
 export const getFolder = async () => {
   const response = await http.get("/folders");
@@ -18,5 +33,11 @@ export const postFolder = async (name: string, upperFolderId: number | null) => 
     name,
     upperFolderId,
   });
+  return response.data;
+};
+
+// 나의 폴더 조회
+export const getMyFolders = async (): Promise<GetMyFoldersResponse> => {
+  const response = await http.get<GetMyFoldersResponse>(`/folders`);
   return response.data;
 };

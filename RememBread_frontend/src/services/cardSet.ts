@@ -70,6 +70,17 @@ export interface LikeCardSetResponse {
   result: object;
 }
 
+export interface ForkCardSetRequest {
+  folderId: number;
+}
+
+export interface ForkCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: object;
+}
+
 // 카드셋 목록 조회
 export const getCardSetList = async (
   params: GetCardSetListParams,
@@ -213,5 +224,19 @@ export const deleteLikeCardSet = async (cardSetId: number): Promise<LikeCardSetR
   } catch (error) {
     console.error("❌ [좋아요 취소 API 오류]", error);
     throw new Error("카드셋 좋아요 취소 요청에 실패했습니다.");
+  }
+};
+
+// 카드셋 fork
+export const postForkCardSet = async (
+  cardSetId: number,
+  data: ForkCardSetRequest,
+): Promise<ForkCardSetResponse> => {
+  try {
+    const response = await http.post<ForkCardSetResponse>(`/card-sets/${cardSetId}/fork`, data);
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 포크 요청 실패:", error);
+    throw new Error("카드셋 포크 중 오류가 발생했습니다.");
   }
 };

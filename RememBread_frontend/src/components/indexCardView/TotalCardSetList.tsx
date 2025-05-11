@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star } from "lucide-react";
+import { Utensils } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
 import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
+import FolderModal from "@/components/indexCardView/FolderModal";
 
 interface CardSetListProps {
   isEditing: boolean;
@@ -17,6 +18,8 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
   const navigate = useNavigate();
 
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
+  const [modalOpen, setModalOpen] = useState<boolean>(false);
+  const [targetCardSetId, setTargetCardSetId] = useState<number | null>(null);
 
   if (cardSets === undefined) {
     return (
@@ -45,6 +48,11 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
     }
   };
 
+  const handleUtensilsClick = (cardSetId: number) => {
+    setTargetCardSetId(cardSetId);
+    setModalOpen(true);
+  };
+
   return (
     <>
       {/* 카드 그리드 */}
@@ -56,9 +64,9 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
             {cardSets.map((item) => (
               <div key={item.cardSetId} className="relative">
                 <div className="absolute top-2 right-2 z-10">
-                  <Star
-                    fill={item.isLike ? "#FDE407" : "none"}
-                    className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
+                  <Utensils
+                    className="text-primary-600 hover:cursor-pointer pc:size-6 size-4"
+                    onClick={() => handleUtensilsClick(item.cardSetId)}
                   />
                 </div>
 
@@ -89,6 +97,15 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
           </div>
         )}
       </div>
+
+      {targetCardSetId !== null && (
+        <FolderModal
+          open={modalOpen}
+          cardSetId={targetCardSetId}
+          onCancel={() => setModalOpen(false)}
+          onSuccess={() => console.log("포크 완료 후 동작")}
+        />
+      )}
     </>
   );
 };
