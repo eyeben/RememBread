@@ -28,7 +28,7 @@ export interface indexCardSet {
   forkCount?: number;
   isLike?: boolean;
   totalCardCnt?: number;
-  hashTags?: string[];
+  hashtags?: string[];
   createdDate?: string | Date;
   updatedDate?: string | Date;
 }

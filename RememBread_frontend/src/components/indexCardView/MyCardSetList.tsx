@@ -2,10 +2,15 @@ import { useEffect, useState, DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
-import { getCardSetList, deleteCardSet, searchMyCardSet } from "@/services/cardSet";
+import {
+  getCardSetList,
+  deleteCardSet,
+  searchMyCardSet,
+  postLikeCardSet,
+} from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
-import CardSet from "@/components/svgs/indexCardView/CardSet";
+import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
 
 interface MyCardSetListProps {
   isEditing: boolean;
@@ -37,11 +42,12 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
           fork: "포크순",
         };
 
-        if (query.trim()) {
+        // folderId === 0이면 getCardSetList 호출 금지
+        if (folderId === 0 || query.trim()) {
           const res = await searchMyCardSet({
             query,
             page: 0,
-            size: 100, // 검색 시 충분히 많이 가져와야 필터링 가능
+            size: 100,
             cardSetSortType: sortMap[sortType],
           });
 
@@ -113,6 +119,20 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
     }
   };
 
+  const handleToggleLike = async (cardSetId: number) => {
+    console.log("즐겨찾기 요청 cardSetId:", cardSetId);
+    try {
+      await postLikeCardSet(cardSetId);
+      setCardSetList((prev) =>
+        prev.map((item) =>
+          item.cardSetId === cardSetId ? { ...item, isLike: !item.isLike } : item,
+        ),
+      );
+    } catch (error) {
+      console.error("좋아요 토글 실패:", error);
+    }
+  };
+
   return (
     <>
       {/* 카드 그리드 */}
@@ -122,6 +142,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
             <div key={item.cardSetId} className="relative">
               <div className="absolute top-2 right-2 z-10">
                 <Star
+                  onClick={() => handleToggleLike(item.cardSetId)}
                   fill={item.isLike ? "#FDE407" : "none"}
                   className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
                 />
@@ -142,13 +163,14 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                   }
                 `}
               >
-                <CardSet className="w-full h-full hover:cursor-pointer" />
+                <CardSet2 className="w-full h-full hover:cursor-pointer" />
                 <div className="text-center w-full">
-                  <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap">
+                  <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
                     {item.name || "제목 없음"}
                   </span>
                   <div className="flex justify-end items-center w-full gap-2">
                     <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
+                    {/* {item.viewCount} */}
                   </div>
                 </div>
               </div>

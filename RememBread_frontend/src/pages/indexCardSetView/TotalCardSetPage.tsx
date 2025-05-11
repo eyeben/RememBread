@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getCardSetList, searchCardSet } from "@/services/cardSet";
+import { searchCardSet } from "@/services/cardSet";
 import { indexCardSet } from "@/types/indexCard";
 import CardViewHeader from "@/components/indexCardView/CardViewHeader";
 import TotalCardSetList from "@/components/indexCardView/TotalCardSetList";
@@ -9,7 +9,7 @@ const TotalCardSetPage = () => {
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [query, setQuery] = useState<string>("");
   const [sortType, setSortType] = useState<"latest" | "popularity" | "fork">("latest");
-  const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
+  const [cardSetList, setCardSetList] = useState<indexCardSet[] | undefined>(undefined);
 
   useEffect(() => {
     const fetchCardSets = async () => {
@@ -20,28 +20,15 @@ const TotalCardSetPage = () => {
           fork: "포크순",
         };
 
-        const sortValue = sortMap[sortType];
+        const params = {
+          query,
+          page: 0,
+          size: 12,
+          cardSetSortType: sortMap[sortType],
+        };
 
-        if (query.trim()) {
-          const params = {
-            query,
-            page: 0,
-            size: 12,
-            cardSetSortType: sortValue,
-          };
-
-          const res = await searchCardSet(params);
-          setCardSetList(res.result.cardSets);
-        } else {
-          const params = {
-            page: 0,
-            size: 12,
-            sort: sortValue,
-          };
-
-          const res = await getCardSetList(params);
-          setCardSetList(res.result.cardSets);
-        }
+        const res = await searchCardSet(params);
+        setCardSetList(res.result.cardSets);
       } catch (e) {
         console.error("카드셋 조회 실패:", e);
       }

@@ -56,6 +56,20 @@ export interface SearchMyCardSetResponse {
   };
 }
 
+export interface GetCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: indexCardSet;
+}
+
+export interface LikeCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: object;
+}
+
 // 카드셋 목록 조회
 export const getCardSetList = async (
   params: GetCardSetListParams,
@@ -113,8 +127,8 @@ export const updateCardSet = async (cardSet: indexCardSet): Promise<UpdateCardSe
   try {
     const payload = {
       name: cardSet.name ?? "",
-      hashtags: cardSet.hashTags ?? [],
-      isPublic: !!cardSet.isPublic,
+      hashtags: cardSet.hashtags ?? [],
+      isPublic: Boolean(cardSet.isPublic),
     };
 
     const response = await http.patch<UpdateCardSetResponse>(
@@ -166,5 +180,27 @@ export const searchMyCardSet = async (
   } catch (error) {
     console.error("내 카드셋 검색 API 오류:", error);
     throw new Error("내 카드셋 검색 중 오류가 발생했습니다.");
+  }
+};
+
+// 카드셋 상세 조회
+export const getCardSetById = async (cardSetId: number): Promise<GetCardSetResponse> => {
+  try {
+    const response = await http.get<GetCardSetResponse>(`/card-sets/${cardSetId}`);
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 단건 조회 중 오류:", error);
+    throw new Error("카드셋 조회 요청에 실패했습니다.");
+  }
+};
+
+// 카드셋 즐겨찾기
+export const postLikeCardSet = async (cardSetId: number): Promise<LikeCardSetResponse> => {
+  try {
+    const response = await http.post<LikeCardSetResponse>(`/card-sets/${cardSetId}/like`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ [API 오류]", error);
+    throw new Error("카드셋 좋아요 요청에 실패했습니다.");
   }
 };
