@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Data
@@ -23,5 +24,6 @@ public class CardSetListGetResponse {
         private Integer totalCardCount;
         private Long lastViewedCardId;
         private List<String> hashTags;
+        private LocalDateTime updatedAt;
     }
 }

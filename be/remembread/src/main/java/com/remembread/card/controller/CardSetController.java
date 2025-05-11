@@ -105,7 +105,7 @@ public class CardSetController {
 
     @GetMapping("search-my")
     @Operation(summary = "빵 묶음 검색 (자기꺼만)", description = "자기 카드셋 검색")
-    public ApiResponse<CardSetSearchResponse> searchMyCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "") String query,
+    public ApiResponse<CardSetSearchMyResponse> searchMyCardSets(@Parameter(description = " 검색어", example = "정보처리기사") @RequestParam(defaultValue = "") String query,
                                                              @Parameter(description = "페이지 번호 (0부터 시작)", example = "0", required = true) @RequestParam(defaultValue = "0") int page,
                                                              @Parameter(description = "한페이지당 보여주는 카드셋 개수", example = "10", required = true) @RequestParam(defaultValue = "10") int size,
                                                              @Parameter(description = "‘이름순’, ‘최신순’ 중 하나", example = "최신순", required = true) @RequestParam(defaultValue = "최신순") CardSetSortType cardSetSortType,

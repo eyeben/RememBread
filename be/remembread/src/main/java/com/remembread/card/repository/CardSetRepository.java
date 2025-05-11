@@ -1,9 +1,6 @@
 package com.remembread.card.repository;
 
-import com.remembread.card.dto.response.CardSetFlatDto;
-import com.remembread.card.dto.response.CardSetListGetResponse;
-import com.remembread.card.dto.response.CardSetSearchResponse;
-import com.remembread.card.dto.response.CardSetSimpleListGetResponse;
+import com.remembread.card.dto.response.*;
 import com.remembread.card.entity.CardSet;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -23,7 +20,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.forks AS forkCount,
         CAST(COUNT(c.id) AS INTEGER) AS totalCardCount,
         cs.last_viewed_card_id AS lastViewedCardId,
-        h.name AS hashTag
+        h.name AS hashTag,
+        cs.updated_at AS updatedAt
     FROM card_sets cs
     LEFT JOIN cards c ON cs.id = c.card_set_id
     LEFT JOIN card_set_hashtags csh ON cs.id = csh.card_set_id
@@ -46,7 +44,12 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     );
 
     @Query(value = """
-    SELECT cs.id AS cardSetId, cs.name AS name, cs.views AS viewCount, cs.forks AS forkCount
+    SELECT
+        cs.id AS cardSetId,
+        cs.name AS name, 
+        cs.views AS viewCount,
+        cs.forks AS forkCount,
+        cs.updated_at AS updatedAt
     FROM card_sets cs
     WHERE cs.is_public = true
         AND cs.name ILIKE %:query%
@@ -63,7 +66,12 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     );
 
     @Query(value = """
-    SELECT cs.id AS cardSetId, cs.name AS name, cs.views AS viewCount, cs.forks AS forkCount
+    SELECT 
+        cs.id AS cardSetId, 
+        cs.name AS name,
+        cs.views AS viewCount,
+        cs.forks AS forkCount,
+        cs.updated_at AS updatedAt
     FROM card_sets cs
     JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
@@ -86,7 +94,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.id AS cardSetId,
         cs.name AS name,
         cs.views AS viewCount,
-        cs.forks AS forkCount
+        cs.forks AS forkCount,
+        cs.updated_at AS updatedAt
     FROM card_sets cs
     WHERE cs.is_public = true
       AND cs.id IN (
@@ -119,7 +128,13 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     List<CardSetSimpleListGetResponse.CardSet> findByFolderIdOrderByName(@Param("folderId") Long folderId);
 
     @Query(value = """
-    SELECT cs.id AS cardSetId, cs.name AS name, cs.views AS viewCount, cs.forks AS forkCount
+    SELECT 
+        cs.id AS cardSetId,
+        cs.name AS name,
+        cs.views AS viewCount,
+        cs.forks AS forkCount,
+        cs.updated_at AS updatedAt,
+        cs.is_like AS isLike
     FROM card_sets cs
     WHERE cs.user_id = :userId
         AND cs.name ILIKE %:query%
@@ -128,7 +143,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         CASE WHEN :column = 'views' THEN cs.views END DESC,
         CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size OFFSET :offset
     """, nativeQuery = true)
-    List<CardSetSearchResponse.CardSet> searchMyCardSetByTitle(
+    List<CardSetSearchMyResponse.CardSet> searchMyCardSetByTitle(
             @Param("userId") long userId,
             @Param("query") String query,
             @Param("column") String column,
@@ -145,7 +160,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.forks AS forkCount,
         CAST(COUNT(c.id) AS INTEGER) AS totalCardCount,
         cs.last_viewed_card_id AS lastViewedCardId,
-        h.name AS hashTag
+        h.name AS hashTag,
+        cs.updated_at AS updatedAt
     FROM card_sets cs
     LEFT JOIN cards c ON cs.id = c.card_set_id
     LEFT JOIN card_set_hashtags csh ON cs.id = csh.card_set_id
