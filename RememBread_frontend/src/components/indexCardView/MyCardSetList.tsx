@@ -2,10 +2,14 @@ import { useEffect, useState, DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
-import { getCardSetList, deleteCardSet, searchMyCardSet } from "@/services/cardSet";
+import {
+  getCardSetList,
+  deleteCardSet,
+  searchMyCardSet,
+  postLikeCardSet,
+} from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
-import CardSet from "@/components/svgs/indexCardView/CardSet2";
 import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
 
 interface MyCardSetListProps {
@@ -115,6 +119,20 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
     }
   };
 
+  const handleToggleLike = async (cardSetId: number) => {
+    console.log("즐겨찾기 요청 cardSetId:", cardSetId);
+    try {
+      await postLikeCardSet(cardSetId);
+      setCardSetList((prev) =>
+        prev.map((item) =>
+          item.cardSetId === cardSetId ? { ...item, isLike: !item.isLike } : item,
+        ),
+      );
+    } catch (error) {
+      console.error("좋아요 토글 실패:", error);
+    }
+  };
+
   return (
     <>
       {/* 카드 그리드 */}
@@ -124,6 +142,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
             <div key={item.cardSetId} className="relative">
               <div className="absolute top-2 right-2 z-10">
                 <Star
+                  onClick={() => handleToggleLike(item.cardSetId)}
                   fill={item.isLike ? "#FDE407" : "none"}
                   className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
                 />

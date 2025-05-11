@@ -63,6 +63,13 @@ export interface GetCardSetResponse {
   result: indexCardSet;
 }
 
+export interface LikeCardSetResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: object;
+}
+
 // 카드셋 목록 조회
 export const getCardSetList = async (
   params: GetCardSetListParams,
@@ -184,5 +191,16 @@ export const getCardSetById = async (cardSetId: number): Promise<GetCardSetRespo
   } catch (error) {
     console.error("카드셋 단건 조회 중 오류:", error);
     throw new Error("카드셋 조회 요청에 실패했습니다.");
+  }
+};
+
+// 카드셋 즐겨찾기
+export const postLikeCardSet = async (cardSetId: number): Promise<LikeCardSetResponse> => {
+  try {
+    const response = await http.post<LikeCardSetResponse>(`/card-sets/${cardSetId}/like`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ [API 오류]", error);
+    throw new Error("카드셋 좋아요 요청에 실패했습니다.");
   }
 };

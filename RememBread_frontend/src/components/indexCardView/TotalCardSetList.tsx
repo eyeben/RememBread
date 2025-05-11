@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Star } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
-import CardSet from "@/components/svgs/indexCardView/CardSet";
+import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
 
 interface CardSetListProps {
   isEditing: boolean;
@@ -74,7 +74,7 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
                     }
                   `}
                 >
-                  <CardSet className="w-full h-full hover:cursor-pointer" />
+                  <CardSet2 className="w-full h-full hover:cursor-pointer" />
                   <div className="text-center w-full">
                     <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
                       {item.name || "제목 없음"}
