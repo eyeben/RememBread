@@ -9,7 +9,7 @@ interface CharacterImageProps {
   isGrayscale?: boolean;
 }
 
-const CharacterImage = ({ characterId, className = "w-60 h-60", isGrayscale = false }: CharacterImageProps) => {
+const CharacterImage = ({ characterId, className = "w-56 h-56", isGrayscale = false }: CharacterImageProps) => {
   if (isGrayscale) {
     switch (characterId) {
       case 1:

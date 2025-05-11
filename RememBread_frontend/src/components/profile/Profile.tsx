@@ -115,7 +115,7 @@ const Profile = () => {
     <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
       <div className="flex flex-col items-center w-full max-w-md mx-auto">
         <CharacterImage characterId={mainCharacterId} />
-        <div className="h-10 mt-4 w-full flex justify-center">
+        <div className="h-10 mt-2 w-full flex justify-center">
           {isEditable && (
             <Button className="min-w-48 w-full max-w-72 h-10" variant="primary-outline" onClick={handleImageEdit}>
               변경하기
@@ -123,7 +123,7 @@ const Profile = () => {
           )}
         </div>
       </div>
-      <div className="flex flex-col items-center w-full max-w-md mx-auto gap-5 mt-8">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto gap-5 mt-2">
         <div className="flex w-full justify-between items-center">
           <Input
             className="min-w-48 w-full max-w-72 h-10 mx-auto"
