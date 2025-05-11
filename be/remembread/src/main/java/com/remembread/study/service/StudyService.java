@@ -37,6 +37,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -112,25 +113,31 @@ public class StudyService {
         if (!cardSet.getUser().getId().equals(user.getId())) {
             throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
         }
-
-        Set<Object> cards = redisService.getZSetRange(
-                redisPrefix + "::study::" + user.getId() + "::sorted-set::", 0, -1);
-        for (Object cardJson : cards) {
-            try {
-                Map<Object, Object> hash = redisService.getHashMap((String) cardJson);
-                CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
-                Card card = cardRepository.findById(cardCache.getId()).orElseThrow(() ->
-                        new GeneralException(ErrorStatus.CARD_NOT_FOUND));
-                card.update(cardCache);
-            } catch (Exception e) {
-                log.warn("Exception occurred while updating card ", e);
-            }
-        }
-
         Card lastCard = cardRepository.findById(request.getLastCardId()).orElseThrow(() ->
                 new GeneralException(ErrorStatus.CARD_NOT_FOUND));
         cardSet.updateLastViewedCard(lastCard);
         cardSetRepository.save(cardSet);
+
+        Set<Object> cardJsons = redisService.getZSetRange(
+                redisPrefix + "::study::" + user.getId() + "::sorted-set::", 0, -1);
+
+        List<Long> cardIds = new ArrayList<>();
+        Map<Long, CardCache> cardCacheMap = new HashMap<>();
+        for (Object cardJson : cardJsons) {
+            Map<Object, Object> hash = redisService.getHashMap((String) cardJson);
+            CardCache cardCache = objectMapper.convertValue(hash, CardCache.class);
+            cardIds.add(cardCache.getId());
+            cardCacheMap.put(cardCache.getId(), cardCache);
+        }
+
+        List<Card> cards = cardRepository.findAllById(cardIds);
+        Map<Long, Card> cardMap = cards.stream()
+                .collect(Collectors.toMap(Card::getId, card -> card));
+        for (Long cardId : cardIds) {
+            Card card = cardMap.get(cardId);
+            CardCache cardCache = cardCacheMap.get(cardId);
+            card.update(cardCache);
+        }
 
         this.addPoint(user,request.getLongitude(), request.getLatitude());
         List<Object> objList = redisService.getList(redisPrefix + "::study-log::" + user.getId() + "::route::");
