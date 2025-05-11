@@ -152,7 +152,7 @@ const CardDetailPage = () => {
 
           <CardSetCardlList cardSetId={cardSetId} />
 
-          <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 pc:w-[598px] z-50">
+          <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 pc:w-[598px] z-25">
             <CardDetailButtons
               onStudyClick={handleStudyClick}
               onTTSClick={handleTTSClick}

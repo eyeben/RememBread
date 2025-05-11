@@ -39,10 +39,7 @@ const CardSetSearchBar = ({ query, setQuery, sortType, setSortType }: CardSetSea
           isLimitExceeded ? "border-negative-500" : "border-neutral-300"
         }`}
       >
-        <Search
-          className="w-5 h-full text-neutral-400 cursor-pointer"
-          onClick={handleSearch} // ✅ 클릭 시 검색 실행
-        />
+        <Search className="w-5 h-full text-neutral-400 cursor-pointer" onClick={handleSearch} />
         <Input
           type="text"
           value={inputValue}

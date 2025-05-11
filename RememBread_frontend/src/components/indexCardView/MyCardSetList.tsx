@@ -7,6 +7,7 @@ import {
   deleteCardSet,
   searchMyCardSet,
   postLikeCardSet,
+  deleteLikeCardSet,
 } from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
@@ -121,9 +122,16 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
   };
 
   const handleToggleLike = async (cardSetId: number) => {
-    console.log("즐겨찾기 요청 cardSetId:", cardSetId);
     try {
-      await postLikeCardSet(cardSetId);
+      const targetCard = cardSetList.find((item) => item.cardSetId === cardSetId);
+      if (!targetCard) return;
+
+      if (targetCard.isLike) {
+        await deleteLikeCardSet(cardSetId);
+      } else {
+        await postLikeCardSet(cardSetId);
+      }
+
       setCardSetList((prev) =>
         prev.map((item) =>
           item.cardSetId === cardSetId ? { ...item, isLike: !item.isLike } : item,
@@ -171,7 +179,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                   </span>
                   <div className="flex justify-end items-center w-full gap-2">
                     <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
-                    {/* {item.viewCount} */}
+                    {/* {item.updatedDate} */}
                   </div>
                 </div>
               </div>

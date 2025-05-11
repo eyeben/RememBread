@@ -204,3 +204,14 @@ export const postLikeCardSet = async (cardSetId: number): Promise<LikeCardSetRes
     throw new Error("카드셋 좋아요 요청에 실패했습니다.");
   }
 };
+
+// 카드셋 좋아요 취소
+export const deleteLikeCardSet = async (cardSetId: number): Promise<LikeCardSetResponse> => {
+  try {
+    const response = await http.delete<LikeCardSetResponse>(`/card-sets/${cardSetId}/like`);
+    return response.data;
+  } catch (error) {
+    console.error("❌ [좋아요 취소 API 오류]", error);
+    throw new Error("카드셋 좋아요 취소 요청에 실패했습니다.");
+  }
+};
