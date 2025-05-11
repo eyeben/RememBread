@@ -5,8 +5,10 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.sql.Timestamp;
+import java.time.LocalDateTime;
+
 @Data
-@AllArgsConstructor
 public class CardSetFlatDto {
     private Long cardSetId;
     private String name;
@@ -17,4 +19,28 @@ public class CardSetFlatDto {
     private Integer totalCardCount;
     private Long lastViewedCardId;
     private String hashTag;
+    private LocalDateTime updatedAt;
+
+    public CardSetFlatDto(Long cardSetId,
+                          String name,
+                          Boolean isPublic,
+                          Boolean isLike,
+                          Integer viewCount,
+                          Integer forkCount,
+                          Integer totalCardCount,
+                          Long lastViewedCardId,
+                          String hashTag,
+                          Timestamp updatedAt) {
+        this.cardSetId = cardSetId;
+        this.name = name;
+        this.isPublic = isPublic;
+        this.isLike = isLike;
+        this.viewCount = viewCount;
+        this.forkCount = forkCount;
+        this.totalCardCount = totalCardCount;
+        this.lastViewedCardId = lastViewedCardId;
+        this.hashTag = hashTag;
+        this.updatedAt = updatedAt != null ? updatedAt.toLocalDateTime() : null;
+    }
+
 }
