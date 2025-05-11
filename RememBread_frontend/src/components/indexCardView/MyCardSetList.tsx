@@ -26,6 +26,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
   const [selectedItems, setSelectedItems] = useState<number[]>([]);
   const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
   const [isDragging, setIsDragging] = useState<boolean>(false);
+  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
   useEffect(() => {
     if (!isEditing) {
@@ -180,18 +181,33 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
       </div>
 
       {/* 드래그 중일 때만 보이는 휴지통 드롭존 */}
-      {isEditing && selectedItems.length > 0 && isDragging && (
-        <div
-          className="fixed left-0 right-0 flex justify-center items-center py-2"
-          style={{ bottom: "56px" }}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDropZoneDrop}
-        >
-          <div className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/80 shadow pointer-events-auto">
-            <Trash2 size={28} />
+      {isEditing &&
+        selectedItems.length > 0 &&
+        (isMobile ? (
+          // 모바일: 삭제 버튼
+          <div className="fixed bottom-[72px] left-0 right-0 flex justify-center items-center py-2 z-50">
+            <button
+              className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/80 shadow pointer-events-auto"
+              onClick={() => setShowDeleteModal(true)}
+            >
+              <Trash2 size={28} />
+            </button>
           </div>
-        </div>
-      )}
+        ) : (
+          // PC: 휴지통 드롭존
+          isDragging && (
+            <div
+              className="fixed left-0 right-0 flex justify-center items-center py-2 z-50"
+              style={{ bottom: "72px" }}
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={handleDropZoneDrop}
+            >
+              <div className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/80 shadow pointer-events-auto">
+                <Trash2 size={28} />
+              </div>
+            </div>
+          )
+        ))}
 
       {/* 삭제 확인 모달 */}
       {showDeleteModal && (
