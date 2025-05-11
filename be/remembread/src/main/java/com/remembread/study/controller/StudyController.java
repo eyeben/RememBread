@@ -9,6 +9,7 @@ import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.dto.response.RouteResponse;
+import com.remembread.study.dto.response.StudyLogResponse;
 import com.remembread.study.service.StudyService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -75,5 +76,15 @@ public class StudyController {
             @AuthUser User user
             ) {
         return ApiResponse.onSuccess(studyService.getRoutes(cardSetId, page, size, user));
+    }
+
+    @GetMapping("/{cardSetId}/logs")
+    public ApiResponse<StudyLogResponse> getLogsByCardSet(
+            @PathVariable Long cardSetId,
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @AuthUser User user
+    ) {
+        return ApiResponse.onSuccess(studyService.getLogsByCardSet(cardSetId, user, page, size));
     }
 }
