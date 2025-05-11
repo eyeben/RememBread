@@ -23,7 +23,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/start")
     public ApiResponse<CardResponse> startStudySession(
             @PathVariable("cardSetId") Long cardSetId,
-            StudyStartRequest request,
+            @RequestBody StudyStartRequest request,
             @AuthUser User user
             ) {
         return ApiResponse.onSuccess(studyService.startStudySession(cardSetId, request, user));
@@ -32,7 +32,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/stop")
     public ApiResponse<Void> stopStudySession(
             @PathVariable("cardSetId") Long cardSetId,
-            StudyStopRequest request,
+            @RequestBody StudyStopRequest request,
             @AuthUser User user
             ) {
         studyService.stopStudySession(cardSetId, request, user);
@@ -43,7 +43,7 @@ public class StudyController {
     public ApiResponse<RemainingCardCountResponse> submitAnswer(
             @PathVariable Long cardSetId,
             @PathVariable Long cardId,
-            AnswerResultRequest request,
+            @RequestBody AnswerResultRequest request,
             @AuthUser User user
     ) {
         return ApiResponse.onSuccess(studyService.submitAnswer(cardSetId, cardId, request, user));
@@ -60,7 +60,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/location")
     public ApiResponse<Void> addPoint(
             @PathVariable Long cardSetId,
-            LocationRequest request,
+            @RequestBody LocationRequest request,
             @AuthUser User user
     ) {
         studyService.addPoint(user, request.getLongitude(), request.getLatitude());
