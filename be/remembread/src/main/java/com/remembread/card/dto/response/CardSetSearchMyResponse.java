@@ -10,7 +10,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class CardSetSearchResponse {
+public class CardSetSearchMyResponse {
     List<CardSet> cardSets = new ArrayList<CardSet>();
 
     @Data
@@ -20,13 +20,15 @@ public class CardSetSearchResponse {
         Integer viewCount;
         Integer forkCount;
         LocalDateTime updatedAt;
+        Boolean isLike;
 
-        public CardSet(Long cardSetId, String name, Integer viewCount, Integer forkCount, Timestamp updatedAt) {
+        public CardSet(Long cardSetId, String name, Integer viewCount, Integer forkCount, Timestamp updatedAt, Boolean isLike) {
             this.cardSetId = cardSetId;
             this.name = name;
             this.viewCount = viewCount;
             this.forkCount = forkCount;
             this.updatedAt = updatedAt.toLocalDateTime();
+            this.isLike = isLike;
         }
 
         public void updateViewCount(Integer viewCount){this.viewCount = viewCount;}

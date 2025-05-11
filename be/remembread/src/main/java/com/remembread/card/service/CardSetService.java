@@ -245,6 +245,7 @@ public class CardSetService {
                             .totalCardCount(row.getTotalCardCount())
                             .lastViewedCardId(row.getLastViewedCardId())
                             .hashTags(new ArrayList<>())
+                            .updatedAt(row.getUpdatedAt())
                             .build()
             );
 
@@ -306,13 +307,13 @@ public class CardSetService {
     }
 
     @Transactional(readOnly = true)
-    public CardSetSearchResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
+    public CardSetSearchMyResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
-        CardSetSearchResponse response = new CardSetSearchResponse(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
+        CardSetSearchMyResponse response = new CardSetSearchMyResponse(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
 
         // 캐시된 애들 조회수 추가
-        for(CardSetSearchResponse.CardSet itm: response.getCardSets())
+        for(CardSetSearchMyResponse.CardSet itm: response.getCardSets())
             itm.updateViewCount(itm.getViewCount() + getCachedCardSetViewCount(itm.getCardSetId()));
 
         return response;
@@ -361,6 +362,7 @@ public class CardSetService {
                             .totalCardCount(row.getTotalCardCount())
                             .lastViewedCardId(row.getLastViewedCardId())
                             .hashTags(new ArrayList<>())
+                            .updatedAt(row.getUpdatedAt())
                             .build()
             );
 
