@@ -17,9 +17,9 @@ const CardSinglePage = () => {
 
   const readonlyMode = location.state?.fromTotalPage ?? false;
 
-  const [isFront, setIsFront] = useState<boolean>(true);
-  const [isRotating, setIsRotating] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
+  const [isFront, setIsFront] = useState(true);
+  const [isRotating, setIsRotating] = useState(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const [lastClickTime, setLastClickTime] = useState<number>(0);
 
   const [name, setName] = useState<string>("");
@@ -71,6 +71,8 @@ const CardSinglePage = () => {
   };
 
   const handleSave = async () => {
+    if (readonlyMode) return; // 🔒 읽기 전용이면 저장 방지
+
     setIsSaving(true);
     try {
       await patchCard(card.cardId, {
@@ -158,6 +160,7 @@ const CardSinglePage = () => {
                 <input
                   value={concept}
                   onChange={(e) => setConcept(e.target.value)}
+                  readOnly={readonlyMode}
                   className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
                 />
               )
@@ -172,6 +175,7 @@ const CardSinglePage = () => {
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
+                readOnly={readonlyMode}
                 className="absolute top-[17%] left-[17%] w-2/3 h-3/4 font-bold rotate-y-180 overflow-auto text-left bg-inherit border-none outline-none resize-none"
                 style={{ whiteSpace: "pre-wrap", scrollbarWidth: "none" }}
               />
