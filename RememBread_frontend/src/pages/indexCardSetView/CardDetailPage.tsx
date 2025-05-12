@@ -25,6 +25,7 @@ const CardDetailPage = () => {
   const [editedName, setEditedName] = useState<string>("");
   const [editedTags, setEditedTags] = useState<string[]>([]);
   const [editedIsPublic, setEditedIsPublic] = useState<number>(1);
+  const nickname = location.state?.card?.nickname;
 
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));
@@ -88,43 +89,60 @@ const CardDetailPage = () => {
 
   return (
     <div className="flex flex-col items-center justify-center py-4 gap-4">
-      {/* 이름 수정 영역 + 편집 버튼 */}
-      <div className="flex justify-center items-center w-full gap-2 px-4">
-        <input
-          type="text"
-          value={isEditing ? editedName : name}
-          onChange={(e) => isEditing && !readonlyMode && setEditedName(e.target.value)}
-          className="text-xl pc:text-3xl font-semibold text-center border-b focus:outline-none w-full max-w-xl pb-2"
-          maxLength={30}
-          readOnly={!isEditing || readonlyMode}
-        />
+      {/* 이름 + 작성자 + 편집버튼 한 줄에 정렬 */}
+      <div className="relative w-full px-4 max-w-3xl">
+        <div className="flex items-center justify-center w-full">
+          {/* 제목 input */}
+          <input
+            type="text"
+            value={isEditing ? editedName : name}
+            onChange={(e) => isEditing && !readonlyMode && setEditedName(e.target.value)}
+            className="text-center text-xl pc:text-3xl font-semibold border-b border-neutral-300 focus:outline-none w-full pb-2"
+            maxLength={30}
+            readOnly={!isEditing || readonlyMode}
+          />
 
-        {isEditing ? (
-          <button onClick={handleSave} disabled={isLoading || readonlyMode} aria-label="저장">
-            <Save size={20} className="text-primary-700 hover:cursor-pointer transition-opacity" />
-          </button>
-        ) : (
-          !readonlyMode && (
-            <button
-              onClick={() => {
-                setEditedName(name);
-                setEditedTags(hashtags);
-                setEditedIsPublic(isPublic);
-                setIsEditing(true);
-              }}
-            >
-              <Tags
-                size={20}
-                className="text-primary-700 hover:cursor-pointer transition-opacity"
-              />
-            </button>
-          )
-        )}
+          {/* 편집/저장 버튼 */}
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2">
+            {nickname && (
+              <span className="text-xs text-muted-foreground whitespace-nowrap pr-3">
+                제빵사: <span className="font-medium">{nickname}</span>
+              </span>
+            )}
+            {isEditing ? (
+              <button onClick={handleSave} disabled={isLoading || readonlyMode} aria-label="저장">
+                <Save
+                  size={20}
+                  className="text-primary-700 hover:cursor-pointer transition-opacity"
+                />
+              </button>
+            ) : (
+              !readonlyMode && (
+                <button
+                  onClick={() => {
+                    setEditedName(name);
+                    setEditedTags(hashtags);
+                    setEditedIsPublic(isPublic);
+                    setIsEditing(true);
+                  }}
+                >
+                  <Tags
+                    size={20}
+                    className="text-primary-700 hover:cursor-pointer transition-opacity"
+                  />
+                </button>
+              )
+            )}
+          </div>
+        </div>
       </div>
 
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <div className="flex items-center gap-2 px-2 w-full ">
+          <div className="flex items-center w-full ">
+            <span className="text-sm text-muted-foreground font-medium whitespace-nowrap pl-6">
+              태그 :
+            </span>
             <TagRow
               tags={isEditing ? editedTags : hashtags}
               cardSetId={cardSetId}
@@ -135,25 +153,27 @@ const CardDetailPage = () => {
               }}
               readonlyMode={readonlyMode}
             />
-            <div className="flex text-center gap-2 items-center w-[80px]">
-              <div className="text-xs text-muted-foreground whitespace-nowrap ">
-                <span className="font-semibold">
-                  {(isEditing ? editedIsPublic : isPublic) === 1 ? "공개" : "비공개"}
-                </span>
-              </div>
+            {!readonlyMode && (
+              <div className="flex text-center gap-2 items-center">
+                <div className="text-xs text-muted-foreground whitespace-nowrap ">
+                  <span className="font-semibold">
+                    {(isEditing ? editedIsPublic : isPublic) === 1 ? "공개" : "비공개"}
+                  </span>
+                </div>
 
-              <div className="flex items-center gap-2 pr-2">
-                <Switch
-                  checked={(isEditing ? editedIsPublic : isPublic) === 1}
-                  onCheckedChange={(checked) => {
-                    if (isEditing && !readonlyMode) {
-                      setEditedIsPublic(checked ? 1 : 0);
-                    }
-                  }}
-                  disabled={!isEditing || readonlyMode}
-                />
+                <div className="flex items-center gap-2 pr-2">
+                  <Switch
+                    checked={(isEditing ? editedIsPublic : isPublic) === 1}
+                    onCheckedChange={(checked) => {
+                      if (isEditing) {
+                        setEditedIsPublic(checked ? 1 : 0);
+                      }
+                    }}
+                    disabled={!isEditing}
+                  />
+                </div>
               </div>
-            </div>
+            )}
           </div>
 
           <CardSetCardlList cardSetId={cardSetId} />

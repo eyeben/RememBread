@@ -62,7 +62,7 @@ const MyCardSetList = ({
           const res = await searchMyCardSet({
             query,
             page: 0,
-            size: 12,
+            size: 48,
             cardSetSortType: sortMap[sortType],
           });
 
@@ -76,7 +76,7 @@ const MyCardSetList = ({
           const res = await getCardSetList({
             folderId,
             page: 0,
-            size: 12,
+            size: 48,
             sort: sortMap[sortType],
           });
           setCardSetList(res.result.cardSets);
