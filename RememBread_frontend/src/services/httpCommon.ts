@@ -29,22 +29,13 @@ http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 http.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
+        console.log("응답 인터셉터 실행");
+        console.log(error);
+        console.log("error.response", error.response);
         const originalRequest = error.config as InternalAxiosRequestConfig;
 
-        // TOKEN4002 에러 처리
-        if (error.response?.data && 
-            typeof error.response.data === 'object' && 
-            'code' in error.response.data &&
-            'isSuccess' in error.response.data &&
-            error.response.data.code === 'TOKEN4002' && 
-            error.response.data.isSuccess === false
-        ) {
-            tokenUtils.removeToken();
-            return Promise.reject(error);
-        }
-
         if (
-            error.response?.status === 401 &&
+            (error.response?.status === 401 || error.request?.status === 401) &&
             !isRefreshing
         ) {
             console.log('토큰 재발급 시도 시작');
