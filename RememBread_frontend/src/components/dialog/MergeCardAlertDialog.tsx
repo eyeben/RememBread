@@ -23,11 +23,19 @@ interface MergeCardAlertDialogProps {
 const MergeCardAlertDialog = ({ selectedCardSet }: MergeCardAlertDialogProps) => {
   const navigate = useNavigate();
   const cardSet = useCardStore((state) => state.cardSet);
+  const resetCardSet = useCardStore((state) => state.resetCardSet);
 
   const handleMerge = async () => {
-    await postCards(selectedCardSet.cardSetId, cardSet);
+    try {
+      await postCards(selectedCardSet.cardSetId, cardSet);
+    } catch (error) {
+      console.error("카드셋 병합 실패:", error);
+      return;
+    } finally {
+      resetCardSet();
 
-    navigate("/card-view");
+      navigate("/card-view");
+    }
   };
 
   return (
