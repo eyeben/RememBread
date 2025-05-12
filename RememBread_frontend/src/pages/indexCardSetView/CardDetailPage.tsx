@@ -14,6 +14,8 @@ const CardDetailPage = () => {
   const cardSetId = Number(indexCardId);
   const cardFromState = location.state?.card;
 
+  const readonlyMode = location.state?.fromTotalPage ?? false;
+
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
   const [hashtags, setHashTags] = useState<string[]>([]);
@@ -91,27 +93,32 @@ const CardDetailPage = () => {
         <input
           type="text"
           value={isEditing ? editedName : name}
-          onChange={(e) => isEditing && setEditedName(e.target.value)}
-          className="text-xl pc:text-3xl font-semibold text-center border-b focus:outline-none w-full max-w-xl"
+          onChange={(e) => isEditing && !readonlyMode && setEditedName(e.target.value)}
+          className="text-xl pc:text-3xl font-semibold text-center border-b focus:outline-none w-full max-w-xl pb-2"
           maxLength={30}
-          readOnly={!isEditing}
+          readOnly={!isEditing || readonlyMode}
         />
 
         {isEditing ? (
-          <button onClick={handleSave} disabled={isLoading} aria-label="저장">
+          <button onClick={handleSave} disabled={isLoading || readonlyMode} aria-label="저장">
             <Save size={20} className="text-primary-700 hover:cursor-pointer transition-opacity" />
           </button>
         ) : (
-          <button
-            onClick={() => {
-              setEditedName(name);
-              setEditedTags(hashtags);
-              setEditedIsPublic(isPublic);
-              setIsEditing(true);
-            }}
-          >
-            <Tags size={20} className="text-primary-700 hover:cursor-pointer transition-opacity" />
-          </button>
+          !readonlyMode && (
+            <button
+              onClick={() => {
+                setEditedName(name);
+                setEditedTags(hashtags);
+                setEditedIsPublic(isPublic);
+                setIsEditing(true);
+              }}
+            >
+              <Tags
+                size={20}
+                className="text-primary-700 hover:cursor-pointer transition-opacity"
+              />
+            </button>
+          )
         )}
       </div>
 
@@ -121,13 +128,13 @@ const CardDetailPage = () => {
             <TagRow
               tags={isEditing ? editedTags : hashtags}
               cardSetId={cardSetId}
-              isEditing={isEditing}
+              isEditing={isEditing && !readonlyMode}
               setEditing={setIsEditing}
               onUpdateTags={(newTags) => {
                 setEditedTags(newTags);
               }}
+              readonlyMode={readonlyMode}
             />
-            {/* 현재 공개 상태 텍스트 */}
             <div className="flex text-center gap-2 items-center w-[80px]">
               <div className="text-xs text-muted-foreground whitespace-nowrap ">
                 <span className="font-semibold">
@@ -139,12 +146,11 @@ const CardDetailPage = () => {
                 <Switch
                   checked={(isEditing ? editedIsPublic : isPublic) === 1}
                   onCheckedChange={(checked) => {
-                    if (isEditing) {
-                      const newIsPublic = checked ? 1 : 0;
-                      setEditedIsPublic(newIsPublic);
+                    if (isEditing && !readonlyMode) {
+                      setEditedIsPublic(checked ? 1 : 0);
                     }
                   }}
-                  disabled={!isEditing}
+                  disabled={!isEditing || readonlyMode}
                 />
               </div>
             </div>

@@ -45,8 +45,8 @@ const CardSetSearchBar = ({ query, setQuery, sortType, setSortType }: CardSetSea
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          placeholder="검색어를 입력하세요"
-          className="w-full text-sm text-neutral-700 placeholder-gray-400 border-0 shadow-none p-0 h-fit focus-visible:ring-0 "
+          placeholder="검색어  |  #해시태그  |  @작성자"
+          className="w-full text-xs pc:text-sm text-neutral-700 placeholder-gray-400 border-0 shadow-none p-0 h-fit focus-visible:ring-0 "
         />
       </div>
       <OrderSelector sortType={sortType} setSortType={setSortType} />
