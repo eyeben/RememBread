@@ -1,16 +1,17 @@
-import { useEffect, useState, DragEvent } from "react";
+import { useEffect, DragEvent, Dispatch, SetStateAction } from "react";
 import { useNavigate } from "react-router-dom";
-import { Star, Trash2 } from "lucide-react";
+import { Star } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
 import {
   getCardSetList,
   deleteCardSet,
   searchMyCardSet,
   postLikeCardSet,
+  deleteLikeCardSet,
 } from "@/services/cardSet";
-import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
 import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
+import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
 
 interface MyCardSetListProps {
   isEditing: boolean;
@@ -18,14 +19,29 @@ interface MyCardSetListProps {
   query: string;
   sortType: "latest" | "popularity" | "fork";
   toggleEditing: () => void;
+  selectedItems: number[];
+  setSelectedItems: Dispatch<SetStateAction<number[]>>;
+  isDragging: boolean;
+  setIsDragging: Dispatch<SetStateAction<boolean>>;
+  showDeleteModal: boolean;
+  setShowDeleteModal: Dispatch<SetStateAction<boolean>>;
+  cardSetList: indexCardSet[];
+  setCardSetList: Dispatch<SetStateAction<indexCardSet[]>>;
 }
 
-const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListProps) => {
+const MyCardSetList = ({
+  isEditing,
+  folderId,
+  query,
+  sortType,
+  selectedItems,
+  setSelectedItems,
+  setIsDragging,
+  setShowDeleteModal,
+  cardSetList,
+  setCardSetList,
+}: MyCardSetListProps) => {
   const navigate = useNavigate();
-  const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
 
   useEffect(() => {
     if (!isEditing) {
@@ -42,12 +58,11 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
           fork: "포크순",
         };
 
-        // folderId === 0이면 getCardSetList 호출 금지
         if (folderId === 0 || query.trim()) {
           const res = await searchMyCardSet({
             query,
             page: 0,
-            size: 100,
+            size: 12,
             cardSetSortType: sortMap[sortType],
           });
 
@@ -102,11 +117,6 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
     setIsDragging(false);
   };
 
-  const handleDropZoneDrop = () => {
-    setIsDragging(false);
-    setShowDeleteModal(true);
-  };
-
   const handleDeleteConfirm = async () => {
     try {
       await Promise.all(selectedItems.map((id) => deleteCardSet(id)));
@@ -120,9 +130,16 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
   };
 
   const handleToggleLike = async (cardSetId: number) => {
-    console.log("즐겨찾기 요청 cardSetId:", cardSetId);
     try {
-      await postLikeCardSet(cardSetId);
+      const targetCard = cardSetList.find((item) => item.cardSetId === cardSetId);
+      if (!targetCard) return;
+
+      if (targetCard.isLike) {
+        await deleteLikeCardSet(cardSetId);
+      } else {
+        await postLikeCardSet(cardSetId);
+      }
+
       setCardSetList((prev) =>
         prev.map((item) =>
           item.cardSetId === cardSetId ? { ...item, isLike: !item.isLike } : item,
@@ -135,7 +152,6 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
 
   return (
     <>
-      {/* 카드 그리드 */}
       <div className="flex flex-col items-center w-full px-2">
         <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
           {cardSetList.map((item) => (
@@ -154,7 +170,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                 onDragEnd={handleDragEnd}
                 onClick={() => handleCardClick(item.cardSetId)}
                 className={`
-                  rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
+                  rounded-md box-border border-2 p-1 pc:h-48 h-36 flex flex-col justify-between items-center
                   ${isEditing ? "cursor-pointer" : ""}
                   ${
                     selectedItems.includes(item.cardSetId)
@@ -170,7 +186,6 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                   </span>
                   <div className="flex justify-end items-center w-full gap-2">
                     <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
-                    {/* {item.viewCount} */}
                   </div>
                 </div>
               </div>
@@ -179,29 +194,13 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
         </div>
       </div>
 
-      {/* 드래그 중일 때만 보이는 휴지통 드롭존 */}
-      {isEditing && selectedItems.length > 0 && isDragging && (
-        <div
-          className="fixed left-0 right-0 flex justify-center items-center py-2"
-          style={{ bottom: "56px" }}
-          onDragOver={(e) => e.preventDefault()}
-          onDrop={handleDropZoneDrop}
-        >
-          <div className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/80 shadow pointer-events-auto">
-            <Trash2 size={28} />
-          </div>
-        </div>
-      )}
-
       {/* 삭제 확인 모달 */}
-      {showDeleteModal && (
-        <ConfirmDeleteModal
-          open={showDeleteModal}
-          message="선택한 카드셋을 삭제하시겠습니까?"
-          onConfirm={handleDeleteConfirm}
-          onCancel={() => setShowDeleteModal(false)}
-        />
-      )}
+      <ConfirmDeleteModal
+        open={false} // 외부에서 열림 제어
+        message="선택한 카드셋을 삭제하시겠습니까?"
+        onConfirm={handleDeleteConfirm}
+        onCancel={() => setShowDeleteModal(false)}
+      />
     </>
   );
 };

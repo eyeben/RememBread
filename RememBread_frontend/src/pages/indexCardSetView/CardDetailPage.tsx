@@ -30,7 +30,7 @@ const CardDetailPage = () => {
 
   useEffect(() => {
     if (!cardSetId || isNaN(cardSetId)) {
-      navigate("/card-view/my", { replace: true });
+      navigate("/card-view", { replace: true });
       return;
     }
 
@@ -42,7 +42,7 @@ const CardDetailPage = () => {
         setIsPublic(result.isPublic ? 1 : 0);
       } catch (e) {
         console.error("카드셋 불러오기 실패:", e);
-        navigate("/card-view/my", { replace: true });
+        navigate("/card-view", { replace: true });
       }
     };
 
@@ -117,7 +117,7 @@ const CardDetailPage = () => {
 
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <div className="flex items-center gap-2 px-2 w-full">
+          <div className="flex items-center gap-2 px-2 w-full ">
             <TagRow
               tags={isEditing ? editedTags : hashtags}
               cardSetId={cardSetId}
@@ -152,7 +152,7 @@ const CardDetailPage = () => {
 
           <CardSetCardlList cardSetId={cardSetId} />
 
-          <div className="absolute bottom-[80px] left-1/2 transform -translate-x-1/2 pc:w-[598px]">
+          <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full pc:w-[598px] z-25">
             <CardDetailButtons
               onStudyClick={handleStudyClick}
               onTTSClick={handleTTSClick}

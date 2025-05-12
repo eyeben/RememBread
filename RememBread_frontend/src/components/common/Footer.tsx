@@ -43,7 +43,7 @@ const Footer = () => {
       <footer className="fixed flex justify-evenly bottom-0 left-0 right-0 w-full max-w-[600px] h-16 mx-auto bg-white pc:border-x border-t border-neutral-200 z-50">
         <FooterItem
           isActive={isActive("/card-view")}
-          onClick={() => handleNavigate("/card-view/my")}
+          onClick={() => handleNavigate("/card-view")}
           activeIcon={<IndexCard className="w-10 h-10" />}
           inactiveIcon={<IndexCardBlack className="w-10 h-10" />}
           label="인덱스 카드"
@@ -53,7 +53,7 @@ const Footer = () => {
           onClick={() => handleNavigate("/map")}
           activeIcon={<Map className="w-10 h-10" />}
           inactiveIcon={<MapBlack className="w-10 h-10" />}
-          label="빵길"
+          label="학습 지도"
         />
         <div
           className="flex-1 flex flex-col items-center justify-center cursor-pointer"
@@ -68,14 +68,14 @@ const Footer = () => {
           onClick={() => handleNavigate("/games")}
           activeIcon={<Game className="w-10 h-10" />}
           inactiveIcon={<GameBlack className="w-10 h-10" />}
-          label="빵반죽"
+          label="따끈따끈 두뇌게임"
         />
         <FooterItem
           isActive={isActive("/profile")}
           onClick={() => handleNavigate("/profile")}
           activeIcon={<Profile className="w-10 h-10" />}
           inactiveIcon={<ProfileBlack className="w-10 h-10" />}
-          label="기본빵"
+          label="프로필"
         />
       </footer>
     </>

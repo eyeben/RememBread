@@ -28,7 +28,7 @@ const CardStudyPage = () => {
 
   useEffect(() => {
     if (!cardSet?.cardSetId) {
-      navigate("/card-view/my", { replace: true });
+      navigate("/card-view", { replace: true });
       return;
     }
 
