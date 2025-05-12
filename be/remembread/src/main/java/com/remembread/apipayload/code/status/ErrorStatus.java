@@ -28,7 +28,8 @@ public enum ErrorStatus implements BaseErrorCode {
     INVALID_ACCESS_TOKEN(HttpStatus.UNAUTHORIZED , "TOKEN4003", "유효하지 않은 Access Token입니다."),
 
     // 캐릭터 관련 에러
-    NOT_FOUND_CHARACTER(HttpStatus.BAD_REQUEST , "CHARACTER4001", "요청 ID에 해당하는 캐릭터가 존재하지 않습니다."),
+    NOT_FOUND_DEFAULT_CHARACTER(HttpStatus.BAD_REQUEST , "CHARACTER4001", "기본 캐릭터가 존재하지 않습니다."),
+    NOT_FOUND_CHARACTER(HttpStatus.BAD_REQUEST , "CHARACTER4002", "요청 ID에 해당하는 캐릭터가 존재하지 않습니다."),
 
     // 폴터 관련 에러
     FOLDER_NOT_FOUND(HttpStatus.BAD_REQUEST, "FOLDER4001", "폴더가 존재하지 않습니다."),
