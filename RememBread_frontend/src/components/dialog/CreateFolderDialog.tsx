@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { FolderPlus } from "lucide-react";
 
-import Button from "@/components/common/Button";
 import { postFolder } from "@/services/folder";
 
 import {
@@ -17,11 +16,16 @@ import {
 import { Input } from "@/components/ui/input";
 
 interface CreateFolderDialogProps {
+  selectedFolderName: string | null;
   selectedFolderId: number | null;
   onCreateFolder: () => void;
 }
 
-const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDialogProps) => {
+const CreateFolderDialog = ({
+  selectedFolderName,
+  selectedFolderId,
+  onCreateFolder,
+}: CreateFolderDialogProps) => {
   const [folderName, setFolderName] = useState<string>("");
 
   const handleCreateFolder = async () => {
@@ -36,8 +40,17 @@ const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDi
       </DialogTrigger>
       <DialogContent className="max-w-xs rounded-lg">
         <DialogHeader>
-          <DialogTitle>새로 폴더 생성</DialogTitle>
-          <DialogDescription>현재 선택된 폴더에 새로 폴더를 생성합니다.</DialogDescription>
+          <DialogTitle>폴더 생성</DialogTitle>
+          <DialogDescription>
+            {selectedFolderName ? (
+              <>
+                <span className="text-primary-500 font-bold">{selectedFolderName}</span>폴더에
+              </>
+            ) : (
+              ""
+            )}{" "}
+            새로운 폴더를 생성합니다.
+          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
           <div className="grid grid-cols-5 items-center gap-4">
@@ -54,9 +67,12 @@ const CreateFolderDialog = ({ selectedFolderId, onCreateFolder }: CreateFolderDi
         </div>
         <DialogFooter>
           <DialogClose>
-            <Button variant="primary" className="w-full" onClick={handleCreateFolder}>
+            <div
+              className="flex justify-center items-center text-sm font-bold rounded-lg transition-colors ease-in-out w-full h-9 bg-primary-500 hover:bg-primary-400 text-white"
+              onClick={handleCreateFolder}
+            >
               폴더 생성
-            </Button>
+            </div>
           </DialogClose>
         </DialogFooter>
       </DialogContent>
