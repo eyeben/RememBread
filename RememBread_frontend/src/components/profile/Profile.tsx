@@ -8,12 +8,19 @@ import CharacterImage from "@/components/common/CharacterImage";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import ImageEditModal from "@/components/profile/ImageEditModal";
+import TimePicker from "@/components/profile/TimePicker";
 import useProfileStore from "@/stores/profileStore";
 
 const Profile = () => {
   const navigate = useNavigate();
   const [isEditable, setIsEditable] = useState<boolean>(false);
   const [isImageModalOpen, setIsImageModalOpen] = useState<boolean>(false);
+  const [ampm, setAmpm] = useState<string>("AM");
+  const [hour, setHour] = useState<string>("09");
+  const [minute, setMinute] = useState<string>("00");
+  const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
+  
+
   
   const { 
     nickname, 
@@ -119,6 +126,12 @@ const Profile = () => {
     setIsImageModalOpen(false);
   };
 
+  const handleTimeChange = (newAmpm: string, newHour: string, newMinute: string) => {
+    setAmpm(newAmpm);
+    setHour(newHour);
+    setMinute(newMinute);
+  };
+
   return (
     <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
       <div className="flex flex-col items-center w-full max-w-md mx-auto">
@@ -155,9 +168,19 @@ const Profile = () => {
             )}
           </div>
         </div>
+        <div className="flex w-full justify-between items-center">
+          <div className="flex min-w-48 w-full max-w-72 mx-auto">
+            <span className="`text-sm text-nuetral-700">알림 설정</span>
+          </div>
+        </div>
         <div className="flex w-full justify-center items-center">
           <div className="flex min-w-48 w-full max-w-72 justify-between items-center">
-            <div>위치 알람 설정</div>
+            <div 
+              className={`${pushEnable ? 'text-black' : 'text-gray-400'} ${isEditable ? 'cursor-pointer hover:text-primary-500' : ''}`}
+              onClick={() => isEditable && setIsTimePickerOpen(true)}
+            >
+              {`${ampm} ${hour}:${minute}`}
+            </div>
             <Switch 
               checked={pushEnable} 
               onCheckedChange={handlePushEnableChange}
@@ -165,6 +188,16 @@ const Profile = () => {
             />
           </div>
         </div>
+        {isEditable && pushEnable && (
+          <TimePicker
+            ampm={ampm}
+            hour={hour}
+            minute={minute}
+            onChange={handleTimeChange}
+            isOpen={isTimePickerOpen}
+            onClose={() => setIsTimePickerOpen(false)}
+          />
+        )}
         <div className="w-full flex justify-center mt-4">
           {isEditable ? (
             <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
