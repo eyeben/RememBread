@@ -50,8 +50,10 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.views AS viewCount,
         cs.forks AS forkCount,
         cs.updated_at AS updatedAt,
-        (cs.user_id = :userId) AS isMine
+        (cs.user_id = :userId) AS isMine,
+        u.nickname AS nickname    
     FROM card_sets cs
+    JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
         AND cs.name ILIKE %:query%
     ORDER BY
@@ -74,7 +76,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.views AS viewCount,
         cs.forks AS forkCount,
         cs.updated_at AS updatedAt,
-        (cs.user_id = :userId) AS isMine
+        (cs.user_id = :userId) AS isMine,
+        u.nickname AS nickname    
     FROM card_sets cs
     JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
@@ -100,8 +103,10 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.views AS viewCount,
         cs.forks AS forkCount,
         cs.updated_at AS updatedAt,
-        (cs.user_id = :userId) AS isMine
+        (cs.user_id = :userId) AS isMine,
+        u.nickname AS nickname    
     FROM card_sets cs
+    JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
       AND cs.id IN (
           SELECT csh.card_set_id
