@@ -11,6 +11,7 @@ const SocialCallbackPage = () => {
 
   const code = searchParams.get('code');
   const socialType = window.location.pathname.split('/')[3]; // /account/login/kakao 등에서 kakao 추출
+  const redirectUri = window.location.origin + window.location.pathname;
 
   const isLoginAttempted = useRef(false);
 
@@ -26,7 +27,7 @@ const SocialCallbackPage = () => {
       }
 
       try {
-        const response = await socialLogin({ code, socialType });
+        const response = await socialLogin({ code, socialType, redirectUri });
         
         // access token을 인메모리에 저장
         tokenUtils.setToken(response.result.accessToken);
@@ -57,7 +58,7 @@ const SocialCallbackPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen no-scrollbar">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
           <p className="text-lg">로그인 처리 중...</p>
@@ -68,7 +69,7 @@ const SocialCallbackPage = () => {
 
   if (error) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen no-scrollbar">
         <div className="text-center">
           <p className="text-lg text-red-500">{error}</p>
         </div>

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import Profile from "@/components/profile/Profile";
+import GameHistory from "@/components/profile/GameHistory";
+import StudyHistory from "@/components/profile/StudyHistory";
 
 const tabs = ["프로필", "게임 히스토리", "학습 기록"];
 const tabContents = [
@@ -7,10 +9,10 @@ const tabContents = [
     <Profile />
   </div>,
   <div key="1">
-    <div>게임 히스토리</div>
+    <GameHistory />
   </div>,
   <div key="2">
-    <div>학습 기록</div>
+    <StudyHistory />
   </div>,
 ];
 
