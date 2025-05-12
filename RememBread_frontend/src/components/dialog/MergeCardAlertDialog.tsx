@@ -27,7 +27,7 @@ const MergeCardAlertDialog = ({ selectedCardSet }: MergeCardAlertDialogProps) =>
   const handleMerge = async () => {
     await postCards(selectedCardSet.cardSetId, cardSet);
 
-    navigate("/card-view/my");
+    navigate("/card-view");
   };
 
   return (

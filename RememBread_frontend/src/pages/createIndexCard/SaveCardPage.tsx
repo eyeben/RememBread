@@ -1,11 +1,15 @@
 import { useEffect, useState } from "react";
+import Button from "@/components/common/Button";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
 import MergeCardAlertDialog from "@/components/dialog/MergeCardAlertDialog";
 import CreateIndexCardSetDialog from "@/components/dialog/CreateIndexCardSetDialog";
+import FolderPathBreadcrumb from "@/components/folder/FolderPathBreadcrumb";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { getCardSetSimple } from "@/services/cardSet";
 import { indexCardSet } from "@/types/indexCard";
 import { Folder } from "@/types/folder";
+
+const SEPARATOR = "퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁";
 
 type FolderTreeItem = Folder & {
   children?: FolderTreeItem[];
@@ -46,6 +50,8 @@ const SaveCardPage = () => {
       return Promise.all(
         nodes.map(async (node) => {
           if (node.id === folderId) {
+            handleFolderSelect(node);
+
             if (node.isOpen) {
               // 접기
               return { ...node, isOpen: false, children: [], cardSets: [] };
@@ -121,11 +127,11 @@ const SaveCardPage = () => {
   const calculatePath = (folder: FolderTreeItem | null): string => {
     if (!folder) return "";
 
-    let path = folder.name;
+    let path = folder.id + SEPARATOR + folder.name;
     let currentFolder = folder.parent;
 
     while (currentFolder) {
-      path = currentFolder.name + " > " + path;
+      path = currentFolder.id + SEPARATOR + currentFolder.name + " > " + path;
       currentFolder = currentFolder.parent;
     }
 
@@ -188,23 +194,25 @@ const SaveCardPage = () => {
     >
       <h1 className="text-primary-500 text-2xl font-bold m-5">어디에 저장할 건빵?</h1>
 
-      <div className="flex flex-col flex-1">
+      <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 268px)" }}>
         {/* 경로 표시 */}
         <div className="flex justify-between mx-5 text-left items-center">
-          <p>
-            현재 경로: {folderPath}
-            {selectedCardSet && " > "}
-            {selectedCardSet?.name}
-          </p>
-          <div>
+          <FolderPathBreadcrumb
+            path={`${folderPath}${
+              selectedCardSet ? " > " + SEPARATOR + "🍞" + selectedCardSet.name : ""
+            }`}
+            toggleFolder={toggleFolder}
+          />
+          <div className="ml-auto">
             <CreateFolderDialog
+              selectedFolderName={selectedFolder?.name ?? null}
               selectedFolderId={selectedFolder?.id ?? null}
               onCreateFolder={CreateFolder}
             />
           </div>
         </div>
 
-        <div className="flex flex-col justify-start items-start m-5">
+        <div className="flex flex-col justify-start items-start m-5 overflow-auto">
           {/* 폴더 트리 렌더링 */}
           {renderFolderTree(folders)}
         </div>
@@ -214,7 +222,11 @@ const SaveCardPage = () => {
         <MergeCardAlertDialog selectedCardSet={selectedCardSet} />
       ) : selectedFolder ? (
         <CreateIndexCardSetDialog selectedFolder={selectedFolder} />
-      ) : null}
+      ) : (
+        <Button variant="primary" className="m-5" disabled={true}>
+          저장하기
+        </Button>
+      )}
     </div>
   );
 };

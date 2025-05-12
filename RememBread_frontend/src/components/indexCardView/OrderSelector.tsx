@@ -17,7 +17,7 @@ const OrderSelector = ({ sortType, setSortType }: OrderSelectorProps) => {
       <SelectTrigger className="w-1/8 pc:px-3 px-2 border-primary-700 focus:ring-primary-700 focus:border-primary-700 h-full">
         <SelectValue placeholder="정렬 기준" />
       </SelectTrigger>
-      <SelectContent>
+      <SelectContent className="w-1/8 right-0">
         <SelectItem value="latest">최신순</SelectItem>
         <SelectItem value="popularity">인기순</SelectItem>
         <SelectItem value="fork">포크순</SelectItem>

@@ -20,11 +20,11 @@ const SignupTermsPage = () => {
   const handleNextClick = async () => {
     try {
       await completeAgree();
-      navigate('/card-view/my');
+      navigate("/card-view");
     } catch (error) {
-      console.error('약관 동의 처리 중 오류:', error);
+      console.error("약관 동의 처리 중 오류:", error);
       tokenUtils.removeToken();
-      navigate('/login');
+      navigate("/login");
     }
   };
 

@@ -13,14 +13,16 @@ interface UserResponse {
     nickname: string;
     mainCharacterId: number;
     mainCharacterImageUrl: string;
-    pushEnable: boolean;
+    notificationTimeEnable: boolean;
+    notificationTime: string;
     socialLoginType: string;
   };
 }
 
 interface UpdateUserParams {
   nickname?: string;
-  pushEnable?: boolean;
+  notificationTimeEnable?: boolean;
+  notificationTime?: string;
   mainCharacterId?: number;
 }
 
@@ -45,7 +47,7 @@ export const completeAgree = async (): Promise<AgreeResponse> => {
     const response = await http.patch<AgreeResponse>(USER_END_POINT.COMPLETE_AGREE);
     return response.data;
   } catch (error) {
-    throw new Error('약관 동의 처리 중 오류가 발생했습니다.');
+    throw error
   }
 };
 
@@ -59,21 +61,22 @@ export const getUser = async (): Promise<UserResponse> => {
     const response = await http.get<UserResponse>(USER_END_POINT.GET_USER);
     return response.data;
   } catch (error) {
-    throw new Error('유저 정보 조회 중 오류가 발생했습니다.');
+    throw error;
   }
 };
 
 /**
  * 유저 정보 수정
  * 
- * 이름, 푸시 알림 설정, 메인 캐릭터 이미지 수정
+ * 이름, 푸시 알림 설정, 알림 시간 설정,메인 캐릭터 이미지 수정
  */
 export const updateUser = async (body: UpdateUserParams): Promise<UserResponse> => {
   try {
     const response = await http.patch<UserResponse>(USER_END_POINT.PATCH_USER, body);
     return response.data;
   } catch (error) {
-    throw new Error('유저 정보 수정 중 오류가 발생했습니다.');
+    console.log(error);
+    throw error
   }
 };
 
@@ -87,7 +90,7 @@ export const deleteUser = async (): Promise<UserResponse> => {
     const response = await http.delete<UserResponse>(USER_END_POINT.DELETE_USER);
     return response.data;
   } catch (error) {
-    throw new Error('유저 삭제 중 오류가 발생했습니다.');
+    throw error
   }
 };
 
@@ -101,6 +104,6 @@ export const getCharacters = async (): Promise<CharacterResponse> => {
     const response = await http.get<CharacterResponse>(USER_END_POINT.GET_CHARACTERS);
     return response.data;
   } catch (error) {
-    throw new Error('캐릭터 목록을 불러오는 중 오류가 발생했습니다.');
+    throw error
   }
 };

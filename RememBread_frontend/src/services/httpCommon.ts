@@ -9,6 +9,9 @@ const http = axios.create({
     withCredentials: true, // refreshToken을 쿠키로 보낼 수 있게 설정
 });
 
+// 토큰 재발급 시도 횟수를 추적하는 변수
+let isRefreshing = false;
+
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const accessToken = tokenUtils.getToken();
@@ -26,44 +29,36 @@ http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
 http.interceptors.response.use(
     (response: AxiosResponse) => response,
     async (error: AxiosError) => {
-        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
-
-        // TOKEN4002 에러 처리
-        if (error.response?.data && 
-            typeof error.response.data === 'object' && 
-            'code' in error.response.data &&
-            'isSuccess' in error.response.data &&
-            error.response.data.code === 'TOKEN4002' && 
-            error.response.data.isSuccess === false
-        ) {
-            tokenUtils.removeToken();
-            return Promise.reject(error);
-        }
-
-        // 토큰 재발급 요청 중 발생한 에러 처리
-        if (originalRequest.url?.includes('/auth/reissue')) {
-            tokenUtils.removeToken();
-            return Promise.reject(error);
-        }
+        console.log("응답 인터셉터 실행");
+        console.log(error);
+        console.log("error.response", error.response);
+        const originalRequest = error.config as InternalAxiosRequestConfig;
 
         if (
-            error.response?.status === 401 &&
-            !originalRequest._retry
+            (error.response?.status === 401 || error.request?.status === 401) &&
+            !isRefreshing
         ) {
-            originalRequest._retry = true;
+            console.log('토큰 재발급 시도 시작');
+            isRefreshing = true;
             try {
                 const isRefreshed = await tokenUtils.tryRefreshToken();
+                console.log('토큰 재발급 결과:', isRefreshed);
                 
                 if (isRefreshed) {
                     const newAccessToken = tokenUtils.getToken();
                     originalRequest.headers = originalRequest.headers || {};
                     originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
+                    isRefreshing = false;
                     return http(originalRequest);
                 } else {
+                    console.log('토큰 재발급 실패, 로그아웃 처리');
+                    isRefreshing = false;
                     tokenUtils.removeToken();
                     return Promise.reject(error);
                 }
             } catch (refreshError) {
+                console.error('토큰 재발급 중 에러 발생:', refreshError);
+                isRefreshing = false;
                 tokenUtils.removeToken();
                 return Promise.reject(refreshError);
             }

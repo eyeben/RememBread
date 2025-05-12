@@ -1,17 +1,17 @@
-import { useEffect, useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import Button from "@/components/common/Button";
 import KakaoLogo from "@/components/svgs/login/KakaoLogo";
 import NaverLogo from "@/components/svgs/login/NaverLogo";
 import GoogleLogo from "@/components/svgs/login/GoogleLogo";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
-import { tokenUtils } from '@/lib/queryClient';
+import { tokenUtils } from "@/lib/queryClient";
 
 const LoginPage = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState<boolean>(true);
- 
+
   useEffect(() => {
     // 토큰 재발급 시도
     const tryRefreshToken = async () => {
@@ -19,12 +19,12 @@ const LoginPage = () => {
       if (!currentToken) {
         const isRefreshed = await tokenUtils.tryRefreshToken();
         if (isRefreshed) {
-          navigate('/card-view/my');
+          navigate("/card-view");
         } else {
           setIsLoading(false);
         }
       } else {
-        navigate('/card-view/my');
+        navigate("/card-view");
       }
     };
 
@@ -49,24 +49,29 @@ const LoginPage = () => {
     );
   }
 
-  const FRONT_BASE_URL = import.meta.env.VITE_FRONT_BASE_URL || 'http://localhost:5173'
+  const FRONT_BASE_URL = import.meta.env.VITE_FRONT_BASE_URL || "http://localhost:5173";
 
   const REDIRECT_URIS = {
     kakao: `${FRONT_BASE_URL}/account/login/kakao`,
     naver: `${FRONT_BASE_URL}/account/login/naver`,
     google: `${FRONT_BASE_URL}/account/login/google`,
-  }
+  };
 
   const OAUTH_URLS = {
-    kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${import.meta.env.VITE_KAKAO_CLIENT_ID}&redirect_uri=${REDIRECT_URIS.kakao}&response_type=code`,
-    naver: `https://nid.naver.com/oauth2.0/authorize?client_id=${import.meta.env.VITE_NAVER_CLIENT_ID}&redirect_uri=${REDIRECT_URIS.naver}&response_type=code&state=test`,
-    google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${import.meta.env.VITE_GOOGLE_CLIENT_ID}&redirect_uri=${REDIRECT_URIS.google}&response_type=code&scope=profile`
-  }
+    kakao: `https://kauth.kakao.com/oauth/authorize?client_id=${
+      import.meta.env.VITE_KAKAO_CLIENT_ID
+    }&redirect_uri=${REDIRECT_URIS.kakao}&response_type=code`,
+    naver: `https://nid.naver.com/oauth2.0/authorize?client_id=${
+      import.meta.env.VITE_NAVER_CLIENT_ID
+    }&redirect_uri=${REDIRECT_URIS.naver}&response_type=code&state=test`,
+    google: `https://accounts.google.com/o/oauth2/v2/auth?client_id=${
+      import.meta.env.VITE_GOOGLE_CLIENT_ID
+    }&redirect_uri=${REDIRECT_URIS.google}&response_type=code&scope=profile`,
+  };
 
-  
   const handleSocialLogin = (type: string) => {
-    window.location.href = OAUTH_URLS[type as keyof typeof OAUTH_URLS]
-  }
+    window.location.href = OAUTH_URLS[type as keyof typeof OAUTH_URLS];
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen p-4 no-scrollbar">
@@ -82,7 +87,7 @@ const LoginPage = () => {
         <Button
           variant="shadow"
           className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#FEE500] hover:bg-[#E6CE00] text-black transition-colors border-none"
-          onClick={() => handleSocialLogin('kakao')}
+          onClick={() => handleSocialLogin("kakao")}
         >
           <div className="w-6">
             <KakaoLogo className="w-6 h-6" />
@@ -93,7 +98,7 @@ const LoginPage = () => {
         <Button
           variant="shadow"
           className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#03C75A] hover:bg-[#02B04E] text-white transition-colors border-none"
-          onClick={() => handleSocialLogin('naver')}
+          onClick={() => handleSocialLogin("naver")}
         >
           <div className="w-6">
             <NaverLogo className="w-6 h-6" />
@@ -104,7 +109,7 @@ const LoginPage = () => {
         <Button
           variant="shadow"
           className="w-full h-12 px-6 flex justify-center items-center gap-2.5 bg-[#F2F2F2] hover:bg-[#E0E0E0] text-neutral-500 transition-colors border-none"
-          onClick={() => handleSocialLogin('google')}
+          onClick={() => handleSocialLogin("google")}
         >
           <div className="w-6">
             <GoogleLogo className="w-6 h-6" />

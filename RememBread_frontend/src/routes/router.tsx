@@ -20,8 +20,7 @@ import CardTestPage from "@/pages/indexCardSetView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import CardTestBlank from "@/components/indexCardView/CardTestBlank";
 import CardTestConcept from "@/components/indexCardView/CardTestConcept";
-import MyCardSetPage from "@/pages/indexCardSetView/MyCardSetPage";
-import TotalCardSetPage from "@/pages/indexCardSetView/TotalCardSetPage";
+import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -75,7 +74,7 @@ const ProtectedOutlet = () => {
 // 로그인 라우트 컴포넌트
 const LoginRoute = () => {
   const accessToken = tokenUtils.getToken();
-  return accessToken ? <Navigate to="/card-view/my" replace /> : <LoginPage />;
+  return accessToken ? <Navigate to="/card-view" replace /> : <LoginPage />;
 };
 
 const router = createBrowserRouter([
@@ -116,7 +115,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <MyCardSetPage />,
+            element: <CardViewPage />,
             handle: { header: true, footer: true },
           },
           {
@@ -134,35 +133,21 @@ const router = createBrowserRouter([
           },
           {
             path: "card-view",
+            element: <CardViewPage />,
+            handle: { header: true, footer: true },
+          },
+          {
+            path: "card-view/:indexCardId",
+            element: <CardDetailPage />,
             children: [
+              { path: "study", element: <CardStudyPage /> },
+              { path: "tts", element: <CardTTSPage /> },
               {
-                path: "my",
-                element: <MyCardSetPage />,
-              },
-              {
-                path: "search",
-                element: <TotalCardSetPage />,
-              },
-              {
-                path: ":indexCardId",
-                element: <CardDetailPage />,
+                path: "test",
+                element: <CardTestPage />,
                 children: [
-                  {
-                    path: "study",
-                    element: <CardStudyPage />,
-                  },
-                  {
-                    path: "tts",
-                    element: <CardTTSPage />,
-                  },
-                  {
-                    path: "test",
-                    element: <CardTestPage />,
-                    children: [
-                      { path: "blank", element: <CardTestBlank /> },
-                      { path: "concept", element: <CardTestConcept /> },
-                    ],
-                  },
+                  { path: "blank", element: <CardTestBlank /> },
+                  { path: "concept", element: <CardTestConcept /> },
                 ],
               },
             ],

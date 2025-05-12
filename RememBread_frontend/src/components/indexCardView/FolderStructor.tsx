@@ -124,15 +124,7 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
           folder: node,
         });
 
-        node.cardSets?.forEach((cs) => {
-          opts.push({
-            value: `set-${cs.cardSetId}`,
-            label: cs.name,
-            depth: depth + 1,
-            folder: node,
-            cardSet: cs,
-          });
-        });
+        // 카드셋은 Drawer에 표시하지 않음
 
         if (node.children) {
           traverse(node.children, depth + 1);
@@ -245,7 +237,7 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
           <div className="overflow-y-auto max-h-[calc(80vh-48px)]">
             <Command>
               <CommandGroup>
-                {options.map((opt) => {
+                {options.map((opt, idx) => {
                   const selectedValue = selectedCardSet
                     ? `set-${selectedCardSet.cardSetId}`
                     : selectedFolder
@@ -256,12 +248,14 @@ const FolderStructor = ({ onSelectFolder }: { onSelectFolder: (id: number) => vo
 
                   return (
                     <CommandItem
-                      key={opt.value}
+                      key={`${opt.value}-${idx}`} // 고유 보장
                       onSelect={() => onSelectChange(opt.value)}
-                      className="!font-normal !text-black hover:cursor-pointer"
+                      className="!font-normal"
                     >
                       <div
-                        className="flex items-center"
+                        className={`!font-normal hover:bg-gray-100 ${
+                          isSelected ? "bg-gray-100" : ""
+                        }`}
                         style={{ paddingLeft: `${opt.depth * 16}px` }}
                       >
                         {opt.depth > 0 && <span className="mr-1 text-gray-400">ㄴ</span>}

@@ -4,7 +4,8 @@ interface ProfileState {
   nickname: string;
   mainCharacterId: number;
   mainCharacterImageUrl: string;
-  pushEnable: boolean;
+  notificationTimeEnable: boolean;
+  notificationTime: string;
   socialLoginType: string;
 }
 
@@ -19,7 +20,8 @@ const initialState: ProfileState = {
   nickname: "",
   mainCharacterId: 1,
   mainCharacterImageUrl: "",
-  pushEnable: true,
+  notificationTimeEnable: true,
+  notificationTime: "09:00:00",
   socialLoginType: ""
 };
 

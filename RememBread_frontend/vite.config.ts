@@ -25,7 +25,7 @@ export default defineConfig({
       manifest: {
         name: "암기빵",
         short_name: "암기빵",
-        description: "출근길에 굽는 지식 한 조각",
+        description: "출퇴근길에 굽는 지식 한 조각",
         theme_color: "#DAB78A",
         background_color: "#DAB78A",
         display: "standalone",
