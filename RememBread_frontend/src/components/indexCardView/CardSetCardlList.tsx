@@ -5,9 +5,14 @@ import { getCardsByCardSet, deleteCard } from "@/services/card";
 interface CardSetCardlListProps {
   cardSetId: number;
   highlightIndex?: number;
+  isReadonly: boolean;
 }
 
-const CardSetCardlList = ({ cardSetId, highlightIndex = -1 }: CardSetCardlListProps) => {
+const CardSetCardlList = ({
+  cardSetId,
+  highlightIndex = -1,
+  isReadonly,
+}: CardSetCardlListProps) => {
   const [cards, setCards] = useState<indexCard[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
 
@@ -26,8 +31,8 @@ const CardSetCardlList = ({ cardSetId, highlightIndex = -1 }: CardSetCardlListPr
   // 우클릭으로 선택 토글
   const handleContextMenu = (e: MouseEvent<HTMLDivElement>, cardId?: number) => {
     e.preventDefault();
-    console.log("오른쪽 클릭된 카드 ID:", cardId);
-    if (!cardId) return;
+    if (isReadonly || !cardId) return;
+
     setSelectedIds((prev) => {
       const isSelected = prev.includes(cardId);
       return isSelected ? prev.filter((id) => id !== cardId) : [...prev, cardId];
@@ -36,7 +41,7 @@ const CardSetCardlList = ({ cardSetId, highlightIndex = -1 }: CardSetCardlListPr
 
   // 선택 삭제
   const handleDeleteSelected = async () => {
-    if (selectedIds.length === 0) return;
+    if (isReadonly || selectedIds.length === 0) return;
     if (!window.confirm("삭제하시겠습니까?")) return;
     try {
       await Promise.all(selectedIds.map((id) => deleteCard(id)));
@@ -50,8 +55,8 @@ const CardSetCardlList = ({ cardSetId, highlightIndex = -1 }: CardSetCardlListPr
 
   return (
     <div className="w-full px-4">
-      {/* 삭제 버튼 (선택된 카드가 있을 때만) */}
-      {selectedIds.length > 0 && (
+      {/* 삭제 버튼 */}
+      {!isReadonly && selectedIds.length > 0 && (
         <div className="flex justify-end mb-4">
           <button
             className="px-3 py-1 bg-negative-500 text-white rounded"
@@ -66,19 +71,20 @@ const CardSetCardlList = ({ cardSetId, highlightIndex = -1 }: CardSetCardlListPr
       <div className="flex flex-col gap-2">
         {cards.map((card, idx) => {
           const isSelected = card.cardId !== undefined && selectedIds.includes(card.cardId);
+          const isHighlight = idx === highlightIndex;
+
+          const cardStyle =
+            isSelected && !isReadonly
+              ? "bg-negative-500 text-white"
+              : isHighlight
+              ? "bg-primary-700 text-white"
+              : "bg-primary-200";
+
           return (
             <div
               key={card.cardId ?? idx}
               onContextMenu={(e) => handleContextMenu(e, card.cardId)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer
-                ${
-                  isSelected
-                    ? "bg-negative-500 text-white"
-                    : idx === highlightIndex
-                    ? "bg-primary-700 text-white"
-                    : "bg-primary-200"
-                }
-              `}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer ${cardStyle}`}
             >
               <span className="font-bold w-12 truncate whitespace-nowrap">{card.concept}</span>
               <span className="flex-1 font-bold truncate whitespace-nowrap">

@@ -92,8 +92,6 @@ export const postCardsByText = async (text: string) => {
         }
       }
     }
-
-    console.log("모든 카드 수신 완료");
   } catch (error) {
     console.error("카드 생성 중 오류:", error);
     throw new Error("카드 생성 실패");

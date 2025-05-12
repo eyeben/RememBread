@@ -28,6 +28,7 @@ export interface indexCardSet {
   viewCount?: number;
   forkCount?: number;
   isLike?: boolean;
+  isMine?: boolean;
   totalCardCnt?: number;
   hashtags?: string[];
   createdDate?: string | Date;

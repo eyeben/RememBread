@@ -183,7 +183,7 @@ const CardDetailPage = () => {
             )}
           </div>
 
-          <CardSetCardlList cardSetId={cardSetId} />
+          <CardSetCardlList cardSetId={cardSetId} isReadonly={readonlyMode} />
 
           <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full pc:w-[598px] z-25">
             <CardDetailButtons
