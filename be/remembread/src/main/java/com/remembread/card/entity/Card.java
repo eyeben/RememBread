@@ -65,6 +65,11 @@ public class Card extends BaseEntity {
         this.description = description;
         this.conceptImageUrl = conceptImageUrl;
         this.descriptionImageUrl = descriptionImageUrl;
+        this.lastCorrectAt = null;
+        this.retentionRate = 0.0;
+        this.stability = 1.0;
+        this.correctCount = 0;
+        this.solvedCount = 0;
     }
 
     public void update(CardUpdateRequest request) {
