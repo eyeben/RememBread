@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { indexCardSet } from "@/types/indexCard";
-import { createEmptyCard } from "@/utils/createEmptyCard";
+import { useLocation, useNavigate } from "react-router-dom";
+import { indexCard, indexCardSet } from "@/types/indexCard";
+import { getCardsByCardSet } from "@/services/card";
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 
@@ -14,27 +15,38 @@ import {
 } from "@/components/ui/carousel";
 
 const CardStudyPage = () => {
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const cardSet: indexCardSet | undefined = location.state?.card;
 
+  const [currentIndex, setCurrentIndex] = useState<number>(0);
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-
-  const [cardSet, setCardSet] = useState<indexCardSet>({
-    folderId: Number(0),
-    hashTags: [],
-    breads: [createEmptyCard(), createEmptyCard(), createEmptyCard()],
-  });
-
+  const [cards, setCards] = useState<indexCard[]>([]);
   const [api, setApi] = useState<CarouselApi>();
 
   useEffect(() => {
-    if (!api) {
+    if (!cardSet?.cardSetId) {
+      navigate("/card-view/my", { replace: true });
       return;
     }
 
-    setCurrentIndex(api.selectedScrollSnap() + 1);
+    const fetchCards = async () => {
+      try {
+        const res = await getCardsByCardSet(cardSet.cardSetId, 0, 100, "asc");
+        setCards(res.result.cards);
+      } catch (error) {
+        console.error("카드 불러오기 실패:", error);
+      }
+    };
 
+    fetchCards();
+  }, [cardSet?.cardSetId, navigate]);
+
+  useEffect(() => {
+    if (!api) return;
+    setCurrentIndex(api.selectedScrollSnap() + 1);
     api.on("select", () => {
       setCurrentIndex(api.selectedScrollSnap() + 1);
     });
@@ -42,9 +54,7 @@ const CardStudyPage = () => {
 
   const handleFlip = () => {
     setIsFront((prev) => !prev);
-
     setIsButtonDisabled(true);
-
     setTimeout(() => {
       setIsRotating(!isRotating);
       setIsButtonDisabled(false);
@@ -52,9 +62,9 @@ const CardStudyPage = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-full text-center gap-4">
+    <div className="flex flex-col justify-between w-full text-center gap-2">
       <Button
-        className="text-primary-500 text-2xl font-bold m-5 py-5"
+        className="text-primary-500 text-2xl font-bold pc:m-2 m-5 py-5"
         variant="primary-outline"
         onClick={handleFlip}
         disabled={isButtonDisabled}
@@ -62,8 +72,8 @@ const CardStudyPage = () => {
         {!isFront ? "concept" : "description"}
       </Button>
 
-      <div className="">
-        {currentIndex} / {cardSet.breads.length}
+      <div>
+        {currentIndex} / {cards.length}
       </div>
 
       <Carousel
@@ -75,9 +85,9 @@ const CardStudyPage = () => {
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
         <CarouselContent className="aspect-square">
-          {cardSet.breads.map((bread, index) => (
-            <CarouselItem key={index} className={`relative`}>
-              <div className="relative w-full h-full">
+          {cards.map((card, index) => (
+            <CarouselItem key={card.cardId ?? index} className="relative">
+              <div className="relative w-full h-full hover:cursor-pointer" onClick={handleFlip}>
                 <div
                   className={`relative transition-transform duration-1000 ${
                     isFront ? "rotate-y-0" : "rotate-y-180"
@@ -87,28 +97,15 @@ const CardStudyPage = () => {
 
                   {!isRotating ? (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
-                      {bread?.concept || "제목 없음"}
+                      {card.concept || "제목 없음"}
                     </div>
                   ) : (
-                    <textarea
-                      className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                      value={bread?.description}
-                      placeholder="여기에 텍스트를 입력하세요"
-                      onChange={(e) => {
-                        const updatedDescription = e.target.value;
-                        setCardSet((prev) => {
-                          const newBreads = [...prev.breads];
-                          newBreads[index] = {
-                            ...newBreads[index],
-                            description: updatedDescription,
-                          };
-                          return { ...prev, breads: newBreads };
-                        });
-                      }}
-                      style={{
-                        scrollbarWidth: "none",
-                      }}
-                    />
+                    <div
+                      className="absolute top-[17%] left-[17%] w-2/3 h-3/4 font-bold rotate-y-180 overflow-auto text-left"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {card.description || "설명이 없습니다."}
+                    </div>
                   )}
                 </div>
               </div>
