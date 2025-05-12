@@ -17,9 +17,9 @@ const CardSinglePage = () => {
 
   const readonlyMode = location.state?.fromTotalPage ?? false;
 
-  const [isFront, setIsFront] = useState(true);
-  const [isRotating, setIsRotating] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isFront, setIsFront] = useState<boolean>(true);
+  const [isRotating, setIsRotating] = useState<boolean>(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [lastClickTime, setLastClickTime] = useState<number>(0);
 
   const [name, setName] = useState<string>("");
