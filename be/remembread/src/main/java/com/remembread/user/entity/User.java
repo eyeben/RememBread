@@ -42,6 +42,7 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isAgreedTerms;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime lastLoginAt;
 }

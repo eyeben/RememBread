@@ -28,19 +28,16 @@ public class KakaoOAuthProvider {
     private final RestTemplate restTemplate;
     private final String clientId;
     private final String clientSecret;
-//    private final String redirectUri;
     private final String tokenUri;
     private final String userInfoUri;
 
     public KakaoOAuthProvider(
             @Value("${spring.security.oauth2.client.registration.kakao.client-id}") String clientId,
             @Value("${spring.security.oauth2.client.registration.kakao.client-secret}") String clientSecret,
-//            @Value("${spring.security.oauth2.client.registration.kakao.redirect-uri}") String redirectUri,
             @Value("${spring.security.oauth2.client.provider.kakao.token-uri}") String tokenUri,
             @Value("${spring.security.oauth2.client.provider.kakao.user-info-uri}") String userInfoUri) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-//        this.redirectUri = redirectUri;
         this.tokenUri = tokenUri;
         this.userInfoUri = userInfoUri;
         this.restTemplate = new RestTemplate();
