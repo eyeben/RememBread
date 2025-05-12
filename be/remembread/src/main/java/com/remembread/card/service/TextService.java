@@ -58,6 +58,33 @@ public class TextService {
             %s
             """.formatted(text);
 
+        systemPrompt = """
+                ### 역할
+                입력된 텍스트로부터 플래시카드를 추출한다.
+
+                ### 규칙
+                - 결과는 아래 형식의 JSON 배열만 출력할 것:
+                ```json
+                [
+                  {
+                    "concept": "개념 단어",
+                    "description": "원문에서 가져온 텍스트"
+                  }
+                ]
+                ```
+                - 개념과 설명이 모두 포함된 텍스트를 `concept`과 `description`으로 분리한다.
+                - `concept`: 텍스트 내에서 중요한 단어나 개념을 추출한다. 이 개념은 단어, 구, 또는 특정 개념일 수 있다.
+                - `description`: 반드시 `concept`가 전부 제거된 텍스트로 구성해야 한다. 관련 있는 모든 문장을 빠짐없이 가져오되, `concept`와 일치하는 텍스트는 제거한다.
+                """;
+        text = text.replace("`", "").replace("\\", "\\\\");
+        userPrompt = """
+                ### 입력
+                다음 텍스트에서 플래시카드를 추출할 것:
+                ```text
+                %s
+                ```
+                """.formatted(text);
+
         return gptService.askStream(systemPrompt, userPrompt)
                 .filter(line -> {
                     String trimmed = line.strip();
