@@ -93,7 +93,7 @@ public class CardSetController {
                                                              @Parameter(description = "한페이지당 보여주는 카드셋 개수", example = "10", required = true) @RequestParam(defaultValue = "10") int size,
                                                              @Parameter(description = "‘인기순’, ‘포크순’, ‘최신순’ 중 하나", example = "최신순", required = true) @RequestParam(defaultValue = "최신순") CardSetSortType cardSetSortType,
                                                              @AuthUser User user){
-        return ApiResponse.onSuccess(cardSetService.searchCardSets(query, page, size, cardSetSortType));
+        return ApiResponse.onSuccess(cardSetService.searchCardSets(query, page, size, cardSetSortType, user));
     }
 
     @GetMapping("/lists-simple")
