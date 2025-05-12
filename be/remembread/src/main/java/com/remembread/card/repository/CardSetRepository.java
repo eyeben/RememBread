@@ -49,7 +49,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.name AS name, 
         cs.views AS viewCount,
         cs.forks AS forkCount,
-        cs.updated_at AS updatedAt
+        cs.updated_at AS updatedAt,
+        (cs.user_id = :userId) AS isMine
     FROM card_sets cs
     WHERE cs.is_public = true
         AND cs.name ILIKE %:query%
@@ -62,7 +63,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             @Param("query") String query,
             @Param("column") String column,
             @Param("size") int size,
-            @Param("offset") int offset
+            @Param("offset") int offset,
+            @Param("userId") Long userId
     );
 
     @Query(value = """
@@ -71,7 +73,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.name AS name,
         cs.views AS viewCount,
         cs.forks AS forkCount,
-        cs.updated_at AS updatedAt
+        cs.updated_at AS updatedAt,
+        (cs.user_id = :userId) AS isMine
     FROM card_sets cs
     JOIN users u ON cs.user_id = u.id
     WHERE cs.is_public = true
@@ -86,7 +89,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             @Param("query") String query,
             @Param("column") String column,
             @Param("size") int size,
-            @Param("offset") int offset
+            @Param("offset") int offset,
+            @Param("userId") Long userId
     );
 
     @Query(value = """
@@ -95,7 +99,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         cs.name AS name,
         cs.views AS viewCount,
         cs.forks AS forkCount,
-        cs.updated_at AS updatedAt
+        cs.updated_at AS updatedAt,
+        (cs.user_id = :userId) AS isMine
     FROM card_sets cs
     WHERE cs.is_public = true
       AND cs.id IN (
@@ -114,7 +119,8 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             @Param("query") String query,
             @Param("column") String column,
             @Param("size") int size,
-            @Param("offset") int offset
+            @Param("offset") int offset,
+            @Param("userId") Long userId
     );
 
     @Query(value = """
