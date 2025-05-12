@@ -1,7 +1,7 @@
 import { useEffect, useState, MouseEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { indexCard } from "@/types/indexCard";
 import { getCardsByCardSet, deleteCard } from "@/services/card";
-import { useNavigate } from "react-router-dom";
 
 interface CardSetCardlListProps {
   cardSetId: number;
@@ -74,7 +74,7 @@ const CardSetCardlList = ({
       )}
 
       {/* 카드 리스트 */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 py-2">
         {cards.map((card, idx) => {
           const isSelected = card.cardId !== undefined && selectedIds.includes(card.cardId);
           const isHighlight = idx === highlightIndex;
