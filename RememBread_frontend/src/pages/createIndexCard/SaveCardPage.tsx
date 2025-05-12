@@ -205,6 +205,7 @@ const SaveCardPage = () => {
           />
           <div className="ml-auto">
             <CreateFolderDialog
+              selectedFolderName={selectedFolder?.name ?? null}
               selectedFolderId={selectedFolder?.id ?? null}
               onCreateFolder={CreateFolder}
             />
