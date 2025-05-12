@@ -10,12 +10,14 @@ import Bread2 from "@/components/svgs/game/Bread2";
 const GameModePage = () => {
   const navigate = useNavigate();
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center pt-14 pb-16 px-4">
-      <SpeechBubble text="오늘도 열심히 해봐요!" />
-      <div className="flex flex-col items-center mt-4">
-        <Game className="w-36 h-36" />
+    <div className="min-h-screen flex flex-col items-center px-4">
+      <div className="flex w-full flex-col items-center">
+        <SpeechBubble text="오늘도 열심히 해봐요!" />
+        <div className="flex flex-col items-center mt-4">
+          <Game className="w-36 h-36" />
+        </div>
       </div>
-      <div className="w-full flex flex-col gap-3 max-w-[384px]">
+      <div className="w-full flex flex-col max-w-[384px] mt-4">
         <CustomButton
           title="순간기억"
           description="숫자와 빵을 기억하자"
