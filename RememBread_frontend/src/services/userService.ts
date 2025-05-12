@@ -73,6 +73,7 @@ export const updateUser = async (body: UpdateUserParams): Promise<UserResponse> 
     const response = await http.patch<UserResponse>(USER_END_POINT.PATCH_USER, body);
     return response.data;
   } catch (error) {
+    console.log(error);
     throw new Error('유저 정보 수정 중 오류가 발생했습니다.');
   }
 };
