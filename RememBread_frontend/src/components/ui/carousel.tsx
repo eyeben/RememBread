@@ -5,7 +5,7 @@ import {
   useContext,
   useEffect,
   useState,
-  type KeyboardEvent,
+  // type KeyboardEvent,
   type HTMLAttributes,
   type ComponentProps,
 } from "react";
@@ -77,18 +77,18 @@ const Carousel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Car
       api?.scrollNext();
     }, [api]);
 
-    const handleKeyDown = useCallback(
-      (event: KeyboardEvent<HTMLDivElement>) => {
-        if (event.key === "ArrowLeft") {
-          event.preventDefault();
-          scrollPrev();
-        } else if (event.key === "ArrowRight") {
-          event.preventDefault();
-          scrollNext();
-        }
-      },
-      [scrollPrev, scrollNext],
-    );
+    // const handleKeyDown = useCallback(
+    //   (event: KeyboardEvent<HTMLDivElement>) => {
+    //     if (event.key === "ArrowLeft") {
+    //       event.preventDefault();
+    //       scrollPrev();
+    //     } else if (event.key === "ArrowRight") {
+    //       event.preventDefault();
+    //       scrollNext();
+    //     }
+    //   },
+    //   [scrollPrev, scrollNext],
+    // );
 
     useEffect(() => {
       if (!api || !setApi) {
@@ -127,7 +127,7 @@ const Carousel = forwardRef<HTMLDivElement, HTMLAttributes<HTMLDivElement> & Car
       >
         <div
           ref={ref}
-          onKeyDownCapture={handleKeyDown}
+          // onKeyDownCapture={handleKeyDown}
           className={cn("relative", className)}
           role="region"
           aria-roledescription="carousel"
