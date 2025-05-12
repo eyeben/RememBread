@@ -132,10 +132,12 @@ public class CardSetService {
 
         List<Card> cards = cardRepository.findAllByCardSet(cardSet);
         List<Card> newCards = new ArrayList<>();
+
         CardSet newCardSet = CardSet.builder()
                 .folder(folder)
                 .name(cardSet.getName())
                 .user(folder.getUser())
+                .isPublic(false)
                 .build();
         cardSetRepository.save(newCardSet);
 
