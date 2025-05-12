@@ -117,7 +117,7 @@ const CardDetailPage = () => {
 
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <div className="flex items-center gap-2 px-2 w-full">
+          <div className="flex items-center gap-2 px-2 w-full ">
             <TagRow
               tags={isEditing ? editedTags : hashtags}
               cardSetId={cardSetId}
@@ -152,7 +152,7 @@ const CardDetailPage = () => {
 
           <CardSetCardlList cardSetId={cardSetId} />
 
-          <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 pc:w-[598px] z-25">
+          <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full z-25">
             <CardDetailButtons
               onStudyClick={handleStudyClick}
               onTTSClick={handleTTSClick}

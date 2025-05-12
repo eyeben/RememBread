@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { Check } from "lucide-react";
 import { getMyFolders } from "@/services/folder";
 import { postForkCardSet } from "@/services/cardSet";
@@ -6,6 +6,7 @@ import { useToast } from "@/hooks/use-toast";
 import { Folder } from "@/types/folder";
 import {
   AlertDialog,
+  AlertDialogTrigger,
   AlertDialogPortal,
   AlertDialogContent,
   AlertDialogHeader,
@@ -16,17 +17,17 @@ import {
 } from "@/components/ui/alert-dialog";
 
 interface SelectFolderModalProps {
-  open: boolean;
   cardSetId: number;
-  onCancel: () => void;
+  trigger: ReactNode;
   onSuccess?: () => void;
 }
 
-const FolderModal = ({ open, onCancel, cardSetId, onSuccess }: SelectFolderModalProps) => {
+const FolderModal = ({ trigger, cardSetId, onSuccess }: SelectFolderModalProps) => {
   const { toast } = useToast();
   const [folders, setFolders] = useState<Folder[]>([]);
   const [selectedId, setSelectedId] = useState<number | null>(null);
   const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
+  const [open, setOpen] = useState<boolean>(false);
 
   useEffect(() => {
     if (open) {
@@ -38,6 +39,8 @@ const FolderModal = ({ open, onCancel, cardSetId, onSuccess }: SelectFolderModal
           console.error("폴더 목록 불러오기 실패:", err);
         }
       })();
+    } else {
+      setSelectedId(null);
     }
   }, [open]);
 
@@ -51,8 +54,8 @@ const FolderModal = ({ open, onCancel, cardSetId, onSuccess }: SelectFolderModal
         title: "포크 완료",
         description: "카드셋이 성공적으로 복사되었습니다.",
       });
+      setOpen(false);
       onSuccess?.();
-      onCancel();
     } catch (err) {
       console.error("포크 실패:", err);
       toast({
@@ -66,7 +69,8 @@ const FolderModal = ({ open, onCancel, cardSetId, onSuccess }: SelectFolderModal
   };
 
   return (
-    <AlertDialog open={open} onOpenChange={(val) => !val && onCancel()}>
+    <AlertDialog open={open} onOpenChange={setOpen}>
+      <AlertDialogTrigger asChild>{trigger}</AlertDialogTrigger>
       <AlertDialogPortal>
         <AlertDialogContent className="w-[90%] rounded-md">
           <AlertDialogHeader>
@@ -79,15 +83,13 @@ const FolderModal = ({ open, onCancel, cardSetId, onSuccess }: SelectFolderModal
                 <button
                   key={folder.id}
                   className={`flex justify-between items-center border rounded-md px-4 py-2 text-left transition-colors duration-200 w-full
-                        ${
-                          selectedId === folder.id
-                            ? "border-primary-700 bg-primary-100 text-primary-900 font-semibold"
-                            : "border-gray-300 hover:bg-gray-100"
-                        }
-                    `}
-                  onClick={() => {
-                    setSelectedId(Number(folder.id));
-                  }}
+                    ${
+                      selectedId === folder.id
+                        ? "border-primary-700 bg-primary-100 text-primary-900 font-semibold"
+                        : "border-neutral-300 hover:bg-neutral-100"
+                    }
+                  `}
+                  onClick={() => setSelectedId(folder.id)}
                 >
                   <span>{folder.name}</span>
                   {selectedId === folder.id && <Check className="w-5 h-5 text-primary-700" />}
@@ -98,15 +100,12 @@ const FolderModal = ({ open, onCancel, cardSetId, onSuccess }: SelectFolderModal
             )}
           </div>
 
-          <AlertDialogFooter className="flex justify-between gap-2">
-            <AlertDialogCancel
-              className="w-1/2 bg-neutral-300 text-black hover:bg-neutral-400"
-              onClick={onCancel}
-            >
+          <AlertDialogFooter className="flex justify-between pc:gap-2 gap-1">
+            <AlertDialogCancel className="pc:w-1/2 w-full bg-neutral-300 text-black hover:bg-neutral-400">
               취소
             </AlertDialogCancel>
             <AlertDialogAction
-              className="w-1/2 bg-primary-700 text-white hover:bg-primary-800 disabled:opacity-50"
+              className="pc:w-1/2 w-full bg-primary-700 text-white hover:bg-primary-800 disabled:opacity-50"
               onClick={handleConfirm}
               disabled={selectedId === null || isSubmitting}
             >

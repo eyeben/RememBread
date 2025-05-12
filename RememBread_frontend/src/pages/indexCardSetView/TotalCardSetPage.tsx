@@ -24,7 +24,7 @@ const TotalCardSetPage = () => {
         const params = {
           query,
           page: 0,
-          size: 12,
+          size: 48,
           cardSetSortType: sortMap[sortType],
         };
 
@@ -44,7 +44,6 @@ const TotalCardSetPage = () => {
 
   return (
     <div className="px-3 py-2 pt-2 flex flex-col gap-3">
-      <Toaster />
       <CardViewHeader />
       <CardSetSearchBar
         query={query}
@@ -59,6 +58,7 @@ const TotalCardSetPage = () => {
         toggleEditing={toggleEditing}
         cardSets={cardSetList}
       />
+      <Toaster />
     </div>
   );
 };

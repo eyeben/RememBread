@@ -2,6 +2,8 @@ import { useEffect, useState, DragEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { Star, Trash2 } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
+import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
+import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
 import {
   getCardSetList,
   deleteCardSet,
@@ -10,8 +12,6 @@ import {
   deleteLikeCardSet,
 } from "@/services/cardSet";
 import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
-import ViewForkCnt from "@/components/indexCardView/ViewForkCnt";
-import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
 
 interface MyCardSetListProps {
   isEditing: boolean;
@@ -163,7 +163,7 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
                 onDragEnd={handleDragEnd}
                 onClick={() => handleCardClick(item.cardSetId)}
                 className={`
-                  rounded-md box-border border-2 p-1 h-48 flex flex-col justify-between items-center
+                  rounded-md box-border border-2 p-1 pc:h-48 h-36 flex flex-col justify-between items-center
                   ${isEditing ? "cursor-pointer" : ""}
                   ${
                     selectedItems.includes(item.cardSetId)
@@ -202,7 +202,6 @@ const MyCardSetList = ({ isEditing, folderId, query, sortType }: MyCardSetListPr
             </button>
           </div>
         ) : (
-          // PC: 휴지통 드롭존
           isDragging && (
             <div
               className="fixed left-0 right-0 flex justify-center items-center py-2 z-50"

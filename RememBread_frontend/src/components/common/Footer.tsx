@@ -53,7 +53,7 @@ const Footer = () => {
           onClick={() => handleNavigate("/map")}
           activeIcon={<Map className="w-10 h-10" />}
           inactiveIcon={<MapBlack className="w-10 h-10" />}
-          label="빵길"
+          label="학습 지도"
         />
         <div
           className="flex-1 flex flex-col items-center justify-center cursor-pointer"
@@ -68,14 +68,14 @@ const Footer = () => {
           onClick={() => handleNavigate("/games")}
           activeIcon={<Game className="w-10 h-10" />}
           inactiveIcon={<GameBlack className="w-10 h-10" />}
-          label="빵반죽"
+          label="따끈따끈 두뇌게임"
         />
         <FooterItem
           isActive={isActive("/profile")}
           onClick={() => handleNavigate("/profile")}
           activeIcon={<Profile className="w-10 h-10" />}
           inactiveIcon={<ProfileBlack className="w-10 h-10" />}
-          label="기본빵"
+          label="프로필"
         />
       </footer>
     </>
