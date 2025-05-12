@@ -15,6 +15,8 @@ const CardSinglePage = () => {
   const { indexCardId } = useParams();
   const card: indexCard | undefined = location.state?.card;
 
+  const readonlyMode = location.state?.fromTotalPage ?? false;
+
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
@@ -48,10 +50,13 @@ const CardSinglePage = () => {
     fetchCardSet();
   }, [indexCardId, navigate]);
 
-  if (!card) {
-    navigate("/card-view", { replace: true });
-    return null;
-  }
+  useEffect(() => {
+    if (!card) {
+      navigate("/card-view", { replace: true });
+    }
+  }, [card, navigate]);
+
+  if (!card) return null;
 
   const handleFlip = () => {
     const now = Date.now();
@@ -145,11 +150,24 @@ const CardSinglePage = () => {
             </div>
 
             {!isRotating ? (
-              <input
-                value={concept}
-                onChange={(e) => setConcept(e.target.value)}
-                className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
-              />
+              readonlyMode ? (
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center">
+                  {concept || "제목 없음"}
+                </div>
+              ) : (
+                <input
+                  value={concept}
+                  onChange={(e) => setConcept(e.target.value)}
+                  className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
+                />
+              )
+            ) : readonlyMode ? (
+              <div
+                className="absolute top-[17%] left-[17%] w-2/3 h-3/4 font-bold rotate-y-180 overflow-auto text-left"
+                style={{ whiteSpace: "pre-wrap" }}
+              >
+                {description || "설명이 없습니다."}
+              </div>
             ) : (
               <textarea
                 value={description}
@@ -162,9 +180,11 @@ const CardSinglePage = () => {
         </div>
       </div>
 
-      <Button className="my-3 mx-auto" variant="primary" onClick={handleSave} disabled={isSaving}>
-        저장
-      </Button>
+      {!readonlyMode && (
+        <Button className="my-3 mx-auto" variant="primary" onClick={handleSave} disabled={isSaving}>
+          저장
+        </Button>
+      )}
     </div>
   );
 };
