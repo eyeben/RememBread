@@ -7,7 +7,7 @@ const Header = () => {
       <nav className="h-full mx-auto">
         <ul className="flex justify-between items-center w-full h-full px-5">
           <li className="absolute left-1/2 transform -translate-x-1/2 flex items-center">
-            <Link to={"/card-view/my"}>
+            <Link to={"/card-view"}>
               <DefaultBread />
             </Link>
           </li>

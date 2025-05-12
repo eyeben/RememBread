@@ -43,7 +43,7 @@ const Footer = () => {
       <footer className="fixed flex justify-evenly bottom-0 left-0 right-0 w-full max-w-[600px] h-16 mx-auto bg-white pc:border-x border-t border-neutral-200 z-50">
         <FooterItem
           isActive={isActive("/card-view")}
-          onClick={() => handleNavigate("/card-view/my")}
+          onClick={() => handleNavigate("/card-view")}
           activeIcon={<IndexCard className="w-10 h-10" />}
           inactiveIcon={<IndexCardBlack className="w-10 h-10" />}
           label="인덱스 카드"
