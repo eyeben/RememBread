@@ -70,23 +70,23 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     );
 
     @Query(value = """
-    SELECT 
-        cs.id AS cardSetId, 
-        cs.name AS name,
-        cs.views AS viewCount,
-        cs.forks AS forkCount,
-        cs.updated_at AS updatedAt,
-        (cs.user_id = :userId) AS isMine,
-        u.nickname AS nickname    
-    FROM card_sets cs
-    JOIN users u ON cs.user_id = u.id
-    WHERE cs.is_public = true
-        AND u.nickname ILIKE :query
-    ORDER BY
-        CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
-        CASE WHEN :column = 'views' THEN cs.views END DESC,
-        CASE WHEN :column = 'forks' THEN cs.forks END DESC 
-    LIMIT :size OFFSET :offset
+        SELECT 
+            cs.id AS cardSetId, 
+            cs.name AS name,
+            cs.views AS viewCount,
+            cs.forks AS forkCount,
+            cs.updated_at AS updatedAt,
+            (cs.user_id = :userId) AS isMine,
+            u.nickname AS nickname    
+        FROM card_sets cs
+        JOIN users u ON cs.user_id = u.id
+        WHERE cs.is_public = true
+            AND u.nickname ILIKE :query
+        ORDER BY
+            CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
+            CASE WHEN :column = 'views' THEN cs.views END DESC,
+            CASE WHEN :column = 'forks' THEN cs.forks END DESC 
+        LIMIT :size OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByAuthor(
             @Param("query") String query,
