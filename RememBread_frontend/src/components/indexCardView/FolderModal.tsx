@@ -1,3 +1,9 @@
+import { useEffect, useState } from "react";
+import { Check } from "lucide-react";
+import { getMyFolders } from "@/services/folder";
+import { postForkCardSet } from "@/services/cardSet";
+import { useToast } from "@/hooks/use-toast";
+import { Folder } from "@/types/folder";
 import {
   AlertDialog,
   AlertDialogPortal,
@@ -8,16 +14,6 @@ import {
   AlertDialogCancel,
   AlertDialogAction,
 } from "@/components/ui/alert-dialog";
-import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
-import { getMyFolders } from "@/services/folder";
-import { postForkCardSet } from "@/services/cardSet";
-import { useToast } from "@/hooks/use-toast";
-
-interface Folder {
-  id: number;
-  name: string;
-}
 
 interface SelectFolderModalProps {
   open: boolean;
