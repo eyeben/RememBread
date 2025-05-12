@@ -7,7 +7,7 @@ import TagRow from "@/components/indexCardView/TagRow";
 import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
 import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
 
-const CardDetailPage = () => {
+const CardSetDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { indexCardId } = useParams();
@@ -202,4 +202,4 @@ const CardDetailPage = () => {
   );
 };
 
-export default CardDetailPage;
+export default CardSetDetailPage;

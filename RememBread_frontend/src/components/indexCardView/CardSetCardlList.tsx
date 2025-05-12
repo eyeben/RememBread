@@ -1,6 +1,7 @@
 import { useEffect, useState, MouseEvent } from "react";
 import { indexCard } from "@/types/indexCard";
 import { getCardsByCardSet, deleteCard } from "@/services/card";
+import { useNavigate } from "react-router-dom";
 
 interface CardSetCardlListProps {
   cardSetId: number;
@@ -13,8 +14,13 @@ const CardSetCardlList = ({
   highlightIndex = -1,
   isReadonly,
 }: CardSetCardlListProps) => {
+  const navigate = useNavigate();
   const [cards, setCards] = useState<indexCard[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  const handleCardClick = (card: indexCard) => {
+    navigate(`/card-view/${cardSetId}/card`, { state: { card, fromTotalPage: true } });
+  };
 
   // 카드 목록 로드
   useEffect(() => {
@@ -84,6 +90,7 @@ const CardSetCardlList = ({
             <div
               key={card.cardId ?? idx}
               onContextMenu={(e) => handleContextMenu(e, card.cardId)}
+              onClick={() => handleCardClick(card)}
               className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer ${cardStyle}`}
             >
               <span className="font-bold w-12 truncate whitespace-nowrap">{card.concept}</span>
