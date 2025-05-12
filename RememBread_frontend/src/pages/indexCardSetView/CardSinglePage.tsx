@@ -17,18 +17,18 @@ const CardSinglePage = () => {
 
   const readonlyMode = location.state?.fromTotalPage ?? false;
 
-  const [isFront, setIsFront] = useState(true);
-  const [isRotating, setIsRotating] = useState(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  const [isFront, setIsFront] = useState<boolean>(true);
+  const [isRotating, setIsRotating] = useState<boolean>(false);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [lastClickTime, setLastClickTime] = useState<number>(0);
 
-  const [name, setName] = useState("");
+  const [name, setName] = useState<string>("");
   const [hashtags, setHashtags] = useState<string[]>([]);
-  const [nickname, setNickname] = useState("");
+  const [nickname, setNickname] = useState<string>("");
 
   const [concept, setConcept] = useState(card?.concept || "");
   const [description, setDescription] = useState(card?.description || "");
-  const [isSaving, setIsSaving] = useState(false);
+  const [isSaving, setIsSaving] = useState<boolean>(false);
 
   useEffect(() => {
     if (!indexCardId || isNaN(Number(indexCardId))) {
