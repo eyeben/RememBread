@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { searchCardSet } from "@/services/cardSet";
 import { indexCardSet } from "@/types/indexCard";
-import CardViewHeader from "@/components/indexCardView/CardViewHeader";
 import TotalCardSetList from "@/components/indexCardView/TotalCardSetList";
 import CardSetSearchBar from "@/components/indexCardView/CardSetSearchBar";
 
@@ -43,7 +42,6 @@ const TotalCardSetPage = () => {
 
   return (
     <div className="px-3 py-2 pt-2 flex flex-col gap-3">
-      <CardViewHeader />
       <CardSetSearchBar
         query={query}
         setQuery={setQuery}

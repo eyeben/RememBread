@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { postCards } from "@/services/card";
+import { postCardSet } from "@/services/cardSet";
+import { useCardStore } from "@/stores/cardStore";
 
 import Button from "@/components/common/Button";
 import HashtagInput from "@/components/common/HashtagInput";
@@ -17,9 +20,6 @@ import {
 import { Folder } from "@/types/folder";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
-import { postCards } from "@/services/card";
-import { postCardSet } from "@/services/cardSet";
-import { useCardStore } from "@/stores/cardStore";
 
 interface CreateIndexCardSetDialogProps {
   selectedFolder: Folder;
@@ -56,7 +56,7 @@ const CreateIndexCardSetDialog = ({ selectedFolder }: CreateIndexCardSetDialogPr
       // 카드셋 초기화
       resetCardSet();
 
-      navigate("/card-view/my");
+      navigate("/card-view");
     }
   };
 

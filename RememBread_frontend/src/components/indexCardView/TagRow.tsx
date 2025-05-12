@@ -53,11 +53,11 @@ const TagRow = ({ tags, isEditing, onUpdateTags }: TagRowProps) => {
   };
 
   return (
-    <div className="flex items-center w-full px-4 py-1 gap-2 h-10 overflow-hidden">
+    <div className="flex items-center w-full pc:px-4 px-2 py-1 gap-2 h-10 overflow-hidden">
       {/* 고정 input */}
       <input
         type="text"
-        className={`border-2 max-w-[150px] h-8 rounded-full px-3 py-1 text-sm focus:outline-none transition-colors ${
+        className={`border-2 pc:max-w-[150px] w-[100px] h-8 rounded-full px-3 py-1 focus:outline-none transition-colors pc:text-sm text-xxs ${
           inputValue.length >= 10
             ? "border-negative-500"
             : "border-primary-500 focus:ring-primary-500"
