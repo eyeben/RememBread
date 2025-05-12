@@ -7,7 +7,7 @@ import TagRow from "@/components/indexCardView/TagRow";
 import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
 import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
 
-const CardDetailPage = () => {
+const CardSetDetailPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { indexCardId } = useParams();
@@ -88,8 +88,7 @@ const CardDetailPage = () => {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center py-4 gap-1">
-      {/* 이름 + 작성자 + 편집버튼 한 줄에 정렬 */}
+    <div className="flex flex-col items-center justify-center py-4 gap-2">
       <div className="relative w-full px-4 max-w-3xl">
         <div className="flex items-center justify-center w-full">
           {/* 제목 input */}
@@ -136,7 +135,7 @@ const CardDetailPage = () => {
             ))}
         </div>
 
-        {/* 제빵사 닉네임 표시 (아래에) */}
+        {/* 닉네임 표시 */}
         {nickname && (
           <div className="mt-1 text-right text-xs text-muted-foreground pr-2">
             제빵사: <span className="font-medium">{nickname}</span>
@@ -183,7 +182,7 @@ const CardDetailPage = () => {
             )}
           </div>
 
-          <CardSetCardlList cardSetId={cardSetId} />
+          <CardSetCardlList cardSetId={cardSetId} isReadonly={readonlyMode} />
 
           <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full pc:w-[598px] z-25">
             <CardDetailButtons
@@ -202,4 +201,4 @@ const CardDetailPage = () => {
   );
 };
 
-export default CardDetailPage;
+export default CardSetDetailPage;
