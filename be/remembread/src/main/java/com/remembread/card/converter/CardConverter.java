@@ -43,11 +43,6 @@ public class CardConverter {
                 .conceptImageUrl(card.getConceptImageUrl())
                 .descriptionImageUrl(card.getDescriptionImageUrl())
 
-                .correctCount(card.getCorrectCount())
-                .solvedCount(card.getSolvedCount())
-                .sessionCorrectCount(0)
-                .sessionSolvedCount(0)
-
                 .retentionRate(card.getRetentionRate())
                 .stability(card.getStability())
                 .lastViewedTime(card.getUpdatedAt())

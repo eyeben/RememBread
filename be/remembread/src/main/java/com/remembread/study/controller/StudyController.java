@@ -9,6 +9,7 @@ import com.remembread.study.dto.request.StudyStartRequest;
 import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.dto.response.RouteResponse;
+import com.remembread.study.dto.response.StudyLogResponse;
 import com.remembread.study.service.StudyService;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/start")
     public ApiResponse<CardResponse> startStudySession(
             @PathVariable("cardSetId") Long cardSetId,
-            StudyStartRequest request,
+            @RequestBody StudyStartRequest request,
             @AuthUser User user
             ) {
         return ApiResponse.onSuccess(studyService.startStudySession(cardSetId, request, user));
@@ -32,7 +33,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/stop")
     public ApiResponse<Void> stopStudySession(
             @PathVariable("cardSetId") Long cardSetId,
-            StudyStopRequest request,
+            @RequestBody StudyStopRequest request,
             @AuthUser User user
             ) {
         studyService.stopStudySession(cardSetId, request, user);
@@ -43,7 +44,7 @@ public class StudyController {
     public ApiResponse<RemainingCardCountResponse> submitAnswer(
             @PathVariable Long cardSetId,
             @PathVariable Long cardId,
-            AnswerResultRequest request,
+            @RequestBody AnswerResultRequest request,
             @AuthUser User user
     ) {
         return ApiResponse.onSuccess(studyService.submitAnswer(cardSetId, cardId, request, user));
@@ -60,7 +61,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/location")
     public ApiResponse<Void> addPoint(
             @PathVariable Long cardSetId,
-            LocationRequest request,
+            @RequestBody LocationRequest request,
             @AuthUser User user
     ) {
         studyService.addPoint(user, request.getLongitude(), request.getLatitude());
@@ -75,5 +76,15 @@ public class StudyController {
             @AuthUser User user
             ) {
         return ApiResponse.onSuccess(studyService.getRoutes(cardSetId, page, size, user));
+    }
+
+    @GetMapping("/{cardSetId}/logs")
+    public ApiResponse<StudyLogResponse> getLogsByCardSet(
+            @PathVariable Long cardSetId,
+            @RequestParam Integer page,
+            @RequestParam Integer size,
+            @AuthUser User user
+    ) {
+        return ApiResponse.onSuccess(studyService.getLogsByCardSet(cardSetId, user, page, size));
     }
 }
