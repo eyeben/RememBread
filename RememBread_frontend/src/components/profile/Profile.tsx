@@ -252,9 +252,9 @@ const Profile = () => {
 
       <a 
         className="text-lg text-red-500 mb-6 underline cursor-pointer mt-4" 
-        onClick={isEditable ? handleWithdrawal : handleLogout}
+        onClick={handleLogout}
       >
-        {isEditable ? '회원탈퇴' : '로그아웃'}
+        { '로그아웃'}
       </a>
 
       <ImageEditModal
