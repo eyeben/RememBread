@@ -55,8 +55,16 @@ const Profile = () => {
         mainCharacterId
       });
       setIsEditable(false);
-    } catch (error) {
+    } catch (error: any) {
       console.error("유저 정보 수정 중 오류가 발생했습니다:", error);
+      if (error.message === '로그인이 만료되었습니다. 다시 로그인해주세요.') {
+        alert('로그인이 만료되었습니다. 다시 로그인해주세요.');
+        tokenUtils.removeToken();
+        resetProfile();
+        navigate('/login');
+      } else {
+        alert('유저 정보 수정 중 오류가 발생했습니다.');
+      }
     }
   };
 
@@ -115,7 +123,7 @@ const Profile = () => {
     <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
       <div className="flex flex-col items-center w-full max-w-md mx-auto">
         <CharacterImage characterId={mainCharacterId} />
-        <div className="h-10 mt-4 w-full flex justify-center">
+        <div className="h-10 mt-2 w-full flex justify-center">
           {isEditable && (
             <Button className="min-w-48 w-full max-w-72 h-10" variant="primary-outline" onClick={handleImageEdit}>
               변경하기
@@ -123,15 +131,29 @@ const Profile = () => {
           )}
         </div>
       </div>
-      <div className="flex flex-col items-center w-full max-w-md mx-auto gap-5 mt-8">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
         <div className="flex w-full justify-between items-center">
-          <Input
-            className="min-w-48 w-full max-w-72 h-10 mx-auto"
-            type="text"
-            value={nickname}
-            disabled={!isEditable}
-            onChange={handleNameChange}
-          />
+          <div className="flex flex-col w-full min-h-[80px]">
+            <Input
+              className="min-w-48 w-full max-w-72 h-10 mx-auto"
+              type="text"
+              value={nickname}
+              disabled={!isEditable}
+              onChange={handleNameChange}
+              maxLength={10}
+              placeholder="닉네임 (최대 10자)"
+            />
+            {isEditable && (
+              <div className="flex justify-between items-center mt-1 w-full min-w-48 max-w-72 mx-auto">
+                <span className="text-xs text-gray-500">
+                  최대 10자까지 입력 가능합니다
+                </span>
+                <span className="text-sm text-gray-500">
+                  {nickname.length}/10
+                </span>
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex w-full justify-center items-center">
           <div className="flex min-w-48 w-full max-w-72 justify-between items-center">
@@ -143,7 +165,7 @@ const Profile = () => {
             />
           </div>
         </div>
-        <div className="w-full flex justify-center">
+        <div className="w-full flex justify-center mt-4">
           {isEditable ? (
             <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
               완료
