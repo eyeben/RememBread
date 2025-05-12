@@ -136,6 +136,7 @@ public class CardSetService {
                 .folder(folder)
                 .name(cardSet.getName())
                 .user(folder.getUser())
+                .isPublic(false)
                 .build();
         cardSetRepository.save(newCardSet);
 
