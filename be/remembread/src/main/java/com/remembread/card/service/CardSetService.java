@@ -262,7 +262,8 @@ public class CardSetService {
     }
 
     @Transactional(readOnly = true)
-    public CardSetSearchResponse searchCardSets(String query, int page, int size, CardSetSortType cardSetSortType) {
+    public CardSetSearchResponse searchCardSets(String query, int page, int size, CardSetSortType cardSetSortType, User user) {
+        Long userId = user == null ? null : user.getId();
         SearchCategory searchCategory = SearchCategory.제목;
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
@@ -278,9 +279,9 @@ public class CardSetService {
 
         CardSetSearchResponse response;
         switch (searchCategory) {
-            case 제목 -> response = new CardSetSearchResponse(cardSetRepository.searchByTitle(query, sortColumn, size, offset));
-            case 작성자 -> response = new CardSetSearchResponse(cardSetRepository.searchByAuthor(query, sortColumn, size, offset));
-            case 해시태그 -> response = new CardSetSearchResponse(cardSetRepository.searchByHashtag(query, sortColumn, size, offset));
+            case 제목 -> response = new CardSetSearchResponse(cardSetRepository.searchByTitle(query, sortColumn, size, offset, userId));
+            case 작성자 -> response = new CardSetSearchResponse(cardSetRepository.searchByAuthor(query, sortColumn, size, offset, userId));
+            case 해시태그 -> response = new CardSetSearchResponse(cardSetRepository.searchByHashtag(query, sortColumn, size, offset, userId));
             default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
         }
 

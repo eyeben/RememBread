@@ -34,15 +34,19 @@ public class Card extends BaseEntity {
     private String description;
 
     @Column(name = "correct_count", nullable = false)
+    @Builder.Default
     private Integer correctCount = 0;
 
     @Column(name = "solved_count", nullable = false)
+    @Builder.Default
     private Integer solvedCount = 0;
 
     @Column(name = "retention_rate", nullable = false)
+    @Builder.Default
     private Double retentionRate = 0.0;
 
     @Column(nullable = false)
+    @Builder.Default
     private Double stability = 1.0;
 
     @Column(name = "last_correct_at")
@@ -72,9 +76,9 @@ public class Card extends BaseEntity {
     }
 
     public void update(CardCache cardCache) {
-        if (cardCache.getCorrectCount() != null) this.correctCount = cardCache.getCorrectCount();
-        if (cardCache.getSolvedCount() != null) this.solvedCount = cardCache.getSolvedCount();
-        if (cardCache.getRetentionRate() != null) this.retentionRate = cardCache.getRetentionRate();
-        if (cardCache.getStability() != null) this.stability = cardCache.getStability();
+        this.correctCount += cardCache.getCorrectCount();
+        this.solvedCount += cardCache.getSolvedCount();
+        this.retentionRate = cardCache.getRetentionRate();
+        this.stability = cardCache.getStability();
     }
 }

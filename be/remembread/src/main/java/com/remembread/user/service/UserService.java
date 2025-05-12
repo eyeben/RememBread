@@ -51,7 +51,8 @@ public class UserService {
     @Transactional
     public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) {
         user.setNickname(userRequestDto.getNickname());
-        user.setPushEnable(userRequestDto.getPushEnable());
+        user.setNotificationTimeEnable(userRequestDto.getNotificationTimeEnable());
+        user.setNotificationTime(userRequestDto.getNotificationTime());
         user.setMainCharacter(characterRepository.findById(userRequestDto.getMainCharacterId())
                 .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_CHARACTER)));
 

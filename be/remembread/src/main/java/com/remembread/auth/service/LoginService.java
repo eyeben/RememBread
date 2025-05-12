@@ -26,6 +26,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.ZoneId;
 
 @Service
@@ -145,23 +146,26 @@ public class LoginService {
 
     @Transactional
     public User findOrCreateUser(String nickname, String socialLoginId, SocialLoginType socialLoginType) {
-        return userRepository.findBySocialLoginId(socialLoginId)
+        User user = userRepository.findBySocialLoginId(socialLoginId)
                 .orElseGet(() -> createUser(nickname, socialLoginId, socialLoginType));
+        user.setLastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+        return user;
     }
 
     @Transactional
     public User createUser(String nickname, String socialLoginId, SocialLoginType socialLoginType) {
         Character defaultCharacter = characterRepository.findByIsDefaultTrue()
-                .orElseThrow(() -> new RuntimeException("기본 캐릭터가 없습니다"));
+                .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_DEFAULT_CHARACTER));
 
         User user = userRepository.save(User.builder()
                 .nickname(nickname)
                 .socialLoginId(socialLoginId)
                 .socialLoginType(socialLoginType)
                 .mainCharacter(defaultCharacter)
-                .pushEnable(false)
+                .notificationTime(LocalTime.of(9, 0))
+                .notificationTimeEnable(false)
+                .notificationLocationEnable(false)
                 .isAgreedTerms(false)
-                .lastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")))
                 .build());
 
         userCharacterRepository.save(UserCharacter.builder()
@@ -174,8 +178,8 @@ public class LoginService {
                 .name("root")
                 .upperFolder(null)
                 .build();
-        folderRepository.save(rootFolder);
 
+        folderRepository.save(rootFolder);
         return user;
     }
 }

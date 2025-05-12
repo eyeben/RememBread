@@ -24,7 +24,6 @@ public class NaverOAuthProvider {
     private final RestTemplate restTemplate;
     private final String clientId;
     private final String clientSecret;
-//    private final String redirectUri;
     private final String tokenUri;
     private final String userInfoUri;
 
@@ -32,12 +31,10 @@ public class NaverOAuthProvider {
     public NaverOAuthProvider(
             @Value("${spring.security.oauth2.client.registration.naver.client-id}") String clientId,
             @Value("${spring.security.oauth2.client.registration.naver.client-secret}") String clientSecret,
-//            @Value("${spring.security.oauth2.client.registration.naver.redirect-uri}") String redirectUri,
             @Value("${spring.security.oauth2.client.provider.naver.token-uri}") String tokenUri,
             @Value("${spring.security.oauth2.client.provider.naver.user-info-uri}") String userInfoUri) {
         this.clientId = clientId;
         this.clientSecret = clientSecret;
-//        this.redirectUri = redirectUri;
         this.tokenUri = tokenUri;
         this.userInfoUri = userInfoUri;
         this.restTemplate = new RestTemplate();

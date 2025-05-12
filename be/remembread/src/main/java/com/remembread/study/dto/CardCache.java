@@ -17,10 +17,12 @@ public class CardCache {
     private String conceptImageUrl;
     private String descriptionImageUrl;
 
-    private Integer correctCount;
-    private Integer solvedCount;
-    private Integer sessionCorrectCount;
-    private Integer sessionSolvedCount;
+    @Builder.Default
+    private Integer correctCount = 0;
+
+    @Builder.Default
+    private Integer solvedCount = 0;
+
     @Setter
     private Double retentionRate;
     private Double stability;

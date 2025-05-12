@@ -10,7 +10,8 @@ public class UserConverter {
                 .nickname(user.getNickname())
                 .mainCharacterId(user.getMainCharacter().getId())
                 .mainCharacterImageUrl(user.getMainCharacter().getImageUrl())
-                .pushEnable(user.getPushEnable())
+                .notificationTimeEnable(user.getNotificationTimeEnable())
+                .notificationTime(user.getNotificationTime())
                 .socialLoginType(user.getSocialLoginType())
                 .build();
     }

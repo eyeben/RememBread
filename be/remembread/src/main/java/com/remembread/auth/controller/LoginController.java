@@ -34,8 +34,7 @@ public class LoginController {
             @RequestParam(name = "redirect-uri", required = false) String redirectUri,
             HttpServletResponse response
     ) {
-        log.info("redirect-uri: {}", redirectUri);
-
+        // Redirect URI 유효성 검사
         if (redirectUri == null) {
             redirectUri = "http://localhost:8080/auth/login/" + provider.toLowerCase();
         } else {

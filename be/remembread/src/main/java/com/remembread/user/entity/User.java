@@ -5,6 +5,7 @@ import com.remembread.common.entity.BaseEntity;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalTime;
 import java.time.LocalDateTime;
 
 @Getter
@@ -34,14 +35,31 @@ public class User extends BaseEntity {
     @JoinColumn(name = "main_character_id")
     private Character mainCharacter;
 
+    @Column(length = 255)
+    private String fcmToken;
+
+    @Setter
+    @Column(nullable = false, columnDefinition = "DEFAULT '09:00:00'")
+    private LocalTime notificationTime;
+
     @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
-    private Boolean pushEnable;
+    private Boolean notificationTimeEnable;
+
+    private Double notificationLocationLatitude;
+
+    private Double notificationLocationLongitude;
+
+    @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private Boolean notificationLocationEnable;
+
+    private LocalDateTime lastLocationNotified;
 
     @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean isAgreedTerms;
 
+    @Setter
     @Column(nullable = false)
     private LocalDateTime lastLoginAt;
 }
