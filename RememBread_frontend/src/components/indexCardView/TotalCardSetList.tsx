@@ -41,7 +41,12 @@ const TotalCardSetList = ({ isEditing, cardSets }: CardSetListProps) => {
       toggleItem(cardSetId);
     } else {
       const selectedCard = cardSets.find((item) => item.cardSetId === cardSetId);
-      navigate(`/card-view/${cardSetId}`, { state: { card: selectedCard } });
+      navigate(`/card-view/${cardSetId}`, {
+        state: {
+          card: selectedCard,
+          fromTotalPage: true,
+        },
+      });
     }
   };
 

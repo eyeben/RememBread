@@ -21,6 +21,7 @@ export interface indexCardSet {
   folderId?: number;
   lastViewCardId?: number;
   name?: string;
+  nickname?: string;
   correctCardCnt?: number;
   solvedCardCnt?: number;
   isPublic?: number;
