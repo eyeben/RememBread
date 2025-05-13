@@ -14,25 +14,43 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
   const inputTypes = [
     {
       topText: "직접",
-      bottomText: "입력",
+      bottomText: "생성",
       path: "/create",
       disabled: false,
     },
     {
-      topText: "텍스트로",
-      bottomText: "입력",
+      topText: (
+        <>
+          (AI)
+          <br />
+          텍스트로
+        </>
+      ),
+      bottomText: "생성",
       path: "/create/text",
       disabled: false,
     },
     {
-      topText: "PDF로",
-      bottomText: "입력",
+      topText: (
+        <>
+          (AI)
+          <br />
+          PDF로
+        </>
+      ),
+      bottomText: "생성",
       path: "/create/pdf",
       disabled: true,
     },
     {
-      topText: "이미지로",
-      bottomText: "입력",
+      topText: (
+        <>
+          (AI)
+          <br />
+          이미지로
+        </>
+      ),
+      bottomText: "생성",
       path: "/create/image",
       disabled: true,
     },
