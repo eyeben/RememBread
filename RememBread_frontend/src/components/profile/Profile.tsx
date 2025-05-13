@@ -193,6 +193,51 @@ const Profile = () => {
     });
   };
 
+  const handleCancelClick = async () => {
+    try {
+      const userData = await getUser();
+      
+      // 시간 데이터 파싱
+      const timeString = userData.result.notificationTime;
+      const [hours, minutes] = timeString.split(':');
+      const hour24 = parseInt(hours);
+      
+      // 오전/오후 및 12시간 형식으로 변환
+      let hour12 = hour24;
+      let ampmValue = "오전";
+      
+      if (hour24 >= 12) {
+        ampmValue = "오후";
+        hour12 = hour24 === 12 ? 12 : hour24 - 12;
+      } else if (hour24 === 0) {
+        hour12 = 12;
+        ampmValue = "오전";
+      }
+
+      setAmpm(ampmValue);
+      setHour(hour12.toString().padStart(2, '0'));
+      setMinute(minutes);
+
+      setProfile({
+        nickname: userData.result.nickname,
+        notificationTimeEnable: userData.result.notificationTimeEnable,
+        notificationTime: userData.result.notificationTime,
+        mainCharacterId: userData.result.mainCharacterId,
+        mainCharacterImageUrl: userData.result.mainCharacterImageUrl,
+        socialLoginType: userData.result.socialLoginType
+      });
+      
+      setIsEditable(false);
+    } catch (error) {
+      console.error("프로필 정보를 초기화하는 중 오류가 발생했습니다:", error);
+      toast({
+        variant: "error",
+        title: "오류 발생",
+        description: "프로필 정보를 초기화하는 중 문제가 발생했습니다.",
+      });
+    }
+  };
+
   return (
     <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
         <Toaster />
@@ -262,9 +307,14 @@ const Profile = () => {
           )}
           <div className="w-full flex justify-center mt-4">
             {isEditable ? (
-              <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
-                완료
-              </Button>
+              <div className="w-full flex flex-col justify-center items-center gap-2">
+                <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
+                  완료
+                </Button>
+                <Button className="min-w-48 w-full max-w-72 h-10" variant="neutral" onClick={handleCancelClick}>
+                  취소
+                </Button>
+              </div>
             ) : (
               <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleEditClick}>
                 수정하기
