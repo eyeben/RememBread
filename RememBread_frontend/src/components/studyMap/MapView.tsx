@@ -1,19 +1,10 @@
 import { useEffect, useRef, useState } from "react";
+import { LocateFixed } from "lucide-react";
 import ReactDOMServer from "react-dom/server";
 import CurrentLocationBtn from "@/components/studyMap/CurrentLocationBtn";
 import CurrentLocation from "@/components/studyMap/CurrentLocation";
-import { LocateFixed } from "lucide-react";
 
-type Props = {
-  searchParams: {
-    keyword: string;
-    categoryId: number | null;
-    startDate: number | null;
-    endDate: number | null;
-  };
-};
-
-const MapView = ({ searchParams }: Props) => {
+const MapView = () => {
   const [curLatitude, setCurLatitude] = useState<number>(37.5665);
   const [curLongitude, setCurLongitude] = useState<number>(126.978);
   const [locationKey, setLocationKey] = useState<number>(0);
@@ -25,14 +16,14 @@ const MapView = ({ searchParams }: Props) => {
     id: string;
     address?: string;
   } | null>(null);
-  const mapRef = useRef<naver.maps.Map | null>(null); // Naver 지도 인스턴스 (naver.maps.Map) 저장
-  const searchParamsRef = useRef(searchParams);
+
+  const mapRef = useRef<naver.maps.Map | null>(null);
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const svgString = ReactDOMServer.renderToStaticMarkup(
     <LocateFixed className="w-full h-full text-primary-500" />,
   );
 
-  const fetchMarkers = async (params = searchParams) => {
+  const fetchMarkers = async () => {
     if (!mapRef.current) return;
 
     const zoomLevel = mapRef.current.getZoom();
@@ -43,10 +34,6 @@ const MapView = ({ searchParams }: Props) => {
         lat: center.lat(),
         lng: center.lng(),
         zoomLevel,
-        keyword: params.keyword || null,
-        categoryId: params.categoryId ?? null,
-        startDate: params.startDate,
-        endDate: params.endDate,
       });
 
       markersRef.current.forEach((m) => m.setMap(null));
@@ -116,16 +103,6 @@ const MapView = ({ searchParams }: Props) => {
   useEffect(() => {
     const style = document.createElement("style");
     style.innerHTML = `
-      @keyframes pulse {
-        0% { transform: scale(1); }
-        50% { transform: scale(1.1); }
-        100% { transform: scale(1); }
-      }
-  
-      .cluster-icon:hover .cluster-count {
-        transform: scale(1.2);
-      }
-  
       .custom-marker:hover {
         transform: scale(1.1);
         cursor: pointer;
@@ -133,22 +110,6 @@ const MapView = ({ searchParams }: Props) => {
     `;
     document.head.appendChild(style);
   }, []);
-
-  // 검색 조건 바뀌었을 때 마커 다시 불러오기
-  useEffect(() => {
-    if (isMapLoaded) {
-      fetchMarkers(searchParams);
-    }
-  }, [searchParams]);
-
-  useEffect(() => {
-    searchParamsRef.current = searchParams;
-  }, [searchParams]);
-
-  const handleLocationUpdate = (lat: number, lng: number) => {
-    setCurLatitude(lat);
-    setCurLongitude(lng);
-  };
 
   useEffect(() => {
     const mapElement = document.getElementById("map");
@@ -171,11 +132,9 @@ const MapView = ({ searchParams }: Props) => {
 
       mapRef.current.addListener("idle", () => {
         const currentZoom = mapRef.current?.getZoom();
-
-        // 줌 레벨이 바뀐 경우에만 fetchMarkers 호출
         if (currentZoom !== lastZoomLevel) {
           setLastZoomLevel(currentZoom ?? null);
-          fetchMarkers(searchParamsRef.current);
+          fetchMarkers();
         }
       });
 
@@ -186,7 +145,7 @@ const MapView = ({ searchParams }: Props) => {
       setIsMapLoaded(true);
     }
 
-    fetchMarkers(searchParams);
+    fetchMarkers();
   }, []);
 
   useEffect(() => {
@@ -212,6 +171,11 @@ const MapView = ({ searchParams }: Props) => {
     return () => observer.disconnect();
   }, []);
 
+  const handleLocationUpdate = (lat: number, lng: number) => {
+    setCurLatitude(lat);
+    setCurLongitude(lng);
+  };
+
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
@@ -222,7 +186,6 @@ const MapView = ({ searchParams }: Props) => {
           onUpdatePosition={handleLocationUpdate}
         />
       )}
-
       <CurrentLocationBtn
         onClick={() => {
           setLocationKey((prev) => prev + 1);

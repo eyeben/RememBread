@@ -41,16 +41,16 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
         currentMarker.circle = new naver.maps.Circle({
           map,
           center: newPosition,
-          radius: 200,
-          strokeColor: "#FFAA00",
-          strokeOpacity: 0.2,
+          radius: 1000,
+          strokeColor: "#B3915C",
+          strokeOpacity: 0.3,
           strokeWeight: 2,
-          fillColor: "#FFA500",
-          fillOpacity: 0.2,
+          fillColor: "#C4A677",
+          fillOpacity: 0.3,
         });
 
         map.setCenter(newPosition);
-        map.setZoom(17);
+        map.setZoom(15);
       },
       () => {
         alert("위치 정보를 불러오지 못했어요. 잠시후 다시 시도해 주세요!");
