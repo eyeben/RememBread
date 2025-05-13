@@ -33,6 +33,7 @@ interface CharacterResponse {
   result: {
     id: number;
     name: string;
+    imageUrl: string;
     isLocked: boolean;
   }[];
 }

@@ -1,4 +1,5 @@
 import { useState, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
@@ -8,8 +9,12 @@ import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
+import { postCardsByPDF } from "@/services/card";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateFromPDFPage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageRange, setPageRange] = useState<[number, number]>([0, 0]);
@@ -46,6 +51,37 @@ const CreateFromPDFPage = () => {
 
   const handleSliderChange = (value: number[]) => {
     setPageRange([value[0], value[1]]);
+  };
+
+  const handleCreateCard = async () => {
+    try {
+      toast({
+        title: "카드를 생성하는 중입니다.",
+        description: "카드 생성이 완료되면 알려드릴게요",
+      });
+      postCardsByPDF(selectedFile!)
+        .then(() => {
+          toast({
+            variant: "success",
+            title: "카드 생성 완료",
+            description: "카드 생성이 완료됐어요!",
+          });
+        })
+        .catch((error) => {
+          console.error("카드 생성 중 오류:", error);
+          toast({
+            variant: "destructive",
+            title: "카드 생성 실패",
+            description: "카드 생성중 오류가 발생했어요",
+          });
+        });
+    } catch (error) {
+      console.error("카드 생성 중 오류:", error);
+    } finally {
+      setTimeout(() => {
+        navigate("/create");
+      }, 1500);
+    }
   };
 
   return (
@@ -89,7 +125,7 @@ const CreateFromPDFPage = () => {
         </div>
       )}
 
-      <Button className="m-5" variant="primary">
+      <Button className="m-5" variant="primary" onClick={handleCreateCard}>
         카드 생성하기
       </Button>
     </div>
