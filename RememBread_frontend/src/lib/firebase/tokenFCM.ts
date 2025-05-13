@@ -1,5 +1,5 @@
 import { getToken } from "firebase/messaging";
-import { messaging } from "./settingFCM";
+import { messaging } from "@/lib/firebase/settingFCM";
 
 // 서비스 워커 실행 함수
 function registerServiceWorker() {
@@ -7,11 +7,9 @@ function registerServiceWorker() {
     .register("firebase-messaging-sw.js")
     .then(function (registration) {
       console.log("Service Worker 등록 성공:", registration);
-      alert(`Service Worker 등록 성공:, ${registration}`);
     })
     .catch(function (error) {
       console.log("Service Worker 등록 실패:", error);
-      alert(`Service Worker 등록 실패:, ${error}`);
     });
 }
 
