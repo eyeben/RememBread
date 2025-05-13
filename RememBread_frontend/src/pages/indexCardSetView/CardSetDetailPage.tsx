@@ -95,9 +95,16 @@ const CardSetDetailPage = () => {
           <input
             type="text"
             value={isEditing ? editedName : name}
-            onChange={(e) => isEditing && !readonlyMode && setEditedName(e.target.value)}
-            className="text-center text-xl pc:text-3xl font-semibold border-b border-neutral-300 focus:outline-none w-full pb-2"
-            maxLength={30}
+            onChange={(e) => {
+              const value = e.target.value;
+              if (!isEditing || readonlyMode) return;
+              if (value.length <= 25) setEditedName(value);
+            }}
+            className={`text-center text-xl pc:text-3xl font-semibold border-b ${
+              editedName.length === 25
+                ? "border-negative-400 text-negative-400"
+                : "border-neutral-300"
+            } focus:outline-none w-full pb-2 px-5`}
             readOnly={!isEditing || readonlyMode}
           />
 
