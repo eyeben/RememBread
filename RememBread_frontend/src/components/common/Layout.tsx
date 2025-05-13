@@ -20,8 +20,8 @@ const Layout = () => {
       <div className="flex flex-col min-w-[300px] w-full max-w-[600px] h-full min-h-screen mx-auto bg-white pc:border-x border-neutral-200">
         {headerComponent}
         <main
-          className={`flex flex-col flex-1 ${headerComponent ? "pt-14" : ""} ${
-            footerComponent ? "pb-16" : ""
+          className={`flex flex-col flex-1 ${headerComponent ? "pt-[calc(env(safe-area-inset-top)+56px)]" : ""} ${
+            footerComponent ? "pb-[calc(env(safe-area-inset-bottom)+64px)]" : ""
           }`}
         >
           <Outlet />
