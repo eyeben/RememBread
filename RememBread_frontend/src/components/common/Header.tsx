@@ -7,7 +7,7 @@ const Header = () => {
   const location = useLocation();
 
   // '/card-view/숫자' 형태의 경로에만 표시
-  const showBackButton = /^\/card-view\/\d+$/.test(location.pathname);
+  const showBackButton = /^\/card-view\/\d+(\/.*)?$/.test(location.pathname);
 
   const handleBack = () => {
     navigate(-1);
