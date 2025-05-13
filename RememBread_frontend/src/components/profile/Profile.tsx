@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { SquarePen } from "lucide-react";
 import { getUser, updateUser } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
@@ -12,7 +13,6 @@ import TimePicker from "@/components/profile/TimePicker";
 import useProfileStore from "@/stores/profileStore";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { SquarePen } from "lucide-react";
 
 interface ApiError {
   response?: {
