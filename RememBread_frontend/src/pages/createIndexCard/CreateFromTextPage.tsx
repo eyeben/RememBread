@@ -4,19 +4,45 @@ import { useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 import { postCardsByText } from "@/services/card";
+import { useToast } from "@/hooks/use-toast";
+
+const MAX_LENGTH = 10000;
 
 const CreateFromTextPage = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
   const [inputText, setInputText] = useState<string>("");
+  const remainingChars = MAX_LENGTH - inputText.length;
 
   const handleCreateCard = async () => {
     try {
-      postCardsByText(inputText);
+      toast({
+        title: "카드를 생성하는 중입니다.",
+        description: "카드 생성이 완료되면 알려드릴게요",
+      });
+
+      postCardsByText(inputText)
+        .then(() => {
+          toast({
+            variant: "success",
+            title: "카드 생성 완료",
+            description: "카드 생성이 완료됐어요!",
+          });
+        })
+        .catch((error) => {
+          console.error("카드 생성 중 오류:", error);
+          toast({
+            variant: "destructive",
+            title: "카드 생성 실패",
+            description: "카드 생성중 오류가 발생했어요",
+          });
+        });
     } catch (error) {
       console.error("카드 생성 중 오류:", error);
     } finally {
-      await new Promise((resolve) => setTimeout(resolve, 1500));
-      navigate("/create");
+      setTimeout(() => {
+        navigate("/create");
+      }, 1500);
     }
   };
 
@@ -29,6 +55,7 @@ const CreateFromTextPage = () => {
 
       <div className="flex justify-center relative w-full px-5">
         <textarea
+          maxLength={MAX_LENGTH}
           className="absolute top-[17%] left-[17%] pc:left-1/4 w-2/3 pc:w-1/2 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold"
           value={inputText}
           placeholder="여기에 텍스트를 입력하세요"
@@ -39,6 +66,14 @@ const CreateFromTextPage = () => {
         />
 
         <InputBread className="w-full h-full max-w-md aspect-square" />
+
+        <div
+          className={`absolute bottom-[-20px] pc:bottom-[-20px] right-16 pc:right-28 text-sm ${
+            remainingChars <= 0 ? "text-red-500" : "text-gray-400"
+          }`}
+        >
+          {inputText.length}/{MAX_LENGTH}
+        </div>
       </div>
 
       <Button className="m-5" variant="primary" onClick={handleCreateCard}>
