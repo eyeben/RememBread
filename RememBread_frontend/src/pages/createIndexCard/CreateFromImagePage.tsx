@@ -1,10 +1,16 @@
 import { useState, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { X } from "lucide-react";
+
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 import { Input } from "@/components/ui/input";
+import { postCardsByImage } from "@/services/card";
+import { useToast } from "@/hooks/use-toast";
 
 const CreateFromImagePage = () => {
+  const navigate = useNavigate();
+  const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
@@ -30,6 +36,37 @@ const CreateFromImagePage = () => {
 
   const handleRemoveFile = (fileToRemove: File) => {
     setSelectedFiles(selectedFiles.filter((file) => file !== fileToRemove));
+  };
+  const handleCreateCard = () => {
+    try {
+      toast({
+        title: "카드를 생성하는 중입니다.",
+        description: "카드 생성이 완료되면 알려드릴게요",
+      });
+
+      postCardsByImage(selectedFiles)
+        .then(() => {
+          toast({
+            variant: "success",
+            title: "카드 생성 완료",
+            description: "카드 생성이 완료됐어요!",
+          });
+        })
+        .catch((error) => {
+          console.error("카드 생성 중 오류:", error);
+          toast({
+            variant: "destructive",
+            title: "카드 생성 실패",
+            description: "카드 생성중 오류가 발생했어요",
+          });
+        });
+    } catch (error) {
+      console.error("카드 생성 중 오류:", error);
+    } finally {
+      setTimeout(() => {
+        navigate("/create");
+      }, 1500);
+    }
   };
 
   return (
@@ -76,7 +113,7 @@ const CreateFromImagePage = () => {
         </div>
       )}
 
-      <Button className="m-5" variant="primary">
+      <Button className="m-5" variant="primary" onClick={handleCreateCard}>
         카드 생성하기
       </Button>
     </div>
