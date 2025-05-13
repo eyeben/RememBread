@@ -195,11 +195,13 @@ html {
   font-family: "SUITE-Regular";
   overflow-y: scroll;
   height: 100%;
+  height: -webkit-fill-available;
 }
 
 body {
   min-height: 100%;
-  padding-bottom: env(safe-area-inset-bottom);
+  min-height: -webkit-fill-available;
+  /* iOS 대응을 위해 body의 padding-bottom 제거 */
 }
 
 html > body[data-scroll-locked] {
