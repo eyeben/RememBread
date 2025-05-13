@@ -22,7 +22,7 @@ const TotalCardSetPage = () => {
         const params = {
           query,
           page: 0,
-          size: 12,
+          size: 96,
           cardSetSortType: sortMap[sortType],
         };
 

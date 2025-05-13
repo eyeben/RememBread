@@ -42,6 +42,7 @@ const MyCardSetPage = ({
         setQuery={setQuery}
         sortType={sortType}
         setSortType={setSortType}
+        placeholder="검색어를 입력해주세요"
       />
       <FolderOrderBar
         isEditing={isEditing}

@@ -25,6 +25,7 @@ const CardStudyPage = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [cards, setCards] = useState<indexCard[]>([]);
   const [api, setApi] = useState<CarouselApi>();
+  const [lastClickTime, setLastClickTime] = useState<number>(0);
 
   useEffect(() => {
     if (!cardSet?.cardSetId) {
@@ -53,6 +54,10 @@ const CardStudyPage = () => {
   }, [api]);
 
   const handleFlip = () => {
+    const now = Date.now();
+    if (now - lastClickTime < 400) return;
+    setLastClickTime(now);
+
     setIsFront((prev) => !prev);
     setIsButtonDisabled(true);
     setTimeout(() => {

@@ -7,9 +7,15 @@ interface TagRowProps {
   isEditing: boolean;
   setEditing: (edit: boolean) => void;
   onUpdateTags: (newTags: string[]) => void;
+  readonlyMode?: boolean; // 읽기 전용 여부
 }
 
-const TagRow = ({ tags, isEditing, onUpdateTags }: TagRowProps) => {
+const TagRow = ({
+  tags,
+  isEditing,
+  onUpdateTags,
+  readonlyMode = false, // 기본값 false
+}: TagRowProps) => {
   const [inputValue, setInputValue] = useState<string>("");
   const [localTags, setLocalTags] = useState<string[]>(tags);
 
@@ -53,21 +59,22 @@ const TagRow = ({ tags, isEditing, onUpdateTags }: TagRowProps) => {
   };
 
   return (
-    <div className="flex items-center w-full pc:px-4 px-2 py-1 gap-2 h-10 overflow-hidden">
-      {/* 고정 input */}
-      <input
-        type="text"
-        className={`border-2 pc:max-w-[150px] w-[100px] h-8 rounded-full px-3 py-1 focus:outline-none transition-colors pc:text-sm text-xxs ${
-          inputValue.length >= 10
-            ? "border-negative-500"
-            : "border-primary-500 focus:ring-primary-500"
-        } ${isEditing ? "" : "opacity-50 pointer-events-none"}`}
-        placeholder="태그를 입력해주세요"
-        value={inputValue}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        disabled={!isEditing}
-      />
+    <div className="flex items-center w-full pc:px-4 px-2 py-1 pc:gap-2 gap-1 h-10 overflow-hidden">
+      {/* 태그 추가 input: 읽기 전용이면 숨김 */}
+      {isEditing && !readonlyMode && (
+        <input
+          type="text"
+          className={`border-2 pc:max-w-[150px] w-[100px] pc:h-8 h-6 rounded-full pc:px-3 px-2 py-1 focus:outline-none transition-colors pc:text-sm text-xxs ${
+            inputValue.length >= 10
+              ? "border-negative-500"
+              : "border-primary-500 focus:ring-primary-500"
+          }`}
+          placeholder="태그를 입력해주세요"
+          value={inputValue}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+        />
+      )}
 
       {/* 태그 리스트 */}
       <div
@@ -79,16 +86,16 @@ const TagRow = ({ tags, isEditing, onUpdateTags }: TagRowProps) => {
           <button
             key={tag}
             type="button"
-            disabled={!isEditing}
+            disabled={!isEditing || readonlyMode}
             onClick={() => handleRemoveTag(tag)}
-            className={`flex items-center h-8 rounded-full px-3 py-1 text-sm text-white transition-all duration-200 ${
-              isEditing
+            className={`flex items-center pc:h-8 h-6 rounded-full px-3 py-1 text-sm text-white transition-all duration-200 ${
+              isEditing && !readonlyMode
                 ? "bg-primary-700 hover:bg-negative-600"
                 : "bg-primary-700 opacity-50 pointer-events-none"
             }`}
           >
             <span>#{tag}</span>
-            {isEditing && <X size={12} className="ml-1" />}
+            {isEditing && !readonlyMode && <X size={12} className="ml-1" />}
           </button>
         ))}
       </div>

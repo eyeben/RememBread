@@ -40,7 +40,7 @@ const Footer = () => {
   return (
     <>
       <FooterModal isOpen={isOvenOpen} onClose={handleCloseModal} />
-      <footer className="fixed flex justify-evenly bottom-0 left-0 right-0 w-full max-w-[600px] h-16 mx-auto bg-white pc:border-x border-t border-neutral-200 z-50">
+      <footer className="fixed flex justify-evenly bottom-0 left-0 right-0 w-full max-w-[600px] mx-auto pc:border-x h-16 bg-white border-t border-neutral-200 z-50 pb-[env(safe-area-inset-bottom)]">
         <FooterItem
           isActive={isActive("/card-view")}
           onClick={() => handleNavigate("/card-view")}
@@ -68,7 +68,7 @@ const Footer = () => {
           onClick={() => handleNavigate("/games")}
           activeIcon={<Game className="w-10 h-10" />}
           inactiveIcon={<GameBlack className="w-10 h-10" />}
-          label="따끈따끈 두뇌게임"
+          label="두뇌게임"
         />
         <FooterItem
           isActive={isActive("/profile")}

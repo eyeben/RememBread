@@ -21,12 +21,14 @@ export interface indexCardSet {
   folderId?: number;
   lastViewCardId?: number;
   name?: string;
+  nickname?: string;
   correctCardCnt?: number;
   solvedCardCnt?: number;
   isPublic?: number;
   viewCount?: number;
   forkCount?: number;
   isLike?: boolean;
+  isMine?: boolean;
   totalCardCnt?: number;
   hashtags?: string[];
   createdDate?: string | Date;

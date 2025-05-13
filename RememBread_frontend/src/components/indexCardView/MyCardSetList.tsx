@@ -62,7 +62,7 @@ const MyCardSetList = ({
           const res = await searchMyCardSet({
             query,
             page: 0,
-            size: 12,
+            size: 48,
             cardSetSortType: sortMap[sortType],
           });
 
@@ -76,7 +76,7 @@ const MyCardSetList = ({
           const res = await getCardSetList({
             folderId,
             page: 0,
-            size: 12,
+            size: 48,
             sort: sortMap[sortType],
           });
           setCardSetList(res.result.cardSets);
@@ -153,45 +153,49 @@ const MyCardSetList = ({
   return (
     <>
       <div className="flex flex-col items-center w-full px-2">
-        <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
-          {cardSetList.map((item) => (
-            <div key={item.cardSetId} className="relative">
-              <div className="absolute top-2 right-2 z-10">
-                <Star
-                  onClick={() => handleToggleLike(item.cardSetId)}
-                  fill={item.isLike ? "#FDE407" : "none"}
-                  className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
-                />
-              </div>
+        {cardSetList.length === 0 ? (
+          <div className="w-full text-center text-neutral-500 py-10">카드셋이 없습니다.</div>
+        ) : (
+          <div className="grid grid-cols-3 pc:grid-cols-4 gap-2 pc:gap-3 w-full mt-2">
+            {cardSetList.map((item) => (
+              <div key={item.cardSetId} className="relative">
+                <div className="absolute top-2 right-2 z-10">
+                  <Star
+                    onClick={() => handleToggleLike(item.cardSetId)}
+                    fill={item.isLike ? "#FDE407" : "none"}
+                    className="text-yellow-300 hover:cursor-pointer pc:size-6 size-4"
+                  />
+                </div>
 
-              <div
-                draggable={isEditing && selectedItems.includes(item.cardSetId)}
-                onDragStart={(e) => handleDragStart(e, item.cardSetId)}
-                onDragEnd={handleDragEnd}
-                onClick={() => handleCardClick(item.cardSetId)}
-                className={`
-                  rounded-md box-border border-2 p-1 pc:h-48 h-36 flex flex-col justify-between items-center
-                  ${isEditing ? "cursor-pointer" : ""}
-                  ${
-                    selectedItems.includes(item.cardSetId)
-                      ? "border-primary-700 bg-primary-100"
-                      : "border-transparent"
-                  }
-                `}
-              >
-                <CardSet2 className="w-full h-full hover:cursor-pointer" />
-                <div className="text-center w-full">
-                  <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
-                    {item.name || "제목 없음"}
-                  </span>
-                  <div className="flex justify-end items-center w-full gap-2">
-                    <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
+                <div
+                  draggable={isEditing && selectedItems.includes(item.cardSetId)}
+                  onDragStart={(e) => handleDragStart(e, item.cardSetId)}
+                  onDragEnd={handleDragEnd}
+                  onClick={() => handleCardClick(item.cardSetId)}
+                  className={`
+              rounded-md box-border border-2 p-1 pc:h-48 h-36 flex flex-col justify-between items-center
+              ${isEditing ? "cursor-pointer" : ""}
+              ${
+                selectedItems.includes(item.cardSetId)
+                  ? "border-primary-700 bg-primary-100"
+                  : "border-transparent"
+              }
+            `}
+                >
+                  <CardSet2 className="w-full h-full hover:cursor-pointer" />
+                  <div className="text-center w-full">
+                    <span className="block pc:text-xl text-sm truncate overflow-hidden whitespace-nowrap hover:cursor-pointer">
+                      {item.name || "제목 없음"}
+                    </span>
+                    <div className="flex justify-end items-center w-full gap-2">
+                      <ViewForkCnt viewCount={item.viewCount} forkCount={item.forkCount} />
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </div>
 
       {/* 삭제 확인 모달 */}

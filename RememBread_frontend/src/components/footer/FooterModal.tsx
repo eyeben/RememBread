@@ -1,5 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import OvenBread from "@/components/svgs/footer/CreateBread.tsx"
+import OvenBread from "@/components/svgs/footer/CreateBread.tsx";
 
 interface FooterModalProps {
   isOpen: boolean;
@@ -16,25 +16,30 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
       topText: "직접",
       bottomText: "입력",
       path: "/create",
+      disabled: false,
     },
     {
       topText: "텍스트로",
       bottomText: "입력",
       path: "/create/text",
+      disabled: false,
     },
     {
       topText: "PDF로",
       bottomText: "입력",
       path: "/create/pdf",
+      disabled: true,
     },
     {
       topText: "이미지로",
       bottomText: "입력",
       path: "/create/image",
+      disabled: true,
     },
   ];
 
-  const handleClick = (path: string) => {
+  const handleClick = (path: string, disabled: boolean) => {
+    if (disabled) return;
     navigate(path);
     if (onClose) onClose();
   };
@@ -46,11 +51,13 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
           {inputTypes.map((type, index) => (
             <div
               key={index}
-              className="flex flex-col items-center cursor-pointer"
-              onClick={() => handleClick(type.path)}
+              className={`flex flex-col items-center ${
+                type.disabled ? "cursor-default opacity-50" : "cursor-pointer"
+              }`}
+              onClick={() => handleClick(type.path, type.disabled)}
             >
               <div className="relative w-24 h-24 flex items-center justify-center">
-                <OvenBread className="w-24 h-24"/>
+                <OvenBread className="w-24 h-24" />
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
                   <span className="text-center text-xs text-neutral-900 font-bold leading-tight">
                     {type.topText}
