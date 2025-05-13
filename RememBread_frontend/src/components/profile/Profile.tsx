@@ -12,6 +12,7 @@ import TimePicker from "@/components/profile/TimePicker";
 import useProfileStore from "@/stores/profileStore";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { SquarePen } from "lucide-react";
 
 interface ApiError {
   response?: {
@@ -193,63 +194,23 @@ const Profile = () => {
     });
   };
 
-  const handleCancelClick = async () => {
-    try {
-      const userData = await getUser();
-      
-      // 시간 데이터 파싱
-      const timeString = userData.result.notificationTime;
-      const [hours, minutes] = timeString.split(':');
-      const hour24 = parseInt(hours);
-      
-      // 오전/오후 및 12시간 형식으로 변환
-      let hour12 = hour24;
-      let ampmValue = "오전";
-      
-      if (hour24 >= 12) {
-        ampmValue = "오후";
-        hour12 = hour24 === 12 ? 12 : hour24 - 12;
-      } else if (hour24 === 0) {
-        hour12 = 12;
-        ampmValue = "오전";
-      }
-
-      setAmpm(ampmValue);
-      setHour(hour12.toString().padStart(2, '0'));
-      setMinute(minutes);
-
-      setProfile({
-        nickname: userData.result.nickname,
-        notificationTimeEnable: userData.result.notificationTimeEnable,
-        notificationTime: userData.result.notificationTime,
-        mainCharacterId: userData.result.mainCharacterId,
-        mainCharacterImageUrl: userData.result.mainCharacterImageUrl,
-        socialLoginType: userData.result.socialLoginType
-      });
-      
-      setIsEditable(false);
-    } catch (error) {
-      console.error("프로필 정보를 초기화하는 중 오류가 발생했습니다:", error);
-      toast({
-        variant: "error",
-        title: "오류 발생",
-        description: "프로필 정보를 초기화하는 중 문제가 발생했습니다.",
-      });
-    }
-  };
-
   return (
-    <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
+    <div className="flex flex-col items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8 py-8 gap-5">
         <Toaster />
         <div className="flex flex-col items-center w-full max-w-md mx-auto">
-          <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
-          <div className="h-10 mt-2 w-full flex justify-center">
-            {isEditable && (
-              <Button className="min-w-48 w-full max-w-72 h-10" variant="primary-outline" onClick={handleImageEdit}>
-                변경하기
-              </Button>
-            )}
-          </div>
+          {isEditable ? (
+            <button
+              onClick={handleImageEdit}
+              className="bg-transparent border-0 p-0 cursor-pointer relative"
+            >
+              <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
+              <div className="absolute bottom-4 right-4 bg-white rounded-full p-1">
+                <SquarePen className="w-6 h-6 text-neutral-500" />
+              </div>
+            </button>
+          ) : (
+            <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
+          )}
         </div>
         <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
           <div className="flex w-full justify-between items-center">
@@ -305,14 +266,11 @@ const Profile = () => {
               onClose={() => setIsTimePickerOpen(false)}
             />
           )}
-          <div className="w-full flex justify-center mt-4">
+          <div className="w-full flex justify-center mt-6 ">
             {isEditable ? (
               <div className="w-full flex flex-col justify-center items-center gap-2">
                 <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
                   완료
-                </Button>
-                <Button className="min-w-48 w-full max-w-72 h-10" variant="neutral" onClick={handleCancelClick}>
-                  취소
                 </Button>
               </div>
             ) : (
@@ -322,13 +280,9 @@ const Profile = () => {
             )}
           </div>
         </div>
-
-        <a 
-          className="text-md text-red-500 mb-6 underline cursor-pointer mt-4" 
-          onClick={handleLogout}
-        >
-          { '로그아웃'}
-        </a>
+        <Button className="min-w-48 w-full max-w-72 h-10 mt-4" variant="negative" onClick={handleLogout}>
+            로그아웃
+        </Button>
         
 
         <ImageEditModal
