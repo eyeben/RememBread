@@ -28,8 +28,8 @@ const TestSettingDialog = () => {
 
     if (selectedMode === "CONCEPT") {
       navigate(`/test/${indexCardId}/concept`);
-    } else if (selectedMode === "CHECK") {
-      navigate(`/test/${indexCardId}/check`);
+    } else if (selectedMode === "EXPLANE") {
+      navigate(`/test/${indexCardId}/explane`);
     }
   };
 
@@ -59,8 +59,8 @@ const TestSettingDialog = () => {
                 <Label htmlFor="concept">개념 맞히기</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="CHECK" id="check" />
-                <Label htmlFor="check">설명 해보기</Label>
+                <RadioGroupItem value="EXPLANE" id="explane" />
+                <Label htmlFor="explane">설명 해보기</Label>
               </div>
             </div>
           </RadioGroup>
