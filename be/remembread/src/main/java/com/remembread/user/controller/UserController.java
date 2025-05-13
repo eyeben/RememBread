@@ -2,6 +2,7 @@ package com.remembread.user.controller;
 
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
+import com.remembread.common.service.S3Service;
 import com.remembread.user.converter.UserConverter;
 import com.remembread.user.dto.UserCharacterResponseDto;
 import com.remembread.user.dto.UserRequestDto;
@@ -11,7 +12,9 @@ import com.remembread.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -21,6 +24,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final S3Service service;
 
     @PatchMapping("/agree")
     @Operation(summary = "약관 동의 API", description = "회원가입 시 이용약관을 동의로 처리하는 API 입니다.")
@@ -51,6 +55,13 @@ public class UserController {
     @Operation(summary = "사용자 탈퇴 API", description = "사용자를 탈퇴 처리하는 API입니다. 관련 정보가 모두 삭제됩니다.")
     public ApiResponse<Void> withdrawUser(@AuthUser User user) {
         userService.deleteUser(user);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/test")
+    @Operation(summary = "테스트 API", description = "사용자를 탈퇴 처리하는 API입니다. 관련 정보가 모두 삭제됩니다.")
+    public ApiResponse<Void> nope(@RequestParam("file") String file) {
+        service.deleteImage(file);
         return ApiResponse.onSuccess(null);
     }
 

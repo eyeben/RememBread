@@ -39,6 +39,7 @@ dependencies {
 	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.8.5'
 	implementation 'org.hibernate:hibernate-spatial:6.6.13.Final'
 	implementation 'org.apache.pdfbox:pdfbox:2.0.30'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.660'
 
 	// auth
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
