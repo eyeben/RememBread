@@ -35,6 +35,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "main_character_id")
     private Character mainCharacter;
 
+    @Setter
     @Column(length = 255)
     private String fcmToken;
 

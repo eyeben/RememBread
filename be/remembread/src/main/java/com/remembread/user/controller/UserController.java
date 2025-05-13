@@ -51,17 +51,17 @@ public class UserController {
         return ApiResponse.onSuccess(userService.updateUser(user, userRequestDto));
     }
 
+    @PatchMapping("/fcmToken")
+    @Operation(summary = "FCM 토큰 수정 API", description = "로그인 시 사용자의 FCM 토큰을 수정하는 API 입니다.")
+    public ApiResponse<Void> modifyFcmToken(@AuthUser User user, @RequestBody String fcmToken) {
+        userService.updateUserFcmToken(user, fcmToken);
+        return ApiResponse.onSuccess(null);
+    }
+
     @DeleteMapping
     @Operation(summary = "사용자 탈퇴 API", description = "사용자를 탈퇴 처리하는 API입니다. 관련 정보가 모두 삭제됩니다.")
     public ApiResponse<Void> withdrawUser(@AuthUser User user) {
         userService.deleteUser(user);
-        return ApiResponse.onSuccess(null);
-    }
-
-    @GetMapping("/test")
-    @Operation(summary = "테스트 API", description = "사용자를 탈퇴 처리하는 API입니다. 관련 정보가 모두 삭제됩니다.")
-    public ApiResponse<Void> nope(@RequestParam("file") String file) {
-        service.deleteImage(file);
         return ApiResponse.onSuccess(null);
     }
 

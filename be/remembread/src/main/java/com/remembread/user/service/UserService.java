@@ -8,7 +8,6 @@ import com.remembread.user.dto.UserRequestDto;
 import com.remembread.user.dto.UserResponseDto;
 import com.remembread.user.entity.Character;
 import com.remembread.user.entity.User;
-import com.remembread.user.entity.UserCharacter;
 import com.remembread.user.repository.CharacterRepository;
 import com.remembread.user.repository.UserCharacterRepository;
 import com.remembread.user.repository.UserRepository;
@@ -68,6 +67,11 @@ public class UserService {
 
         user.setMainCharacter(character);
         return UserConverter.toUserResponseDto(user);
+    }
+
+    @Transactional
+    public void updateUserFcmToken(User user, String fcmToken) {
+        user.setFcmToken(fcmToken);
     }
 
     @Transactional
