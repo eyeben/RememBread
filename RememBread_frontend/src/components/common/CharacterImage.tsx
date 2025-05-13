@@ -1,42 +1,24 @@
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
-import InputBread from "@/components/svgs/breads/InputBread";
 import DefaultBreadBlack from "@/components/svgs/breads/DefaultBread";
-import InputBreadBlack from "@/components/svgs/breads/InputBread";
+import { CharacterImageProps } from "@/types/profile";
 
-interface CharacterImageProps {
-  characterId: number;
-  className?: string;
-  isGrayscale?: boolean;
-}
 
-const CharacterImage = ({ characterId, className = "w-56 h-56", isGrayscale = false }: CharacterImageProps) => {
-  if (isGrayscale) {
-    switch (characterId) {
-      case 1:
-        return <DefaultBreadBlack className={className} />;
-      case 2:
-        return <InputBreadBlack className={className} />;
-      case 3:
-        return <DefaultBreadBlack className={className} />;
-      case 4:
-        return <DefaultBreadBlack className={className} />;
-      default:
-        return <DefaultBreadBlack className={className} />;
-    }
+const CharacterImage = ({ characterImageUrl, className = "w-56 h-56", isGrayscale = false }: CharacterImageProps) => {
+  if (characterImageUrl) {
+    return (
+      <img 
+        src={characterImageUrl} 
+        alt="character" 
+        className={`${className} ${isGrayscale ? 'grayscale' : ''}`}
+      />
+    );
   }
 
-  switch (characterId) {
-    case 1:
-      return <DefaultBread className={className} />;
-    case 2:
-      return <InputBread className={className} />;
-    case 3:
-      return <DefaultBread className={className} />;
-    case 4:
-      return <DefaultBread className={className} />;
-    default:
-      return <DefaultBread className={className} />;
-  }
+  return isGrayscale ? (
+    <DefaultBreadBlack className={className} />
+  ) : (
+    <DefaultBread className={className} />
+  );
 };
 
 export default CharacterImage; 

@@ -14,7 +14,7 @@ const Header = () => {
   };
 
   return (
-    <header className="fixed top-0 left-0 right-0 w-full max-w-[600px] h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30">
+    <header className="fixed top-0 left-0 right-0 w-full max-w-[600px] h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-50 pt-[env(safe-area-inset-top)]">
       <nav className="h-full mx-auto">
         <ul className="flex justify-between items-center w-full h-full px-5 relative">
           {/* 왼쪽 뒤로가기 버튼 (조건부 렌더링) */}
