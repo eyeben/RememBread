@@ -167,3 +167,32 @@ export const deleteCard = async (cardId: number) => {
     throw new Error("카드 삭제에 실패했습니다.");
   }
 };
+
+// 카드 수정하기
+export const patchCard = async (cardId: number, card: Partial<indexCard>) => {
+  try {
+    const response = await http.patch(`/cards/${cardId}`, card);
+    return response.data;
+  } catch (error) {
+    console.error("카드 수정 중 오류:", error);
+    throw new Error("카드 수정에 실패했습니다.");
+  }
+};
+
+// 카드 단건 조회
+export const getCardById = async (
+  cardId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: indexCard;
+}> => {
+  try {
+    const response = await http.get(`/cards/${cardId}`);
+    return response.data;
+  } catch (error) {
+    console.error("카드 단건 조회 중 오류:", error);
+    throw new Error("카드 조회 실패");
+  }
+};
