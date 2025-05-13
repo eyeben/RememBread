@@ -50,12 +50,22 @@ public class UserService {
 
     @Transactional
     public UserResponseDto updateUser(User user, UserRequestDto userRequestDto) {
+        if (userRepository.findByNickname(userRequestDto.getNickname()).isPresent()) {
+            throw new GeneralException(ErrorStatus.ALREADY_EXIST_NICKNAME);
+        }
+
         user.setNickname(userRequestDto.getNickname());
         user.setNotificationTimeEnable(userRequestDto.getNotificationTimeEnable());
         user.setNotificationTime(userRequestDto.getNotificationTime());
-        user.setMainCharacter(characterRepository.findById(userRequestDto.getMainCharacterId())
-                .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_CHARACTER)));
 
+        Character character = characterRepository.findById(userRequestDto.getMainCharacterId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_CHARACTER));
+
+        if (userCharacterRepository.findByUserAndCharacter(user, character).isEmpty()) {
+            throw new GeneralException(ErrorStatus.LOCKED_CHARACTER);
+        }
+
+        user.setMainCharacter(character);
         return UserConverter.toUserResponseDto(user);
     }
 
