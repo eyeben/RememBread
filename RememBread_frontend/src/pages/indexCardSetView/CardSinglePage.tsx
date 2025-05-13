@@ -126,9 +126,9 @@ const CardSinglePage = () => {
         />
       </div>
 
-      <div className="flex flex-col justify-between w-full text-center">
+      <div className="flex flex-col justify-between w-full text-center px-10">
         <Button
-          className="text-primary-500 text-2xl font-bold pc:m-5 pc-3 py-5"
+          className="text-primary-500 text-2xl font-bold pc:m-5 pc-3 py-5 "
           variant="primary-outline"
           onClick={handleFlip}
           disabled={isButtonDisabled}
@@ -148,7 +148,7 @@ const CardSinglePage = () => {
               onClick={handleFlip}
               className="relative w-full h-full aspect-square hover:cursor-pointer"
             >
-              <InputBread className="w-full h-full" />
+              <InputBread className="w-full h-full px-4" />
             </div>
 
             {!isRotating ? (
