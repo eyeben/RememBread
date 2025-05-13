@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUser, updateUser, deleteUser } from "@/services/userService";
+import { getUser, updateUser } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
 import Button from "@/components/common/Button";
@@ -27,6 +27,7 @@ const Profile = () => {
     notificationTimeEnable, 
     notificationTime,
     mainCharacterId,
+    mainCharacterImageUrl,
     setProfile,
     resetProfile 
   } = useProfileStore();
@@ -125,25 +126,26 @@ const Profile = () => {
     }
   };
 
-  const handleWithdrawal = async () => {
-    try {
-      await deleteUser();
-      tokenUtils.removeToken();
-      resetProfile();
-      navigate('/login');
-    } catch (error) {
-      console.error('회원탈퇴 중 오류가 발생했습니다:', error);
-    }
-  };
+  // const handleWithdrawal = async () => {
+  //   try {
+  //     await deleteUser();
+  //     tokenUtils.removeToken();
+  //     resetProfile();
+  //     navigate('/login');
+  //   } catch (error) {
+  //     console.error('회원탈퇴 중 오류가 발생했습니다:', error);
+  //   }
+  // };
 
   const handleImageEdit = () => {
     setIsImageModalOpen(true);
   };
 
-  const handleCharacterSelect = (characterId: number) => {
+  const handleCharacterSelect = (characterId: number, characterImageUrl: string) => {
     setProfile({
       ...useProfileStore.getState(),
-      mainCharacterId: characterId
+      mainCharacterId: characterId,
+      mainCharacterImageUrl: characterImageUrl
     });
     setIsImageModalOpen(false);
   };
@@ -174,7 +176,7 @@ const Profile = () => {
   return (
     <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
       <div className="flex flex-col items-center w-full max-w-md mx-auto">
-        <CharacterImage characterId={mainCharacterId} />
+        <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
         <div className="h-10 mt-2 w-full flex justify-center">
           {isEditable && (
             <Button className="min-w-48 w-full max-w-72 h-10" variant="primary-outline" onClick={handleImageEdit}>
@@ -251,11 +253,12 @@ const Profile = () => {
       </div>
 
       <a 
-        className="text-lg text-red-500 mb-6 underline cursor-pointer mt-4" 
+        className="text-md text-red-500 mb-6 underline cursor-pointer mt-4" 
         onClick={handleLogout}
       >
         { '로그아웃'}
       </a>
+      
 
       <ImageEditModal
         isOpen={isImageModalOpen}
