@@ -13,7 +13,7 @@ import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
-import CardDetailPage from "@/pages/indexCardSetView/CardDetailPage";
+import CardSetDetailPage from "@/pages/indexCardSetView/CardSetDetailPage";
 import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
 import CardTTSPage from "@/pages/indexCardSetView/CardTTSPage";
 import CardTestPage from "@/pages/indexCardSetView/CardTestPage";
@@ -21,6 +21,7 @@ import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import CardTestBlank from "@/components/indexCardView/CardTestBlank";
 import CardTestConcept from "@/components/indexCardView/CardTestConcept";
 import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
+import CardSinglePage from "@/pages/indexCardSetView/CardSinglePage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -138,7 +139,7 @@ const router = createBrowserRouter([
           },
           {
             path: "card-view/:indexCardId",
-            element: <CardDetailPage />,
+            element: <CardSetDetailPage />,
             children: [
               { path: "study", element: <CardStudyPage /> },
               { path: "tts", element: <CardTTSPage /> },
@@ -151,6 +152,10 @@ const router = createBrowserRouter([
                 ],
               },
             ],
+          },
+          {
+            path: "card-view/:indexCardId/card",
+            element: <CardSinglePage />,
           },
           {
             path: "profile",
