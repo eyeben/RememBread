@@ -88,6 +88,8 @@ public class LoginService {
         }
 
         User user = findOrCreateUser(nickname, socialLoginId, socialLoginType);
+        user.setLastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
+
         log.info("user id: {}", user.getId());
 
         UserTokens userTokens = jwtUtil.createLoginToken(user.getIsAgreedTerms(), user.getId().toString());
@@ -146,10 +148,8 @@ public class LoginService {
 
     @Transactional
     public User findOrCreateUser(String nickname, String socialLoginId, SocialLoginType socialLoginType) {
-        User user = userRepository.findBySocialLoginId(socialLoginId)
+        return userRepository.findBySocialLoginId(socialLoginId)
                 .orElseGet(() -> createUser(nickname, socialLoginId, socialLoginType));
-        user.setLastLoginAt(LocalDateTime.now(ZoneId.of("Asia/Seoul")));
-        return user;
     }
 
     @Transactional
