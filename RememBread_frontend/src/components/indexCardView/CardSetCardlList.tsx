@@ -1,15 +1,26 @@
-import React, { useEffect, useState, MouseEvent, FC } from "react";
+import { useEffect, useState, MouseEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import { indexCard } from "@/types/indexCard";
 import { getCardsByCardSet, deleteCard } from "@/services/card";
 
-interface CardDetailListProps {
+interface CardSetCardlListProps {
   cardSetId: number;
   highlightIndex?: number;
+  isReadonly: boolean;
 }
 
-const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps) => {
+const CardSetCardlList = ({
+  cardSetId,
+  highlightIndex = -1,
+  isReadonly,
+}: CardSetCardlListProps) => {
+  const navigate = useNavigate();
   const [cards, setCards] = useState<indexCard[]>([]);
   const [selectedIds, setSelectedIds] = useState<number[]>([]);
+
+  const handleCardClick = (card: indexCard) => {
+    navigate(`/card-view/${cardSetId}/card`, { state: { card, fromTotalPage: true } });
+  };
 
   // 카드 목록 로드
   useEffect(() => {
@@ -26,8 +37,8 @@ const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps)
   // 우클릭으로 선택 토글
   const handleContextMenu = (e: MouseEvent<HTMLDivElement>, cardId?: number) => {
     e.preventDefault();
-    console.log("오른쪽 클릭된 카드 ID:", cardId);
-    if (!cardId) return;
+    if (isReadonly || !cardId) return;
+
     setSelectedIds((prev) => {
       const isSelected = prev.includes(cardId);
       return isSelected ? prev.filter((id) => id !== cardId) : [...prev, cardId];
@@ -36,7 +47,7 @@ const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps)
 
   // 선택 삭제
   const handleDeleteSelected = async () => {
-    if (selectedIds.length === 0) return;
+    if (isReadonly || selectedIds.length === 0) return;
     if (!window.confirm("삭제하시겠습니까?")) return;
     try {
       await Promise.all(selectedIds.map((id) => deleteCard(id)));
@@ -50,8 +61,8 @@ const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps)
 
   return (
     <div className="w-full px-4">
-      {/* 삭제 버튼 (선택된 카드가 있을 때만) */}
-      {selectedIds.length > 0 && (
+      {/* 삭제 버튼 */}
+      {!isReadonly && selectedIds.length > 0 && (
         <div className="flex justify-end mb-4">
           <button
             className="px-3 py-1 bg-negative-500 text-white rounded"
@@ -63,22 +74,24 @@ const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps)
       )}
 
       {/* 카드 리스트 */}
-      <div className="flex flex-col gap-2">
+      <div className="flex flex-col gap-2 py-2 pb-10">
         {cards.map((card, idx) => {
           const isSelected = card.cardId !== undefined && selectedIds.includes(card.cardId);
+          const isHighlight = idx === highlightIndex;
+
+          const cardStyle =
+            isSelected && !isReadonly
+              ? "bg-negative-500 text-white"
+              : isHighlight
+              ? "bg-primary-700 text-white"
+              : "bg-primary-200";
+
           return (
             <div
               key={card.cardId ?? idx}
               onContextMenu={(e) => handleContextMenu(e, card.cardId)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer
-                ${
-                  isSelected
-                    ? "bg-negative-500 text-white"
-                    : idx === highlightIndex
-                    ? "bg-primary-700 text-white"
-                    : "bg-primary-200"
-                }
-              `}
+              onClick={() => handleCardClick(card)}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer pc:h-10 h-8 ${cardStyle}`}
             >
               <span className="font-bold w-12 truncate whitespace-nowrap">{card.concept}</span>
               <span className="flex-1 font-bold truncate whitespace-nowrap">
@@ -92,4 +105,4 @@ const CardDetailList = ({ cardSetId, highlightIndex = -1 }: CardDetailListProps)
   );
 };
 
-export default CardDetailList;
+export default CardSetCardlList;

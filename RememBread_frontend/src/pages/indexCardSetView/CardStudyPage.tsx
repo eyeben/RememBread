@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { indexCard, indexCardSet } from "@/types/indexCard";
 import { getCardsByCardSet } from "@/services/card";
-import { createEmptyCard } from "@/utils/createEmptyCard";
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 
@@ -26,10 +25,11 @@ const CardStudyPage = () => {
   const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
   const [cards, setCards] = useState<indexCard[]>([]);
   const [api, setApi] = useState<CarouselApi>();
+  const [lastClickTime, setLastClickTime] = useState<number>(0);
 
   useEffect(() => {
     if (!cardSet?.cardSetId) {
-      navigate("/card-view/my", { replace: true });
+      navigate("/card-view", { replace: true });
       return;
     }
 
@@ -54,6 +54,10 @@ const CardStudyPage = () => {
   }, [api]);
 
   const handleFlip = () => {
+    const now = Date.now();
+    if (now - lastClickTime < 400) return;
+    setLastClickTime(now);
+
     setIsFront((prev) => !prev);
     setIsButtonDisabled(true);
     setTimeout(() => {
@@ -63,9 +67,9 @@ const CardStudyPage = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between w-full text-center gap-4">
+    <div className="flex flex-col justify-between w-full text-center gap-2">
       <Button
-        className="text-primary-500 text-2xl font-bold m-5 py-5"
+        className="text-primary-500 text-2xl font-bold pc:m-2 m-5 py-5"
         variant="primary-outline"
         onClick={handleFlip}
         disabled={isButtonDisabled}
@@ -87,8 +91,8 @@ const CardStudyPage = () => {
       >
         <CarouselContent className="aspect-square">
           {cards.map((card, index) => (
-            <CarouselItem key={card.id ?? index} className="relative">
-              <div className="relative w-full h-full">
+            <CarouselItem key={card.cardId ?? index} className="relative">
+              <div className="relative w-full h-full hover:cursor-pointer" onClick={handleFlip}>
                 <div
                   className={`relative transition-transform duration-1000 ${
                     isFront ? "rotate-y-0" : "rotate-y-180"
@@ -101,20 +105,12 @@ const CardStudyPage = () => {
                       {card.concept || "제목 없음"}
                     </div>
                   ) : (
-                    <textarea
-                      className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                      value={card.description}
-                      placeholder="여기에 텍스트를 입력하세요"
-                      onChange={(e) => {
-                        const updated = [...cards];
-                        updated[index] = {
-                          ...updated[index],
-                          description: e.target.value,
-                        };
-                        setCards(updated);
-                      }}
-                      style={{ scrollbarWidth: "none" }}
-                    />
+                    <div
+                      className="absolute top-[17%] left-[17%] w-2/3 h-3/4 font-bold rotate-y-180 overflow-auto text-left"
+                      style={{ whiteSpace: "pre-wrap" }}
+                    >
+                      {card.description || "설명이 없습니다."}
+                    </div>
                   )}
                 </div>
               </div>

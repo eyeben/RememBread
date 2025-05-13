@@ -45,7 +45,6 @@ interface LogoutResponse {
  */
 export const socialLogin = async ({ code, socialType, redirectUri }: SocialLoginParams): Promise<SocialLoginResponse> => {
   try {
-    console.log("params: ", redirectUri)
     const response = await http.get<SocialLoginResponse>(
       AUTH_END_POINT.SOCIAL_LOGIN(socialType),
       { params: { code, 'redirect-uri': redirectUri } }
@@ -54,7 +53,7 @@ export const socialLogin = async ({ code, socialType, redirectUri }: SocialLogin
   } catch (error) {
     console.log("요청 Uri:", AUTH_END_POINT.SOCIAL_LOGIN(socialType), "params: ", { code, redirectUri })
     console.error('소셜 로그인 실패:', error);
-    throw new Error('소셜 로그인에 실패했습니다.');
+    throw error;
   }
 };
 
@@ -69,8 +68,7 @@ export const refreshToken = async (): Promise<RefreshTokenResponse> => {
     const response = await http.post<RefreshTokenResponse>(AUTH_END_POINT.REFRESH_TOKEN);
     return response.data;
   } catch (error) {
-    console.error('토큰 갱신에 실패했습니다:', error);
-    throw new Error('토큰 갱신에 실패했습니다.');
+    throw error
   }
 };
 
@@ -84,6 +82,6 @@ export const logout = async (): Promise<LogoutResponse> => {
     const response = await http.post<LogoutResponse>(AUTH_END_POINT.LOGOUT);
     return response.data;
   } catch (error) {
-    throw new Error('로그아웃에 실패했습니다.');
+    throw error
   }
 };

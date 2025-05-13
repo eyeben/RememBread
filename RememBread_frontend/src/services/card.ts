@@ -48,11 +48,46 @@ export const postCards = async (cardSetId: number, cards: indexCard[]) => {
   }
 };
 
+const handleStreamedCards = async (response: Response) => {
+  if (!response.body) {
+    throw new Error("ReadableStream이 없습니다.");
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder("utf-8");
+  let buffer = "";
+
+  const addCard = useCardStore.getState().appendCard;
+  useCardStore.getState().clearCardSet();
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) break;
+
+    buffer += decoder.decode(value, { stream: true });
+
+    let newlineIndex;
+    while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
+      const line = buffer.slice(0, newlineIndex).trim();
+      buffer = buffer.slice(newlineIndex + 1);
+
+      if (line.startsWith("data:")) {
+        const json = line.replace(/^data:\s*/, "");
+        const card = JSON.parse(json);
+        addCard(card);
+      }
+    }
+  }
+
+  console.log("모든 카드 수신 완료");
+};
+
 // 대량 텍스트로 카드 생성
 export const postCardsByText = async (text: string) => {
   try {
     const accessToken = tokenUtils.getToken();
     const baseURL = import.meta.env.VITE_APP_BASE_URL;
+
     const response = await fetch(baseURL + "/cards/text/large", {
       method: "POST",
       headers: {
@@ -62,38 +97,60 @@ export const postCardsByText = async (text: string) => {
       body: JSON.stringify({ text }),
     });
 
-    if (!response.body) {
-      throw new Error("ReadableStream이 없습니다.");
+    await handleStreamedCards(response);
+  } catch (error) {
+    console.error("카드 생성 중 오류:", error);
+    throw new Error("카드 생성 실패");
+  }
+};
+
+// PDF로 카드 생성
+export const postCardsByPDF = async (file: File) => {
+  try {
+    if (file == null) {
+      throw new Error("파일이 없습니다.");
     }
+    const accessToken = tokenUtils.getToken();
+    const baseURL = import.meta.env.VITE_APP_BASE_URL;
+    const formData = new FormData();
 
-    const reader = response.body.getReader();
-    const decoder = new TextDecoder("utf-8");
-    let buffer = "";
+    formData.append("file", file);
 
-    const addCard = useCardStore.getState().appendCard;
-    useCardStore.getState().clearCardSet();
+    const response = await fetch(baseURL + "/cards/pdf", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
 
-    while (true) {
-      const { value, done } = await reader.read();
-      if (done) break;
+    await handleStreamedCards(response);
+  } catch (error) {
+    console.error("카드 생성 중 오류:", error);
+    throw new Error("카드 생성 실패");
+  }
+};
 
-      buffer += decoder.decode(value, { stream: true });
+// 이미지로 카드 생성
+export const postCardsByImage = async (images: File[]) => {
+  try {
+    const accessToken = tokenUtils.getToken();
+    const baseURL = import.meta.env.VITE_APP_BASE_URL;
+    const formData = new FormData();
 
-      let newlineIndex;
-      while ((newlineIndex = buffer.indexOf("\n")) !== -1) {
-        const line = buffer.slice(0, newlineIndex).trim();
-        buffer = buffer.slice(newlineIndex + 1);
+    images.forEach((image) => {
+      formData.append("image", image);
+    });
 
-        if (line.startsWith("data:")) {
-          const json = line.replace(/^data:\s*/, "");
-          const card = JSON.parse(json);
+    const response = await fetch(baseURL + "/cards/image", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
 
-          addCard(card);
-        }
-      }
-    }
-
-    console.log("모든 카드 수신 완료");
+    await handleStreamedCards(response);
   } catch (error) {
     console.error("카드 생성 중 오류:", error);
     throw new Error("카드 생성 실패");
@@ -108,5 +165,34 @@ export const deleteCard = async (cardId: number) => {
   } catch (error) {
     console.error("카드 삭제 중 오류:", error);
     throw new Error("카드 삭제에 실패했습니다.");
+  }
+};
+
+// 카드 수정하기
+export const patchCard = async (cardId: number, card: Partial<indexCard>) => {
+  try {
+    const response = await http.patch(`/cards/${cardId}`, card);
+    return response.data;
+  } catch (error) {
+    console.error("카드 수정 중 오류:", error);
+    throw new Error("카드 수정에 실패했습니다.");
+  }
+};
+
+// 카드 단건 조회
+export const getCardById = async (
+  cardId: number,
+): Promise<{
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: indexCard;
+}> => {
+  try {
+    const response = await http.get(`/cards/${cardId}`);
+    return response.data;
+  } catch (error) {
+    console.error("카드 단건 조회 중 오류:", error);
+    throw new Error("카드 조회 실패");
   }
 };

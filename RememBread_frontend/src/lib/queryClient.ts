@@ -10,7 +10,7 @@ const TOKEN_TIMESTAMP_KEY = 'token-timestamp';
 export const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 1000 * 60 * 10, // 10분
+      staleTime: 1000 * 60 * 60, // 1시간
     },
   },
 });

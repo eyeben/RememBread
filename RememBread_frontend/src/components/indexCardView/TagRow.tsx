@@ -1,28 +1,42 @@
-import { ChangeEvent, useState, KeyboardEvent } from "react";
-import { Save, Tags, X } from "lucide-react";
-import { updateCardSet } from "@/services/cardSet";
+import { ChangeEvent, useState, KeyboardEvent, useEffect, WheelEvent, useRef } from "react";
+import { X } from "lucide-react";
 
 interface TagRowProps {
   tags: string[];
   cardSetId: number;
   isEditing: boolean;
-  name?: string;
-  isPublic?: number;
   setEditing: (edit: boolean) => void;
+  onUpdateTags: (newTags: string[]) => void;
+  readonlyMode?: boolean; // 읽기 전용 여부
 }
 
 const TagRow = ({
   tags,
   isEditing,
-  cardSetId,
-  name = "",
-  isPublic = 1,
-  setEditing,
+  onUpdateTags,
+  readonlyMode = false, // 기본값 false
 }: TagRowProps) => {
-  const [isInputVisible, setIsInputVisible] = useState<boolean>(false);
   const [inputValue, setInputValue] = useState<string>("");
   const [localTags, setLocalTags] = useState<string[]>(tags);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  useEffect(() => {
+    setLocalTags(tags);
+  }, [tags]);
+
+  const handleAddTag = () => {
+    const trimmed = inputValue.trim();
+    if (!trimmed || localTags.includes(trimmed)) return;
+    const newTags = [...localTags, trimmed];
+    setLocalTags(newTags);
+    onUpdateTags(newTags);
+    setInputValue("");
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const newTags = localTags.filter((tag) => tag !== tagToRemove);
+    setLocalTags(newTags);
+    onUpdateTags(newTags);
+  };
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const newValue = e.target.value;
@@ -31,107 +45,60 @@ const TagRow = ({
     if (newValue.length <= 10) setInputValue(newValue);
   };
 
-  const isLimitExceeded = inputValue.length >= 10;
-
-  const updateTagsOnServer = async (newTags: string[]) => {
-    try {
-      setIsLoading(true);
-      await updateCardSet({
-        cardSetId,
-        name,
-        hashTags: newTags,
-        isPublic,
-      });
-    } catch (error) {
-      console.error("태그 수정 실패:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleAddTag = async () => {
-    if (!inputValue.trim()) return;
-    const newTags = [...localTags, inputValue.trim()];
-    setLocalTags(newTags);
-    setInputValue("");
-    setIsInputVisible(false);
-    await updateTagsOnServer(newTags);
-  };
-
-  const handleRemoveTag = async (tagToRemove: string) => {
-    const newTags = localTags.filter((tag) => tag !== tagToRemove);
-    setLocalTags(newTags);
-    await updateTagsOnServer(newTags);
-  };
-
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") handleAddTag();
-    if (e.key === "Escape") {
-      setIsInputVisible(false);
-      setInputValue("");
+    if (e.key === "Escape") setInputValue("");
+  };
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+
+  const handleWheel = (e: WheelEvent<HTMLDivElement>) => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft += e.deltaY;
     }
   };
 
   return (
-    <div className="flex-nowrap whitespace-nowrap overflow-x-scroll w-full pc:px-8 px-4 py-1 flex items-center gap-2 scrollbar-hide h-10">
-      {isInputVisible ? (
-        <Save
-          size={20}
-          className="min-w-[20px] hover:cursor-pointer text-primary-700"
-          onClick={async () => {
-            if (inputValue.trim()) {
-              await handleAddTag();
-            }
-            setIsInputVisible(false);
-            setEditing(false);
-          }}
-        />
-      ) : (
-        <Tags
-          size={20}
-          className="min-w-[20px] hover:cursor-pointer text-primary-700"
-          onClick={() => {
-            setIsInputVisible(true);
-            setEditing(true);
-          }}
-        />
-      )}
-
-      {isInputVisible && (
+    <div className="flex items-center w-full pc:px-4 px-2 py-1 pc:gap-2 gap-1 h-10 overflow-hidden">
+      {/* 태그 추가 input: 읽기 전용이면 숨김 */}
+      {isEditing && !readonlyMode && (
         <input
           type="text"
-          className={`border-2 max-w-[150px] h-8 rounded-full px-3 py-1 text-sm focus:outline-none ${
-            isLimitExceeded ? "border-negative-500 " : "border-primary-500  focus:ring-primary-500"
+          className={`border-2 pc:max-w-[150px] w-[100px] pc:h-8 h-6 rounded-full pc:px-3 px-2 py-1 focus:outline-none transition-colors pc:text-sm text-xxs ${
+            inputValue.length >= 10
+              ? "border-negative-500"
+              : "border-primary-500 focus:ring-primary-500"
           }`}
           placeholder="태그를 입력해주세요"
           value={inputValue}
           onChange={handleChange}
           onKeyDown={handleKeyDown}
-          disabled={isLoading}
         />
       )}
 
-      {localTags.map((tag) => (
-        <button
-          key={tag}
-          type="button"
-          disabled={!isEditing}
-          onClick={() => handleRemoveTag(tag)}
-          className={`
-            flex items-center h-8 rounded-full px-3 py-1 text-sm text-white transition-all duration-200
-            ${
-              isEditing
+      {/* 태그 리스트 */}
+      <div
+        ref={scrollRef}
+        onWheel={handleWheel}
+        className="flex-1 min-w-0 flex-nowrap whitespace-nowrap overflow-x-auto scrollbar-hide flex items-center gap-2 h-10"
+      >
+        {localTags.map((tag) => (
+          <button
+            key={tag}
+            type="button"
+            disabled={!isEditing || readonlyMode}
+            onClick={() => handleRemoveTag(tag)}
+            className={`flex items-center pc:h-8 h-6 rounded-full px-3 py-1 text-sm text-white transition-all duration-200 ${
+              isEditing && !readonlyMode
                 ? "bg-primary-700 hover:bg-negative-600"
                 : "bg-primary-700 opacity-50 pointer-events-none"
-            }
-          `}
-          aria-label={`${tag} 태그 삭제`}
-        >
-          <span>#{tag}</span>
-          {/* 편집 모드일 땐 항상 X 아이콘 보이기 */}
-          {isEditing && <X size={12} className="ml-1" />}
-        </button>
-      ))}
+            }`}
+          >
+            <span>#{tag}</span>
+            {isEditing && !readonlyMode && <X size={12} className="ml-1" />}
+          </button>
+        ))}
+      </div>
     </div>
   );
 };
