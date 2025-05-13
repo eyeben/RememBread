@@ -74,7 +74,7 @@ const CardSetCardlList = ({
       )}
 
       {/* 카드 리스트 */}
-      <div className="flex flex-col gap-2 py-2">
+      <div className="flex flex-col gap-2 py-2 pb-10">
         {cards.map((card, idx) => {
           const isSelected = card.cardId !== undefined && selectedIds.includes(card.cardId);
           const isHighlight = idx === highlightIndex;
@@ -91,7 +91,7 @@ const CardSetCardlList = ({
               key={card.cardId ?? idx}
               onContextMenu={(e) => handleContextMenu(e, card.cardId)}
               onClick={() => handleCardClick(card)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer ${cardStyle}`}
+              className={`flex items-center gap-2 px-4 py-2 rounded-full w-full text-sm font-medium hover:cursor-pointer pc:h-10 h-8 ${cardStyle}`}
             >
               <span className="font-bold w-12 truncate whitespace-nowrap">{card.concept}</span>
               <span className="flex-1 font-bold truncate whitespace-nowrap">
