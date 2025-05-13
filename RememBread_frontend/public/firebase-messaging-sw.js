@@ -3,18 +3,26 @@ self.addEventListener("install", function () {
     self.skipWaiting();
   });
   
-  self.addEventListener("activate", function () {
-    console.log("fcm sw activate..");
-  });
   self.addEventListener("push", function (e) {
-    if (!e.data.json()) return;
-    const resultData = e.data.json().notification;
-    const notificationTitle = resultData.title;
+    let data;
+    try {
+      data = e.data.json();
+    } catch (err) {
+      console.error("푸시 데이터 JSON 파싱 실패:", err);
+      return;
+    }
+  
+    // notification 객체가 없을 때 대비
+    const notification = data.notification || data;
+    const notificationTitle = notification.title || "알림";
     const notificationOptions = {
-      body: resultData.body,
+      body: notification.body || "",
     };
-    console.log(resultData.title, {
-      body: resultData.body,
-    });
-    e.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
+  
+    console.log(notificationTitle, notificationOptions);
+  
+    e.waitUntil(
+      self.registration.showNotification(notificationTitle, notificationOptions)
+    );
   });
+  
