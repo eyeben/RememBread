@@ -14,6 +14,9 @@ import {
 } from "@/components/ui/carousel";
 import { useCardStore } from "@/stores/cardStore";
 
+const MAX_CONCEPT_LENGTH = 50;
+const MAX_LENGTH = 1000;
+
 const CreateFromSelfPage = () => {
   const navigate = useNavigate();
   const [currentIndex, setCurrentIndex] = useState<number>(0);
@@ -130,45 +133,85 @@ const CreateFromSelfPage = () => {
 
                   {!isRotating ? (
                     editingIndex === index ? (
-                      <input
-                        autoFocus
-                        type="text"
-                        value={indexCard.concept}
-                        onChange={(e) => handleConceptChange(e, index)}
-                        onBlur={() => setEditingIndex(null)}
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") {
-                            setEditingIndex(null);
-                          }
-                        }}
-                        className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
-                      />
+                      <>
+                        <input
+                          autoFocus
+                          type="text"
+                          value={indexCard.concept}
+                          maxLength={MAX_CONCEPT_LENGTH}
+                          onChange={(e) => handleConceptChange(e, index)}
+                          onBlur={() => setEditingIndex(null)}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              setEditingIndex(null);
+                            }
+                          }}
+                          className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
+                        />
+
+                        <div
+                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
+                            indexCard.concept.length >= MAX_CONCEPT_LENGTH
+                              ? "text-red-500"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
+                        </div>
+                      </>
                     ) : (
-                      <div
-                        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold cursor-text"
-                        onClick={() => setEditingIndex(index)}
-                      >
-                        {indexCard.concept || "제목 없음"}
-                      </div>
+                      <>
+                        <div
+                          className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 
+                                      text-2xl font-bold cursor-text text-center
+                                      line-clamp-5 overflow-hidden break-words"
+                          onClick={() => setEditingIndex(index)}
+                        >
+                          {indexCard.concept || "제목 없음"}
+                        </div>
+
+                        <div
+                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
+                            indexCard.concept.length >= MAX_CONCEPT_LENGTH
+                              ? "text-red-500"
+                              : "text-gray-400"
+                          }`}
+                        >
+                          {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
+                        </div>
+                      </>
                     )
                   ) : (
-                    <textarea
-                      className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                      value={indexCard.description}
-                      placeholder="여기에 텍스트를 입력하세요"
-                      onChange={(e) => {
-                        const updatedDescription = e.target.value;
-                        const updatedCards = [...cardSet];
-                        updatedCards[index] = {
-                          ...updatedCards[index],
-                          description: updatedDescription,
-                        };
-                        setCardSet(updatedCards);
-                      }}
-                      style={{
-                        scrollbarWidth: "none",
-                      }}
-                    />
+                    <>
+                      <textarea
+                        className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
+                        value={indexCard.description}
+                        placeholder="여기에 텍스트를 입력하세요"
+                        onChange={(e) => {
+                          const updatedDescription = e.target.value;
+                          const updatedCards = [...cardSet];
+                          updatedCards[index] = {
+                            ...updatedCards[index],
+                            description: updatedDescription,
+                          };
+                          setCardSet(updatedCards);
+                        }}
+                        maxLength={MAX_LENGTH}
+                        style={{
+                          scrollbarWidth: "none",
+                        }}
+                      />
+
+                      <div
+                        className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm rotate-y-180 ${
+                          indexCard.description.length >= MAX_LENGTH
+                            ? "text-red-500"
+                            : "text-gray-400"
+                        }`}
+                      >
+                        {indexCard.description.length}/{MAX_LENGTH}
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
