@@ -3,10 +3,7 @@ package com.remembread.user.service;
 import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.user.converter.UserConverter;
-import com.remembread.user.dto.UserCharacterResponseDto;
-import com.remembread.user.dto.UserLocationRequestDto;
-import com.remembread.user.dto.UserRequestDto;
-import com.remembread.user.dto.UserResponseDto;
+import com.remembread.user.dto.*;
 import com.remembread.user.entity.Character;
 import com.remembread.user.entity.User;
 import com.remembread.user.repository.CharacterRepository;
@@ -71,8 +68,8 @@ public class UserService {
     }
 
     @Transactional
-    public void updateUserFcmToken(User user, String fcmToken) {
-        user.setFcmToken(fcmToken);
+    public void updateUserFcmToken(User user, UserFcmTokenRequest userFcmTokenRequest) {
+        user.setFcmToken(userFcmTokenRequest.getFcmToken());
     }
 
     @Transactional
