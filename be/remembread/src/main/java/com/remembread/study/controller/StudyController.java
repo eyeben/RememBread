@@ -22,12 +22,13 @@ public class StudyController {
     private final StudyService studyService;
 
     @PostMapping("/{cardSetId}/start")
-    public ApiResponse<CardResponse> startStudySession(
+    public ApiResponse<Void> startStudySession(
             @PathVariable("cardSetId") Long cardSetId,
             @RequestBody StudyStartRequest request,
             @AuthUser User user
             ) {
-        return ApiResponse.onSuccess(studyService.startStudySession(cardSetId, request, user));
+        studyService.startStudySession(cardSetId, request, user);
+        return ApiResponse.onSuccess(null);
     }
 
     @PostMapping("/{cardSetId}/stop")
