@@ -1,9 +1,22 @@
 import TestSettingDialog from "@/components/dialog/TestSettingDialog";
+import { startRecord } from "@/services/map";
 
 interface CardDetailButtonsProps {
   onStudyClick: () => void;
   onTTSClick: () => void;
 }
+
+const cardSetId = 123;
+
+const handleStartRecord = async () => {
+  try {
+    const response = await startRecord(cardSetId, {
+      latitude: 0.1,
+      longitude: 0.1,
+    });
+    // 여기서 성공 후 이동이나 UI 업데이트 등도 추가 가능
+  } catch (error) {}
+};
 
 const CardDetailButtons = ({ onStudyClick, onTTSClick }: CardDetailButtonsProps) => {
   return (
