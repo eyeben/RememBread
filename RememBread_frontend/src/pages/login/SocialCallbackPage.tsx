@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { socialLogin } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
 import { getDeviceToken } from "@/lib/firebase/tokenFCM";
+import { patchFcmToken } from "@/services/userService";
 
 const SocialCallbackPage = () => {
   const [searchParams] = useSearchParams();
@@ -40,9 +41,10 @@ const SocialCallbackPage = () => {
           // 약관 동의한 사용자는 로그인 처리, device token 저장
           if (Notification.permission === "granted") {
             const token = await getDeviceToken();
+            await patchFcmToken({ fcmToken: token });
           } else{
-            const token = null
-
+            const token = null;
+            await patchFcmToken({ fcmToken: token });
           }
           navigate("/card-view");
         }

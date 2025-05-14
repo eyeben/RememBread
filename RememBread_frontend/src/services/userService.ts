@@ -38,6 +38,13 @@ interface CharacterResponse {
   }[];
 }
 
+interface FcmTokenResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {}
+}
+
 /**
  * 약관 동의 완료 확인용
  *
@@ -103,6 +110,20 @@ export const deleteUser = async (): Promise<UserResponse> => {
 export const getCharacters = async (): Promise<CharacterResponse> => {
   try {
     const response = await http.get<CharacterResponse>(USER_END_POINT.GET_CHARACTERS);
+    return response.data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * FCM 토큰 전송
+ *
+ * 서버에 device token 정보 전송
+ */
+export const patchFcmToken = async (body: { fcmToken: string|null }): Promise<FcmTokenResponse> => {
+  try {
+    const response = await http.patch<FcmTokenResponse>(USER_END_POINT.PATCH_FCM_TOKEN, body);
     return response.data;
   } catch (error) {
     throw error;

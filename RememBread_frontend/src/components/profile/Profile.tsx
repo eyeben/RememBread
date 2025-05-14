@@ -1,6 +1,6 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { getUser, updateUser } from "@/services/userService";
+import { getUser, updateUser, patchFcmToken } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
 import Button from "@/components/common/Button";
@@ -138,7 +138,7 @@ const Profile = () => {
           const permission = await Notification.requestPermission();
           if (permission === "granted") {
             const token = await getDeviceToken();
-            // 백엔드에 요청 보낼거임.
+            await patchFcmToken({ fcmToken: token });
           }
         } catch (error) {
           console.error("알림 권한 요청 중 오류가 발생했습니다:", error);
