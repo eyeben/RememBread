@@ -67,4 +67,5 @@ public class CardSet extends BaseEntity {
         this.lastViewedCard = lastViewedCard;
     }
     public void updateIsLike(Boolean isLike) {this.isLike = isLike;}
+    public void updateFolderId(Long id) {this.id = id;}
 }

@@ -5,6 +5,7 @@ import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
 import com.remembread.card.dto.request.CardSetDeleteManyRequest;
+import com.remembread.card.dto.request.CardSetMoveRequest;
 import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.*;
 import com.remembread.card.entity.Card;
@@ -420,5 +421,26 @@ public class CardSetService {
         }
         cardRepository.deleteAllByCardSetIdIn(request.getCardSetIds());
         cardSetRepository.deleteAll(cardSets);
+    }
+
+    @Transactional
+    public void moveCardSet(CardSetMoveRequest request, User user) {
+        Long userId = user.getId();
+        Folder folder = folderRepository.findById(request.getTargetFolderId()).orElseThrow(() -> new GeneralException(ErrorStatus.FOLDER_NOT_FOUND));
+
+        if(!folder.getUser().getId().equals(userId))
+            throw new GeneralException(ErrorStatus.FOLDER_FORBIDDEN);
+
+        List<CardSet> cardSets = cardSetRepository.findAllById(request.getCardSetIds());
+
+        if (cardSets.size() != request.getCardSetIds().size()) {
+            throw new GeneralException(ErrorStatus.CARDSET_NOT_FOUND);
+        }
+
+        for (CardSet cardSet : cardSets) {
+            if(!cardSet.getUser().getId().equals(userId))
+                throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+            cardSet.updateFolderId(folder.getId());
+        }
     }
 }
