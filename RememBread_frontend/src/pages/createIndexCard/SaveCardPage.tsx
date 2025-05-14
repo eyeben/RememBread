@@ -1,4 +1,7 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
+
 import Button from "@/components/common/Button";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
 import MergeCardAlertDialog from "@/components/dialog/MergeCardAlertDialog";
@@ -19,6 +22,7 @@ type FolderTreeItem = Folder & {
 };
 
 const SaveCardPage = () => {
+  const navigate = useNavigate();
   const [folders, setFolders] = useState<FolderTreeItem[]>([]);
   const [folderPath, setFolderPath] = useState<string>("");
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
@@ -142,7 +146,7 @@ const SaveCardPage = () => {
     return nodes.map((node) => (
       <div key={node.id} className="flex flex-col w-full h-full items-center">
         <span
-          className="w-full text-left text-xl"
+          className="w-full text-left"
           onClick={() => {
             handleFolderSelect(node);
             toggleFolder(node.id);
@@ -188,46 +192,58 @@ const SaveCardPage = () => {
   }, []);
 
   return (
-    <div
-      className="flex flex-col justify-between w-full h-full text-center"
-      style={{ minHeight: "calc(100vh - 120px)" }}
-    >
-      <h1 className="text-primary-500 text-2xl font-bold m-5">어디에 저장할 건빵?</h1>
+    <>
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
+        <nav className="h-full mx-auto">
+          <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
+            <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+            <h1 className="text-xl font-bold">저장 위치 선택</h1>
+            <div className="w-8 h-8"></div>
+          </ul>
+        </nav>
+      </header>
 
-      <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 268px)" }}>
-        {/* 경로 표시 */}
-        <div className="flex justify-between mx-5 text-left items-center">
-          <FolderPathBreadcrumb
-            path={`${folderPath}${
-              selectedCardSet ? " > " + SEPARATOR + "🍞" + selectedCardSet.name : ""
-            }`}
-            toggleFolder={toggleFolder}
-          />
-          <div className="ml-auto">
-            <CreateFolderDialog
-              selectedFolderName={selectedFolder?.name ?? null}
-              selectedFolderId={selectedFolder?.id ?? null}
-              onCreateFolder={CreateFolder}
-            />
+      <div
+        className="flex flex-col justify-between w-full h-full mt-14 text-center"
+        style={{ minHeight: "calc(100vh - 120px)" }}
+      >
+        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 196px)" }}>
+          {/* 경로 표시 */}
+          <div className="flex justify-between m-5 text-left items-center gap-5">
+            <div className="min-w-0 flex-1">
+              <FolderPathBreadcrumb
+                path={`${folderPath}${
+                  selectedCardSet ? " > " + SEPARATOR + "🍞" + selectedCardSet.name : ""
+                }`}
+                toggleFolder={toggleFolder}
+              />
+            </div>
+            <div className="ml-2 shrink-0">
+              <CreateFolderDialog
+                selectedFolderName={selectedFolder?.name ?? null}
+                selectedFolderId={selectedFolder?.id ?? null}
+                onCreateFolder={CreateFolder}
+              />
+            </div>
+          </div>
+
+          <div className="flex flex-col flex-1 justify-start items-start mx-5 overflow-auto rounded-md border p-5 scrollbar-hide bg-neutral-50">
+            {/* 폴더 트리 렌더링 */}
+            {renderFolderTree(folders)}
           </div>
         </div>
 
-        <div className="flex flex-col justify-start items-start m-5 overflow-auto">
-          {/* 폴더 트리 렌더링 */}
-          {renderFolderTree(folders)}
-        </div>
+        {selectedCardSet ? (
+          <MergeCardAlertDialog selectedCardSet={selectedCardSet} />
+        ) : selectedFolder ? (
+          <CreateIndexCardSetDialog selectedFolder={selectedFolder} />
+        ) : (
+          <Button variant="primary" className="m-5" disabled={true}>
+            저장하기
+          </Button>
+        )}
       </div>
-
-      {selectedCardSet ? (
-        <MergeCardAlertDialog selectedCardSet={selectedCardSet} />
-      ) : selectedFolder ? (
-        <CreateIndexCardSetDialog selectedFolder={selectedFolder} />
-      ) : (
-        <Button variant="primary" className="m-5" disabled={true}>
-          저장하기
-        </Button>
-      )}
-    </div>
+    </>
   );
 };
 
