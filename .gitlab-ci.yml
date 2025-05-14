@@ -18,7 +18,7 @@ build_and_push:
   script:
     - cd be/remembread
     - echo "Building Spring Boot Application"
-    - gradle build -x test
+    - gradle build -x test -Duser.timezone=Asia/Seoul
     - echo "Building Docker Image"
     - docker build -t ${DOCKER_USERNAME}/${DOCKER_BACKEND_IMAGE_NAME} .
     - echo "Pushing Docker Image"
