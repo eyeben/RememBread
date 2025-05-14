@@ -21,7 +21,7 @@ import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import CardTestBlank from "@/components/indexCardView/CardTestBlank";
 import CardTestConcept from "@/components/indexCardView/CardTestConcept";
 import GameModePage from "@/pages/games/GameModePage";
-import GamesHomePage from "@/pages/games/GamesHomePage";
+import GameHomePage from "@/pages/games/GameHomePage";
 import MemoryGamePage from "@/pages/games/MemoryGamePage";
 import GameResultPage from "@/pages/games/GameResultPage";
 import CompareGamePage from "@/pages/games/CompareGamePage";
@@ -182,7 +182,7 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <GamesHomePage />,
+                element: <GameHomePage />,
               },
               {
                 path: "game-mode",
