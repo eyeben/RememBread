@@ -24,7 +24,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final S3Service service;
 
     @PatchMapping("/agree")
     @Operation(summary = "약관 동의 API", description = "회원가입 시 이용약관을 동의로 처리하는 API 입니다.")
