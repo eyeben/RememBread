@@ -110,144 +110,143 @@ const CreateFromSelfPage = () => {
 
       <div className="">
         {currentIndex} / {cardSet.length}
-      </div>
+        <Carousel
+          setApi={setApi}
+          opts={{
+            align: "center",
+            loop: false,
+          }}
+          className="w-full max-w-md mx-auto px-4 pc:px-0"
+        >
+          <CarouselContent className="aspect-square">
+            {cardSet.map((indexCard, index) => (
+              <CarouselItem key={index} className={`relative`}>
+                <div className="relative w-full h-full">
+                  <div
+                    className={`relative transition-transform duration-1000 ${
+                      isFront ? "rotate-y-0" : "rotate-y-180"
+                    }`}
+                  >
+                    <InputBread className="w-full h-full aspect-square" />
 
-      <Carousel
-        setApi={setApi}
-        opts={{
-          align: "center",
-          loop: false,
-        }}
-        className="w-full max-w-md mx-auto px-4 pc:px-0"
-      >
-        <CarouselContent className="aspect-square">
-          {cardSet.map((indexCard, index) => (
-            <CarouselItem key={index} className={`relative`}>
-              <div className="relative w-full h-full">
-                <div
-                  className={`relative transition-transform duration-1000 ${
-                    isFront ? "rotate-y-0" : "rotate-y-180"
-                  }`}
-                >
-                  <InputBread className="w-full h-full aspect-square" />
+                    {!isRotating ? (
+                      editingIndex === index ? (
+                        <>
+                          <input
+                            autoFocus
+                            type="text"
+                            value={indexCard.concept}
+                            maxLength={MAX_CONCEPT_LENGTH}
+                            onChange={(e) => handleConceptChange(e, index)}
+                            onBlur={() => setEditingIndex(null)}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter") {
+                                setEditingIndex(null);
+                              }
+                            }}
+                            className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
+                          />
 
-                  {!isRotating ? (
-                    editingIndex === index ? (
+                          <div
+                            className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
+                              indexCard.concept.length >= MAX_CONCEPT_LENGTH
+                                ? "text-red-500"
+                                : "text-gray-400"
+                            }`}
+                          >
+                            {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
+                          </div>
+                        </>
+                      ) : (
+                        <>
+                          <div
+                            className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 
+                                      text-2xl font-bold cursor-text text-center
+                                      line-clamp-5 overflow-hidden break-words"
+                            onClick={() => setEditingIndex(index)}
+                          >
+                            {indexCard.concept || "제목 없음"}
+                          </div>
+
+                          <div
+                            className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
+                              indexCard.concept.length >= MAX_CONCEPT_LENGTH
+                                ? "text-red-500"
+                                : "text-gray-400"
+                            }`}
+                          >
+                            {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
+                          </div>
+                        </>
+                      )
+                    ) : (
                       <>
-                        <input
-                          autoFocus
-                          type="text"
-                          value={indexCard.concept}
-                          maxLength={MAX_CONCEPT_LENGTH}
-                          onChange={(e) => handleConceptChange(e, index)}
-                          onBlur={() => setEditingIndex(null)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              setEditingIndex(null);
-                            }
+                        <textarea
+                          className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
+                          value={indexCard.description}
+                          placeholder="여기에 텍스트를 입력하세요"
+                          onChange={(e) => {
+                            const updatedDescription = e.target.value;
+                            const updatedCards = [...cardSet];
+                            updatedCards[index] = {
+                              ...updatedCards[index],
+                              description: updatedDescription,
+                            };
+                            setCardSet(updatedCards);
                           }}
-                          className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
+                          maxLength={MAX_LENGTH}
+                          style={{
+                            scrollbarWidth: "none",
+                          }}
                         />
 
                         <div
-                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
-                            indexCard.concept.length >= MAX_CONCEPT_LENGTH
+                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm rotate-y-180 ${
+                            indexCard.description.length >= MAX_LENGTH
                               ? "text-red-500"
                               : "text-gray-400"
                           }`}
                         >
-                          {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
+                          {indexCard.description.length}/{MAX_LENGTH}
                         </div>
                       </>
-                    ) : (
-                      <>
-                        <div
-                          className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 
-                                      text-2xl font-bold cursor-text text-center
-                                      line-clamp-5 overflow-hidden break-words"
-                          onClick={() => setEditingIndex(index)}
-                        >
-                          {indexCard.concept || "제목 없음"}
-                        </div>
-
-                        <div
-                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
-                            indexCard.concept.length >= MAX_CONCEPT_LENGTH
-                              ? "text-red-500"
-                              : "text-gray-400"
-                          }`}
-                        >
-                          {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
-                        </div>
-                      </>
-                    )
-                  ) : (
-                    <>
-                      <textarea
-                        className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                        value={indexCard.description}
-                        placeholder="여기에 텍스트를 입력하세요"
-                        onChange={(e) => {
-                          const updatedDescription = e.target.value;
-                          const updatedCards = [...cardSet];
-                          updatedCards[index] = {
-                            ...updatedCards[index],
-                            description: updatedDescription,
-                          };
-                          setCardSet(updatedCards);
-                        }}
-                        maxLength={MAX_LENGTH}
-                        style={{
-                          scrollbarWidth: "none",
-                        }}
-                      />
-
-                      <div
-                        className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm rotate-y-180 ${
-                          indexCard.description.length >= MAX_LENGTH
-                            ? "text-red-500"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {indexCard.description.length}/{MAX_LENGTH}
-                      </div>
-                    </>
-                  )}
+                    )}
+                  </div>
                 </div>
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+              </CarouselItem>
+            ))}
+          </CarouselContent>
+          <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
 
-        {cardSet.length > 1 && (
-          <div
-            className="absolute flex justify-center items-center rounded-full font-bold top-0 left-0 mx-5 w-10 h-10 bg-neutral-300 text-700 pc:mx-0 focus-visible:ring-ring focus-visible:ring-1 hover:bg-accent cursor-pointer"
-            onClick={handleDeleteCard}
-          >
-            -
-          </div>
-        )}
+          {cardSet.length > 1 && (
+            <div
+              className="absolute flex justify-center items-center rounded-full font-bold top-0 left-0 mx-5 w-10 h-10 bg-neutral-300 text-700 pc:mx-0 focus-visible:ring-ring focus-visible:ring-1 hover:bg-accent cursor-pointer"
+              onClick={handleDeleteCard}
+            >
+              -
+            </div>
+          )}
 
-        {currentIndex === cardSet.length && (
-          <div
-            className="absolute flex justify-center items-center rounded-full font-bold top-0 right-0 mx-5 w-10 h-10 bg-primary-500 text-700 pc:hidden"
-            onClick={handleAddCard}
-          >
-            +
-          </div>
-        )}
+          {currentIndex === cardSet.length && (
+            <div
+              className="absolute flex justify-center items-center rounded-full font-bold top-0 right-0 mx-5 w-10 h-10 bg-primary-500 text-700 pc:hidden"
+              onClick={handleAddCard}
+            >
+              +
+            </div>
+          )}
 
-        {currentIndex === cardSet.length ? (
-          <CarouselNext
-            className="hidden bg-primary-500 text-700 pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10 disabled:pointer-events-auto"
-            onClick={handleAddCard}
-            disabled={false}
-          />
-        ) : (
-          <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
-        )}
-      </Carousel>
+          {currentIndex === cardSet.length ? (
+            <CarouselNext
+              className="hidden bg-primary-500 text-700 pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10 disabled:pointer-events-auto"
+              onClick={handleAddCard}
+              disabled={false}
+            />
+          ) : (
+            <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
+          )}
+        </Carousel>
+      </div>
 
       <Button className="my-5 mx-5" variant="primary" onClick={handeleSaveCard}>
         생성
