@@ -13,12 +13,14 @@ const GamesHomePage = () => {
   };
 
   return (
-    <div className="fixed inset-0 flex flex-col items-center justify-center pt-14 pb-16 px-4">
-      <SpeechBubble text="오늘도 열심히 해봐요!" />
-      <div className="flex flex-col items-center mt-4 mb-4">
-        <Game className="w-60 h-60 " />
+    <div className="min-h-screen flex flex-col items-center px-4">
+      <div className="flex w-full flex-col items-center">
+        <SpeechBubble text="오늘도 열심히 해봐요!" />
+        <div className="flex flex-col items-center mt-4 mb-4">
+          <Game className="w-60 h-60 " />
+        </div>
       </div>
-      <div className="w-full flex flex-col gap-3 max-w-[384px]">
+      <div className="w-full flex flex-col gap-3 max-w-[384px] mt-4">
         <Button 
           className="w-full h-[90px] flex-shrink-0 rounded-[30px] bg-primary-100 text-xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
           onClick={handleRandomGame}
