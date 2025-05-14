@@ -51,6 +51,9 @@ const MapView = () => {
 
     const fetchRoutes = async () => {
       try {
+        setRoutesByCardSet([]);
+        setTotalCount(0);
+
         // 기존 마커 제거
         markersRef.current.forEach((m) => m.setMap(null));
         markersRef.current = [];
@@ -109,7 +112,7 @@ const MapView = () => {
       mapRef.current = new naver.maps.Map(mapElement, {
         center: new naver.maps.LatLng(curLatitude, curLongitude),
         zoom: 15,
-        zoomControl: true,
+        zoomControl: false,
         zoomControlOptions: {
           style: naver.maps.ZoomControlStyle.SMALL,
           position: naver.maps.Position.TOP_RIGHT,
@@ -122,24 +125,48 @@ const MapView = () => {
     fetchMyCardSets();
   }, []);
 
+  useEffect(() => {
+    if (routesByCardSet.length > 0) {
+      setSelectedDateTime(routesByCardSet[0].studiedAt);
+    }
+  }, [routesByCardSet]);
+
   const handleLocationUpdate = (lat: number, lng: number) => {
     setCurLatitude(lat);
     setCurLongitude(lng);
   };
+
+  useEffect(() => {
+    if (!mapRef.current || !selectedCardSet || !selectedDateTime) return;
+
+    const matched = routesByCardSet.find((r) => r.studiedAt === selectedDateTime);
+    if (!matched || !matched.route || matched.route.length === 0) return;
+
+    const [lng, lat] = matched.route[0]; // 첫 번째 좌표 사용
+    mapRef.current.setCenter(new naver.maps.LatLng(lat, lng));
+  }, [selectedCardSet, selectedDateTime]);
 
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
       {/* 상단 Selector */}
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
         {/* 카드셋 셀렉터 (60%) */}
-        <div className="w-3/5 bg-white opacity-75">
+        <div className="w-3/5 bg-white opacity-100 rounded-md ">
           <Select
             value={selectedCardSet ? String(selectedCardSet) : ""}
             onValueChange={(v) => setSelectedCardSet(Number(v))}
           >
             <SelectTrigger className="w-full">
-              <SelectValue placeholder="조회하실 카드셋을 선택해주세요" />
+              {selectedCardSet !== 0 ? (
+                <span>
+                  {myCardSets.find((set) => set.cardSetId === selectedCardSet)?.name}{" "}
+                  <span className="text-sm text-muted-foreground"> ({totalCount}건)</span>
+                </span>
+              ) : (
+                <SelectValue placeholder="조회하실 카드셋을 선택해주세요" />
+              )}
             </SelectTrigger>
+
             <SelectContent>
               {myCardSets.map((cardSet) => (
                 <SelectItem key={cardSet.cardSetId} value={String(cardSet.cardSetId)}>
@@ -151,7 +178,7 @@ const MapView = () => {
         </div>
 
         {/* 날짜 셀렉터 (40%) */}
-        <div className="w-2/5 bg-white opacity-75">
+        <div className="w-2/5 bg-white opacity-100 rounded-md ">
           <Select
             value={selectedDateTime}
             onValueChange={setSelectedDateTime}
