@@ -4,10 +4,7 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.common.service.S3Service;
 import com.remembread.user.converter.UserConverter;
-import com.remembread.user.dto.UserCharacterResponseDto;
-import com.remembread.user.dto.UserLocationRequestDto;
-import com.remembread.user.dto.UserRequestDto;
-import com.remembread.user.dto.UserResponseDto;
+import com.remembread.user.dto.*;
 import com.remembread.user.entity.User;
 import com.remembread.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -53,8 +50,8 @@ public class UserController {
 
     @PatchMapping("/fcm-token")
     @Operation(summary = "FCM 토큰 수정 API", description = "로그인 시 사용자의 FCM 토큰을 수정하는 API 입니다.")
-    public ApiResponse<Void> modifyFcmToken(@AuthUser User user, @RequestBody String fcmToken) {
-        userService.updateUserFcmToken(user, fcmToken);
+    public ApiResponse<Void> modifyFcmToken(@AuthUser User user, @RequestBody @Valid UserFcmTokenRequest userFcmTokenRequest) {
+        userService.updateUserFcmToken(user, userFcmTokenRequest);
         return ApiResponse.onSuccess(null);
     }
 
