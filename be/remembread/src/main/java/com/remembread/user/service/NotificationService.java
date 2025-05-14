@@ -20,7 +20,7 @@ public class NotificationService {
     private final UserRepository userRepository;
 
     // 1분 단위로 푸시알람 보내는 함수
-    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    @Scheduled(cron = "0 0/5 * * * *", zone = "Asia/Seoul")
     public void sendNotificationByTime() {
         LocalTime currentTime = LocalTime.now().withSecond(0).withNano(0);
         List<User> users = userRepository.findByNotificationTime(currentTime);
@@ -32,7 +32,7 @@ public class NotificationService {
             String message = user.getNickname() + "님, 공부하실 시간이에요!";
             String path = "/card-view";
 
-            if (fcmToken != null && !fcmToken.isBlank()) {
+            if (fcmToken != null && !fcmToken.isBlank() && user.getNotificationTimeEnable()) {
                 log.info("{} 님에게 알림 전송", user.getNickname());
                 NotificationMessageDto notificationMessageDto = NotificationMessageDto.of("암기빵", message);
                 fcmService.send(fcmService.createMessage(fcmToken, notificationMessageDto, path));
@@ -52,6 +52,8 @@ public class NotificationService {
                 NotificationMessageDto notificationMessageDto = NotificationMessageDto.of("암기빵", message);
                 fcmService.send(fcmService.createMessage(fcmToken, notificationMessageDto, path));
             }
+
+
 
             return true;
         }
