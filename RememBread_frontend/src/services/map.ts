@@ -49,3 +49,11 @@ export const stopRecord = async (
   const response = await http.post(`/studies/${cardSetId}/stop`, data);
   return response.data;
 };
+
+export const postLocation = async (cardSetId: number, latitude: number, lontitude: number) => {
+  const response = await http.post(`/studies/${cardSetId}/location`, {
+    latitude,
+    lontitude,
+  });
+  return response.data;
+};
