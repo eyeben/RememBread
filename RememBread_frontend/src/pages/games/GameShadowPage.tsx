@@ -55,18 +55,34 @@ function getAnswerButtons(answerIndices: number[]) {
   return allIndices;
 }
 
-const parentW = 376;
-const parentH = 350;
 const svgW = 160;
 const svgH = 160;
+
+// 화면 크기에 따른 게임 영역 크기 계산
+const getGameAreaDimensions = () => {
+  const width = window.innerWidth;
+  if (width <= 320) {
+    return {
+      width: 320,
+      height: 320
+    };
+  }
+  return {
+    width: 375,
+    height: 350
+  };
+};
+
 const getRandomPos = () => {
+  const { width: parentW, height: parentH } = getGameAreaDimensions();
+  
   // 중앙점 계산
   const centerX = (parentW - svgW) / 2;
   const centerY = (parentH - svgH) / 2;
   
-  // 중앙에서부터 랜덤하게 이동할 거리 계산 (-60% ~ +40%)
-  const offsetX = (Math.random() * 1 - 0.55) * (parentW - svgW);
-  const offsetY = (Math.random() * 1 - 0.55) * (parentH - svgH);
+  // 중앙에서부터 랜덤하게 이동할 거리 계산 (-50% ~ +50%)
+  const offsetX = (Math.random() * 1 - 0.5) * (parentW - svgW);
+  const offsetY = (Math.random() * 1 - 0.5) * (parentH - svgH);
   
   return {
     x: centerX + offsetX,
@@ -86,12 +102,23 @@ const GameShadowPage = () => {
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [answerButtons, setAnswerButtons] = useState<number[]>([]);
+  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   
   // useAnimation을 최상위 레벨에서 호출
   const controlsArray = Array.from({ length: 5 }, () => useAnimation());
   
   // controls 배열을 level에 따라 필터링
   const controls = useMemo(() => controlsArray.slice(0, level), [level]);
+
+  // 화면 크기 변경 감지
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const generateNewProblem = () => {
     const newIndices = getRandomIndices(level);
@@ -193,7 +220,7 @@ useEffect(() => {
   };
 
   return (
-    <div className="fixed inset-0 min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-16 pb-16 overflow-hidden">
+    <div className="min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 pb-4 overflow-hidden">
       {!isGameStarted ? (
         <StartModal onCountdownEnd={handleGameStart} />
       ) : (
@@ -204,7 +231,7 @@ useEffect(() => {
               <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
             </span>
           </div>
-          <div className="w-full max-w-[376px] h-[350px] flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-8 text-white text-3xl font-bold overflow-hidden">
+          <div className={`w-full ${windowWidth <= 320 ? 'max-w-[320px] h-[320px]' : 'max-w-[375px] h-[350px]'} flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-6 text-white text-3xl font-bold overflow-hidden`}>
             <div className="relative w-full h-full">
               {randomIdx.map((idx, i) => {
                 const Svg = svgList[idx];
@@ -224,16 +251,16 @@ useEffect(() => {
               })}
             </div>
           </div>
-          <div className="w-full max-w-[376px] grid grid-cols-3 gap-4">
+          <div className={`w-full ${windowWidth <= 320 ? 'max-w-[320px]' : 'max-w-[375px]'} grid grid-cols-3 gap-3`}>
             {answerButtons.map((idx) => {
               const Svg = svgList[idx];
               return (
                 <CustomButton
                   key={idx}
-                  className="bg-white shadow h-24 flex items-center justify-center"
+                  className="bg-white hover:bg-neutral-50 active:bg-neutral-100 shadow-md rounded-xl p-2"
                   onClick={() => handleAnswer(idx)}
                 >
-                  <Svg className="w-16 h-16" />
+                  <Svg className="w-14 h-14 sm:w-16 sm:h-16" />
                 </CustomButton>
               );
             })}

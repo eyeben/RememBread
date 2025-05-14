@@ -23,7 +23,7 @@ const GameResultModal = ({ open, onClose, type }: GameResultModalProps) => {
         {type === "success" ? (
           <ClearBread className="w-128 h-128" />
         ) : (
-          <FailBread className="w-128 h-128" />
+          <FailBread className="w-96 h-96" />
         )}
       </div>
     </div>

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Button from '@/components/common/Button';
+import CustomButton from '@/components/common/CustomButton';
 import Timer from '@/components/common/Timer';
 import StartModal from '@/components/game/StartModal';
 import RandomImage from '@/components/game/RandomImage';
@@ -11,7 +11,7 @@ import GameResultModal from '@/components/game/GameResultModal';
 const GameDetectivePage = () => {
   const navigate = useNavigate();
   const { setDetectiveScore } = useGameStore();
-  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
   const [problemNumber, setProblemNumber] = useState<number>(1);
   const [currentImage, setCurrentImage] = useState<string>('');
   const [answers, setAnswers] = useState<string[]>([]);
@@ -73,15 +73,15 @@ const GameDetectivePage = () => {
   };
 
   return (
-    <div className="fixed inset-0 min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-16 pb-16 overflow-hidden">
+    <div className="min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 overflow-hidden">
       {!isGameStarted ? (
         <StartModal onCountdownEnd={handleGameStart} />
       ) : (
-        <div className="flex flex-col items-center gap-2">
+        <div className="flex flex-col items-center gap-2 w-full">
           {/* 상단: 전체 타이머 */}
-          <div className="w-full mb-4 text-2xl font-bold text-primary-700 flex items-center justify-center gap-2">
+          <div className="w-full mb-4 text-xl font-bold text-primary-700 flex items-center justify-center gap-2">
             <span>무슨 빵일까?</span>
-            <span className="text-2xl text-neutral-500">
+            <span className="text-xl text-neutral-500">
               <Timer
                 initial={60}
                 onEnd={handleTimeEnd}
@@ -92,7 +92,7 @@ const GameDetectivePage = () => {
           </div>
 
           {/* 중앙: 이미지 */}
-          <div className="flex flex-col items-center justify-center w-full max-w-[320px] h-[450px]">
+          <div className="flex flex-col items-center justify-center w-full max-w-[320px] sm:max-w-[360px] h-[360px]">
             <div className="w-full h-full">
               <RandomImage 
                 key={problemNumber}
@@ -102,16 +102,15 @@ const GameDetectivePage = () => {
           </div>
 
           {/* 하단: 선택지 버튼 */}
-          <div className="w-full grid grid-cols-2 gap-4 pb-10">
+          <div className="w-full grid grid-cols-2 gap-2 pb-10 mt-2 ">
             {answers.map((answer, index) => (
-              <Button 
+              <CustomButton 
                 key={index}
-                variant="primary" 
-                className="py-7 text-lg" 
+                className="bg-white active:bg-primary-100 shadow-md rounded-xl py-6"
                 onClick={() => handleAnswer(answer)}
               >
-                {answer}
-              </Button>
+                <span className="text-lg font-bold">{answer}</span>
+              </CustomButton>
             ))}
           </div>
         </div>

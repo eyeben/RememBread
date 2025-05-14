@@ -1,9 +1,4 @@
 import { useState, useEffect } from 'react';
-// import DefaultBread from '@/components/svgs/breads/DefaultBread';
-// import Bread from '@/components/svgs/game/Bread';
-// import Bread2 from '@/components/svgs/game/Bread2';
-// import Baguette from '@/components/svgs/game/Baguette';
-// import Croissant from '@/components/svgs/game/Croissant';
 import styles from '@/styles/gameStyle.module.css';
 
 // PNG 이미지 import
@@ -29,7 +24,6 @@ const RandomImage = ({ onImageSelect }: RandomImageProps) => {
   const [blurValue, setBlurValue] = useState<number>(40);
   const [scaleValue, setScaleValue] = useState<number>(10000);
   const [timeLeft, setTimeLeft] = useState<number>(10);
-  // const [transformOrigin, setTransformOrigin] = useState<string>('center center');
 
   // 초기 설정을 위한 useEffect
   useEffect(() => {

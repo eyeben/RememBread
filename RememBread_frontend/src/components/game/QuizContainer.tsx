@@ -40,11 +40,11 @@ const QuizContainer = ({ breads, onClick }: QuizContainerProps) => {
   const renderBread = (type: string) => {
     switch (type) {
       case 'bread':
-        return <Bread className="w-12 h-12" />;
+        return <Bread className="w-12 h-12 sm:w-14 sm:h-14" />;
       case 'baguette':
-        return <Baguette className="w-12 h-12" />;
+        return <Baguette className="w-12 h-12 sm:w-14 sm:h-14" />;
       case 'croissant':
-        return <Croissant className="w-12 h-12" />;
+        return <Croissant className="w-12 h-12 sm:w-14 sm:h-14" />;
       default:
         return null;
     }
@@ -52,10 +52,10 @@ const QuizContainer = ({ breads, onClick }: QuizContainerProps) => {
 
   return (
     <div
-      className="w-full sm:w-96 h-52 flex-shrink-0 bg-neutral-50 rounded-xl border border-neutral-300 relative cursor-pointer overflow-hidden flex items-center justify-center"
+      className="w-full sm:w-96 h-40 sm:h-48 flex-shrink-0 bg-neutral-50 rounded-xl border border-neutral-300 relative cursor-pointer overflow-hidden flex items-center justify-center"
       onClick={onClick}
     >
-      <div className={`grid grid-cols-${GRID_COLS} grid-rows-${GRID_ROWS} gap-2 w-full h-full p-4`}>
+      <div className="grid grid-cols-4 grid-rows-3 gap-2 w-full h-full p-2 sm:p-4">
         {grid.map((bread, idx) => (
           <div key={idx} className="flex items-center justify-center w-full h-full">
             {bread ? renderBread(bread.type) : null}

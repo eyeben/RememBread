@@ -65,10 +65,10 @@ function getNewQuiz(breads: Bread[], score: number) {
 const CompareGamePage = () => {
   const navigate = useNavigate();
   const { setCompareScore } = useGameStore();
-  const [isGameStarted, setIsGameStarted] = useState(false);
+  const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
   const [userInput, setUserInput] = useState<string | null>(null);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
-  const [score, setLocalScore] = useState(0);
+  const [score, setLocalScore] = useState<number>(0);
   const [breads, setBreads] = useState<Bread[]>(initialBreads);
   const [quiz, setQuiz] = useState(() => getNewQuiz(breads, 0));
 
@@ -131,30 +131,30 @@ const CompareGamePage = () => {
   };
 
   return (
-    <div className="fixed inset-0 min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-16 pb-16 overflow-hidden">
+    <div className="min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 overflow-hidden">
       {!isGameStarted ? (
         <StartModal onCountdownEnd={handleGameStart} />
       ) : (
         <>
-          <div className="mb-4 text-2xl font-bold text-primary-700 flex items-center gap-2">
+          <div className="mb-2 sm:mb-4 text-2xl font-bold text-primary-700 flex items-center gap-2">
             <span>가격이 더 비싼 빵은?</span>
             <span className="ml-2 text-2xl text-neutral-500">
               <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
             </span>
           </div>
-          <div className="w-full max-w-96 h-28 flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-8 py-4 mb-8 text-white text-3xl font-bold">
+          <div className="w-full max-w-96 h-24 sm:h-28 flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-4 sm:gap-8 py-2 sm:py-4 mb-4 text-white">
             <div className="flex flex-row items-center justify-center w-full gap-12">
               {breads.map((bread, idx) => (
                 <div key={idx} className="flex flex-col items-center justify-center">
-                  <div className="w-16 h-16 mt-3 flex items-center justify-center">
+                  <div className="w-12 h-12 sm:w-16 sm:h-16 mt-2 sm:mt-3 flex items-center justify-center">
                     {renderBread(bread.type)}
                   </div>
-                  <span className="text-lg">{bread.price} 원</span>
+                  <span className="text-lg text-bold">{bread.price} 원</span>
                 </div>
               ))}
             </div>
           </div>
-          <div className="w-full max-w-96 mx-auto mt-8 flex flex-col gap-6">
+          <div className="w-full max-w-96 mx-auto flex flex-col gap-4">
             <QuizContainer breads={quiz.top} onClick={() => handleInput("top")} />
             <QuizContainer breads={quiz.bottom} onClick={() => handleInput("bottom")} />
           </div>
