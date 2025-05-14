@@ -4,6 +4,7 @@ import com.remembread.card.converter.CardConverter;
 import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.request.CardSetDeleteManyRequest;
 import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.*;
 import com.remembread.card.entity.Card;
@@ -401,5 +402,23 @@ public class CardSetService {
         String countKey = "cardSet:viewCount:" + cardSetId;
         String value = redisTemplate.opsForValue().get(countKey);
         return value != null ? Integer.parseInt(value) : 0;
+    }
+
+    @Transactional
+    public void deleteCardSetMany(CardSetDeleteManyRequest request, User user) {
+        List<CardSet> cardSets = cardSetRepository.findAllById(request.getCardSetIds());
+
+        // 잘못된 카드셋 입력 되었는지 확인
+        if (cardSets.size() != request.getCardSetIds().size()) {
+            throw new GeneralException(ErrorStatus.CARDSET_NOT_FOUND);
+        }
+
+        for (CardSet cardSet : cardSets) {
+            if (!cardSet.getUser().getId().equals(user.getId())) {
+                throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+            }
+        }
+        cardRepository.deleteAllByCardSetIdIn(request.getCardSetIds());
+        cardSetRepository.deleteAll(cardSets);
     }
 }

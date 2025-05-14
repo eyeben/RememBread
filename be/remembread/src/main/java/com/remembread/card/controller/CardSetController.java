@@ -3,6 +3,7 @@ package com.remembread.card.controller;
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardSetCreateRequest;
+import com.remembread.card.dto.request.CardSetDeleteManyRequest;
 import com.remembread.card.dto.request.CardSetUpdateRequest;
 import com.remembread.card.dto.response.*;
 import com.remembread.card.dto.request.ForkCardSetRequest;
@@ -133,4 +134,9 @@ public class CardSetController {
         return ApiResponse.onSuccess(cardSetService.getLikeCardSets(page, size, cardSetSortType, user));
     }
 
+    @DeleteMapping("/delete-many")
+    public ApiResponse<Void> deleteCardSetMany(@RequestBody CardSetDeleteManyRequest request, @AuthUser User user) {
+        cardSetService.deleteCardSetMany(request, user);
+        return ApiResponse.onSuccess(null);
+    }
 }
