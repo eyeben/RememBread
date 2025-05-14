@@ -54,6 +54,7 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean notificationLocationEnable;
 
+    @Setter
     private LocalDateTime lastLocationNotified;
 
     @Setter

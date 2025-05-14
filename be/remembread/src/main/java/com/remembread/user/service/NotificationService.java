@@ -8,7 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
@@ -33,7 +35,6 @@ public class NotificationService {
             String path = "/card-view";
 
             if (fcmToken != null && !fcmToken.isBlank() && user.getNotificationTimeEnable()) {
-                log.info("{} 님에게 알림 전송", user.getNickname());
                 NotificationMessageDto notificationMessageDto = NotificationMessageDto.of("암기빵", message);
                 fcmService.send(fcmService.createMessage(fcmToken, notificationMessageDto, path));
             }
@@ -41,8 +42,13 @@ public class NotificationService {
     }
 
     // 위치 기반으로 푸시알람 보내는 함수
+    @Transactional
     public Boolean sendNotificationByLocation(User user, Double latitude, Double longitude) {
-        if (GeoUtil.isWithin200m(latitude, longitude, user.getNotificationLocationLatitude(), user.getNotificationLocationLongitude())) {
+        if (user.getNotificationLocationEnable()
+                && (user.getLastLocationNotified() == null
+                    || user.getLastLocationNotified().isBefore(LocalDateTime.now().minusHours(12)))
+                && GeoUtil.isWithin200m(latitude, longitude, user.getNotificationLocationLatitude(), user.getNotificationLocationLongitude())) {
+
             String fcmToken = user.getFcmToken();
             String message = user.getNickname() + "님, 공부하실 시간이에요!";
             String path = "/card-view";
@@ -53,8 +59,7 @@ public class NotificationService {
                 fcmService.send(fcmService.createMessage(fcmToken, notificationMessageDto, path));
             }
 
-
-
+            user.setLastLocationNotified(LocalDateTime.now());
             return true;
         }
 
