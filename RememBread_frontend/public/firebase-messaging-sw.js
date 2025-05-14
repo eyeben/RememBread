@@ -28,8 +28,6 @@ self.addEventListener("push", function (e) {
     };
   
     console.log(notificationTitle, notificationOptions);
-    console.log(notification)
-    console.log(data)
   
     e.waitUntil(
       self.registration.showNotification(notificationTitle, notificationOptions)
@@ -45,19 +43,28 @@ self.addEventListener("push", function (e) {
     const fullUrl = new URL(path, location.origin).href;
   
     event.waitUntil(
-      clients.matchAll({ type: 'window', includeUncontrolled: true }).then(clientList => {
-        // 이미 열려 있는 탭이 있다면 거기로 포커스
-        for (const client of clientList) {
-          if (client.url.startsWith(location.origin)) {
-            if ('navigate' in client) {
-            client.navigate(fullUrl);
+      clients.claim().then(() => {
+        return clients.matchAll({ 
+          type: 'window', 
+          includeUncontrolled: true 
+        })
+        .then(clientList => {
+          // 이미 열려 있는 탭이 있다면 거기로 포커스
+          for (const client of clientList) {
+            if (client.url.startsWith(location.origin)) {
+              return client.focus().then(function(focusedClient) {
+                return focusedClient.navigate(fullUrl)
+                  .then(() => focusedClient)
+                  .catch(err => {
+                    console.error('Navigation failed:', err);
+                    return focusedClient;
+                  });
+              });
             }
-            return client.focus();
           }
-        }
-  
-        // 아니면 새 창으로 열기
-        return clients.openWindow(fullUrl);
+          // 아니면 새 창으로 열기
+          return clients.openWindow(fullUrl);
+        })
       })
     );
   });
