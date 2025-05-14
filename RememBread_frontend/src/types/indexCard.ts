@@ -1,5 +1,5 @@
 export interface indexCard {
-  cardId?: number;
+  cardId: number;
   cardSetId?: number;
   number?: number;
   concept: string;
@@ -28,7 +28,7 @@ export interface indexCardSet {
   forkCount?: number;
   isLike?: boolean;
   totalCardCnt?: number;
-  hashTags?: string[];
+  hashtags?: string[];
   createdDate?: string | Date;
   updatedDate?: string | Date;
 }

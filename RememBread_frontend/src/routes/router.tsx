@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { tokenUtils } from "@/lib/queryClient";
 import Layout from "@/components/common/Layout";
-import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import GamesPage from "@/pages/GamesPage";
 import MapPage from "@/pages/MapPage";
@@ -12,22 +12,22 @@ import CreateFromSelfPage from "@/pages/createIndexCard/CreateFromSelfPage";
 import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
-import IndexCardViewPage from "@/pages/indexCardView/CardViewPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
-import CardDetailPage from "@/pages/indexCardView/CardDetailPage";
-import CardStudyPage from "@/pages/indexCardView/CardStudyPage";
-import CardTTSPage from "@/pages/indexCardView/CardTTSPage";
-import CardTestPage from "@/pages/indexCardView/CardTestPage";
+import CardDetailPage from "@/pages/indexCardSetView/CardDetailPage";
+import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
+import CardTTSPage from "@/pages/indexCardSetView/CardTTSPage";
+import CardTestPage from "@/pages/indexCardSetView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
-import { tokenUtils } from "@/lib/queryClient";
 import CardTestBlank from "@/components/indexCardView/CardTestBlank";
 import CardTestConcept from "@/components/indexCardView/CardTestConcept";
 import GameModePage from "@/pages/games/GameModePage";
-import GamesHomePage from "@/pages/games/GamesHomePage";
+import GameHomePage from "@/pages/games/GameHomePage";
 import MemoryGamePage from "@/pages/games/MemoryGamePage";
 import GameResultPage from "@/pages/games/GameResultPage";
 import CompareGamePage from "@/pages/games/CompareGamePage";
 import GameDetectivePage from "@/pages/games/GameDetectivePage";
+import MyCardSetPage from "@/pages/indexCardSetView/MyCardSetPage";
+import TotalCardSetPage from "@/pages/indexCardSetView/TotalCardSetPage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -122,7 +122,7 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <IndexCardViewPage />,
+            element: <MyCardSetPage />,
             handle: { header: true, footer: true },
           },
           {
@@ -143,11 +143,11 @@ const router = createBrowserRouter([
             children: [
               {
                 path: "my",
-                element: <IndexCardViewPage />,
+                element: <MyCardSetPage />,
               },
               {
                 path: "search",
-                element: <IndexCardViewPage />,
+                element: <TotalCardSetPage />,
               },
               {
                 path: ":indexCardId",
@@ -183,7 +183,7 @@ const router = createBrowserRouter([
             children: [
               {
                 index: true,
-                element: <GamesHomePage />,
+                element: <GameHomePage />,
               },
               {
                 path: "game-mode",

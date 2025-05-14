@@ -9,13 +9,13 @@ import useGameStore from "@/stores/gameStore";
 const MemoryGamePage = () => {
   const navigate = useNavigate();
   const { setMemoryScore } = useGameStore();
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [difficulty, setDifficulty] = useState(3); // 초기 난이도 3개
-  const [score, setLocalScore] = useState(0);
+  const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
+  const [showQuiz, setShowQuiz] = useState<boolean>(false);
+  const [difficulty, setDifficulty] = useState<number>(3); // 초기 난이도 3개
+  const [score, setLocalScore] = useState<number>(0);
   const [userInput, setUserInput] = useState<(string|number)[]>([]);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
-  const [successCount, setSuccessCount] = useState(0); // 현재 난이도에서의 성공 횟수
+  const [successCount, setSuccessCount] = useState<number>(0); // 현재 난이도에서의 성공 횟수
   
   // 사용 가능한 모든 아이템
   const allItems = [1,2,3,4,5,6,7,8,9,'🍞','🥖','🥐'];
@@ -98,7 +98,7 @@ const MemoryGamePage = () => {
               <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
             </span>
           </div>
-          <div className="w-full max-w-[376px] h-[107px] flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-4 py-4 mb-8 text-white text-3xl font-bold">
+          <div className="w-full max-w-[376px] h-[108px] flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-4 py-4 mb-4 text-white text-3xl font-bold">
             {showQuiz ? (
               <>
                 {answer.map((item, idx) => (
@@ -125,7 +125,7 @@ const MemoryGamePage = () => {
               </div>
             )}
           </div>
-          <div className="w-full max-w-[376px] mx-auto mt-8 grid grid-cols-3 gap-4 sm:gap-6">
+          <div className="w-full max-w-[376px] mx-auto mt-2 grid grid-cols-3 gap-4 sm:gap-6">
             {allItems.map((item, idx) => (
               <CustomButton
                 key={idx}
