@@ -26,14 +26,14 @@ const CreateFromSelfPage = () => {
   const [selected, setSelected] = useState<number[]>([]);
   const isAllSelected = cardSet.length > 0 && selected.length === cardSet.length;
 
-  const [inputText, setInputText] = useState("");
+  const [inputText, setInputText] = useState<string>("");
   const filteredCards = cardSet.filter(
     (card) => card.concept.includes(inputText) || card.description.includes(inputText),
   );
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  const [editConcept, setEditConcept] = useState("");
-  const [editDescription, setEditDescription] = useState("");
+  const [editConcept, setEditConcept] = useState<string>("");
+  const [editDescription, setEditDescription] = useState<string>("");
 
   const handleCheckboxChange = (index: number) => {
     setSelected((prev) =>
