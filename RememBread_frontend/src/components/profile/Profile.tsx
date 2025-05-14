@@ -1,5 +1,6 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { SquarePen } from "lucide-react";
 import { getUser, updateUser, patchFcmToken } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
@@ -209,17 +210,22 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col justify-between items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8">
+    <div className="flex flex-col items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8 py-8 gap-5">
         <Toaster />
         <div className="flex flex-col items-center w-full max-w-md mx-auto">
-          <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
-          <div className="h-10 mt-2 w-full flex justify-center">
-            {isEditable && (
-              <Button className="min-w-48 w-full max-w-72 h-10" variant="primary-outline" onClick={handleImageEdit}>
-                변경하기
-              </Button>
-            )}
-          </div>
+          {isEditable ? (
+            <button
+              onClick={handleImageEdit}
+              className="bg-transparent border-0 p-0 cursor-pointer relative"
+            >
+              <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
+              <div className="absolute bottom-4 right-4 bg-white rounded-full p-1">
+                <SquarePen className="w-6 h-6 text-neutral-500" />
+              </div>
+            </button>
+          ) : (
+            <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
+          )}
         </div>
         <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
           <div className="flex w-full justify-between items-center">
@@ -275,11 +281,13 @@ const Profile = () => {
               onClose={() => setIsTimePickerOpen(false)}
             />
           )}
-          <div className="w-full flex justify-center mt-4">
+          <div className="w-full flex justify-center mt-6 ">
             {isEditable ? (
-              <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
-                완료
-              </Button>
+              <div className="w-full flex flex-col justify-center items-center gap-2">
+                <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
+                  완료
+                </Button>
+              </div>
             ) : (
               <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleEditClick}>
                 수정하기
@@ -287,13 +295,9 @@ const Profile = () => {
             )}
           </div>
         </div>
-
-        <a 
-          className="text-md text-red-500 mb-6 underline cursor-pointer mt-4" 
-          onClick={handleLogout}
-        >
-          { '로그아웃'}
-        </a>
+        <Button className="min-w-48 w-full max-w-72 h-10 mt-4" variant="negative" onClick={handleLogout}>
+            로그아웃
+        </Button>
         
 
         <ImageEditModal
