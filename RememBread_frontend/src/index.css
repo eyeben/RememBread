@@ -189,8 +189,7 @@
   font-style: normal;
 }
 /* ios 안전 영역 설정 -> min-height, padding */
-* {
-}
+
 html {
   font-family: "SUITE-Regular";
   overflow-y: scroll;

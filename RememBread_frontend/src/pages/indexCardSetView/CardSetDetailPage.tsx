@@ -54,7 +54,6 @@ const CardSetDetailPage = () => {
 
   const handleStudyClick = () => navigate("study", { state: { card: cardFromState } });
   const handleTTSClick = () => navigate("tts", { state: { card: cardFromState } });
-  const handleTestClick = () => navigate("test", { state: { card: cardFromState } });
 
   const saveCardSet = async (
     override?: Partial<{ name: string; hashtags: string[]; isPublic: number }>,
@@ -192,11 +191,7 @@ const CardSetDetailPage = () => {
           <CardSetCardlList cardSetId={cardSetId} isReadonly={readonlyMode} />
 
           <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full pc:w-[598px] z-25">
-            <CardDetailButtons
-              onStudyClick={handleStudyClick}
-              onTTSClick={handleTTSClick}
-              onTestClick={handleTestClick}
-            />
+            <CardDetailButtons onStudyClick={handleStudyClick} onTTSClick={handleTTSClick} />
           </div>
         </>
       )}
