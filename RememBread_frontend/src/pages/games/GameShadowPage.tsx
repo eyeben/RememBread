@@ -86,10 +86,9 @@ const GameShadowPage = () => {
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [answerButtons, setAnswerButtons] = useState<number[]>([]);
-  const [positions, setPositions] = useState<{x: number, y: number}[]>([]);
   
   // useAnimation을 최상위 레벨에서 호출
-  const controlsArray = Array.from({ length: 4 }, () => useAnimation());
+  const controlsArray = Array.from({ length: 5 }, () => useAnimation());
   
   // controls 배열을 level에 따라 필터링
   const controls = useMemo(() => controlsArray.slice(0, level), [level]);
@@ -98,102 +97,89 @@ const GameShadowPage = () => {
     const newIndices = getRandomIndices(level);
     setRandomIdx(newIndices);
     
-    // 새로운 위치 생성 - level 수만큼 정확히 생성
-    const newPositions = Array.from({ length: level }, () => getRandomPos());
-    setPositions(newPositions);
-    
     setAnswerButtons(getAnswerButtons(newIndices));
   };
 
-  // 게임 시작 시 문제 생성
-  useEffect(() => {
-    if (isGameStarted) {
-      console.log("게임생성", level)
-      generateNewProblem();
-    }
-  }, [isGameStarted, level]);
+// 문제 출제는 레벨, 게임 시작, solvedBreads가 비었을 때만!
+useEffect(() => {
+  if (isGameStarted && solvedBreads.length === 0) {
+    generateNewProblem();
+  }
+}, [isGameStarted, level, solvedBreads]);
 
   // 애니메이션 효과
   useEffect(() => {
-    if (!isGameStarted || randomIdx.length === 0 || positions.length === 0) return;
-
-    const animate = async () => {
-      const newPositions = Array.from({ length: level }, () => getRandomPos());
-      setPositions(newPositions);
-      
-      await Promise.all(
-        controls.map((control, idx) => {
-          if (idx < positions.length) {
-            return control.start({
-              x: newPositions[idx].x,
-              y: newPositions[idx].y,
-              transition: {
-                duration: 2,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "mirror"
-              }
-            });
-          }
-          return Promise.resolve();
-        })
-      );
+    if (!isGameStarted || randomIdx.length === 0) return;
+  
+    let isCancelled = false;
+  
+    // duration 계산 함수
+    const getDuration = (level:number) => {
+      const base = 1.75;
+      const decrement = 0.25;
+      // 최소값 0.1초로 제한
+      return Math.max(base - (level - 1) * decrement, 0.1);
     };
-
-    // 초기 위치 설정
-    controls.forEach((control, idx) => {
-      if (idx < positions.length && positions[idx]) {
-        control.set({ x: positions[idx].x, y: positions[idx].y });
-      }
+  
+    controls.forEach((control) => {
+      const animateToRandom = async () => {
+        const firstPos = getRandomPos();
+        control.set({ x: firstPos.x, y: firstPos.y });
+  
+        while (!isCancelled) {
+          const newPos = getRandomPos();
+          await control.start({
+            x: newPos.x,
+            y: newPos.y,
+            transition: {
+              duration: getDuration(level), // 레벨에 따라 duration 적용
+              ease: "easeInOut",
+            }
+          });
+        }
+      };
+      animateToRandom();
     });
-
-    animate();
-
+  
     return () => {
+      isCancelled = true;
       controls.forEach(control => control.stop());
     };
-  }, [isGameStarted, randomIdx, controls, level, positions.length]);
+  }, [isGameStarted, randomIdx, controls, level]);
+  
 
   const handleAnswer = (selectedIdx: number) => {
     if (randomIdx.includes(selectedIdx) && !solvedBreads.includes(selectedIdx)) {
       setSolvedBreads(prev => [...prev, selectedIdx]);
-      
       if (solvedBreads.length + 1 === level) {
-        // 모든 빵을 맞췄을 때
         setIsCorrect(true);
         setShowResultModal(true);
         setScore(prev => prev + 1);
         setLevelScore(prev => prev + 1);
-        
-        // 현재 레벨에서 3문제를 맞췄는지 확인
-        if (levelScore + 1 >= 3) {
-          if (level < 4) {
-            setLevel(prev => prev + 1);
-            setLevelScore(0); // 레벨이 올라가면 레벨 점수 초기화
-          }
+  
+        // 레벨업이 필요한지 확인
+        if (levelScore + 1 >= 3 && level < 6) {
+          setTimeout(() => {
+            setLevel(prev => prev + 1); // 레벨업
+            setLevelScore(0); // 레벨 점수 초기화
+            setShowResultModal(false);
+            setSolvedBreads([]);
+          }, 1000);
+        } else {
+          setTimeout(() => {
+            setShowResultModal(false);
+            setSolvedBreads([]);
+            // 여기서 generateNewProblem()을 호출하지 않음!
+          }, 1000);
         }
-        
-        // 정확히 1초 후에 다음 문제로 이동
-        const timer = setTimeout(() => {
-          setShowResultModal(false);
-          setSolvedBreads([]);
-          generateNewProblem();
-        }, 1000);
-        
-        return () => clearTimeout(timer);
       }
     } else {
-      // 실패 시 모달 표시 후 새 문제 출제
       setIsCorrect(false);
       setShowResultModal(true);
-      setSolvedBreads([]);
-      
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         setShowResultModal(false);
-        generateNewProblem();
+        setSolvedBreads([]);
       }, 1000);
-      
-      return () => clearTimeout(timer);
     }
   };
 
