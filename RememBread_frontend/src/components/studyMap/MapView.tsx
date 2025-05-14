@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/select";
 
 const MapView = () => {
-  const [curLatitude, setCurLatitude] = useState<number>(37.5665);
-  const [curLongitude, setCurLongitude] = useState<number>(126.978);
-  const [locationKey, setLocationKey] = useState<number>(0);
-  const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
+  const [curLatitude, setCurLatitude] = useState(37.5665);
+  const [curLongitude, setCurLongitude] = useState(126.978);
+  const [locationKey, setLocationKey] = useState(0);
+  const [isMapLoaded, setIsMapLoaded] = useState(false);
 
   const [myCardSets, setMyCardSets] = useState<indexCardSet[]>([]);
   const [routesByCardSet, setRoutesByCardSet] = useState<any[]>([]);
@@ -28,8 +28,21 @@ const MapView = () => {
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const markersRef = useRef<naver.maps.Marker[]>([]);
+  const polylineRef = useRef<naver.maps.Polyline | null>(null);
 
-  // 내 카드셋 목록 불러오기
+  const lineColors = [
+    "#3B82F6",
+    "#10B981",
+    "#F59E0B",
+    "#EF4444",
+    "#6366F1",
+    "#EC4899",
+    "#0EA5E9",
+    "#8B5CF6",
+    "#14B8A6",
+    "#F43F5E",
+  ];
+
   const fetchMyCardSets = async () => {
     try {
       const params: SearchMyCardSetParams = {
@@ -45,7 +58,6 @@ const MapView = () => {
     }
   };
 
-  // 카드셋 선택 시 학습 이력(routes) 조회
   useEffect(() => {
     if (!selectedCardSet) return;
 
@@ -54,14 +66,16 @@ const MapView = () => {
         setRoutesByCardSet([]);
         setTotalCount(0);
 
-        // 기존 마커 제거
         markersRef.current.forEach((m) => m.setMap(null));
         markersRef.current = [];
 
-        // 날짜 초기화
+        if (polylineRef.current) {
+          polylineRef.current.setMap(null);
+          polylineRef.current = null;
+        }
+
         setSelectedDateTime("");
 
-        // 경로 재조회
         const { result } = await getRoutes(selectedCardSet, 0, 10);
         setRoutesByCardSet(result.routes);
         setTotalCount(result.total);
@@ -73,24 +87,38 @@ const MapView = () => {
     fetchRoutes();
   }, [selectedCardSet]);
 
-  // 날짜 선택 시 해당 경로만 마커로 표시
   useEffect(() => {
     if (!mapRef.current || !selectedDateTime) return;
 
     const matched = routesByCardSet.find((r) => r.studiedAt === selectedDateTime);
     if (!matched) return;
 
-    // 기존 마커 제거
+    // 색상 결정: 초(second)의 마지막 자리 숫자로 색 선택
+    const second = new Date(selectedDateTime).getSeconds();
+    const lastDigit = second % 10;
+    const stroke = lineColors[lastDigit];
+
+    // 기존 마커/선 제거
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
+
+    if (polylineRef.current) {
+      polylineRef.current.setMap(null);
+      polylineRef.current = null;
+    }
 
     const breadSvg = ReactDOMServer.renderToStaticMarkup(<MarkerStudyBread />);
     const size = 32;
 
+    const latlngs: naver.maps.LatLng[] = [];
+
     matched.route.forEach((coords: [number, number]) => {
       const [lng, lat] = coords;
+      const latlng = new naver.maps.LatLng(lat, lng);
+      latlngs.push(latlng);
+
       const marker = new naver.maps.Marker({
-        position: new naver.maps.LatLng(lat, lng),
+        position: latlng,
         icon: {
           content: breadSvg,
           size: new naver.maps.Size(size, size),
@@ -101,9 +129,19 @@ const MapView = () => {
 
       markersRef.current.push(marker);
     });
+
+    polylineRef.current = new naver.maps.Polyline({
+      map: mapRef.current!,
+      path: latlngs,
+      strokeColor: stroke,
+      strokeWeight: 10,
+      strokeOpacity: 0.7,
+      strokeStyle: "solid",
+      strokeLineCap: "round",
+      strokeLineJoin: "round",
+    });
   }, [selectedDateTime]);
 
-  // 최초 지도 초기화 및 카드셋 로딩
   useEffect(() => {
     const mapElement = document.getElementById("map");
     if (!mapElement) return;
@@ -113,10 +151,6 @@ const MapView = () => {
         center: new naver.maps.LatLng(curLatitude, curLongitude),
         zoom: 15,
         zoomControl: false,
-        zoomControlOptions: {
-          style: naver.maps.ZoomControlStyle.SMALL,
-          position: naver.maps.Position.TOP_RIGHT,
-        },
       });
 
       setIsMapLoaded(true);
@@ -131,27 +165,25 @@ const MapView = () => {
     }
   }, [routesByCardSet]);
 
+  useEffect(() => {
+    if (!mapRef.current || !selectedCardSet || !selectedDateTime) return;
+
+    const matched = routesByCardSet.find((r) => r.studiedAt === selectedDateTime);
+    if (!matched || !matched.route.length) return;
+
+    const [lng, lat] = matched.route[0];
+    mapRef.current.setCenter(new naver.maps.LatLng(lat, lng));
+  }, [selectedCardSet, selectedDateTime]);
+
   const handleLocationUpdate = (lat: number, lng: number) => {
     setCurLatitude(lat);
     setCurLongitude(lng);
   };
 
-  useEffect(() => {
-    if (!mapRef.current || !selectedCardSet || !selectedDateTime) return;
-
-    const matched = routesByCardSet.find((r) => r.studiedAt === selectedDateTime);
-    if (!matched || !matched.route || matched.route.length === 0) return;
-
-    const [lng, lat] = matched.route[0]; // 첫 번째 좌표 사용
-    mapRef.current.setCenter(new naver.maps.LatLng(lat, lng));
-  }, [selectedCardSet, selectedDateTime]);
-
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
-      {/* 상단 Selector */}
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
-        {/* 카드셋 셀렉터 (60%) */}
-        <div className="w-3/5 bg-white opacity-100 rounded-md ">
+        <div className="w-3/5 bg-white opacity-100 rounded-md">
           <Select
             value={selectedCardSet ? String(selectedCardSet) : ""}
             onValueChange={(v) => setSelectedCardSet(Number(v))}
@@ -166,7 +198,6 @@ const MapView = () => {
                 <SelectValue placeholder="조회하실 카드셋을 선택해주세요" />
               )}
             </SelectTrigger>
-
             <SelectContent>
               {myCardSets.map((cardSet) => (
                 <SelectItem key={cardSet.cardSetId} value={String(cardSet.cardSetId)}>
@@ -177,8 +208,7 @@ const MapView = () => {
           </Select>
         </div>
 
-        {/* 날짜 셀렉터 (40%) */}
-        <div className="w-2/5 bg-white opacity-100 rounded-md ">
+        <div className="w-2/5 bg-white opacity-100 rounded-md">
           <Select
             value={selectedDateTime}
             onValueChange={setSelectedDateTime}
@@ -210,7 +240,6 @@ const MapView = () => {
         </div>
       </div>
 
-      {/* 지도 */}
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
       {isMapLoaded && mapRef.current && (
         <CurrentLocation
