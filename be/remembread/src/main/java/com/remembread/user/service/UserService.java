@@ -4,6 +4,7 @@ import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.user.converter.UserConverter;
 import com.remembread.user.dto.UserCharacterResponseDto;
+import com.remembread.user.dto.UserLocationRequestDto;
 import com.remembread.user.dto.UserRequestDto;
 import com.remembread.user.dto.UserResponseDto;
 import com.remembread.user.entity.Character;
@@ -72,6 +73,13 @@ public class UserService {
     @Transactional
     public void updateUserFcmToken(User user, String fcmToken) {
         user.setFcmToken(fcmToken);
+    }
+
+    @Transactional
+    public void updateUserLocation(User user, UserLocationRequestDto userLocationRequestDto) {
+        user.setNotificationLocationEnable(userLocationRequestDto.getNotificationLocationEnable());
+        user.setNotificationLocationLatitude(userLocationRequestDto.getNotificationLocationLatitude());
+        user.setNotificationLocationLongitude(userLocationRequestDto.getNotificationLocationLongitude());
     }
 
     @Transactional
