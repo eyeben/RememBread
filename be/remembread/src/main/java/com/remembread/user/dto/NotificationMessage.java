@@ -4,13 +4,13 @@ import com.google.firebase.messaging.Notification;
 import lombok.Builder;
 
 @Builder
-public record NotificationMessageDto(
+public record NotificationMessage(
         String title,
         String body
 ) {
 
-    public static NotificationMessageDto of(String title, String body) {
-        return NotificationMessageDto.builder()
+    public static NotificationMessage of(String title, String body) {
+        return NotificationMessage.builder()
                 .title(title)
                 .body(body)
                 .build();

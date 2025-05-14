@@ -1,7 +1,7 @@
 package com.remembread.user.service;
 
 import com.remembread.common.util.GeoUtil;
-import com.remembread.user.dto.NotificationMessageDto;
+import com.remembread.user.dto.NotificationMessage;
 import com.remembread.user.entity.User;
 import com.remembread.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -35,8 +35,8 @@ public class NotificationService {
             String path = "/card-view";
 
             if (fcmToken != null && !fcmToken.isBlank() && user.getNotificationTimeEnable()) {
-                NotificationMessageDto notificationMessageDto = NotificationMessageDto.of("암기빵", message);
-                fcmService.send(fcmService.createMessage(fcmToken, notificationMessageDto, path));
+                NotificationMessage notificationMessage = NotificationMessage.of("암기빵", message);
+                fcmService.send(fcmService.createMessage(fcmToken, notificationMessage, path));
             }
         });
     }
@@ -55,8 +55,8 @@ public class NotificationService {
 
             if (fcmToken != null && !fcmToken.isBlank()) {
                 log.info("{} 님에게 알림 전송", user.getNickname());
-                NotificationMessageDto notificationMessageDto = NotificationMessageDto.of("암기빵", message);
-                fcmService.send(fcmService.createMessage(fcmToken, notificationMessageDto, path));
+                NotificationMessage notificationMessage = NotificationMessage.of("암기빵", message);
+                fcmService.send(fcmService.createMessage(fcmToken, notificationMessage, path));
             }
 
             user.setLastLocationNotified(LocalDateTime.now());

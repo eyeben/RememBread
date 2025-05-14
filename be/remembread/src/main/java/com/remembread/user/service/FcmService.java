@@ -1,7 +1,7 @@
 package com.remembread.user.service;
 
 import com.google.firebase.messaging.*;
-import com.remembread.user.dto.NotificationMessageDto;
+import com.remembread.user.dto.NotificationMessage;
 import lombok.Builder;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -23,14 +23,14 @@ public class FcmService {
     }
 
     //다음 행동 유도가 필요할 때 path를 쓴다
-    public Message createMessage(String deviceToken, NotificationMessageDto notificationMessageDto, String path) {
-        Notification notification = notificationMessageDto.toNotification();
+    public Message createMessage(String deviceToken, NotificationMessage notificationMessage, String path) {
+        Notification notification = notificationMessage.toNotification();
 
         return Message.builder()
                 .setToken(deviceToken)
                 .setNotification(notification)
-                .putData("title", notificationMessageDto.title())
-                .putData("body", notificationMessageDto.body())
+                .putData("title", notificationMessage.title())
+                .putData("body", notificationMessage.body())
                 .putData("type", "NOTIFY")
                 .putData("path", path)
                 .putData("sound", "default")
