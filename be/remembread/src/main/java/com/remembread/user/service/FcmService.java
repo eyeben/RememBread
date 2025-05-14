@@ -29,15 +29,6 @@ public class FcmService {
         return Message.builder()
                 .setToken(deviceToken)
                 .setNotification(notification)
-                .setApnsConfig(
-                        ApnsConfig.builder()
-                                .setAps(
-                                        Aps.builder()
-                                                .setSound("default")
-                                                .build()
-                                )
-                                .build()
-                )
                 .putData("title", notificationMessageDto.title())
                 .putData("body", notificationMessageDto.body())
                 .putData("type", "NOTIFY")
