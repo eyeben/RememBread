@@ -1,0 +1,25 @@
+package com.remembread.user.dto;
+
+import com.google.firebase.messaging.Notification;
+import lombok.Builder;
+
+@Builder
+public record NotificationMessageDto(
+        String title,
+        String body
+) {
+
+    public static NotificationMessageDto of(String title, String body) {
+        return NotificationMessageDto.builder()
+                .title(title)
+                .body(body)
+                .build();
+    }
+
+    public Notification toNotification() {
+        return Notification.builder()
+                .setTitle(title)
+                .setBody(body)
+                .build();
+    }
+}

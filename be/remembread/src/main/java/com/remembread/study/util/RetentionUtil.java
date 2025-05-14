@@ -18,4 +18,8 @@ public final class RetentionUtil {
         double timeDiff = (double) ChronoUnit.SECONDS.between(lastReview, now);
         return Math.exp(-timeDiff / SECONDS_IN_A_DAY * Math.pow(stability, 2));
     }
+
+    public static Double calcThreshold(Double stability) {
+        return Math.max(5.5 + Math.exp(-1.4 * stability) + 1, 1);
+    }
 }

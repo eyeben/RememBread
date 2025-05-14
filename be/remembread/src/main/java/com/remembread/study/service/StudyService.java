@@ -64,7 +64,7 @@ public class StudyService {
     private final ObjectMapper objectMapper;
 
     @Transactional
-    public CardResponse startStudySession(Long cardSetId, StudyStartRequest request, User user) {
+    public void startStudySession(Long cardSetId, StudyStartRequest request, User user) {
         CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() ->
                 new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
         if (!cardSet.getUser().getId().equals(user.getId())) {
@@ -72,26 +72,11 @@ public class StudyService {
         }
         this.deleteStudySession(user);
 
-        List<Card> cards = cardRepository.findAllByCardSet(cardSet);
-        List<CardCache> cardCaches = new ArrayList<>();
-        for (Card card : cards) {
-            cardCaches.add(CardConverter.toCardCache(card));
-        }
+        String mode = request.getMode().toString();
+        redisService.setValue(redisPrefix + "::study-mode::" + user.getId(), mode);
 
-        LocalDateTime now = LocalDateTime.now();
-        cardCaches.sort(Comparator.comparingDouble(card -> {
-            Double retentionRate = RetentionUtil.calcRetentionRate(card.getLastViewedTime(), now, card.getStability());
-            card.setRetentionRate(retentionRate);
-            return Math.abs(0.9 - retentionRate) + (0.9 <= retentionRate ? 1:0);
-        }));
-        redisService.setValue(redisPrefix + "::study-mode::" + user.getId(), request.getMode().toString());
-        String zSetKey = redisPrefix + "::study::" + user.getId() + "::sorted-set::";
-        for (CardCache cardCache : cardCaches) {
-            if (request.getCount() <= redisService.getZSetSize(zSetKey)) break;
-            String cardKey = redisPrefix + "::study::" + user.getId() + "::card::" + cardCache.getId();
-            redisService.addToZSet(zSetKey, cardKey, cardCache.getRetentionRate());
-            Map<String, Object> hash = objectMapper.convertValue(cardCache, new TypeReference<HashMap<String, Object>>() {});
-            redisService.putAllHash(cardKey, hash);
+        if (!mode.equals("STUDY")) {
+            this.loadCardSet(cardSet, request.getCount(), user);
         }
 
         StudySession studySession = StudySession.builder()
@@ -102,8 +87,29 @@ public class StudyService {
         studySessionRepository.saveAndFlush(studySession);
         this.addPoint(user,request.getLongitude(), request.getLatitude());
         redisService.setValue(redisPrefix + "::study-log::" + user.getId() + "::session-id::", studySession.getId());
+    }
 
-        return getNextCard(cardSetId, user);
+    @Transactional(readOnly = true)
+    public void loadCardSet(CardSet cardSet, Integer count, User user) {
+        List<Card> cards = cardRepository.findAllByCardSet(cardSet);
+        List<CardCache> cardCaches = new ArrayList<>();
+        for (Card card : cards)
+            cardCaches.add(CardConverter.toCardCache(card));
+
+        LocalDateTime now = LocalDateTime.now();
+        cardCaches.sort(Comparator.comparingDouble(card -> {
+            Double retentionRate = RetentionUtil.calcRetentionRate(card.getLastViewedTime(), now, card.getStability());
+            card.setRetentionRate(retentionRate);
+            return Math.abs(0.9 - retentionRate) + (0.9 <= retentionRate ? 1:0);
+        }));
+        String zSetKey = redisPrefix + "::study::" + user.getId() + "::sorted-set::";
+        for (CardCache cardCache : cardCaches) {
+            if (count <= redisService.getZSetSize(zSetKey)) break;
+            String cardKey = redisPrefix + "::study::" + user.getId() + "::card::" + cardCache.getId();
+            redisService.addToZSet(zSetKey, cardKey, cardCache.getRetentionRate());
+            Map<String, Object> hash = objectMapper.convertValue(cardCache, new TypeReference<HashMap<String, Object>>() {});
+            redisService.putAllHash(cardKey, hash);
+        }
     }
 
     @Transactional
@@ -121,6 +127,32 @@ public class StudyService {
         cardSet.updateLastViewedCard(lastCard);
         cardSetRepository.save(cardSet);
 
+        String mode = (String) redisService.getValue(redisPrefix + "::study-mode::" + user.getId());
+
+        if (!mode.equals("STUDY")) {
+            this.saveCardSet(cardSet, user, studySession);
+        }
+
+        this.addPoint(user,request.getLongitude(), request.getLatitude());
+        List<Object> objList = redisService.getList(redisPrefix + "::study-log::" + user.getId() + "::route::");
+        List<Coordinate> coordList = new ArrayList<>();
+        for (Object obj : objList) {
+            String[] coordStr = ((String) obj).split(",");
+            coordList.add(new Coordinate(Double.parseDouble(coordStr[0]), Double.parseDouble(coordStr[1])));
+        }
+        PrecisionModel precisionModel = new PrecisionModel();
+        GeometryFactory geometryFactory = new GeometryFactory(precisionModel, SRID);
+        Coordinate[] coords = coordList.toArray(new Coordinate[0]);
+
+        LineString route = geometryFactory.createLineString(coords);
+        studySession.addRoute(route);
+        studySessionRepository.save(studySession);
+
+        this.deleteStudySession(user);
+    }
+
+    @Transactional
+    public void saveCardSet(CardSet cardSet, User user, StudySession studySession) {
         Set<Object> cardJsons = redisService.getZSetRange(
                 redisPrefix + "::study::" + user.getId() + "::sorted-set::", 0, -1);
 
@@ -152,23 +184,6 @@ public class StudyService {
         }
 
         cardStudyLogRepository.saveAll(cardStudyLogs);
-
-        this.addPoint(user,request.getLongitude(), request.getLatitude());
-        List<Object> objList = redisService.getList(redisPrefix + "::study-log::" + user.getId() + "::route::");
-        List<Coordinate> coordList = new ArrayList<>();
-        for (Object obj : objList) {
-            String[] coordStr = ((String) obj).split(",");
-            coordList.add(new Coordinate(Double.parseDouble(coordStr[0]), Double.parseDouble(coordStr[1])));
-        }
-        PrecisionModel precisionModel = new PrecisionModel();
-        GeometryFactory geometryFactory = new GeometryFactory(precisionModel, SRID);
-        Coordinate[] coords = coordList.toArray(new Coordinate[0]);
-
-        LineString route = geometryFactory.createLineString(coords);
-        studySession.addRoute(route);
-        studySessionRepository.save(studySession);
-
-        this.deleteStudySession(user);
     }
 
     public void addPoint(User user, Double longitude, Double latitude) {
@@ -204,18 +219,19 @@ public class StudyService {
         if (request.getIsCorrect()) {
             redisService.incrementHash(cardKey, "correctCount", 1L);
             stability = Math.min(stability * INCREASE_RATE, S_MAX);
+            Double retentionRate = RetentionUtil.calcRetentionRate(lastViewedTime, stability);
+            int correctCount = (int) redisService.getHash(cardKey, "correctCount");
+            if (0.9 <= retentionRate && RetentionUtil.calcThreshold(stability) <= correctCount) {
+                redisService.removeFromZSet(zSetKey, cardKey);
+            }
         } else {
             stability = Math.max(stability * DECREASE_RATE, S_MIN);
         }
 
-        Double retentionRate = RetentionUtil.calcRetentionRate(lastViewedTime, stability);
 
         redisService.putHash(cardKey, "stability", stability);
 
-        int correctCount = (int) redisService.getHash(cardKey, "correctCount");
-        if (0.9 <= retentionRate && 3 <= correctCount) {
-            redisService.removeFromZSet(zSetKey, cardKey);
-        }
+
         updateAllCardCaches(user);
 
         RemainingCardCountResponse response = new RemainingCardCountResponse();
@@ -298,6 +314,4 @@ public class StudyService {
                 .logs(studySessionList)
                 .build();
     }
-
-
 }
