@@ -16,10 +16,9 @@ import ProfilePage from "@/pages/profile/ProfilePage";
 import CardSetDetailPage from "@/pages/indexCardSetView/CardSetDetailPage";
 import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
 import CardTTSPage from "@/pages/indexCardSetView/CardTTSPage";
-import CardTestPage from "@/pages/indexCardSetView/CardTestPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
-import CardTestBlank from "@/components/indexCardView/CardTestBlank";
-import CardTestConcept from "@/components/indexCardView/CardTestConcept";
+import CardTestConceptPage from "@/pages/cardTest/CardTestConceptPage";
+import CardTestExplanePage from "@/pages/cardTest/CardTestExplanePage";
 import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
 import CardSinglePage from "@/pages/indexCardSetView/CardSinglePage";
 
@@ -122,7 +121,11 @@ const router = createBrowserRouter([
           {
             path: "create",
             children: [
-              { index: true, element: <CreateFromSelfPage /> },
+              {
+                index: true,
+                element: <CreateFromSelfPage />,
+                handle: { header: false, footer: true },
+              },
               { path: "pdf", element: <CreateFromPDFPage /> },
               { path: "text", element: <CreateFromTextFPage /> },
               { path: "image", element: <CreateFromImageFPage /> },
@@ -131,6 +134,7 @@ const router = createBrowserRouter([
           {
             path: "save",
             element: <SaveCardPage />,
+            handle: { header: false, footer: true },
           },
           {
             path: "card-view",
@@ -143,14 +147,13 @@ const router = createBrowserRouter([
             children: [
               { path: "study", element: <CardStudyPage /> },
               { path: "tts", element: <CardTTSPage /> },
-              {
-                path: "test",
-                element: <CardTestPage />,
-                children: [
-                  { path: "blank", element: <CardTestBlank /> },
-                  { path: "concept", element: <CardTestConcept /> },
-                ],
-              },
+            ],
+          },
+          {
+            path: "test/:indexCardId",
+            children: [
+              { path: "concept", element: <CardTestConceptPage /> },
+              { path: "explane", element: <CardTestExplanePage /> },
             ],
           },
           {

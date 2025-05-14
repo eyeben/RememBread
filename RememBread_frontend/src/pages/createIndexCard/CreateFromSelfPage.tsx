@@ -1,258 +1,232 @@
-import { useEffect, useState, ChangeEvent } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 import Button from "@/components/common/Button";
-import InputBread from "@/components/svgs/breads/InputBread";
-import { createEmptyCard } from "@/utils/createEmptyCard";
-import {
-  Carousel,
-  CarouselContent,
-  CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
-  type CarouselApi,
-} from "@/components/ui/carousel";
 import { useCardStore } from "@/stores/cardStore";
+import { createEmptyCard } from "@/utils/createEmptyCard";
 
-const MAX_CONCEPT_LENGTH = 50;
-const MAX_LENGTH = 1000;
+import {
+  Table,
+  TableHeader,
+  TableBody,
+  TableRow,
+  TableHead,
+  TableCell,
+} from "@/components/ui/table";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 
 const CreateFromSelfPage = () => {
   const navigate = useNavigate();
-  const [currentIndex, setCurrentIndex] = useState<number>(0);
-
-  const [isFront, setIsFront] = useState<boolean>(true);
-  const [isRotating, setIsRotating] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-
   const { cardSet, setCardSet } = useCardStore();
+
+  const [selected, setSelected] = useState<number[]>([]);
+  const isAllSelected = cardSet.length > 0 && selected.length === cardSet.length;
+
+  const [inputText, setInputText] = useState<string>("");
+  const filteredCards = cardSet.filter(
+    (card) => card.concept.includes(inputText) || card.description.includes(inputText),
+  );
+
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editConcept, setEditConcept] = useState<string>("");
+  const [editDescription, setEditDescription] = useState<string>("");
 
-  const [api, setApi] = useState<CarouselApi>();
+  const handleCheckboxChange = (index: number) => {
+    setSelected((prev) =>
+      prev.includes(index) ? prev.filter((i) => i !== index) : [...prev, index],
+    );
+  };
 
-  useEffect(() => {
-    if (!api) {
-      return;
+  const handleSelectAll = () => {
+    if (isAllSelected) {
+      setSelected([]);
+    } else {
+      setSelected(cardSet.map((_, index) => index));
     }
-
-    setCurrentIndex(api.selectedScrollSnap() + 1);
-
-    api.on("select", () => {
-      setCurrentIndex(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
-
-  const handleFlip = () => {
-    setIsFront((prev) => !prev);
-
-    setIsButtonDisabled(true);
-
-    setTimeout(() => {
-      setIsRotating(!isRotating);
-      setIsButtonDisabled(false);
-    }, 310);
   };
 
   const handleAddCard = () => {
-    const newCardLength = cardSet.length;
     const updated = [...cardSet, createEmptyCard()];
     setCardSet(updated);
-
-    setTimeout(() => {
-      api?.scrollTo(newCardLength);
-    }, 10);
   };
 
   const handleDeleteCard = () => {
-    if (cardSet.length === 0 || currentIndex === 0) return;
+    const updated = cardSet.filter((_, index) => !selected.includes(index));
+    setCardSet(updated);
+    setSelected([]);
+  };
 
-    const updatedCardSet = [...cardSet];
-    updatedCardSet.splice(currentIndex - 1, 1);
-    setCardSet(updatedCardSet);
+  const handleEditCard = (index: number) => {
+    const card = cardSet[index];
+    setEditConcept(card.concept);
+    setEditDescription(card.description);
+    setEditingIndex(index);
+  };
 
-    const newIndex = currentIndex === cardSet.length ? currentIndex - 1 : currentIndex;
-    setCurrentIndex(newIndex);
-
-    setTimeout(() => {
-      api?.scrollTo(newIndex - 1);
-    }, 10);
+  const handelEditSave = () => {
+    if (typeof editingIndex === "number") {
+      const updated = [...cardSet];
+      updated[editingIndex] = {
+        ...updated[editingIndex],
+        concept: editConcept,
+        description: editDescription,
+      };
+      setCardSet(updated);
+      setEditingIndex(null);
+    }
   };
 
   const handeleSaveCard = () => {
     navigate("/save");
   };
 
-  const handleConceptChange = (e: ChangeEvent<HTMLInputElement>, index: number) => {
-    const updatedConcept = e.target.value;
-    const updatedCards = [...cardSet];
-
-    updatedCards[index] = {
-      ...updatedCards[index],
-      concept: updatedConcept,
-    };
-
-    setCardSet(updatedCards);
-  };
-
   return (
-    <div
-      className="flex flex-col justify-between w-full text-center"
-      style={{ minHeight: "calc(100vh - 120px)" }}
-    >
-      <Button
-        className="text-primary-500 text-2xl font-bold m-5 py-5"
-        variant="primary-outline"
-        onClick={handleFlip}
-        disabled={isButtonDisabled}
-      >
-        {!isFront ? "concept" : "description"}
-      </Button>
+    <>
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
+        <nav className="h-full mx-auto">
+          <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
+            {typeof editingIndex === "number" ? (
+              <ArrowLeft className="cursor-pointer" onClick={() => setEditingIndex(null)} />
+            ) : (
+              <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+            )}
 
-      <div className="">
-        {currentIndex} / {cardSet.length}
-      </div>
+            <h1 className="text-xl font-bold">빵 생성</h1>
+            <div className="w-8 h-8"></div>
+          </ul>
+        </nav>
+      </header>
 
-      <Carousel
-        setApi={setApi}
-        opts={{
-          align: "center",
-          loop: false,
-        }}
-        className="w-full max-w-md mx-auto px-4 pc:px-0"
-      >
-        <CarouselContent className="aspect-square">
-          {cardSet.map((indexCard, index) => (
-            <CarouselItem key={index} className={`relative`}>
-              <div className="relative w-full h-full">
-                <div
-                  className={`relative transition-transform duration-1000 ${
-                    isFront ? "rotate-y-0" : "rotate-y-180"
-                  }`}
-                >
-                  <InputBread className="w-full h-full aspect-square" />
+      {typeof editingIndex === "number" ? (
+        <div
+          className="flex flex-col justify-between w-full mt-14 text-center"
+          style={{ minHeight: "calc(100vh - 120px)" }}
+        >
+          <div
+            className="flex flex-col flex-grow overflow-hidden pt-5"
+            style={{ maxHeight: "calc(100vh - 190px)" }}
+          >
+            <div className="text-start mx-5">
+              <Label className="text-lg">앞면</Label>
+              <Input
+                value={editConcept}
+                onChange={(e) => setEditConcept(e.target.value)}
+                maxLength={50}
+              ></Input>
+              <p
+                className={`text-sm text-right ${
+                  editConcept.length > 50 ? "text-red-500" : "text-muted-foreground"
+                }`}
+              >
+                {editConcept.length} / 50
+              </p>
+            </div>
+            <div className="flex-grow flex flex-col overflow-hidden text-start p-5">
+              <Label className="text-lg">뒷면</Label>
+              <Textarea
+                className="h-full flex-grow scrollbar-hide"
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+                maxLength={1000}
+              />
+              <p
+                className={`text-sm text-right ${
+                  editDescription.length > 1000 ? "text-red-500" : "text-muted-foreground"
+                }`}
+              >
+                {editDescription.length} / 1000
+              </p>
+            </div>
+          </div>
 
-                  {!isRotating ? (
-                    editingIndex === index ? (
-                      <>
-                        <input
-                          autoFocus
-                          type="text"
-                          value={indexCard.concept}
-                          maxLength={MAX_CONCEPT_LENGTH}
-                          onChange={(e) => handleConceptChange(e, index)}
-                          onBlur={() => setEditingIndex(null)}
-                          onKeyDown={(e) => {
-                            if (e.key === "Enter") {
-                              setEditingIndex(null);
-                            }
-                          }}
-                          className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold text-center bg-transparent border-b-2 border-primary-300 focus:outline-none"
-                        />
-
-                        <div
-                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
-                            indexCard.concept.length >= MAX_CONCEPT_LENGTH
-                              ? "text-red-500"
-                              : "text-gray-400"
-                          }`}
-                        >
-                          {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
-                        </div>
-                      </>
+          <Button className="mb-5 mx-5" variant="primary" onClick={handelEditSave}>
+            수정
+          </Button>
+        </div>
+      ) : (
+        <div
+          className="flex flex-col justify-between w-full mt-14 text-center"
+          style={{ minHeight: "calc(100vh - 120px)" }}
+        >
+          <div>
+            <div className="flex mt-5 mx-5 gap-5">
+              <Input
+                placeholder="내용을 입력하세요"
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+              />
+              {selected.length > 0 ? (
+                <Button variant="negative" onClick={handleDeleteCard}>
+                  삭제
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={handleAddCard}>
+                  추가
+                </Button>
+              )}
+            </div>
+            <div
+              className="m-5 overflow-auto scrollbar-hide"
+              style={{ maxHeight: "calc(100vh - 272px)" }}
+            >
+              <div className="text-left rounded-md border">
+                <Table className="table-fixed">
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead className="w-10 text-center p-0">
+                        <Checkbox checked={isAllSelected} onCheckedChange={handleSelectAll} />
+                      </TableHead>
+                      <TableHead className="w-28">앞면</TableHead>
+                      <TableHead className="w-full">뒷면</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {filteredCards.length > 0 ? (
+                      filteredCards.map((card, index) => (
+                        <TableRow key={index} className="h-10">
+                          <TableCell className="text-center p-0">
+                            <Checkbox
+                              checked={selected.includes(index)}
+                              onCheckedChange={() => handleCheckboxChange(index)}
+                            />
+                          </TableCell>
+                          <TableCell
+                            className="truncate overflow-hidden whitespace-nowrap font-bold"
+                            onClick={() => handleEditCard(index)}
+                          >
+                            {card.concept}
+                          </TableCell>
+                          <TableCell
+                            className="truncate overflow-hidden whitespace-nowrap"
+                            onClick={() => handleEditCard(index)}
+                          >
+                            {card.description}
+                          </TableCell>
+                        </TableRow>
+                      ))
                     ) : (
-                      <>
-                        <div
-                          className="absolute top-1/2 left-1/2 w-2/3 transform -translate-x-1/2 -translate-y-1/2 
-                                      text-2xl font-bold cursor-text text-center
-                                      line-clamp-5 overflow-hidden break-words"
-                          onClick={() => setEditingIndex(index)}
-                        >
-                          {indexCard.concept || "제목 없음"}
-                        </div>
-
-                        <div
-                          className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm ${
-                            indexCard.concept.length >= MAX_CONCEPT_LENGTH
-                              ? "text-red-500"
-                              : "text-gray-400"
-                          }`}
-                        >
-                          {indexCard.concept.length}/{MAX_CONCEPT_LENGTH}
-                        </div>
-                      </>
-                    )
-                  ) : (
-                    <>
-                      <textarea
-                        className="absolute top-[17%] left-[17%] w-2/3 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold rotate-y-180"
-                        value={indexCard.description}
-                        placeholder="여기에 텍스트를 입력하세요"
-                        onChange={(e) => {
-                          const updatedDescription = e.target.value;
-                          const updatedCards = [...cardSet];
-                          updatedCards[index] = {
-                            ...updatedCards[index],
-                            description: updatedDescription,
-                          };
-                          setCardSet(updatedCards);
-                        }}
-                        maxLength={MAX_LENGTH}
-                        style={{
-                          scrollbarWidth: "none",
-                        }}
-                      />
-
-                      <div
-                        className={`absolute bottom-[-20px] left-5 pc:left-10 text-sm rotate-y-180 ${
-                          indexCard.description.length >= MAX_LENGTH
-                            ? "text-red-500"
-                            : "text-gray-400"
-                        }`}
-                      >
-                        {indexCard.description.length}/{MAX_LENGTH}
-                      </div>
-                    </>
-                  )}
-                </div>
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center text-neutral-500 py-5">
+                          표시할 카드가 없습니다
+                        </TableCell>
+                      </TableRow>
+                    )}
+                  </TableBody>
+                </Table>
               </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
-        <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
-
-        {cardSet.length > 1 && (
-          <div
-            className="absolute flex justify-center items-center rounded-full font-bold top-0 left-0 mx-5 w-10 h-10 bg-neutral-300 text-700 pc:mx-0 focus-visible:ring-ring focus-visible:ring-1 hover:bg-accent cursor-pointer"
-            onClick={handleDeleteCard}
-          >
-            -
+            </div>
           </div>
-        )}
 
-        {currentIndex === cardSet.length && (
-          <div
-            className="absolute flex justify-center items-center rounded-full font-bold top-0 right-0 mx-5 w-10 h-10 bg-primary-500 text-700 pc:hidden"
-            onClick={handleAddCard}
-          >
-            +
-          </div>
-        )}
-
-        {currentIndex === cardSet.length ? (
-          <CarouselNext
-            className="hidden bg-primary-500 text-700 pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10 disabled:pointer-events-auto"
-            onClick={handleAddCard}
-            disabled={false}
-          />
-        ) : (
-          <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
-        )}
-      </Carousel>
-
-      <Button className="my-5 mx-5" variant="primary" onClick={handeleSaveCard}>
-        생성
-      </Button>
-    </div>
+          <Button className="mb-5 mx-5" variant="primary" onClick={handeleSaveCard}>
+            생성
+          </Button>
+        </div>
+      )}
+    </>
   );
 };
 

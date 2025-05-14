@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { FolderPlus } from "lucide-react";
 
+import Button from "@/components/common/Button";
 import { postFolder } from "@/services/folder";
 
 import {
@@ -36,7 +36,7 @@ const CreateFolderDialog = ({
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <FolderPlus />
+        <Button variant="primary">추가</Button>
       </DialogTrigger>
       <DialogContent className="max-w-xs rounded-lg">
         <DialogHeader>
