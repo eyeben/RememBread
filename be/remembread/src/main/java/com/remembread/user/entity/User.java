@@ -35,6 +35,7 @@ public class User extends BaseEntity {
     @JoinColumn(name = "main_character_id")
     private Character mainCharacter;
 
+    @Setter
     @Column(length = 255)
     private String fcmToken;
 
@@ -46,13 +47,17 @@ public class User extends BaseEntity {
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean notificationTimeEnable;
 
+    @Setter
     private Double notificationLocationLatitude;
 
+    @Setter
     private Double notificationLocationLongitude;
 
+    @Setter
     @Column(nullable = false, columnDefinition = "BOOLEAN DEFAULT FALSE")
     private Boolean notificationLocationEnable;
 
+    @Setter
     private LocalDateTime lastLocationNotified;
 
     @Setter

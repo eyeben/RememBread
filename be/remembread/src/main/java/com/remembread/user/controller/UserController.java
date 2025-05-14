@@ -5,6 +5,7 @@ import com.remembread.auth.annotation.AuthUser;
 import com.remembread.common.service.S3Service;
 import com.remembread.user.converter.UserConverter;
 import com.remembread.user.dto.UserCharacterResponseDto;
+import com.remembread.user.dto.UserLocationRequestDto;
 import com.remembread.user.dto.UserRequestDto;
 import com.remembread.user.dto.UserResponseDto;
 import com.remembread.user.entity.User;
@@ -24,7 +25,6 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
-    private final S3Service service;
 
     @PatchMapping("/agree")
     @Operation(summary = "약관 동의 API", description = "회원가입 시 이용약관을 동의로 처리하는 API 입니다.")
@@ -51,17 +51,24 @@ public class UserController {
         return ApiResponse.onSuccess(userService.updateUser(user, userRequestDto));
     }
 
+    @PatchMapping("/fcmToken")
+    @Operation(summary = "FCM 토큰 수정 API", description = "로그인 시 사용자의 FCM 토큰을 수정하는 API 입니다.")
+    public ApiResponse<Void> modifyFcmToken(@AuthUser User user, @RequestBody String fcmToken) {
+        userService.updateUserFcmToken(user, fcmToken);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @PatchMapping("/location")
+    @Operation(summary = "위치 관련 정보 수정 API", description = "위치 알림 수신 여부, 기준점 위치 정보를 수정하는 API 입니다.")
+    public ApiResponse<Void> modifyLocation(@AuthUser User user, @RequestBody @Valid UserLocationRequestDto userLocationRequestDto) {
+        userService.updateUserLocation(user, userLocationRequestDto);
+        return ApiResponse.onSuccess(null);
+    }
+
     @DeleteMapping
     @Operation(summary = "사용자 탈퇴 API", description = "사용자를 탈퇴 처리하는 API입니다. 관련 정보가 모두 삭제됩니다.")
     public ApiResponse<Void> withdrawUser(@AuthUser User user) {
         userService.deleteUser(user);
-        return ApiResponse.onSuccess(null);
-    }
-
-    @GetMapping("/test")
-    @Operation(summary = "테스트 API", description = "사용자를 탈퇴 처리하는 API입니다. 관련 정보가 모두 삭제됩니다.")
-    public ApiResponse<Void> nope(@RequestParam("file") String file) {
-        service.deleteImage(file);
         return ApiResponse.onSuccess(null);
     }
 
