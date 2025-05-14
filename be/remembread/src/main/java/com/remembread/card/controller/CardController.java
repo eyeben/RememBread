@@ -3,10 +3,10 @@ import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.request.CardCreateRequest;
 import com.remembread.card.dto.request.CardCreateManyRequest;
+import com.remembread.card.dto.request.CardDeleteManyRequest;
 import com.remembread.card.dto.request.CardUpdateRequest;
 import com.remembread.card.dto.response.CardGetResponse;
 import com.remembread.card.dto.response.CardListInfiniteResponse;
-import com.remembread.card.dto.response.CardListResponse;
 import com.remembread.card.service.CardService;
 import com.remembread.user.entity.User;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -65,4 +65,14 @@ public class CardController {
 
         return ApiResponse.onSuccess(cardService.getCardsInfinite(cardId, isDownward, size, user.getId()));
     }
+
+    @DeleteMapping("/delete-many")
+    public ApiResponse<Void> deleteCardMany(
+            @RequestBody CardDeleteManyRequest request,
+            @AuthUser User user
+    ) {
+        cardService.deleteCardMany(request, user);
+        return ApiResponse.onSuccess(null);
+    }
+
 }

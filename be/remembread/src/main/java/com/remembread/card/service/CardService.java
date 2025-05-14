@@ -4,6 +4,7 @@ import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.request.CardCreateManyRequest;
 import com.remembread.card.dto.request.CardCreateRequest;
+import com.remembread.card.dto.request.CardDeleteManyRequest;
 import com.remembread.card.dto.request.CardUpdateRequest;
 import com.remembread.card.dto.response.CardGetResponse;
 import com.remembread.card.dto.response.CardListInfiniteResponse;
@@ -153,5 +154,31 @@ public class CardService {
                         c.getDescription()
                 ))
                 .toList();
+    }
+    @Transactional
+    public void deleteCardMany(CardDeleteManyRequest request, User user) {
+        List<Card> cards = cardRepository.findAllById(request.getCardIds());
+
+        if (cards.size() != request.getCardIds().size()) {
+            throw new GeneralException(ErrorStatus.CARD_NOT_FOUND);
+        }
+
+        Long cardSetId = cards.get(0).getCardSet().getId();
+
+        // 모든 카드의 cardSetId가 같은지 확인
+        boolean allSameCardSet = cards.stream()
+                .allMatch(card -> card.getCardSet().getId().equals(cardSetId));
+
+        if (!allSameCardSet) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+
+        // 카드셋 주인의 ID와 현재 유저 ID 일치 여부 확인
+        CardSet cardSet = cards.get(0).getCardSet();
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+
+        cardRepository.deleteAll(cards);
     }
 }
