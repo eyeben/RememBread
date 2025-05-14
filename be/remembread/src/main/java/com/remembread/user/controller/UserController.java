@@ -51,7 +51,7 @@ public class UserController {
         return ApiResponse.onSuccess(userService.updateUser(user, userRequestDto));
     }
 
-    @PatchMapping("/fcmToken")
+    @PatchMapping("/fcm-token")
     @Operation(summary = "FCM 토큰 수정 API", description = "로그인 시 사용자의 FCM 토큰을 수정하는 API 입니다.")
     public ApiResponse<Void> modifyFcmToken(@AuthUser User user, @RequestBody String fcmToken) {
         userService.updateUserFcmToken(user, fcmToken);
