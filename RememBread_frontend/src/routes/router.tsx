@@ -121,7 +121,11 @@ const router = createBrowserRouter([
           {
             path: "create",
             children: [
-              { index: true, element: <CreateFromSelfPage /> },
+              {
+                index: true,
+                element: <CreateFromSelfPage />,
+                handle: { header: false, footer: true },
+              },
               { path: "pdf", element: <CreateFromPDFPage /> },
               { path: "text", element: <CreateFromTextFPage /> },
               { path: "image", element: <CreateFromImageFPage /> },
@@ -130,6 +134,7 @@ const router = createBrowserRouter([
           {
             path: "save",
             element: <SaveCardPage />,
+            handle: { header: false, footer: true },
           },
           {
             path: "card-view",
