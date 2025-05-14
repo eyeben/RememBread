@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion, useAnimation } from 'framer-motion';
 import Timer from '@/components/common/Timer';
@@ -17,7 +17,6 @@ import Doughnut from '@/components/svgs/game/Doughnut';
 import Pizza from '@/components/svgs/game/Pizza';
 import Pretzel from '@/components/svgs/game/Pretzel';
 
-// 임시로 같은 SVG를 반복해서 10개로 만듦
 const svgList = [
   Baguette, Croissant, Bread, Bread2,
   Cake, Cookie, Cupcake, Doughnut,
@@ -78,25 +77,29 @@ const getRandomPos = () => {
 const GameShadowPage = () => {
   const navigate = useNavigate();
   const { setShadowScore } = useGameStore();
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const [score, setScore] = useState(0);
-  const [level, setLevel] = useState(2);
+  const [isGameStarted, setIsGameStarted] = useState<boolean>(false);
+  const [score, setScore] = useState<number>(0);
+  const [level, setLevel] = useState<number>(2);
+  const [levelScore, setLevelScore] = useState<number>(0); // 현재 레벨에서의 점수
   const [randomIdx, setRandomIdx] = useState<number[]>([]);
   const [solvedBreads, setSolvedBreads] = useState<number[]>([]);
-  const [showResultModal, setShowResultModal] = useState(false);
-  const [isCorrect, setIsCorrect] = useState(false);
+  const [showResultModal, setShowResultModal] = useState<boolean>(false);
+  const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [answerButtons, setAnswerButtons] = useState<number[]>([]);
   const [positions, setPositions] = useState<{x: number, y: number}[]>([]);
   
-  // 각 이미지마다 별도의 controls 생성
-  const controls = Array.from({ length: 5 }, () => useAnimation());
+  // useAnimation을 최상위 레벨에서 호출
+  const controlsArray = Array.from({ length: 4 }, () => useAnimation());
+  
+  // controls 배열을 level에 따라 필터링
+  const controls = useMemo(() => controlsArray.slice(0, level), [level]);
 
   const generateNewProblem = () => {
     const newIndices = getRandomIndices(level);
     setRandomIdx(newIndices);
     
-    // 새로운 위치 생성
-    const newPositions = newIndices.map(() => getRandomPos());
+    // 새로운 위치 생성 - level 수만큼 정확히 생성
+    const newPositions = Array.from({ length: level }, () => getRandomPos());
     setPositions(newPositions);
     
     setAnswerButtons(getAnswerButtons(newIndices));
@@ -105,46 +108,51 @@ const GameShadowPage = () => {
   // 게임 시작 시 문제 생성
   useEffect(() => {
     if (isGameStarted) {
+      console.log("게임생성", level)
       generateNewProblem();
     }
-  }, [isGameStarted]);
+  }, [isGameStarted, level]);
 
   // 애니메이션 효과
   useEffect(() => {
-    if (!isGameStarted || randomIdx.length === 0) return;
+    if (!isGameStarted || randomIdx.length === 0 || positions.length === 0) return;
 
     const animate = async () => {
-      const newPositions = randomIdx.map(() => getRandomPos());
+      const newPositions = Array.from({ length: level }, () => getRandomPos());
       setPositions(newPositions);
       
       await Promise.all(
-        randomIdx.map((_, idx) =>
-          controls[idx].start({
-            x: newPositions[idx].x,
-            y: newPositions[idx].y,
-            transition: {
-              duration: 2,
-              ease: "easeInOut",
-            }
-          })
-        )
+        controls.map((control, idx) => {
+          if (idx < positions.length) {
+            return control.start({
+              x: newPositions[idx].x,
+              y: newPositions[idx].y,
+              transition: {
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Infinity,
+                repeatType: "mirror"
+              }
+            });
+          }
+          return Promise.resolve();
+        })
       );
-
-      // 애니메이션이 끝나면 0.2초 후에 다음 애니메이션 시작
-      setTimeout(() => {
-        if (isGameStarted) {
-          animate();
-        }
-      }, 200);
     };
 
     // 초기 위치 설정
-    randomIdx.forEach((_, idx) => {
-      controls[idx].set({ x: positions[idx]?.x || 0, y: positions[idx]?.y || 0 });
+    controls.forEach((control, idx) => {
+      if (idx < positions.length && positions[idx]) {
+        control.set({ x: positions[idx].x, y: positions[idx].y });
+      }
     });
 
     animate();
-  }, [isGameStarted, randomIdx]);
+
+    return () => {
+      controls.forEach(control => control.stop());
+    };
+  }, [isGameStarted, randomIdx, controls, level, positions.length]);
 
   const handleAnswer = (selectedIdx: number) => {
     if (randomIdx.includes(selectedIdx) && !solvedBreads.includes(selectedIdx)) {
@@ -155,11 +163,13 @@ const GameShadowPage = () => {
         setIsCorrect(true);
         setShowResultModal(true);
         setScore(prev => prev + 1);
+        setLevelScore(prev => prev + 1);
         
-        // 레벨 업 조건 체크
-        if (score + 1 >= level * 2) { // 현재 레벨의 2배 점수를 획득하면 레벨업
+        // 현재 레벨에서 3문제를 맞췄는지 확인
+        if (levelScore + 1 >= 3) {
           if (level < 4) {
             setLevel(prev => prev + 1);
+            setLevelScore(0); // 레벨이 올라가면 레벨 점수 초기화
           }
         }
         
