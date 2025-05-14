@@ -26,18 +26,27 @@ const FolderPathBreadcrumb = ({ path, toggleFolder }: FolderPathBreadcrumbProps)
     .filter(Boolean);
 
   if (segments.length === 0) {
-    return null;
+    return (
+      <div className="flex w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm text-muted-foreground">
+        저장 위치를 선택해주세요.
+      </div>
+    );
   }
 
   if (segments.length === 1) {
     return (
-      <Breadcrumb>
-        <BreadcrumbList>
-          <BreadcrumbItem onClick={() => toggleFolder(Number(segments[0].split(SEPARATOR)[0]))}>
-            <p className="text-lg">{"📁 " + segments[0].split(SEPARATOR)[1]}</p>
-          </BreadcrumbItem>
-        </BreadcrumbList>
-      </Breadcrumb>
+      <div className="flex w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm">
+        <Breadcrumb>
+          <BreadcrumbList>
+            <BreadcrumbItem
+              className="min-w-0 cursor-pointer"
+              onClick={() => toggleFolder(Number(segments[0].split(SEPARATOR)[0]))}
+            >
+              <p className="truncate">{"📁 " + segments[0].split(SEPARATOR)[1]}</p>
+            </BreadcrumbItem>
+          </BreadcrumbList>
+        </Breadcrumb>
+      </div>
     );
   }
 
@@ -46,46 +55,53 @@ const FolderPathBreadcrumb = ({ path, toggleFolder }: FolderPathBreadcrumbProps)
   const last = segments[segments.length - 1];
 
   return (
-    <Breadcrumb>
-      <BreadcrumbList>
-        <BreadcrumbItem onClick={() => toggleFolder(Number(first.split(SEPARATOR)[0]))}>
-          <p className="text-lg">{"📁 " + first.split(SEPARATOR)[1]}</p>
-        </BreadcrumbItem>
+    <div className="flex w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm">
+      <Breadcrumb className="w-full overflow-hidden">
+        <BreadcrumbList className="flex items-center gap-1.5 sm:gap-2.5 flex-nowrap min-w-0 overflow-hidden">
+          <BreadcrumbItem className="min-w-0 max-w-full">
+            <p
+              className="truncate cursor-pointer"
+              onClick={() => toggleFolder(Number(first.split(SEPARATOR)[0]))}
+            >
+              {"📁 " + first.split(SEPARATOR)[1]}
+            </p>
+          </BreadcrumbItem>
 
-        {middle.length > 0 && (
-          <>
-            <BreadcrumbSeparator />
-            <BreadcrumbItem>
-              <DropdownMenu>
-                <DropdownMenuTrigger className="flex items-center gap-1">
-                  <BreadcrumbEllipsis className="h-4 w-4" />
-                  <span className="sr-only text-lg">Toggle menu</span>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="start">
-                  {middle.map((item, idx) => (
-                    <DropdownMenuItem
-                      key={idx}
-                      onClick={() => toggleFolder(Number(item.split(SEPARATOR)[0]))}
-                    >
-                      {"📁 " + item.split(SEPARATOR)[1]}
-                    </DropdownMenuItem>
-                  ))}
-                </DropdownMenuContent>
-              </DropdownMenu>
-            </BreadcrumbItem>
-          </>
-        )}
+          {middle.length > 0 && (
+            <>
+              <BreadcrumbSeparator />
+              <BreadcrumbItem className="shrink-0">
+                <DropdownMenu>
+                  <DropdownMenuTrigger className="flex items-center gap-1">
+                    <BreadcrumbEllipsis className="h-4 w-4" />
+                    <span className="sr-only">Toggle menu</span>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="start">
+                    {middle.map((item, idx) => (
+                      <DropdownMenuItem
+                        key={idx}
+                        onClick={() => toggleFolder(Number(item.split(SEPARATOR)[0]))}
+                      >
+                        {"📁 " + item.split(SEPARATOR)[1]}
+                      </DropdownMenuItem>
+                    ))}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </BreadcrumbItem>
+            </>
+          )}
 
-        <BreadcrumbSeparator />
-        <BreadcrumbItem>
-          <p className="text-lg">
-            {last.split(SEPARATOR)[1].startsWith("🍞")
-              ? last.split(SEPARATOR)[1]
-              : "📁 " + last.split(SEPARATOR)[1]}
-          </p>
-        </BreadcrumbItem>
-      </BreadcrumbList>
-    </Breadcrumb>
+          <BreadcrumbSeparator />
+          <BreadcrumbItem className="min-w-0 max-w-full">
+            <p className="truncate cursor-pointer">
+              {last.split(SEPARATOR)[1].startsWith("🍞")
+                ? last.split(SEPARATOR)[1]
+                : "📁 " + last.split(SEPARATOR)[1]}
+            </p>
+          </BreadcrumbItem>
+        </BreadcrumbList>
+      </Breadcrumb>
+    </div>
   );
 };
 
