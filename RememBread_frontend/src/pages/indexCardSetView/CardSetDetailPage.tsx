@@ -55,12 +55,12 @@ const CardSetDetailPage = () => {
 
   const handleStudyClick = async () => {
     try {
-      navigate("study", { state: { card: cardFromState } });
       const response = await startRecord(cardSetId, {
         mode: "STUDY",
         latitude: 0.1,
         longitude: 0.1,
       });
+      navigate("study", { state: { card: cardFromState } });
       console.log("학습 시작:", response);
       console.log("cardFromState", cardFromState);
     } catch (e) {
