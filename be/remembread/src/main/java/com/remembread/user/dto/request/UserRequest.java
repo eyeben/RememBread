@@ -1,6 +1,5 @@
-package com.remembread.user.dto;
+package com.remembread.user.dto.request;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -9,7 +8,7 @@ import lombok.Getter;
 import java.time.LocalTime;
 
 @Getter
-public class UserRequestDto {
+public class UserRequest {
     @NotNull
     @Size(max = 10)
     String nickname;
