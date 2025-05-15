@@ -11,8 +11,9 @@ import java.time.LocalDateTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class GameResponse {
+public class GameRankingResponse {
     String nickname;
+    String mainCharacterImageUrl;
     Integer rank;
     Integer maxScore;
     LocalDateTime playedAt;
