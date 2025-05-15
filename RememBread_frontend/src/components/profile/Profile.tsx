@@ -1,7 +1,7 @@
 import { useState, ChangeEvent, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { SquarePen } from "lucide-react";
-import { getUser, updateUser } from "@/services/userService";
+import { getUser, updateUser, patchFcmToken } from "@/services/userService";
 import { logout } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
 import Button from "@/components/common/Button";
@@ -13,6 +13,7 @@ import TimePicker from "@/components/profile/TimePicker";
 import useProfileStore from "@/stores/profileStore";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
+import { getDeviceToken } from "@/lib/firebase/tokenFCM";
 
 interface ApiError {
   response?: {
@@ -126,11 +127,25 @@ const Profile = () => {
     });
   };
 
-  const handlenotificationTimeEnableChange = (checked: boolean) => {
+  const handlenotificationTimeEnableChange = async (checked: boolean) => {
     setProfile({
       ...useProfileStore.getState(),
       notificationTimeEnable: checked
     });
+
+    if (checked) {
+      if (Notification.permission === "default") {
+        try {
+          const permission = await Notification.requestPermission();
+          if (permission === "granted") {
+            const token = await getDeviceToken();
+            await patchFcmToken({ fcmToken: token });
+          }
+        } catch (error) {
+          console.error("알림 권한 요청 중 오류가 발생했습니다:", error);
+        }
+      }
+    }
   };
 
   const handleLogout = async () => {
@@ -252,7 +267,7 @@ const Profile = () => {
               <Switch 
                 checked={notificationTimeEnable} 
                 onCheckedChange={handlenotificationTimeEnableChange}
-                disabled={!isEditable} 
+                disabled={!isEditable}
               />
             </div>
           </div>
