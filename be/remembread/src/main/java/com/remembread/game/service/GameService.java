@@ -1,7 +1,9 @@
 package com.remembread.game.service;
 
+import com.remembread.game.converter.GameConverter;
 import com.remembread.game.dto.request.GameRequest;
 import com.remembread.game.dto.response.GameRankingResponse;
+import com.remembread.game.dto.response.GameSessionResponse;
 import com.remembread.game.entity.GameSession;
 import com.remembread.game.enums.GameType;
 import com.remembread.game.repository.GameSessionRepository;
@@ -42,6 +44,15 @@ public class GameService {
                 .rank(rank)
                 .maxScore(maxScore)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameSessionResponse> getGameSession(User user) {
+        List<GameSession> gameSessionList = gameSessionRepository.findByUserOrderByPlayedAtDesc(user);
+
+        return gameSessionList.stream()
+                .map(GameConverter::toGameSessionResponse)
+                .toList();
     }
 
     @Transactional(readOnly = true)
