@@ -5,7 +5,7 @@ import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.auth.entity.UserTokens;
-import com.remembread.auth.entity.response.AccessTokenResponse;
+import com.remembread.auth.dto.response.AccessTokenResponse;
 import com.remembread.auth.service.LoginService;
 import com.remembread.common.enums.SocialLoginType;
 import com.remembread.user.entity.User;

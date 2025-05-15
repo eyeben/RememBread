@@ -1,12 +1,12 @@
 package com.remembread.user.converter;
 
-import com.remembread.user.dto.UserResponseDto;
+import com.remembread.user.dto.response.UserResponse;
 import com.remembread.user.entity.User;
 
 public class UserConverter {
 
-    public static UserResponseDto toUserResponseDto(User user) {
-        return UserResponseDto.builder()
+    public static UserResponse toUserResponseDto(User user) {
+        return UserResponse.builder()
                 .nickname(user.getNickname())
                 .mainCharacterId(user.getMainCharacter().getId())
                 .mainCharacterImageUrl(user.getMainCharacter().getImageUrl())

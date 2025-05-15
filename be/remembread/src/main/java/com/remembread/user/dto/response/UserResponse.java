@@ -1,7 +1,6 @@
-package com.remembread.user.dto;
+package com.remembread.user.dto.response;
 
 import com.remembread.common.enums.SocialLoginType;
-import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
@@ -13,7 +12,7 @@ import java.time.LocalTime;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserResponseDto {
+public class UserResponse {
     String nickname;
     Long mainCharacterId;
     String mainCharacterImageUrl;
