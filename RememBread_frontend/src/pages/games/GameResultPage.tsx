@@ -60,9 +60,6 @@ const GameResultPage = () => {
     fetchUserProfile();
   }, [nickname, mainCharacterImageUrl]);
 
-  // 현재 사용자의 순위 계산
-  const userRank = dummyLeaderboard.findIndex(item => item.name === userProfile.nickname);
-
   return (
     <div className="flex flex-col items-center justify-center p-4">
       <header>
@@ -80,7 +77,7 @@ const GameResultPage = () => {
       <div className="w-full max-w-md bg-white rounded-lg border-2 border-primary-200 p-6 mb-8">
         {/* 현재 사용자 점수 */}
         <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg mb-6">
-          <div className="w-12 h-12 bg-gray-200 rounded-full overflow-hidden">
+          <div className="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
             {userProfile.profileImage ? (
               <img 
                 src={userProfile.profileImage} 
@@ -92,7 +89,7 @@ const GameResultPage = () => {
             )}
           </div>
           <div className="flex-1">
-            <div className="text-lg font-bold">{userRank !== -1 ? `${userRank + 1}등` : '-'}</div>
+            <div className="text-lg font-bold">{nickname}</div>
             <div className="text-gray-600">{score} Pts</div>
           </div>
         </div>

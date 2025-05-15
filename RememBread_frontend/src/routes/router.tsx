@@ -26,8 +26,8 @@ import GameHomePage from "@/pages/games/GameHomePage";
 import MemoryGamePage from "@/pages/games/MemoryGamePage";
 import GameResultPage from "@/pages/games/GameResultPage";
 import CompareGamePage from "@/pages/games/CompareGamePage";
-import GameDetectivePage from "@/pages/games/GameDetectivePage";
-import GameShadowPage from "@/pages/games/GameShadowPage";
+import GameDetectivePage from "@/pages/games/DetectiveGamePage";
+import GameShadowPage from "@/pages/games/ShadowGamePage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
