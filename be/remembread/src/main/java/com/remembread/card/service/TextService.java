@@ -1,6 +1,5 @@
 package com.remembread.card.service;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.common.service.GPTService;
@@ -11,8 +10,6 @@ import reactor.core.publisher.Flux;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-
-import java.util.Map;
 
 @Slf4j
 @Service
@@ -44,45 +41,34 @@ public class TextService {
     }
 
     public Flux<CardResponse> createCardListStream(String text, AtomicInteger index) {
-        String systemPrompt = "너는 사용자가 입력한 텍스트를 주제별로 나눠 JSON 배열로 정리하는 역할을 해. 각 항목은 concept과 description으로 구성돼야 하고, description에는 concept 단어가 그대로 들어가면 안 돼.";
+        text = text.replace("`", "");
 
-        String userPrompt = """
-            가장 중요한 규칙: description에 concept 단어가 그대로 포함되면 안 돼.
-            너는 사용자가 입력한 긴 설명 텍스트를 concept과 description으로 나누는 역할을 해.
-
-            - 각 항목은 반드시 concept과 description 키를 포함한 JSON 객체여야 해.
-            - description은 **절대로 요약하거나 생략하지 마. 한 문장도 빠뜨리지 말고, 원문 문장 전체를 그대로 포함시켜.**
-            - 단지 concept 단어만 다른 표현으로 바꾸거나 문장 속에서 제거해. 문장 순서, 내용은 그대로 유지해.
-
-            텍스트:
-            %s
-            """.formatted(text);
-
-        systemPrompt = """
+        String systemPrompt = """
                 ### 역할
-                입력된 텍스트로부터 사용자가 학습할 플래시카드를 CSV 형식의 텍스트로 출력하는 역할이다.
-                모든 출력은 원문에 존재하는 내용으로만 구성해야 하며, 원문의 내용을 아래 규칙에 맞게 CSV 텍스트로 분할만 한다.
-                절대로 새로운 텍스트를 생성해서는 안 된다.
+                너는 지금부터 **플래시카드 생성기**야.
+                입력된 텍스트로부터 사용자가 학습할 플래시카드를 **CSV 형식의 텍스트**로 출력하는 역할을 수행해야돼.
+                모든 출력은 **원문에 존재하는 내용**으로만 구성해야 하고, 원문의 내용을 아래 규칙에 맞게 **분할**만 해야돼.
+                절대로 새로운 텍스트를 생성해서는 안돼.
                 
                 ### 규칙
-                - 양식은 다음과 같다:
+                - 출력 양식은 다음과 같아:
                 ```text
                 "개념 1", "설명 1"
                 "개념 2", "설명 2"
                 ...
                 ```
-                - 각 줄은 "개념", "설명" 쌍으로 구성된 하나의 플래시카드이다.
-                - "개념"은 텍스트 내에서 중요한 단어나 개념을 그대로 추출한 것이다. 이것은 단어(Word) 또는 구(Phrase)일 수 있다.
-                - "설명"은 "개념"을 다른 문자열로 표현한 것이다. "설명" 또한 원문 텍스트에서 추출하지만, 주의할 점이 몇 가지 있다.
-                  - 원문에 존재하는 "개념"에 대한 모든 설명을 그대로 복사해서 가져온다.
-                  - 가져온 각 문장에서 "개념"의 문자열과 완전히 일치하는 부분을 제외한 나머지를 포함시켜야 한다.
-                - 정말 중요해서 다시 한 번 강조하는데, 무슨 일이 있어도 "설명"에는 "개념"과 동일한 문자열이 직접적으로 들어가면 안 된다.
+                - 각 줄은 "개념", "설명" 쌍으로 구성된 하나의 플래시카드야.
+                - "개념"은 원문 텍스트 내에서 중요한 단어나 개념을 그대로 추출한 것이야. 이것은 단어(Word) 또는 구(Phrase)일 수 있어.
+                - "설명"은 "개념"을 다른 문자열로 표현한 거야. "설명" 또한 원문 텍스트에서 추출하지만, 주의할 점이 몇 가지 있어.
+                    - 원문에 존재하는 "개념"에 대한 모든 설명을 그대로 복사해서 가져와야 돼. 짧게는 단어, 길게는 문단이 될 수도 있어. 설명에 해당되는 텍스트라면 빠짐없이 가져와야 돼.
+                    - 가져온 각 문장에서 "개념"의 문자열과 완전히 일치하는 부분을 제거해줘. 제거 후 나머지 부분을 포함시켜야 돼.
+                - 사용자는 "설명"을 보고 "개념"을 유추할 수 있고, "개념"을 보고 "설명"을 유추할 수 있어야 돼.
+                - 정말 중요해서 다시 한 번 강조하는데, 무슨 일이 있어도 "설명"을 구성하는 텍스트에는 "개념"과 동일한 문자열이 직접적으로 들어가면 안돼. 제거하거나 다른 표현으로 변경해줘.
                 """;
 
-        text = text.replace("`", "");
-        userPrompt = """
+        String userPrompt = """
                 ### 입력
-                다음 텍스트에서 플래시카드를 추출해야 한다:
+                다음 텍스트에서 플래시카드를 추출해줘:
                 ```text
                 %s
                 ```
@@ -122,65 +108,6 @@ public class TextService {
                         throw new RuntimeException("CardResponse 변환 실패: " + csvLine, e);
                     }
                 });
-//        return gptService.askStream(systemPrompt, userPrompt)
-//                .filter(line -> {
-//                    String trimmed = line.strip();
-//                    return !trimmed.isBlank()
-//                            && !trimmed.equals("```")
-//                            && !trimmed.equals("```json")
-//                            && !trimmed.equals("[")
-//                            && !trimmed.equals("]")
-//                            && !trimmed.equals(",");
-//                })
-//                .transform(this::splitJsonObjectsFromStream)
-//                .map(json -> {
-//                    try {
-//                        Map<String, String> map = objectMapper.readValue(json, new TypeReference<>() {});
-//                        return CardResponse.builder()
-//                                .number(index.getAndIncrement())
-//                                .concept(map.get("concept"))
-//                                .description(map.get("description"))
-//                                .build();
-//                    } catch (Exception e) {
-//                        throw new RuntimeException("CardResponse 변환 실패: " + json, e);
-//                    }
-//                });
-    }
-
-    private Flux<String> splitJsonObjectsFromStream(Flux<String> stream) {
-        return Flux.create(sink -> {
-            StringBuilder buffer = new StringBuilder();
-            AtomicInteger braceDepth = new AtomicInteger(0);
-            AtomicBoolean insideObject = new AtomicBoolean(false);
-
-            stream.subscribe(
-                    chunk -> {
-                        for (char c : chunk.toCharArray()) {
-                            if (c == '{') {
-                                if (!insideObject.get()) {
-                                    buffer.setLength(0); // 초기화
-                                    insideObject.set(true);
-                                }
-                                braceDepth.incrementAndGet();
-                            }
-
-                            if (insideObject.get()) {
-                                buffer.append(c);
-                            }
-
-                            if (c == '}') {
-                                if (braceDepth.decrementAndGet() == 0 && insideObject.get()) {
-                                    insideObject.set(false);
-                                    String completed = buffer.toString();
-                                    sink.next(completed);
-                                }
-                            }
-                        }
-                    },
-                    sink::error,
-                    sink::complete
-            );
-        });
     }
 
     private Flux<String> splitCsvObjectsFromStream(Flux<String> stream) {
