@@ -1,14 +1,13 @@
 import  http  from "@/services/httpCommon";
 import { GAME_END_POINT } from "@/services/endPoints";
-import { Leaderboard } from "@/types/game";
+import { LeaderboardType, GameHistoryType } from "@/types/game";
 
 interface RankResponse {
     isSuccess: boolean;
     code: string;
     message: string;
-    result:Leaderboard[]
+    result:LeaderboardType[]
 }
-
 
 
 interface GameResultResponse {
@@ -26,6 +25,13 @@ interface GameResultResponse {
 interface GameResultParams {
     gameName: string;
     score: number;
+}
+
+interface GameHistoryResponse {
+    isSuccess: boolean;
+    code: string;
+    message: string;
+    result: GameHistoryType[];
 }
 
 /**
@@ -57,3 +63,18 @@ export const getRanks = async (): Promise<RankResponse> => {
       throw error
     }
   };
+
+/**
+ * 게임 히스토리 조회
+ * 
+ * 게임 히스토리 조회 요청 및 응답 처리
+ */
+export const getGameHistory = async (): Promise<GameHistoryResponse> => {
+    try {
+        const response = await http.get<GameHistoryResponse>(GAME_END_POINT.GET_GAME_HISTORY);
+        console.log("게임 히스토리 조회", response.data);
+        return response.data;
+    } catch (error) {
+        throw error;
+    }
+}

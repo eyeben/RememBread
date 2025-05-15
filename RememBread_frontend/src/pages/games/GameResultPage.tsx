@@ -4,7 +4,7 @@ import useGameStore from "@/stores/gameStore";
 import ClearBread from "@/components/svgs/breads/ClearBread";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { getRanks, postGameResult } from "@/services/gameService";
-import { Leaderboard } from "@/types/game";
+import { LeaderboardType } from "@/types/game";
 
 interface UserProfile {
   nickname: string;
@@ -18,7 +18,7 @@ const GameResultPage = () => {
   const location = useLocation();
   const { memoryScore, compareScore, detectiveScore, shadowScore, resetMemoryScore, resetCompareScore, resetDetectiveScore, resetShadowScore } = useGameStore();
   const [userProfile, setUserProfile] = useState<UserProfile>();
-  const [Leaderboard, setLeaderboard] = useState<Leaderboard[]>([]);
+  const [Leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
   
   const gameType = location.state?.game || "memory";
   const score = gameType === "memory" ? memoryScore : 

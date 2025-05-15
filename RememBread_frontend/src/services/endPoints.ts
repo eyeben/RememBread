@@ -41,4 +41,5 @@ export const USER_END_POINT = {
 export const GAME_END_POINT = {
     GET_RANKS: '/games',
     POST_GAME_RESULT: '/games',
+    GET_GAME_HISTORY: '/games/history',
 }
