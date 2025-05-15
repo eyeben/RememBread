@@ -218,7 +218,7 @@ const SaveCardPage = () => {
                 toggleFolder={toggleFolder}
               />
             </div>
-            <div className="ml-2 shrink-0">
+            <div className="shrink-0">
               <CreateFolderDialog
                 selectedFolderName={selectedFolder?.name ?? null}
                 selectedFolderId={selectedFolder?.id ?? null}
