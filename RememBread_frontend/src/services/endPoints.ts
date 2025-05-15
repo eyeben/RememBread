@@ -31,3 +31,14 @@ export const USER_END_POINT = {
     GET_CHARACTERS: '/users/characters',
     PATCH_FCM_TOKEN: '/users/fcm-token',
 }
+
+/**
+ * 게임 관련 URL
+ * 
+ * GET_RANKS : /games/ranks
+ * POST_GAME_RESULT : /games/result
+ */
+export const GAME_END_POINT = {
+    GET_RANKS: '/games',
+    POST_GAME_RESULT: '/games',
+}

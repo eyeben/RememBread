@@ -22,13 +22,13 @@ const GamesHomePage = () => {
       </div>
       <div className="w-full flex flex-col gap-3 max-w-[384px] mt-4">
         <Button 
-          className="w-full h-[90px] flex-shrink-0 rounded-[30px] bg-primary-100 text-xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
+          className="w-full h-[90px] flex-shrink-0 rounded-[30px] bg-primary-200 text-2xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
           onClick={handleRandomGame}
         >
           랜덤모드
         </Button>
         <Button 
-          className="w-full h-[90px] flex-shrink-0 rounded-[30px] bg-primary-100 text-xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
+          className="w-full h-[90px] flex-shrink-0 rounded-[30px] bg-primary-200 text-2xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
           onClick={() => navigate('/games/game-mode')}
         >
           선택모드
