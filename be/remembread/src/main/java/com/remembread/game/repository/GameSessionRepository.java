@@ -46,4 +46,5 @@ public interface GameSessionRepository extends JpaRepository<GameSession, Long> 
     """, nativeQuery = true)
     List<GameSession> findTopSessionsByGameType(String gameType);
 
+    List<GameSession> findByUserOrderByPlayedAtDesc(User user);
 }
