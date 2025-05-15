@@ -8,7 +8,7 @@ interface TimerProps {
 
 const Timer = ({ initial, onEnd, children }: TimerProps) => {
   const [value, setValue] = useState(initial);
-  const intervalRef = useRef<number | undefined>(undefined);
+  const intervalRef = useRef<NodeJS.Timeout | undefined>(undefined);
   const onEndRef = useRef(onEnd);
   const initialRef = useRef(initial);
 

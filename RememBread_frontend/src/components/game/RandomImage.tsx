@@ -2,16 +2,16 @@ import { useState, useEffect } from 'react';
 import styles from '@/styles/gameStyle.module.css';
 
 // PNG 이미지 import
-import muffin from '@/components/svgs/game/detect/머핀.png';
-import pretzel from '@/components/svgs/game/detect/프레첼.png';
-import saltBread from '@/components/svgs/game/detect/소금빵.png';
-import creamBread from '@/components/svgs/game/detect/크림빵.png';
-import redBeanBread from '@/components/svgs/game/detect/단팥빵.png';
-import whiteBread from '@/components/svgs/game/detect/식빵.png';
-import bagel from '@/components/svgs/game/detect/베이글.png';
-import ciabatta from '@/components/svgs/game/detect/치아바타.png';
-import croissant from '@/components/svgs/game/detect/크루아상.png';
-import baguette from '@/components/svgs/game/detect/바게트.png';
+import muffin from '@/components/pngs/detect/머핀.png';
+import pretzel from '@/components/pngs/detect/프레첼.png';
+import saltBread from '@/components/pngs/detect/소금빵.png';
+import creamBread from '@/components/pngs/detect/크림빵.png';
+import redBeanBread from '@/components/pngs/detect/단팥빵.png';
+import whiteBread from '@/components/pngs/detect/식빵.png';
+import bagel from '@/components/pngs/detect/베이글.png';
+import ciabatta from '@/components/pngs/detect/치아바타.png';
+import croissant from '@/components/pngs/detect/크루아상.png';
+import baguette from '@/components/pngs/detect/바게트.png';
 
 interface RandomImageProps {
   onImageSelect?: (imageName: string) => void;
@@ -59,7 +59,7 @@ const RandomImage = ({ onImageSelect }: RandomImageProps) => {
 
   // 타이머와 blur 효과를 위한 useEffect
   useEffect(() => {
-    let timer: number;
+    let timer: NodeJS.Timeout;
     
     if (timeLeft > 0) {
       timer = setInterval(() => {

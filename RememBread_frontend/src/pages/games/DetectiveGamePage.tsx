@@ -4,7 +4,7 @@ import CustomButton from '@/components/common/CustomButton';
 import Timer from '@/components/common/Timer';
 import StartModal from '@/components/game/StartModal';
 import RandomImage from '@/components/game/RandomImage';
-import { breadNames, imageToName } from '@/data/breadData';
+import { breadNames, imageToName } from '@/utils/breadData';
 import useGameStore from '@/stores/gameStore';
 import GameResultModal from '@/components/game/GameResultModal';
 

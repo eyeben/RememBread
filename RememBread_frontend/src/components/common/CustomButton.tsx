@@ -1,4 +1,4 @@
-import { ReactNode, useState } from "react";
+import { ReactNode, useState, MouseEvent } from "react";
 import clsx from "clsx";
 
 interface CustomButtonProps {
@@ -21,9 +21,9 @@ const CustomButton = ({
   disabled,
   children,
 }: CustomButtonProps) => {
-  const [isClicked, setIsClicked] = useState(false);
+  const [isClicked, setIsClicked] = useState<boolean>(false);
 
-  const handleClick = (e: React.MouseEvent) => {
+  const handleClick = (e: MouseEvent<HTMLButtonElement>) => {
     if (disabled) return;
     e.preventDefault();
     setIsClicked(true);

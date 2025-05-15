@@ -5,62 +5,10 @@ import GameResultModal from "@/components/game/GameResultModal";
 import StartModal from "@/components/game/StartModal";
 import QuizContainer from "@/components/game/QuizContainer";
 import useGameStore from "@/stores/gameStore";
-import Bread from "@/components/svgs/game/Bread";
-import Baguette from "@/components/svgs/game/Baguette";
-import Croissant from "@/components/svgs/game/Croissant";
 import { generateNewBreadPrices, initialBreads } from "@/utils/breadPriceGenerator";
-
-interface Bread {
-  name: string;
-  price: number;
-  type: string;
-}
-
-function getRandomBreads(breads: Bread[], count: number) {
-  const arr = [];
-  for (let i = 0; i < count; i++) {
-    arr.push(breads[Math.floor(Math.random() * breads.length)]);
-  }
-  return arr;
-}
-
-function getNewQuiz(breads: Bread[], score: number) {
-  let topCount, bottomCount;
-  let topBreads, bottomBreads;
-  let topSum, bottomSum;
-  
-  do {
-    if (score < 3) {
-      // 처음 3문제: 1~3개
-      topCount = Math.floor(Math.random() * 3) + 1;
-      bottomCount = Math.floor(Math.random() * 3) + 1;
-    } else if (score < 6) {
-      // 3~5문제: 3~5개
-      topCount = Math.floor(Math.random() * 3) + 3;
-      bottomCount = Math.floor(Math.random() * 3) + 3;
-    } else if (score < 9) {
-      // 6문제 이상: 5~7개
-      topCount = Math.floor(Math.random() * 3) + 5;
-      bottomCount = Math.floor(Math.random() * 3) + 5;
-    } else {
-      // 9문제 이상: 7~9개
-      topCount = Math.floor(Math.random() * 3) + 7;
-      bottomCount = Math.floor(Math.random() * 3) + 7;
-    }
-
-    
-    topBreads = getRandomBreads(breads, topCount);
-    bottomBreads = getRandomBreads(breads, bottomCount);
-    
-    topSum = topBreads.reduce((acc, cur) => acc + cur.price, 0);
-    bottomSum = bottomBreads.reduce((acc, cur) => acc + cur.price, 0);
-  } while (topSum === bottomSum);
-  
-  return {
-    top: topBreads,
-    bottom: bottomBreads
-  };
-}
+import { getNewQuiz } from "@/utils/breadGame";
+import { Bread as BreadType } from "@/types/game";
+import { renderBread } from "@/constants/game";
 
 const CompareGamePage = () => {
   const navigate = useNavigate();
@@ -69,7 +17,7 @@ const CompareGamePage = () => {
   const [userInput, setUserInput] = useState<string | null>(null);
   const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
   const [score, setLocalScore] = useState<number>(0);
-  const [breads, setBreads] = useState<Bread[]>(initialBreads);
+  const [breads, setBreads] = useState<BreadType[]>(initialBreads);
   const [quiz, setQuiz] = useState(() => getNewQuiz(breads, 0));
 
   // 게임 시작 시 초기화
@@ -115,19 +63,6 @@ const CompareGamePage = () => {
     setResultModalType(null);
     setUserInput(null);
     setQuiz(getNewQuiz(breads, score));
-  };
-
-  const renderBread = (type: string) => {
-    switch (type) {
-      case 'bread':
-        return <Bread className="w-16 h-16" />;
-      case 'baguette':
-        return <Baguette className="w-16 h-16" />;
-      case 'croissant':
-        return <Croissant className="w-16 h-16" />;
-      default:
-        return null;
-    }
   };
 
   return (

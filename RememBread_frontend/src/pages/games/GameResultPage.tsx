@@ -1,16 +1,11 @@
-import { useNavigate, useLocation } from "react-router-dom";
 import { useEffect, useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import useGameStore from "@/stores/gameStore";
 import useProfileStore from "@/stores/profileStore";
 import ClearBread from "@/components/svgs/breads/ClearBread";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { getUser } from "@/services/userService";
-
-interface LeaderboardEntry {
-  id: number;
-  name: string;
-  score: number;
-}
+import { LeaderboardEntry } from "@/types/game";
 
 // 임시 더미 데이터
 const dummyLeaderboard: LeaderboardEntry[] = [

@@ -6,89 +6,14 @@ import StartModal from '@/components/game/StartModal';
 import GameResultModal from '@/components/game/GameResultModal';
 import useGameStore from '@/stores/gameStore';
 import CustomButton from '@/components/common/CustomButton';
-import Baguette from '@/components/svgs/game/Baguette';
-import Croissant from '@/components/svgs/game/Croissant';
-import Bread from '@/components/svgs/game/Bread';
-import Bread2 from '@/components/svgs/game/Bread2';
-import Cake from '@/components/svgs/game/Cake';
-import Cookie from '@/components/svgs/game/Cookie';
-import Cupcake from '@/components/svgs/game/Cupcake';
-import Doughnut from '@/components/svgs/game/Doughnut';
-import Pizza from '@/components/svgs/game/Pizza';
-import Pretzel from '@/components/svgs/game/Pretzel';
-
-const svgList = [
-  Baguette, Croissant, Bread, Bread2,
-  Cake, Cookie, Cupcake, Doughnut,
-  Pizza, Pretzel
-];
-
-function getRandomIndices(count: number) {
-  const arr = Array.from({ length: svgList.length }, (_, i) => i);
-  for (let i = arr.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [arr[i], arr[j]] = [arr[j], arr[i]];
-  }
-  return arr.slice(0, count);
-}
-
-function getAnswerButtons(answerIndices: number[]) {
-  // 정답 인덱스들을 포함한 6개의 랜덤 인덱스 생성
-  const remainingIndices = Array.from({ length: svgList.length }, (_, i) => i)
-    .filter(i => !answerIndices.includes(i));
-  
-  // 남은 인덱스들 중에서 랜덤하게 선택
-  for (let i = remainingIndices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [remainingIndices[i], remainingIndices[j]] = [remainingIndices[j], remainingIndices[i]];
-  }
-  
-  // 정답 인덱스와 랜덤 인덱스를 합쳐서 6개 만들기
-  const allIndices = [...answerIndices, ...remainingIndices.slice(0, 6 - answerIndices.length)];
-  
-  // 최종 인덱스 배열을 섞기
-  for (let i = allIndices.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [allIndices[i], allIndices[j]] = [allIndices[j], allIndices[i]];
-  }
-  
-  return allIndices;
-}
-
-const svgW = 160;
-const svgH = 160;
-
-// 화면 크기에 따른 게임 영역 크기 계산
-const getGameAreaDimensions = () => {
-  const width = window.innerWidth;
-  if (width <= 320) {
-    return {
-      width: 320,
-      height: 320
-    };
-  }
-  return {
-    width: 375,
-    height: 350
-  };
-};
-
-const getRandomPos = () => {
-  const { width: parentW, height: parentH } = getGameAreaDimensions();
-  
-  // 중앙점 계산
-  const centerX = (parentW - svgW) / 2;
-  const centerY = (parentH - svgH) / 2;
-  
-  // 중앙에서부터 랜덤하게 이동할 거리 계산 (-50% ~ +50%)
-  const offsetX = (Math.random() * 1 - 0.5) * (parentW - svgW);
-  const offsetY = (Math.random() * 1 - 0.5) * (parentH - svgH);
-  
-  return {
-    x: centerX + offsetX,
-    y: centerY + offsetY
-  };
-};
+import { BREAD_SVG_LIST } from '@/constants/game';
+import { 
+  getRandomIndices, 
+  getAnswerButtons, 
+  SVG_WIDTH, 
+  SVG_HEIGHT,
+  getRandomPos 
+} from '@/utils/breadGame';
 
 const GameShadowPage = () => {
   const navigate = useNavigate();
@@ -148,25 +73,29 @@ useEffect(() => {
       return Math.max(base - (level - 1) * decrement, 0.1);
     };
   
-    controls.forEach((control) => {
-      const animateToRandom = async () => {
+    const startAnimations = async () => {
+      for (const control of controls) {
         const firstPos = getRandomPos();
         control.set({ x: firstPos.x, y: firstPos.y });
-  
-        while (!isCancelled) {
-          const newPos = getRandomPos();
-          await control.start({
-            x: newPos.x,
-            y: newPos.y,
-            transition: {
-              duration: getDuration(level), // 레벨에 따라 duration 적용
-              ease: "easeInOut",
-            }
-          });
-        }
-      };
-      animateToRandom();
-    });
+        
+        const animate = async () => {
+          while (!isCancelled) {
+            const newPos = getRandomPos();
+            await control.start({
+              x: newPos.x,
+              y: newPos.y,
+              transition: {
+                duration: getDuration(level),
+                ease: "easeInOut",
+              }
+            });
+          }
+        };
+        animate();
+      }
+    };
+
+    startAnimations();
   
     return () => {
       isCancelled = true;
@@ -234,18 +163,18 @@ useEffect(() => {
           <div className={`w-full ${windowWidth <= 320 ? 'max-w-[320px] h-[320px]' : 'max-w-[375px] h-[350px]'} flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-6 text-white text-3xl font-bold overflow-hidden`}>
             <div className="relative w-full h-full">
               {randomIdx.map((idx, i) => {
-                const Svg = svgList[idx];
+                const Svg = BREAD_SVG_LIST[idx];
                 return (
                   <motion.div
                     key={`${idx}-${i}`}
                     className="absolute"
                     animate={controls[i]}
                     style={{ 
-                      width: `${svgW}px`, 
-                      height: `${svgH}px`,
+                      width: `${SVG_WIDTH}px`, 
+                      height: `${SVG_HEIGHT}px`,
                     }}
                   >
-                    <Svg className={`w-full h-full ${!solvedBreads.includes(idx) ? 'grayscale brightness-0 contrast-200 opacity-80' : ''}`} />
+                    <Svg className={`w-full h-full ${!solvedBreads.includes(idx) ? 'grayscale brightness-0 contrast-200 opacity-100' : ''}`} />
                   </motion.div>
                 );
               })}
@@ -253,7 +182,7 @@ useEffect(() => {
           </div>
           <div className={`w-full ${windowWidth <= 320 ? 'max-w-[320px]' : 'max-w-[375px]'} grid grid-cols-3 gap-3`}>
             {answerButtons.map((idx) => {
-              const Svg = svgList[idx];
+              const Svg = BREAD_SVG_LIST[idx];
               return (
                 <CustomButton
                   key={idx}
