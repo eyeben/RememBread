@@ -1,4 +1,4 @@
-package com.remembread.auth.entity.request;
+package com.remembread.auth.dto.request;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
