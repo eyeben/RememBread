@@ -4,9 +4,8 @@ import { Save, Tags } from "lucide-react";
 import { updateCardSet, getCardSetById } from "@/services/cardSet";
 import { Switch } from "@/components/ui/switch";
 import TagRow from "@/components/indexCardView/TagRow";
-import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
 import TestSettingDialog from "@/components/dialog/TestSettingDialog";
-import { startRecord } from "@/services/map";
+import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
 
 const CardSetDetailPage = () => {
   const navigate = useNavigate();
@@ -16,8 +15,8 @@ const CardSetDetailPage = () => {
   const cardFromState = location.state?.card;
 
   const readonlyMode = location.state?.fromTotalPage ?? false;
-
   const nickname = location.state?.card?.nickname;
+
   const [name, setName] = useState<string>("");
   const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hashtags, setHashTags] = useState<string[]>([]);
@@ -53,22 +52,13 @@ const CardSetDetailPage = () => {
     fetchCardSet();
   }, [cardSetId, navigate]);
 
-  const handleStudyClick = async () => {
-    try {
-      // const response = await startRecord(cardSetId, {
-      //   mode: "STUDY",
-      //   latitude: 0.1,
-      //   longitude: 0.1,
-      // });
-      navigate("study", { state: { card: cardFromState } });
-      // console.log("학습 시작:", response);
-      console.log("cardFromState", cardFromState);
-    } catch (e) {
-      console.error("학습 시작 실패:", e);
-    }
+  const handleStudyClick = () => {
+    navigate("study", { state: { card: cardFromState } });
   };
 
-  const handleTTSClick = () => navigate("tts", { state: { card: cardFromState } });
+  const handleTTSClick = () => {
+    navigate("tts", { state: { card: cardFromState } });
+  };
 
   const saveCardSet = async (
     override?: Partial<{ name: string; hashtags: string[]; isPublic: number }>,
@@ -171,9 +161,7 @@ const CardSetDetailPage = () => {
               cardSetId={cardSetId}
               isEditing={isEditing && !readonlyMode}
               setEditing={setIsEditing}
-              onUpdateTags={(newTags) => {
-                setEditedTags(newTags);
-              }}
+              onUpdateTags={(newTags) => setEditedTags(newTags)}
               readonlyMode={readonlyMode}
             />
             {!readonlyMode && (
@@ -200,7 +188,6 @@ const CardSetDetailPage = () => {
 
           <CardSetCardlList cardSetId={cardSetId} isReadonly={readonlyMode} />
 
-          {/* 고정 버튼 */}
           <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full pc:w-[598px] z-25">
             <div className="flex justify-between w-full gap-2 px-4">
               <button

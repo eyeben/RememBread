@@ -15,16 +15,16 @@ import {
 } from "@/components/ui/select";
 
 const MapView = () => {
-  const [curLatitude, setCurLatitude] = useState(37.5665);
-  const [curLongitude, setCurLongitude] = useState(126.978);
-  const [locationKey, setLocationKey] = useState(0);
-  const [isMapLoaded, setIsMapLoaded] = useState(false);
+  const [locationKey, setLocationKey] = useState<number>(0);
+  const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
+  const [curLatitude, setCurLatitude] = useState<number>(37.5665);
+  const [curLongitude, setCurLongitude] = useState<number>(126.978);
 
+  const [totalCount, setTotalCount] = useState<number>(0);
   const [myCardSets, setMyCardSets] = useState<indexCardSet[]>([]);
   const [routesByCardSet, setRoutesByCardSet] = useState<any[]>([]);
   const [selectedCardSet, setSelectedCardSet] = useState<number>(0);
   const [selectedDateTime, setSelectedDateTime] = useState<string>("");
-  const [totalCount, setTotalCount] = useState<number>(0);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const markersRef = useRef<naver.maps.Marker[]>([]);
@@ -214,7 +214,7 @@ const MapView = () => {
             onValueChange={setSelectedDateTime}
             disabled={routesByCardSet.length === 0}
           >
-            <SelectTrigger className="w-full">
+            <SelectTrigger className="w-full pc:text-sm text-xs text-center">
               <SelectValue placeholder="조회하실 날짜를 선택해주세요" />
             </SelectTrigger>
             <SelectContent>
