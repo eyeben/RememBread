@@ -34,7 +34,7 @@ public class StudySession {
     @Column(columnDefinition = "geometry(LINESTRING, 4326)")
     private LineString route;
 
-    public void addRoute(LineString route) {
+    public void updateRoute(LineString route) {
         this.route = route;
     }
 }
