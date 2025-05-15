@@ -2,6 +2,7 @@ import  http  from "@/services/httpCommon";
 import { GAME_END_POINT } from "@/services/endPoints";
 import { LeaderboardType, GameHistoryType } from "@/types/game";
 
+
 interface RankResponse {
     isSuccess: boolean;
     code: string;
@@ -9,22 +10,22 @@ interface RankResponse {
     result:LeaderboardType[]
 }
 
-
 interface GameResultResponse {
     isSuccess: boolean;
     code: string;
     message: string;
     result: {
         nickname: string
+        mainCharacterImageUrl: string;
         rank: number
         maxScore: number
-        profileImage: string;
+        playedAt: string
     }
 }
 
 interface GameResultParams {
-    gameName: string;
     score: number;
+    gameType: string;
 }
 
 interface GameHistoryResponse {
@@ -54,12 +55,13 @@ export const postGameResult = async (body: GameResultParams): Promise<GameResult
  * 
  * 게임 랭킹 조회 요청 및 응답 처리
  */
-export const getRanks = async (): Promise<RankResponse> => {
+export const getRanks = async (gameType: string): Promise<RankResponse> => {
     try {
-      const response = await http.get<RankResponse>(GAME_END_POINT.GET_RANKS);
+      const response = await http.get<RankResponse>(GAME_END_POINT.GET_RANKS(gameType));
       console.log("게임 랭킹 조회", response.data)
       return response.data;
     } catch (error) {
+        console.log("게임 랭킹 조회 오류", error)
       throw error
     }
   };

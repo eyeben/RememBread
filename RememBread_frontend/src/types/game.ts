@@ -6,14 +6,15 @@ export interface Bread {
   
 export interface LeaderboardType {
     nickname: string;
+    mainCharacterImageUrl: string;
     rank: number;
     maxScore: number;
     playedAt: string;
-    profileImage: string;
   }
 
 export interface GameHistoryType {
-  gameName: string;
+  id: number;
+  playedAt: string;
   score: number;
-  createdAt: string;
+  gameType: string;
 }

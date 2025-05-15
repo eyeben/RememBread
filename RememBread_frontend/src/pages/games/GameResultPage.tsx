@@ -8,9 +8,10 @@ import { LeaderboardType } from "@/types/game";
 
 interface UserProfile {
   nickname: string;
-  profileImage: string;
+  mainCharacterImageUrl: string;
   rank: number;
   maxScore: number;
+  playedAt: string;
 }
 
 const GameResultPage = () => {
@@ -20,7 +21,7 @@ const GameResultPage = () => {
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const [Leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
   
-  const gameType = location.state?.game || "memory";
+  const gameType = location.state?.game.toUpperCase() || "memory";
   const score = gameType === "memory" ? memoryScore : 
                 gameType === "compare" ? compareScore : 
                 gameType === "detective" ? detectiveScore :
@@ -29,8 +30,9 @@ const GameResultPage = () => {
   useEffect(() => {
     const sendGameResult = async () => {
       try {
+        console.log("게임 결과 저장 시작", score, gameType)
         const response = await postGameResult({
-          gameName: gameType,
+          gameType: gameType,
           score: score
         });
         setUserProfile(response.result)
@@ -41,7 +43,7 @@ const GameResultPage = () => {
     };
     const getLeaderboard = async () => {
       try {
-        const response = await getRanks();
+        const response = await getRanks(gameType);
         console.log("게임 랭킹 조회 완료", response);
         setLeaderboard(response.result);
       } catch (error) {
@@ -71,9 +73,9 @@ const GameResultPage = () => {
         {/* 현재 사용자 점수 */}
         <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg mb-6">
           <div className="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
-            {userProfile?.profileImage ? (
+            {userProfile?.mainCharacterImageUrl ? (
               <img      
-                src={userProfile.profileImage} 
+                src={userProfile.mainCharacterImageUrl} 
                 alt="User" 
                 className="w-full h-full object-cover" 
               />
@@ -83,7 +85,7 @@ const GameResultPage = () => {
           </div>
           <div className="flex-1">
             <div className="text-lg font-bold">{userProfile?.nickname}</div>
-            <div className="text-gray-600">{score} Pts</div>
+            <div className="text-xl font-bold text-gray-600">{score} Pts</div>
           </div>
         </div>
 
@@ -99,9 +101,9 @@ const GameResultPage = () => {
               >
                 <div className="w-8 text-center font-bold">{index + 1}</div>
                 <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
-                {userProfile?.profileImage ? (
+                {userProfile?.mainCharacterImageUrl ? (
               <img 
-                src={userProfile.profileImage} 
+                src={userProfile.mainCharacterImageUrl} 
                 alt="User" 
                 className="w-full h-full object-cover" 
               />

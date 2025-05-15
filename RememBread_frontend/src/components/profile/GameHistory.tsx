@@ -43,8 +43,8 @@ const GameHistory = () => {
             >
               <Game className="w-10 h-10 mr-4" />
               <div className="flex-1">
-                <div className="text-xs text-neutral-400 mb-1">{item.gameName}</div>
-                <div className="text-xs text-neutral-400 mb-1">{item.createdAt}</div>
+                <div className="text-xs text-neutral-400 mb-1">{item.gameType}</div>
+                <div className="text-xs text-neutral-400 mb-1">{item.playedAt}</div>
                 <div className="text-md font-semibold">
                   게임 성적 <span className="font-bold">{item.score}</span>
                 </div>
