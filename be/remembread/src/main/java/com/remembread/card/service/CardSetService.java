@@ -421,4 +421,14 @@ public class CardSetService {
         cardRepository.deleteAllByCardSetIdIn(request.getCardSetIds());
         cardSetRepository.deleteAll(cardSets);
     }
+
+    @Transactional(readOnly = true)
+    public CardSet validateCardSetOwner(Long cardSetId, User user) {
+        CardSet cardSet = cardSetRepository.findById(cardSetId).orElseThrow(() ->
+                new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
+        }
+        return cardSet;
+    }
 }
