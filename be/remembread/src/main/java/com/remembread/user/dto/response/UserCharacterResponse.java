@@ -1,4 +1,4 @@
-package com.remembread.user.dto;
+package com.remembread.user.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserCharacterResponseDto {
+public class UserCharacterResponse {
     Long id;
     String name;
     String imageUrl;

@@ -1,4 +1,4 @@
-package com.remembread.auth.entity.response;
+package com.remembread.auth.dto.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
