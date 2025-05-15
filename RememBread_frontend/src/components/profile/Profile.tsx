@@ -59,13 +59,16 @@ const Profile = () => {
         let hour12 = hour24;
         let ampmValue = "오전";
         
-        if (hour24 >= 12) {
-          ampmValue = "오후";
-          hour12 = hour24 === 12 ? 12 : hour24 - 12;
-        } else if (hour24 === 0) {
-          ampmValue = "오후";
+        if (hour24 === 0) {
+          // 자정(00시)는 오전 12시로 표시
           hour12 = 12;
-
+        } else if (hour24 === 12) {
+          // 정오(12시)는 오후 12시로 표시
+          ampmValue = "오후";
+        } else if (hour24 > 12) {
+          // 13시~23시는 오후 1시~11시로 표시
+          ampmValue = "오후";
+          hour12 = hour24 - 12;
         }
 
         setAmpm(ampmValue);
@@ -200,11 +203,11 @@ const Profile = () => {
     let hour24 = parseInt(newHour);
     if (newAmpm === "오후") {
       hour24 += 12;
-      if (hour24 >= 24) {
-        hour24 = 0;
-      }
     }
 
+      if (hour24 === 12) {
+        hour24 = 0;
+    }
     // HH:mm:00 형식으로 변환
     const formattedTime = `${hour24.toString().padStart(2, '0')}:${newMinute}:00`;
     
