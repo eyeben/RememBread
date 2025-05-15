@@ -81,6 +81,9 @@ public class UserService {
         user.setNotificationLocationEnable(userLocationRequest.getNotificationLocationEnable());
         user.setNotificationLocationLatitude(userLocationRequest.getNotificationLocationLatitude());
         user.setNotificationLocationLongitude(userLocationRequest.getNotificationLocationLongitude());
+
+        // 위치 변경 시 마지막 알림 시간 초기화
+        user.setLastLocationNotified(null);
     }
 
     @Transactional
