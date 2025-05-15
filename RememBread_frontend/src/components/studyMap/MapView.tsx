@@ -197,6 +197,7 @@ const MapView = () => {
         mapRef.current?.setCenter(new naver.maps.LatLng(latitude, longitude));
 
         toast({
+          variant: "success",
           title: "알림 위치 설정 완료",
           description: "현재 위치로 알림 위치가 설정되었습니다.",
         });
@@ -225,18 +226,32 @@ const MapView = () => {
         return;
       }
 
-      const { lat, lng } = result;
+      // 소수점 6자리까지 반올림 후 문자열 → 숫자 변환
+      const lat = Number(result.lat.toFixed(6));
+      const lng = Number(result.lng.toFixed(6));
+
+      // 숫자 정수부 3자리 초과 방지 체크 (한국 범위 안에서는 거의 문제가 없음)
+      if (
+        Math.floor(Math.abs(lat)).toString().length > 3 ||
+        Math.floor(Math.abs(lng)).toString().length > 3
+      ) {
+        toast({
+          variant: "destructive",
+          title: "좌표 범위 오류",
+          description: "위도/경도가 허용된 범위를 초과합니다.",
+        });
+        return;
+      }
+
       await patchNotificationLocation(lat, lng, isAlarmEnabled);
 
       const position = new naver.maps.LatLng(lat, lng);
       mapRef.current?.setCenter(position);
 
-      // 기존 마커 제거
       if (addressMarker) {
         addressMarker.setMap(null);
       }
 
-      // 마커 추가
       const marker = new naver.maps.Marker({
         position,
         map: mapRef.current!,
