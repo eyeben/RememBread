@@ -21,6 +21,9 @@ const Footer = () => {
     if (path === "/card-view") {
       return location.pathname.startsWith("/card-view");
     }
+    if (path === "/games") {
+      return location.pathname.startsWith("/games");
+    }
     return location.pathname === path;
   };
 
@@ -40,7 +43,7 @@ const Footer = () => {
   return (
     <>
       <FooterModal isOpen={isOvenOpen} onClose={handleCloseModal} />
-      <footer className="fixed flex justify-evenly w-full min-h-16 max-w-[600px] mx-auto pc:border-x bg-white border-t border-neutral-200 z-50 pb-env(safe-area-inset-bottom) bottom-0 left-0 right-0">
+      <footer className="fixed flex justify-evenly w-full min-h-16 max-w-[600px] mx-auto pc:border-x bg-white border-t border-neutral-200 z-50 pb-[env(safe-area-inset-bottom)] bottom-0 left-0 right-0">
         <FooterItem
           isActive={isActive("/card-view")}
           onClick={() => handleNavigate("/card-view")}
