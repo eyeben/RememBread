@@ -1,4 +1,4 @@
-package com.remembread.user.service;
+package com.remembread.common.service;
 
 import com.google.firebase.messaging.*;
 import com.remembread.user.dto.NotificationMessage;

@@ -1,5 +1,6 @@
 package com.remembread.user.service;
 
+import com.remembread.common.service.FcmService;
 import com.remembread.common.util.GeoUtil;
 import com.remembread.user.dto.NotificationMessage;
 import com.remembread.user.entity.User;
