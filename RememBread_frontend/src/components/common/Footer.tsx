@@ -21,6 +21,9 @@ const Footer = () => {
     if (path === "/card-view") {
       return location.pathname.startsWith("/card-view");
     }
+    if (path === "/games") {
+      return location.pathname.startsWith("/games");
+    }
     return location.pathname === path;
   };
 
