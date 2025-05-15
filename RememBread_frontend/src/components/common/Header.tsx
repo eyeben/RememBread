@@ -15,7 +15,7 @@ const Header = () => {
 
   return (
 <header
-  className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0"
+  className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-[env(safe-area-inset-top)] top-0 left-0 right-0"
 >
   <nav className="h-full mx-auto">
     <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">

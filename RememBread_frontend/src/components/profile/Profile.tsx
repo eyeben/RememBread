@@ -144,6 +144,11 @@ const Profile = () => {
         } catch (error) {
           console.error("알림 권한 요청 중 오류가 발생했습니다:", error);
         }
+      } else if(Notification.permission === "granted") {
+        const token = await getDeviceToken();
+        await patchFcmToken({ fcmToken: token });
+      } else {
+        console.error("알림 설정을 켜주세요.");
       }
     }
   };
