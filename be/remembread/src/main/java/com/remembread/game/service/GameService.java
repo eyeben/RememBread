@@ -1,7 +1,9 @@
 package com.remembread.game.service;
 
+import com.remembread.game.converter.GameConverter;
 import com.remembread.game.dto.request.GameRequest;
-import com.remembread.game.dto.response.GameResponse;
+import com.remembread.game.dto.response.GameRankingResponse;
+import com.remembread.game.dto.response.GameSessionResponse;
 import com.remembread.game.entity.GameSession;
 import com.remembread.game.enums.GameType;
 import com.remembread.game.repository.GameSessionRepository;
@@ -23,7 +25,7 @@ public class GameService {
     private final GameSessionRepository gameSessionRepository;
 
     @Transactional
-    public GameResponse addGameSession(User user, GameRequest gameRequest) {
+    public GameRankingResponse addGameSession(User user, GameRequest gameRequest) {
         GameSession gameSession = GameSession.builder()
                 .user(user)
                 .playedAt(LocalDateTime.now())
@@ -36,22 +38,32 @@ public class GameService {
         Integer maxScore = gameSessionRepository.findMaxScoreByUserIdAndGameType(user, gameRequest.getGameType());
         Integer rank = gameSessionRepository.findRankByUserIdAndGameType(maxScore, gameRequest.getGameType().name());
 
-        return GameResponse.builder()
+        return GameRankingResponse.builder()
                 .nickname(user.getNickname())
+                .mainCharacterImageUrl(user.getMainCharacter().getImageUrl())
                 .rank(rank)
                 .maxScore(maxScore)
-                .playedAt(gameSession.getPlayedAt())
                 .build();
     }
 
     @Transactional(readOnly = true)
-    public List<GameResponse> getGameRanking(GameType gameType) {
+    public List<GameSessionResponse> getGameSession(User user) {
+        List<GameSession> gameSessionList = gameSessionRepository.findByUserOrderByPlayedAtDesc(user);
+
+        return gameSessionList.stream()
+                .map(GameConverter::toGameSessionResponse)
+                .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public List<GameRankingResponse> getGameRanking(GameType gameType) {
         List<GameSession> gameSessionList = gameSessionRepository.findTopSessionsByGameType(gameType.name());
         AtomicInteger rank = new AtomicInteger(1);
 
         return gameSessionList.stream()
-                .map(gameSession -> GameResponse.builder()
+                .map(gameSession -> GameRankingResponse.builder()
                         .nickname(gameSession.getUser().getNickname())
+                        .mainCharacterImageUrl(gameSession.getUser().getMainCharacter().getImageUrl())
                         .rank(rank.getAndIncrement())
                         .maxScore(gameSession.getScore())
                         .playedAt(gameSession.getPlayedAt())
