@@ -57,3 +57,16 @@ export const postLocation = async (cardSetId: number, latitude: number, longitud
   });
   return response.data;
 };
+
+export const patchNotificationLocation = async (
+  latitude: number,
+  longitude: number,
+  notificationEnable: boolean,
+) => {
+  const response = await http.patch(`/users/location`, {
+    notificationLocationLatitude: latitude,
+    notificationLocationLongitude: longitude,
+    notificationLocationEnable: notificationEnable,
+  });
+  return response.data;
+};
