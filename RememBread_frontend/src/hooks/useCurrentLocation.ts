@@ -1,45 +1,41 @@
 import { useEffect, useState } from "react";
 
 interface Location {
-  latitude: number | null;
-  longitude: number | null;
-  error: string | null;
+  latitude: number;
+  longitude: number;
 }
 
-const useCurrentLocation = (): Location => {
-  const [location, setLocation] = useState<Location>({
-    latitude: null,
-    longitude: null,
-    error: null,
-  });
+export const useCurrentLocation = () => {
+  const [location, setLocation] = useState<Location | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!navigator.geolocation) {
-      setLocation((prev) => ({
-        ...prev,
-        error: "Geolocation을 지원하지 않는 브라우저입니다.",
-      }));
+      setError("Geolocation을 지원하지 않는 브라우저입니다.");
       return;
     }
 
-    navigator.geolocation.getCurrentPosition(
+    const watchId = navigator.geolocation.watchPosition(
       (position) => {
         setLocation({
           latitude: position.coords.latitude,
           longitude: position.coords.longitude,
-          error: null,
         });
+        setError(null);
       },
       (err) => {
-        setLocation((prev) => ({
-          ...prev,
-          error: err.message,
-        }));
+        setError("위치 정보를 가져올 수 없습니다.");
+        console.error("Geolocation error:", err);
+      },
+      {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 10000,
       },
     );
+
+    return () => navigator.geolocation.clearWatch(watchId);
   }, []);
 
-  return location;
+  return { location, error };
 };
-
-export default useCurrentLocation;
