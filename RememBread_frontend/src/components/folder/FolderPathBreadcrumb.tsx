@@ -27,7 +27,7 @@ const FolderPathBreadcrumb = ({ path, toggleFolder }: FolderPathBreadcrumbProps)
 
   if (segments.length === 0) {
     return (
-      <div className="flex w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm text-muted-foreground">
+      <div className="flex items-center w-full h-9 rounded-md border border-input bg-transparent px-3 py-1 text-base shadow-sm text-muted-foreground">
         저장 위치를 선택해주세요.
       </div>
     );
