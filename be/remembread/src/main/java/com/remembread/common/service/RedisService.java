@@ -99,4 +99,24 @@ public class RedisService {
         return redisTemplate.opsForList().range(key, 0, -1);
     }
 
+    public Long size(String key) {
+        return redisTemplate.opsForList().size(key);
+    }
+
+    public void addToSet(String key, Object value) {
+        redisTemplate.opsForSet().add(key, value);
+    }
+
+    public Set<Object> getSet(String key) {
+        return redisTemplate.opsForSet().members(key);
+    }
+
+    public void removeFromSet(String key, Object value) {
+        redisTemplate.opsForSet().remove(key, value);
+    }
+
+    public void expire(String key, Duration ttl) {
+        redisTemplate.expire(key, ttl);
+    }
+
 }
