@@ -14,4 +14,8 @@ public class UserCharacterResponse {
     String name;
     String imageUrl;
     Boolean isLocked;
+
+    public void updateIsLock(boolean isLocked) {
+        this.isLocked = isLocked;
+    }
 }
