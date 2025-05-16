@@ -9,8 +9,20 @@ const http = axios.create({
     withCredentials: true, // refreshToken을 쿠키로 보낼 수 있게 설정
 });
 
-// 토큰 재발급 시도 횟수를 추적하는 변수
+// 토큰 재발급 관련 상태 관리
 let isRefreshing = false;
+let refreshSubscribers: ((token: string) => void)[] = [];
+
+// 토큰 재발급 후 대기 중인 요청들 처리
+const onRefreshed = (token: string) => {
+    refreshSubscribers.forEach((callback) => callback(token));
+    refreshSubscribers = [];
+};
+
+// 대기열에 요청 추가
+const addRefreshSubscriber = (callback: (token: string) => void) => {
+    refreshSubscribers.push(callback);
+};
 
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
@@ -32,20 +44,33 @@ http.interceptors.response.use(
         console.log("응답 인터셉터 실행");
         console.log(error);
         console.log("error.response", error.response);
-        const originalRequest = error.config as InternalAxiosRequestConfig;
+        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-        if (
-            (error.response?.status === 401 || error.request?.status === 401) &&
-            !isRefreshing
-        ) {
-            console.log('토큰 재발급 시도 시작');
+        if ((error.response?.status === 401 || error.request?.status === 401) && !originalRequest._retry) {
+            if (isRefreshing) {
+                // 이미 재발급 진행 중이면 대기열에 추가
+                return new Promise((resolve) => {
+                    addRefreshSubscriber((token: string) => {
+                        originalRequest.headers = originalRequest.headers || {};
+                        originalRequest.headers['Authorization'] = `Bearer ${token}`;
+                        resolve(http(originalRequest));
+                    });
+                });
+            }
+
+            originalRequest._retry = true;
             isRefreshing = true;
+
             try {
                 const isRefreshed = await tokenUtils.tryRefreshToken();
                 console.log('토큰 재발급 결과:', isRefreshed);
                 
                 if (isRefreshed) {
                     const newAccessToken = tokenUtils.getToken();
+                    // 새로운 토큰으로 대기 중인 요청들 처리
+                    onRefreshed(newAccessToken as any);
+                    
+                    // 현재 요청 재시도
                     originalRequest.headers = originalRequest.headers || {};
                     originalRequest.headers['Authorization'] = `Bearer ${newAccessToken}`;
                     isRefreshing = false;
@@ -54,12 +79,14 @@ http.interceptors.response.use(
                     console.log('토큰 재발급 실패, 로그아웃 처리');
                     isRefreshing = false;
                     tokenUtils.removeToken();
+                    refreshSubscribers = []; // 대기열 초기화
                     return Promise.reject(error);
                 }
             } catch (refreshError) {
                 console.error('토큰 재발급 중 에러 발생:', refreshError);
                 isRefreshing = false;
                 tokenUtils.removeToken();
+                refreshSubscribers = []; // 대기열 초기화
                 return Promise.reject(refreshError);
             }
         }

@@ -66,7 +66,7 @@ const CompareGamePage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 overflow-hidden">
+    <div className="min-h-[calc(100vh-126px)] w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 overflow-hidden">
       {!isGameStarted ? (
         <StartModal onCountdownEnd={handleGameStart} />
       ) : (
@@ -84,7 +84,7 @@ const CompareGamePage = () => {
                   <div className="w-12 h-12 sm:w-16 sm:h-16 mt-2 sm:mt-3 flex items-center justify-center">
                     {renderBread(bread.type)}
                   </div>
-                  <span className="text-lg text-bold">{bread.price} 원</span>
+                  <span className="text-xl font-semibold">{bread.price} 원</span>
                 </div>
               ))}
             </div>

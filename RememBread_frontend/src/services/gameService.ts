@@ -58,7 +58,6 @@ export const postGameResult = async (body: GameResultParams): Promise<GameResult
 export const getRanks = async (gameType: string): Promise<RankResponse> => {
     try {
       const response = await http.get<RankResponse>(GAME_END_POINT.GET_RANKS(gameType));
-      console.log("게임 랭킹 조회", response.data)
       return response.data;
     } catch (error) {
         console.log("게임 랭킹 조회 오류", error)
@@ -74,7 +73,6 @@ export const getRanks = async (gameType: string): Promise<RankResponse> => {
 export const getGameHistory = async (): Promise<GameHistoryResponse> => {
     try {
         const response = await http.get<GameHistoryResponse>(GAME_END_POINT.GET_GAME_HISTORY);
-        console.log("게임 히스토리 조회", response.data);
         return response.data;
     } catch (error) {
         throw error;

@@ -87,7 +87,7 @@ const MemoryGamePage = () => {
   };
 
   return (
-    <div className="min-h-screen w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 overflow-hidden">
+    <div className="min-h-[calc(100vh-126px)] w-full max-w-[600px] mx-auto flex flex-col items-center justify-start bg-primary-100 px-2 sm:px-4 pt-4 overflow-hidden">
       {!isGameStarted ? (
         <StartModal onCountdownEnd={handleGameStart} />
       ) : (

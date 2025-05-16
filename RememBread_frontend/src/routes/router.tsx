@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet, useLocation } from "react-router-dom";
 import { tokenUtils } from "@/lib/queryClient";
 import Layout from "@/components/common/Layout";
 import LoginPage from "@/pages/LoginPage";
@@ -32,12 +32,13 @@ const ProtectedOutlet = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
   const [redirectPath] = useState<string>("/login");
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
       const currentToken = tokenUtils.getToken();
 
-      // 토큰이 없는 경우 바로 로그인 페이지로 리다이렉트
+      // 토큰이 없는 경우 현재 경로를 state로 포함하여 로그인 페이지로 리다이렉트
       if (!currentToken) {
         setShouldRedirect(true);
         setIsLoading(false);
@@ -70,7 +71,8 @@ const ProtectedOutlet = () => {
   }
 
   if (shouldRedirect) {
-    return <Navigate to={redirectPath} replace />;
+    // 로그인 페이지로 리다이렉트할 때 현재 경로를 state로 전달
+    return <Navigate to={redirectPath} state={{ from: location.pathname }} replace />;
   }
 
   return <Outlet />;

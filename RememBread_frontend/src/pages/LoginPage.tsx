@@ -19,12 +19,16 @@ const LoginPage = () => {
       if (!currentToken) {
         const isRefreshed = await tokenUtils.tryRefreshToken();
         if (isRefreshed) {
-          navigate("/card-view");
+          // 이전 경로가 있으면 해당 경로로, 없으면 기본 경로로 이동
+          const from = location.state?.from || "/card-view";
+          navigate(from);
         } else {
           setIsLoading(false);
         }
       } else {
-        navigate("/card-view");
+        // 이전 경로가 있으면 해당 경로로, 없으면 기본 경로로 이동
+        const from = location.state?.from || "/card-view";
+        navigate(from);
       }
     };
 
@@ -36,7 +40,7 @@ const LoginPage = () => {
       // alert 표시 후 state 초기화 (뒤로 가기 시 다시 alert가 뜨는 것을 방지)
       navigate(location.pathname, { replace: true });
     }
-  }, [location]);
+  }, [location, navigate]);
 
   if (isLoading) {
     return (
