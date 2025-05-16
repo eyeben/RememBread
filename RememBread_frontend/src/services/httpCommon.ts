@@ -12,6 +12,7 @@ const http = axios.create({
 // 토큰 재발급 관련 상태 관리
 let isRefreshing = false;
 let refreshSubscribers: ((token: string) => void)[] = [];
+let originalRetry = false;
 
 // 토큰 재발급 후 대기 중인 요청들 처리
 const onRefreshed = (token: string) => {
@@ -46,7 +47,7 @@ http.interceptors.response.use(
         console.log("error.response", error.response);
         const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-        if ((error.response?.status === 401 || error.request?.status === 401) && !originalRequest._retry) {
+        if ((error.response?.status === 401 || error.request?.status === 401) && !originalRetry) {
             if (isRefreshing) {
                 // 이미 재발급 진행 중이면 대기열에 추가
                 return new Promise((resolve) => {
@@ -60,8 +61,10 @@ http.interceptors.response.use(
 
             originalRequest._retry = true;
             isRefreshing = true;
+            originalRetry = true;
 
             try {
+                console.log("토큰 재발급 시도");
                 const isRefreshed = await tokenUtils.tryRefreshToken();
                 console.log('토큰 재발급 결과:', isRefreshed);
                 
@@ -80,6 +83,7 @@ http.interceptors.response.use(
                     isRefreshing = false;
                     tokenUtils.removeToken();
                     refreshSubscribers = []; // 대기열 초기화
+                    originalRetry = false;
                     return Promise.reject(error);
                 }
             } catch (refreshError) {
@@ -87,10 +91,10 @@ http.interceptors.response.use(
                 isRefreshing = false;
                 tokenUtils.removeToken();
                 refreshSubscribers = []; // 대기열 초기화
+                originalRetry = false;
                 return Promise.reject(refreshError);
             }
         }
-
         return Promise.reject(error);
     }
 );
