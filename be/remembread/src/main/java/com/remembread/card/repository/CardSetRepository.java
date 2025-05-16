@@ -2,6 +2,7 @@ package com.remembread.card.repository;
 
 import com.remembread.card.dto.response.*;
 import com.remembread.card.entity.CardSet;
+import com.remembread.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -197,4 +198,6 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     @Modifying
     @Query("UPDATE CardSet c SET c.views = c.views + :viewCount WHERE c.id = :cardSetId")
     void increaseViewCount(@Param("cardSetId") Long cardSetId, @Param("viewCount") Integer viewCount);
+
+    int countByUser(User user);
 }

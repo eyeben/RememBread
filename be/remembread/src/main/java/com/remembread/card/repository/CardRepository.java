@@ -2,6 +2,7 @@ package com.remembread.card.repository;
 
 import com.remembread.card.entity.Card;
 import com.remembread.card.entity.CardSet;
+import com.remembread.user.entity.User;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -17,4 +18,7 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findAllByCardSetOrderByRetentionRate(CardSet cardSet, Limit limit);
 
     void deleteAllByCardSetIdIn(List<Long> cardSetIds);
+
+    int countByCardSet_User(User user);
+
 }

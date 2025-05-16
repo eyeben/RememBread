@@ -9,6 +9,7 @@ import com.remembread.user.dto.request.UserRequest;
 import com.remembread.user.dto.response.UserCharacterResponse;
 import com.remembread.user.dto.response.UserResponse;
 import com.remembread.user.entity.User;
+import com.remembread.user.facade.UserFacadeService;
 import com.remembread.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
@@ -23,6 +24,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final UserFacadeService userFacadeService;
 
     @PatchMapping("/agree")
     @Operation(summary = "약관 동의 API", description = "회원가입 시 이용약관을 동의로 처리하는 API 입니다.")
@@ -40,7 +42,7 @@ public class UserController {
     @GetMapping("/characters")
     @Operation(summary = "사용자 캐릭터 조회 API", description = "사용자가 가지고 있는 캐릭터의 정보를 조회하는 API 입니다.")
     public ApiResponse<List<UserCharacterResponse>> getUserCharacterInfo(@AuthUser User user) {
-        return ApiResponse.onSuccess(userService.getUserCharacter(user));
+        return ApiResponse.onSuccess(userFacadeService.getUserCharacter(user));
     }
 
     @PatchMapping

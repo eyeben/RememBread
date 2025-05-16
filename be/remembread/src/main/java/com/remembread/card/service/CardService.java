@@ -196,4 +196,8 @@ public class CardService {
     public List<Card> findAllById(List<Long> ids) {
         return cardRepository.findAllById(ids);
     }
+
+    public int countCard(User user) {
+        return cardRepository.countByCardSet_User(user);
+    }
 }
