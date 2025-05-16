@@ -202,6 +202,13 @@ public class StudyFacade {
     public RouteResponse getRoutes(Long cardSetId, Integer page, Integer size, User user) {
         CardSet cardSet = cardSetService.validateCardSetOwner(cardSetId, user);
         List<StudySession> studySessions = studySessionService.findAllByCardSetOrderByStudiedAtDesc(cardSet, page, size);
+        if (studySessions.isEmpty()) {
+            return RouteResponse.builder()
+                    .cardSetId(cardSetId)
+                    .total(0)
+                    .routes(new ArrayList<>())
+                    .build();
+        }
         return StudyConverter.toRouteResponse(studySessions);
     }
 
