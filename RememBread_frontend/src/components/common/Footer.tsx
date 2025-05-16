@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
+import { stopRecord } from "@/services/map";
+import { useStudyStore } from "@/stores/studyRecord";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import FooterModal from "@/components/footer/FooterModal";
 import FooterItem from "@/components/footer/FooterItem";
 import Game from "@/components/svgs/footer/Game";
@@ -11,15 +14,24 @@ import IndexCardBlack from "@/components/svgs/footer/IndexCardBlack";
 import Profile from "@/components/svgs/footer/Profile";
 import ProfileBlack from "@/components/svgs/footer/ProfileBlack";
 import CreateOven from "@/components/svgs/footer/CreateOven";
+import StopStudyModal from "@/components/studyMap/StopStudyModal";
 
 const Footer = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [isOvenOpen, setIsOvenOpen] = useState<boolean>(false);
 
+  const { isRecording, cardSetId, lastCardId, stopRecording } = useStudyStore();
+  const [showStopModal, setShowStopModal] = useState<boolean>(false);
+  const [pendingPath, setPendingPath] = useState<string | null>(null);
+  const { location: currentLocation } = useCurrentLocation();
+
   const isActive = (path: string) => {
     if (path === "/card-view") {
       return location.pathname.startsWith("/card-view");
+    }
+    if (path === "/games") {
+      return location.pathname.startsWith("/games");
     }
     return location.pathname === path;
   };
@@ -34,13 +46,53 @@ const Footer = () => {
 
   const handleNavigate = (path: string) => {
     handleCloseModal();
-    navigate(path);
+
+    if (isRecording && path !== `/card-view/${cardSetId}`) {
+      setPendingPath(path);
+      setShowStopModal(true);
+    } else {
+      navigate(path);
+    }
+  };
+
+  const handleStopConfirm = async () => {
+    if (!cardSetId) return;
+
+    const latitude = currentLocation?.latitude ?? 0;
+    const longitude = currentLocation?.longitude ?? 0;
+
+    const payload = {
+      lastCardId,
+      latitude,
+      longitude,
+    };
+
+    console.log("[STOP] stopRecord 호출 준비됨", {
+      cardSetId,
+      ...payload,
+    });
+
+    try {
+      await stopRecord(cardSetId, payload);
+      console.log("[STOP] stopRecord 호출 성공");
+    } catch (e) {
+      console.error("[STOP] stopRecord 호출 실패", e);
+    }
+
+    stopRecording();
+    setShowStopModal(false);
+
+    if (pendingPath) {
+      console.log("[STOP] navigate 실행:", pendingPath);
+      navigate(pendingPath);
+      setPendingPath(null);
+    }
   };
 
   return (
     <>
       <FooterModal isOpen={isOvenOpen} onClose={handleCloseModal} />
-      <footer className="fixed flex justify-evenly w-full min-h-16 max-w-[600px] mx-auto pc:border-x bg-white border-t border-neutral-200 z-50 pb-env(safe-area-inset-bottom) bottom-0 left-0 right-0">
+      <footer className="fixed flex justify-evenly w-full min-h-16 max-w-[600px] mx-auto pc:border-x bg-white border-t border-neutral-200 z-50 pb-[env(safe-area-inset-bottom)] bottom-0 left-0 right-0">
         <FooterItem
           isActive={isActive("/card-view")}
           onClick={() => handleNavigate("/card-view")}
@@ -78,6 +130,15 @@ const Footer = () => {
           label="프로필"
         />
       </footer>
+      <StopStudyModal
+        open={showStopModal}
+        onOpenChange={(open) => {
+          setShowStopModal(open);
+          if (!open) setPendingPath(null);
+        }}
+        cardSetId={cardSetId ?? 0}
+        onConfirm={handleStopConfirm}
+      />
     </>
   );
 };

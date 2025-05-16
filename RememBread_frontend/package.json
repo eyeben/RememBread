@@ -33,6 +33,7 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.10.4",
     "firebase": "^11.7.1",
     "lucide-react": "^0.503.0",
     "pdfjs-dist": "^5.2.133",
@@ -48,6 +49,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@types/navermaps": "^3.7.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",

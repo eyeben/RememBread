@@ -4,8 +4,8 @@ import { Save, Tags } from "lucide-react";
 import { updateCardSet, getCardSetById } from "@/services/cardSet";
 import { Switch } from "@/components/ui/switch";
 import TagRow from "@/components/indexCardView/TagRow";
+import TestSettingDialog from "@/components/dialog/TestSettingDialog";
 import CardSetCardlList from "@/components/indexCardView/CardSetCardlList";
-import CardDetailButtons from "@/components/indexCardView/CardDetailButtons";
 
 const CardSetDetailPage = () => {
   const navigate = useNavigate();
@@ -15,9 +15,10 @@ const CardSetDetailPage = () => {
   const cardFromState = location.state?.card;
 
   const readonlyMode = location.state?.fromTotalPage ?? false;
+  const nickname = location.state?.card?.nickname;
 
-  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [name, setName] = useState<string>("");
+  const [isEditing, setIsEditing] = useState<boolean>(false);
   const [hashtags, setHashTags] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<number>(1);
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -25,7 +26,6 @@ const CardSetDetailPage = () => {
   const [editedName, setEditedName] = useState<string>("");
   const [editedTags, setEditedTags] = useState<string[]>([]);
   const [editedIsPublic, setEditedIsPublic] = useState<number>(1);
-  const nickname = location.state?.card?.nickname;
 
   const isStudyRoute = Boolean(useMatch("/card-view/:indexCardId/study"));
   const isTTSRoute = Boolean(useMatch("/card-view/:indexCardId/tts"));
@@ -52,8 +52,13 @@ const CardSetDetailPage = () => {
     fetchCardSet();
   }, [cardSetId, navigate]);
 
-  const handleStudyClick = () => navigate("study", { state: { card: cardFromState } });
-  const handleTTSClick = () => navigate("tts", { state: { card: cardFromState } });
+  const handleStudyClick = () => {
+    navigate("study", { state: { card: cardFromState } });
+  };
+
+  const handleTTSClick = () => {
+    navigate("tts", { state: { card: cardFromState } });
+  };
 
   const saveCardSet = async (
     override?: Partial<{ name: string; hashtags: string[]; isPublic: number }>,
@@ -90,7 +95,6 @@ const CardSetDetailPage = () => {
     <div className="flex flex-col items-center justify-center py-4 gap-2">
       <div className="relative w-full px-4 max-w-3xl">
         <div className="flex items-center justify-center w-full">
-          {/* 제목 input */}
           <input
             type="text"
             value={isEditing ? editedName : name}
@@ -106,8 +110,6 @@ const CardSetDetailPage = () => {
             } focus:outline-none w-full pb-2 px-5`}
             readOnly={!isEditing || readonlyMode}
           />
-
-          {/* 편집/저장 버튼 */}
           {!isStudyRoute &&
             (isEditing ? (
               <button
@@ -141,7 +143,6 @@ const CardSetDetailPage = () => {
             ))}
         </div>
 
-        {/* 닉네임 표시 */}
         {nickname && (
           <div className="mt-1 text-right text-xs text-muted-foreground pr-2">
             제빵사: <span className="font-medium">{nickname}</span>
@@ -151,7 +152,7 @@ const CardSetDetailPage = () => {
 
       {!isStudyRoute && !isTTSRoute && !isTestRoute && (
         <>
-          <div className="flex items-center w-full ">
+          <div className="flex items-center w-full">
             <span className="text-sm text-muted-foreground font-medium whitespace-nowrap pl-6">
               태그 :
             </span>
@@ -160,19 +161,16 @@ const CardSetDetailPage = () => {
               cardSetId={cardSetId}
               isEditing={isEditing && !readonlyMode}
               setEditing={setIsEditing}
-              onUpdateTags={(newTags) => {
-                setEditedTags(newTags);
-              }}
+              onUpdateTags={(newTags) => setEditedTags(newTags)}
               readonlyMode={readonlyMode}
             />
             {!readonlyMode && (
               <div className="flex text-center gap-2 items-center">
-                <div className="text-xs text-muted-foreground whitespace-nowrap ">
+                <div className="text-xs text-muted-foreground whitespace-nowrap">
                   <span className="font-semibold">
                     {(isEditing ? editedIsPublic : isPublic) === 1 ? "공개" : "비공개"}
                   </span>
                 </div>
-
                 <div className="flex items-center gap-2 pr-2">
                   <Switch
                     checked={(isEditing ? editedIsPublic : isPublic) === 1}
@@ -191,7 +189,21 @@ const CardSetDetailPage = () => {
           <CardSetCardlList cardSetId={cardSetId} isReadonly={readonlyMode} />
 
           <div className="fixed bottom-[80px] left-1/2 -translate-x-1/2 w-full pc:w-[598px] z-25">
-            <CardDetailButtons onStudyClick={handleStudyClick} onTTSClick={handleTTSClick} />
+            <div className="flex justify-between w-full gap-2 px-4">
+              <button
+                onClick={handleStudyClick}
+                className="bg-white w-1/3 border-2 border-primary-600 text-primary-600 pc:text-md text-xs py-2 font-semibold rounded-full hover:bg-primary-600 hover:text-white"
+              >
+                학습하기
+              </button>
+              <button
+                disabled
+                className="bg-neutral-200 w-1/3 border-2 pc:text-md text-xs py-2 rounded-full text-neutral-500 cursor-not-allowed"
+              >
+                TTS 학습하기
+              </button>
+              <TestSettingDialog />
+            </div>
           </div>
         </>
       )}

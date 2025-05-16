@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useStudyStore } from "@/stores/studyRecord";
 import { indexCard, indexCardSet } from "@/types/indexCard";
 import { getCardsByCardSet } from "@/services/card";
+import { startRecord, postLocation, stopRecord } from "@/services/map";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
-
+import StopStudyModal from "@/components/studyMap/StopStudyModal";
 import {
   Carousel,
   CarouselContent,
@@ -17,53 +20,143 @@ import {
 const CardStudyPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { location: currentLocation } = useCurrentLocation();
   const cardSet: indexCardSet | undefined = location.state?.card;
 
+  const [api, setApi] = useState<CarouselApi>();
+  const [cards, setCards] = useState<indexCard[]>([]);
+  const [lastCardId, setLastCardId] = useState<number>(0);
   const [currentIndex, setCurrentIndex] = useState<number>(0);
+
   const [isFront, setIsFront] = useState<boolean>(true);
   const [isRotating, setIsRotating] = useState<boolean>(false);
-  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
-  const [cards, setCards] = useState<indexCard[]>([]);
-  const [api, setApi] = useState<CarouselApi>();
   const [lastClickTime, setLastClickTime] = useState<number>(0);
+  const [isButtonDisabled, setIsButtonDisabled] = useState<boolean>(false);
+
+  const [hasStarted, setHasStarted] = useState<boolean>(false);
+  const [locationIntervalId, setLocationIntervalId] = useState<NodeJS.Timeout | null>(null);
+
+  const isRecordingRef = useRef<boolean>(false);
+  const [showStopModal, setShowStopModal] = useState<boolean>(false);
+
+  useEffect(() => {
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      if (!isRecordingRef.current || !cardSet?.cardSetId) return;
+      stopRecord(cardSet.cardSetId, {
+        lastCardId,
+        latitude: currentLocation?.latitude ?? 0,
+        longitude: currentLocation?.longitude ?? 0,
+      });
+      e.preventDefault();
+      e.returnValue = "";
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [lastCardId, currentLocation]);
+
+  useEffect(() => {
+    const handlePopState = () => {
+      if (isRecordingRef.current) {
+        setShowStopModal(true);
+      }
+    };
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   useEffect(() => {
     if (!cardSet?.cardSetId) {
       navigate("/card-view", { replace: true });
       return;
     }
-
     const fetchCards = async () => {
       try {
         const res = await getCardsByCardSet(cardSet.cardSetId, 0, 100, "asc");
         setCards(res.result.cards);
-      } catch (error) {
-        console.error("카드 불러오기 실패:", error);
+      } catch (e) {
+        console.error("[카드 로딩 실패]", e);
       }
     };
-
     fetchCards();
   }, [cardSet?.cardSetId, navigate]);
 
   useEffect(() => {
     if (!api) return;
-    setCurrentIndex(api.selectedScrollSnap() + 1);
-    api.on("select", () => {
-      setCurrentIndex(api.selectedScrollSnap() + 1);
-    });
-  }, [api]);
+    const updateIndex = () => {
+      const snap = api.selectedScrollSnap();
+      const cardId = cards[snap]?.cardId ?? 0;
+      setCurrentIndex(snap + 1);
+      setLastCardId(cardId);
+      useStudyStore.getState().setLastCardId(cardId);
+    };
+    updateIndex();
+    api.on("select", updateIndex);
+  }, [api, cards]);
 
   const handleFlip = () => {
     const now = Date.now();
     if (now - lastClickTime < 400) return;
     setLastClickTime(now);
-
     setIsFront((prev) => !prev);
     setIsButtonDisabled(true);
     setTimeout(() => {
       setIsRotating(!isRotating);
       setIsButtonDisabled(false);
     }, 310);
+  };
+
+  // 학습 시작
+  useEffect(() => {
+    if (!cardSet?.cardSetId || !currentLocation || hasStarted) return;
+    const start = async () => {
+      try {
+        await startRecord(cardSet.cardSetId, {
+          mode: "STUDY",
+          latitude: currentLocation.latitude,
+          longitude: currentLocation.longitude,
+        });
+        console.log("[START] startRecord 호출됨", {
+          cardSetId: cardSet.cardSetId,
+          currentLocation,
+        });
+        isRecordingRef.current = true;
+        setHasStarted(true);
+        useStudyStore.getState().setRecording(cardSet.cardSetId);
+        const intervalId = setInterval(() => {
+          if (!currentLocation) return;
+          postLocation(cardSet.cardSetId, currentLocation.latitude, currentLocation.longitude)
+            .then(() => console.log("위치 전송 완료"))
+            .catch((e) => console.error("위치 전송 실패", e));
+        }, 2 * 60 * 1000);
+        setLocationIntervalId(intervalId);
+      } catch (e) {
+        console.error("학습 시작 실패", e);
+      }
+    };
+    start();
+  }, [cardSet?.cardSetId, currentLocation, hasStarted]);
+
+  const handleStopConfirm = async () => {
+    if (!cardSet?.cardSetId) return;
+
+    const stopPayload = {
+      lastCardId,
+      latitude: currentLocation?.latitude ?? 0,
+      longitude: currentLocation?.longitude ?? 0,
+    };
+
+    console.log("[STOP] stopRecord 호출됨", {
+      cardSetId: cardSet.cardSetId,
+      ...stopPayload,
+    });
+
+    await stopRecord(cardSet.cardSetId, stopPayload);
+    useStudyStore.getState().stopRecording();
+    if (locationIntervalId) clearInterval(locationIntervalId);
+    isRecordingRef.current = false;
+    setShowStopModal(false);
+
+    navigate(`/card-view`);
   };
 
   return (
@@ -76,17 +169,12 @@ const CardStudyPage = () => {
       >
         {!isFront ? "concept" : "description"}
       </Button>
-
       <div>
         {currentIndex} / {cards.length}
       </div>
-
       <Carousel
         setApi={setApi}
-        opts={{
-          align: "center",
-          loop: false,
-        }}
+        opts={{ align: "center", loop: false }}
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
         <CarouselContent className="aspect-square">
@@ -99,7 +187,6 @@ const CardStudyPage = () => {
                   }`}
                 >
                   <InputBread className="w-full h-full aspect-square" />
-
                   {!isRotating ? (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
                       {card.concept || "제목 없음"}
@@ -120,6 +207,20 @@ const CardStudyPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
+      <div className="flex gap-4 justify-center mt-2 ">
+        <Button
+          onClick={() => setShowStopModal(true)}
+          className="w-2/3 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition"
+        >
+          기록 종료하기
+        </Button>
+      </div>
+      <StopStudyModal
+        open={showStopModal}
+        onOpenChange={(open) => setShowStopModal(open)}
+        cardSetId={cardSet?.cardSetId ?? 0}
+        onConfirm={handleStopConfirm}
+      />
     </div>
   );
 };

@@ -21,6 +21,14 @@ import CardTestConceptPage from "@/pages/cardTest/CardTestConceptPage";
 import CardTestExplanePage from "@/pages/cardTest/CardTestExplanePage";
 import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
 import CardSinglePage from "@/pages/indexCardSetView/CardSinglePage";
+import GameModePage from "@/pages/games/GameModePage";
+import GameHomePage from "@/pages/games/GameHomePage";
+import MemoryGamePage from "@/pages/games/MemoryGamePage";
+import GameResultPage from "@/pages/games/GameResultPage";
+import CompareGamePage from "@/pages/games/CompareGamePage";
+import GameDetectivePage from "@/pages/games/DetectiveGamePage";
+import GameShadowPage from "@/pages/games/ShadowGamePage";
+import RankPage from "@/pages/games/RankPage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -165,8 +173,42 @@ const router = createBrowserRouter([
             element: <ProfilePage />,
           },
           {
-            path: "/games",
+            path: "games",
             element: <GamesPage />,
+            children: [
+              {
+                index: true,
+                element: <GameHomePage />,
+              },
+              {
+                path: "game-mode",
+                element: <GameModePage />,
+              },
+              {
+                path: "memory",
+                element: <MemoryGamePage />,
+              },
+              {
+                path: "compare",
+                element: <CompareGamePage />,
+              },
+              {
+                path: "detective",
+                element: <GameDetectivePage />,
+              },
+              {
+                path: "shadow",
+                element: <GameShadowPage />,
+              },
+              {
+                path: "result",
+                element: <GameResultPage />,
+              },
+              {
+                path: "rank",
+                element: <RankPage />,
+              },
+            ],
           },
           {
             path: "/map",
