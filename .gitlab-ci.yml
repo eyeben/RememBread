@@ -17,6 +17,7 @@ build:
     - echo "VITE_NAVER_CLIENT_ID=${VITE_NAVER_CLIENT_ID}" >> .env
     - echo "VITE_GOOGLE_CLIENT_ID=${VITE_GOOGLE_CLIENT_ID}" >> .env
     - echo "VITE_FRONT_BASE_URL=${VITE_FRONT_BASE_URL}" >> .env
+    - echo "VITE_CLIENT_ID=${VITE_CLIENT_ID}" >> .env
     - npm install
     - npm run build
   artifacts:
