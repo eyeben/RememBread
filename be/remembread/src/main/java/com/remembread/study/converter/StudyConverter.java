@@ -1,6 +1,8 @@
 package com.remembread.study.converter;
 
+import com.remembread.study.dto.response.DayLogProjection;
 import com.remembread.study.dto.response.RouteResponse;
+import com.remembread.study.dto.response.SummaryLogResponse;
 import com.remembread.study.entity.StudySession;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.LineString;
@@ -37,6 +39,14 @@ public class StudyConverter {
         return RouteResponse.Route.builder()
                 .studiedAt(studySession.getStudiedAt())
                 .route(toRoute(studySession.getRoute()))
+                .build();
+    }
+
+    public static SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse toDayLogResponseList(DayLogProjection projection) {
+        return SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse.builder()
+                .day(projection.getDay().getDayOfMonth())
+                .totalCorrect(projection.getTotalCorrect())
+                .totalSolved(projection.getTotalSolved())
                 .build();
     }
 }

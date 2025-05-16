@@ -19,6 +19,7 @@ import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.dto.response.StudyLogResponse;
+import com.remembread.study.dto.response.SummaryLogResponse;
 import com.remembread.study.entity.CardStudyLog;
 import com.remembread.study.entity.StudySession;
 import com.remembread.study.service.CardStudyLogService;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -200,6 +202,13 @@ public class StudyFacade {
     public RouteResponse getRoutes(Long cardSetId, Integer page, Integer size, User user) {
         CardSet cardSet = cardSetService.validateCardSetOwner(cardSetId, user);
         List<StudySession> studySessions = studySessionService.findAllByCardSetOrderByStudiedAtDesc(cardSet, page, size);
+        if (studySessions.isEmpty()) {
+            return RouteResponse.builder()
+                    .cardSetId(cardSetId)
+                    .total(0)
+                    .routes(new ArrayList<>())
+                    .build();
+        }
         return StudyConverter.toRouteResponse(studySessions);
     }
 
@@ -220,6 +229,11 @@ public class StudyFacade {
                 .name(cardSet.getName())
                 .logs(studySessionList)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public SummaryLogResponse getLogs(LocalDate startDate, LocalDate endDate, User user) {
+        return cardStudyLogService.getDayLogResponses(startDate, endDate, user.getId());
     }
 
     public void addPoint(User user, Double longitude, Double latitude) {
