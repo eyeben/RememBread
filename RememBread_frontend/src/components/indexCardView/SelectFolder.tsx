@@ -4,8 +4,10 @@ import { ArrowLeft } from "lucide-react";
 import Button from "@/components/common/Button";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
 import FolderPathBreadcrumb from "@/components/folder/FolderPathBreadcrumb";
+import { postForkCardSet } from "@/services/cardSet";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { Folder } from "@/types/folder";
+import { useToast } from "@/hooks/use-toast";
 
 const SEPARATOR = "퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁퉁";
 
@@ -16,11 +18,17 @@ type FolderTreeItem = Folder & {
 };
 
 interface SelectFolderProps {
+  selectedCardSetId: number | null;
   setFolderSelect: (folderSelect: boolean) => void;
   setSelectedFolderId: (id: number | null) => void;
 }
 
-const SelectFolder = ({ setFolderSelect, setSelectedFolderId }: SelectFolderProps) => {
+const SelectFolder = ({
+  selectedCardSetId,
+  setFolderSelect,
+  setSelectedFolderId,
+}: SelectFolderProps) => {
+  const { toast } = useToast();
   const [folders, setFolders] = useState<FolderTreeItem[]>([]);
   const [folderPath, setFolderPath] = useState<string>("");
   const [selectedFolder, setSelectedFolder] = useState<Folder | null>(null);
@@ -33,6 +41,30 @@ const SelectFolder = ({ setFolderSelect, setSelectedFolderId }: SelectFolderProp
   const handleSelectFolder = () => {
     setSelectedFolderId(selectedFolder?.id ?? null);
     setFolderSelect(false);
+  };
+
+  const handleForkCardSet = async () => {
+    if (selectedCardSetId === null || selectedFolder === null) {
+      return;
+    }
+
+    try {
+      await postForkCardSet(selectedCardSetId, { folderId: selectedFolder.id });
+
+      toast({
+        variant: "success",
+        title: "포크 완료",
+        description: "카드셋이 성공적으로 복사되었습니다.",
+      });
+
+      setFolderSelect(false);
+    } catch {
+      toast({
+        variant: "destructive",
+        title: "포크 실패",
+        description: "카드셋 복사 중 오류가 발생했습니다.",
+      });
+    }
   };
 
   const fetchRootFolders = async () => {
@@ -217,10 +249,15 @@ const SelectFolder = ({ setFolderSelect, setSelectedFolderId }: SelectFolderProp
             {renderFolderTree(folders)}
           </div>
         </div>
-
-        <Button variant="primary" className="mt-5" onClick={handleSelectFolder}>
-          선택하기
-        </Button>
+        {selectedCardSetId === null ? (
+          <Button variant="primary" className="mt-5" onClick={handleSelectFolder}>
+            선택하기
+          </Button>
+        ) : (
+          <Button variant="primary" className="mt-5" onClick={handleForkCardSet}>
+            가져오기
+          </Button>
+        )}
       </div>
     </>
   );
