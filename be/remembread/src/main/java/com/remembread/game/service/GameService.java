@@ -48,7 +48,7 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public List<GameSessionResponse> getGameSession(User user) {
-        List<GameSession> gameSessionList = gameSessionRepository.findByUserOrderByPlayedAtDesc(user);
+        List<GameSession> gameSessionList = gameSessionRepository.findRecent20ByUserId(user.getId());
 
         return gameSessionList.stream()
                 .map(GameConverter::toGameSessionResponse)

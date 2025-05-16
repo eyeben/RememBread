@@ -46,5 +46,11 @@ public interface GameSessionRepository extends JpaRepository<GameSession, Long> 
     """, nativeQuery = true)
     List<GameSession> findTopSessionsByGameType(String gameType);
 
-    List<GameSession> findByUserOrderByPlayedAtDesc(User user);
+    @Query(value = """
+    SELECT * FROM game_sessions 
+    WHERE user_id = :userId 
+    ORDER BY played_at DESC 
+    LIMIT 20
+    """, nativeQuery = true)
+    List<GameSession> findRecent20ByUserId(Long userId);
 }
