@@ -2,10 +2,7 @@ package com.remembread.card.service;
 
 import com.remembread.apipayload.code.status.ErrorStatus;
 import com.remembread.apipayload.exception.GeneralException;
-import com.remembread.card.dto.request.CardCreateManyRequest;
-import com.remembread.card.dto.request.CardCreateRequest;
-import com.remembread.card.dto.request.CardDeleteManyRequest;
-import com.remembread.card.dto.request.CardUpdateRequest;
+import com.remembread.card.dto.request.*;
 import com.remembread.card.dto.response.CardGetResponse;
 import com.remembread.card.dto.response.CardListInfiniteResponse;
 import com.remembread.card.entity.Card;
@@ -20,9 +17,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -113,6 +109,16 @@ public class CardService {
             throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
         }
         cardRepository.delete(card);
+
+        // 삭제 후 번호 재정렬
+        List<Card> remainingCards = cardRepository.findByCardSetIdOrderByNumber(cardSet.getId());
+
+        Map<Long, Integer> idToNumberMap = new LinkedHashMap<>();
+        for (int i = 0; i < remainingCards.size(); i++) {
+            idToNumberMap.put(remainingCards.get(i).getId(), i + 1);
+        }
+
+        reorderCardNumbers(idToNumberMap);
     }
 
     public List<CardListInfiniteResponse> getCardsInfinite(Long cardId, boolean isDownward, int size, Long userId) {
@@ -179,7 +185,71 @@ public class CardService {
             throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
         }
 
+        // 삭제
         cardRepository.deleteAll(cards);
+
+        // 삭제 후 남은 카드 번호 재정렬
+        List<Card> remainingCards = cardRepository.findByCardSetIdOrderByNumber(cardSetId);
+
+        Map<Long, Integer> idToNumberMap = new LinkedHashMap<>();
+        for (int i = 0; i < remainingCards.size(); i++) {
+            idToNumberMap.put(remainingCards.get(i).getId(), i + 1);
+        }
+
+        reorderCardNumbers(idToNumberMap);
+    }
+
+    @Transactional
+    public void moveCard(CardMoveRequest request, User user) {
+        Card fromCard = cardRepository.findById(request.getFromCardId())
+                .orElseThrow(() -> new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+
+        CardSet cardSet = fromCard.getCardSet();
+        // 자기 카드 아닐 때
+        if (!cardSet.getUser().getId().equals(user.getId())) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+
+        List<Card> cards = cardRepository.findByCardSetIdOrderByNumber(cardSet.getId());
+
+        // 그대로면 무시
+        if (fromCard.getNumber().equals(request.getToNumber())) return;
+
+        // 재정렬 리스트
+        List<Card> reordered = new ArrayList<>(cards);
+        reordered.removeIf(card -> card.getId().equals(fromCard.getId()));
+
+        int toIndex = Math.max(0, Math.min(request.getToNumber() - 1, reordered.size()));
+        reordered.add(toIndex, fromCard);
+
+        Map<Long, Integer> idToNumberMap = new LinkedHashMap<>();
+        for (int i = 0; i < reordered.size(); i++) {
+            idToNumberMap.put(reordered.get(i).getId(), i + 1);
+        }
+
+        reorderCardNumbers(idToNumberMap);
+
+    }
+    @Transactional
+    public void reorderCardNumbers(Map<Long, Integer> idToNumberMap) {
+        if (idToNumberMap == null || idToNumberMap.isEmpty()) {
+            return;
+        }
+
+        StringBuilder sql = new StringBuilder("UPDATE cards SET number = CASE id ");
+
+        for (Map.Entry<Long, Integer> entry : idToNumberMap.entrySet()) {
+            sql.append("WHEN ").append(entry.getKey())
+                    .append(" THEN ").append(entry.getValue()).append(" ");
+        }
+
+        sql.append("END WHERE id IN (")
+                .append(idToNumberMap.keySet().stream()
+                        .map(String::valueOf)
+                        .collect(Collectors.joining(",")))
+                .append(");");
+
+        em.createNativeQuery(sql.toString()).executeUpdate();
     }
 
     @Transactional(readOnly = true)
