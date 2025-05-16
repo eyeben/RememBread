@@ -21,9 +21,7 @@ import com.remembread.hashtag.entity.Hashtag;
 import com.remembread.hashtag.repository.CardSetHashtagRepository;
 import com.remembread.hashtag.repository.HashtagRepository;
 import com.remembread.user.entity.User;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -440,7 +438,7 @@ public class CardSetService {
         for (CardSet cardSet : cardSets) {
             if(!cardSet.getUser().getId().equals(userId))
                 throw new GeneralException(ErrorStatus.CARDSET_FORBIDDEN);
-            cardSet.updateFolderId(folder.getId());
+            cardSet.updateFolder(folder);
         }
     }
 }
