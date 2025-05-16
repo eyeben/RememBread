@@ -363,7 +363,15 @@ const CardSetDetail = ({
             <Button
               className="w-full"
               variant="primary-outline"
-              onClick={() => navigate(`/study/${selectedCardSetId}`)}
+              onClick={() =>
+                navigate(`/study/${selectedCardSetId}`, {
+                  state: {
+                    card: {
+                      cardSetId: selectedCardSetId,
+                    },
+                  },
+                })
+              }
             >
               학습하기
             </Button>
