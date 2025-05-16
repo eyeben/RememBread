@@ -21,7 +21,7 @@ const Layout = () => {
         {headerComponent}
         <main
           className={`flex flex-col flex-1 ${headerComponent ? "pt-[calc(env(safe-area-inset-top)+56px)]" : ""} ${
-            footerComponent ? "pb-[calc(env(safe-area-inset-bottom)+64px)]" : ""
+            footerComponent ? "pb-[calc(env(safe-area-inset-bottom)+70px)]" : ""
           }`}
         >
           <Outlet />
