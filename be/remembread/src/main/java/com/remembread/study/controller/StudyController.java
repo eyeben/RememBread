@@ -10,10 +10,13 @@ import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.dto.response.StudyLogResponse;
+import com.remembread.study.dto.response.SummaryLogResponse;
 import com.remembread.study.facade.StudyFacade;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/studies")
@@ -87,5 +90,14 @@ public class StudyController {
             @AuthUser User user
     ) {
         return ApiResponse.onSuccess(studyFacade.getLogsByCardSet(cardSetId, user, page, size));
+    }
+
+    @GetMapping("/logs")
+    public ApiResponse<SummaryLogResponse> getLogs(
+            @RequestParam LocalDate startDate,
+            @RequestParam LocalDate endDate,
+            @AuthUser User user
+    ) {
+        return ApiResponse.onSuccess(studyFacade.getLogs(startDate, endDate, user));
     }
 }
