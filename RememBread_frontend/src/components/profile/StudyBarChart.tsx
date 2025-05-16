@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, MouseEvent, TouchEvent } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Select,
@@ -60,7 +60,7 @@ const StudyBarChart = () => {
   const visibleDailyData = dailyData.slice(dayStartIdx, dayStartIdx + 15);
 
   // 드래그 이벤트 핸들러 (일별)
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleDragStart = (e: MouseEvent | TouchEvent) => {
     dragging.current = true;
     if ("touches" in e) {
       dragStartX.current = e.touches[0].clientX;
@@ -68,7 +68,7 @@ const StudyBarChart = () => {
       dragStartX.current = e.clientX;
     }
   };
-  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleDragMove = (e: MouseEvent | TouchEvent) => {
     if (!dragging.current || dragStartX.current === null) return;
     let clientX;
     if ("touches" in e) {
