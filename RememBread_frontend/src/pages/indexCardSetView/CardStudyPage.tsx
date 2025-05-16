@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useStudyStore } from "@/stores/studyRecord";
 import { indexCard, indexCardSet } from "@/types/indexCard";
 import { getCardsByCardSet } from "@/services/card";
 import { startRecord, postLocation, stopRecord } from "@/services/map";
@@ -36,8 +37,7 @@ const CardStudyPage = () => {
   const [locationIntervalId, setLocationIntervalId] = useState<NodeJS.Timeout | null>(null);
 
   const isRecordingRef = useRef<boolean>(false);
-  const [showStopModal, setShowStopModal] = useState(false);
-  const [pendingNavigate, setPendingNavigate] = useState<null | (() => void)>(null);
+  const [showStopModal, setShowStopModal] = useState<boolean>(false);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -58,7 +58,6 @@ const CardStudyPage = () => {
     const handlePopState = () => {
       if (isRecordingRef.current) {
         setShowStopModal(true);
-        setPendingNavigate(() => () => window.history.back());
       }
     };
     window.addEventListener("popstate", handlePopState);
@@ -85,8 +84,10 @@ const CardStudyPage = () => {
     if (!api) return;
     const updateIndex = () => {
       const snap = api.selectedScrollSnap();
+      const cardId = cards[snap]?.cardId ?? 0;
       setCurrentIndex(snap + 1);
-      setLastCardId(cards[snap]?.cardId ?? 0);
+      setLastCardId(cardId);
+      useStudyStore.getState().setLastCardId(cardId);
     };
     updateIndex();
     api.on("select", updateIndex);
@@ -104,6 +105,7 @@ const CardStudyPage = () => {
     }, 310);
   };
 
+  // 학습 시작
   useEffect(() => {
     if (!cardSet?.cardSetId || !currentLocation || hasStarted) return;
     const start = async () => {
@@ -119,6 +121,7 @@ const CardStudyPage = () => {
         });
         isRecordingRef.current = true;
         setHasStarted(true);
+        useStudyStore.getState().setRecording(cardSet.cardSetId);
         const intervalId = setInterval(() => {
           if (!currentLocation) return;
           postLocation(cardSet.cardSetId, currentLocation.latitude, currentLocation.longitude)
@@ -135,15 +138,25 @@ const CardStudyPage = () => {
 
   const handleStopConfirm = async () => {
     if (!cardSet?.cardSetId) return;
-    await stopRecord(cardSet.cardSetId, {
+
+    const stopPayload = {
       lastCardId,
       latitude: currentLocation?.latitude ?? 0,
       longitude: currentLocation?.longitude ?? 0,
+    };
+
+    console.log("[STOP] stopRecord 호출됨", {
+      cardSetId: cardSet.cardSetId,
+      ...stopPayload,
     });
+
+    await stopRecord(cardSet.cardSetId, stopPayload);
+    useStudyStore.getState().stopRecording();
     if (locationIntervalId) clearInterval(locationIntervalId);
     isRecordingRef.current = false;
     setShowStopModal(false);
-    pendingNavigate?.();
+
+    navigate(`/card-view`);
   };
 
   return (
@@ -194,6 +207,14 @@ const CardStudyPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
+      <div className="flex gap-4 justify-center mt-2 ">
+        <Button
+          onClick={() => setShowStopModal(true)}
+          className="w-2/3 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition"
+        >
+          기록 종료하기
+        </Button>
+      </div>
       <StopStudyModal
         open={showStopModal}
         onOpenChange={(open) => setShowStopModal(open)}
