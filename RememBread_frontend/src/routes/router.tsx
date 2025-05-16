@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createBrowserRouter, Navigate, Outlet } from "react-router-dom";
+import { createBrowserRouter, Navigate, Outlet, useLocation } from "react-router-dom";
 import { tokenUtils } from "@/lib/queryClient";
 import Layout from "@/components/common/Layout";
 import LoginPage from "@/pages/LoginPage";
@@ -13,14 +13,10 @@ import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
-import CardSetDetailPage from "@/pages/indexCardSetView/CardSetDetailPage";
-import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
-import CardTTSPage from "@/pages/indexCardSetView/CardTTSPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import CardTestConceptPage from "@/pages/cardTest/CardTestConceptPage";
 import CardTestExplanePage from "@/pages/cardTest/CardTestExplanePage";
 import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
-import CardSinglePage from "@/pages/indexCardSetView/CardSinglePage";
 import GameModePage from "@/pages/games/GameModePage";
 import GameHomePage from "@/pages/games/GameHomePage";
 import MemoryGamePage from "@/pages/games/MemoryGamePage";
@@ -29,18 +25,20 @@ import CompareGamePage from "@/pages/games/CompareGamePage";
 import GameDetectivePage from "@/pages/games/DetectiveGamePage";
 import GameShadowPage from "@/pages/games/ShadowGamePage";
 import RankPage from "@/pages/games/RankPage";
+import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [shouldRedirect, setShouldRedirect] = useState<boolean>(false);
   const [redirectPath] = useState<string>("/login");
+  const location = useLocation();
 
   useEffect(() => {
     const checkAuth = async () => {
       const currentToken = tokenUtils.getToken();
 
-      // 토큰이 없는 경우 바로 로그인 페이지로 리다이렉트
+      // 토큰이 없는 경우 현재 경로를 state로 포함하여 로그인 페이지로 리다이렉트
       if (!currentToken) {
         setShouldRedirect(true);
         setIsLoading(false);
@@ -73,7 +71,8 @@ const ProtectedOutlet = () => {
   }
 
   if (shouldRedirect) {
-    return <Navigate to={redirectPath} replace />;
+    // 로그인 페이지로 리다이렉트할 때 현재 경로를 state로 전달
+    return <Navigate to={redirectPath} state={{ from: location.pathname }} replace />;
   }
 
   return <Outlet />;
@@ -124,7 +123,7 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <CardViewPage />,
-            handle: { header: true, footer: true },
+            handle: { header: false, footer: true },
           },
           {
             path: "create",
@@ -147,15 +146,11 @@ const router = createBrowserRouter([
           {
             path: "card-view",
             element: <CardViewPage />,
-            handle: { header: true, footer: true },
+            handle: { header: false, footer: true },
           },
           {
-            path: "card-view/:indexCardId",
-            element: <CardSetDetailPage />,
-            children: [
-              { path: "study", element: <CardStudyPage /> },
-              { path: "tts", element: <CardTTSPage /> },
-            ],
+            path: "study/:cardSetId",
+            element: <CardStudyPage />,
           },
           {
             path: "test/:indexCardId",
@@ -163,10 +158,6 @@ const router = createBrowserRouter([
               { path: "concept", element: <CardTestConceptPage /> },
               { path: "explane", element: <CardTestExplanePage /> },
             ],
-          },
-          {
-            path: "card-view/:indexCardId/card",
-            element: <CardSinglePage />,
           },
           {
             path: "profile",

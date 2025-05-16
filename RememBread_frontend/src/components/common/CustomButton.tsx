@@ -39,7 +39,7 @@ const CustomButton = ({
       className={clsx(
         "flex flex-row items-center w-full max-w-[380px] rounded-2xl px-5 py-4 mb-2 transition-all duration-200 cursor-pointer",
         disabled && "opacity-50 cursor-not-allowed",
-        isClicked && "!bg-primary-300",
+        isClicked && "!bg-primary-400",
         className
       )}
       onClick={handleClick}

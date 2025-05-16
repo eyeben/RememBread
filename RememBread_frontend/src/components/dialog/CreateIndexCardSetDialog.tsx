@@ -99,7 +99,7 @@ const CreateIndexCardSetDialog = ({ selectedFolder }: CreateIndexCardSetDialogPr
           <HashtagInput
             hashtags={hashtags}
             hashtagInput={hashtagInput}
-            setHashtags={setHashtags}
+            setHashTags={setHashtags}
             setHashtagInput={setHashtagInput}
           />
         </div>

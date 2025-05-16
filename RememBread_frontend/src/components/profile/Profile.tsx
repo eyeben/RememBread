@@ -276,6 +276,7 @@ const Profile = () => {
                 checked={notificationTimeEnable} 
                 onCheckedChange={handlenotificationTimeEnableChange}
                 disabled={!isEditable}
+                className="scale-150"
               />
             </div>
           </div>
@@ -302,10 +303,10 @@ const Profile = () => {
               </Button>
             )}
           </div>
-        </div>
-        <Button className="min-w-48 w-full max-w-72 h-10 mt-4" variant="negative" onClick={handleLogout}>
+        <Button className="min-w-48 w-full max-w-72 h-10 mt-3" variant="negative" onClick={handleLogout}>
             로그아웃
         </Button>
+        </div>
         
 
         <ImageEditModal

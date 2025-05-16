@@ -39,7 +39,7 @@ export const USER_END_POINT = {
  * POST_GAME_RESULT : /games/result
  */
 export const GAME_END_POINT = {
-    GET_RANKS: (gameType: string) => `/games/ranking/${gameType}`,
+    GET_RANKS: (gameType: string) => `/games/ranking?gameType=${gameType}`,
     POST_GAME_RESULT: '/games',
     GET_GAME_HISTORY: '/games',
 }

@@ -1,100 +1,223 @@
-import { useState } from "react";
-import { Trash2 } from "lucide-react";
-import { deleteCardSet } from "@/services/cardSet";
-import MyCardSetPage from "@/pages/indexCardSetView/MyCardSetPage";
-import TotalCardSetPage from "@/pages/indexCardSetView/TotalCardSetPage";
-import { Toaster } from "@/components/ui/toaster";
-import CardViewHeader from "@/components/indexCardView/CardViewHeader";
-import ConfirmDeleteModal from "@/components/indexCardView/ConfirmDeleteModal";
-import { indexCardSet } from "@/types/indexCard";
+import { useEffect, useState } from "react";
+import { ArrowLeft, Search } from "lucide-react";
+
+import Button from "@/components/common/Button";
+import { Input } from "@/components/ui/input";
+import DefaultBread from "@/components/svgs/breads/DefaultBread";
+import SelectFolder from "@/components/indexCardView/SelectFolder";
+import CardSetList from "@/components/indexCardView/CardSetList";
+import CardSetDetail from "@/components/indexCardView/CardSetDetail";
+import OrderSelector from "@/components/indexCardView/OrderSelector";
+import RecentSearchList from "@/components/indexCardView/RecentSearchList";
+
+const tabs = ["내카드", "카드 둘러보기"];
 
 const CardViewPage = () => {
-  const [selectedTab, setSelectedTab] = useState<number>(0);
-  const [isEditing, setIsEditing] = useState<boolean>(false);
-  const [selectedItems, setSelectedItems] = useState<number[]>([]);
-  const [isDragging, setIsDragging] = useState<boolean>(false);
-  const [showDeleteModal, setShowDeleteModal] = useState<boolean>(false);
-  const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
+  const [nickname, setNickname] = useState<string>("");
+  const [isFocused, setIsFocused] = useState<boolean>(false);
+  const [folderSelect, setFolderSelect] = useState<boolean>(false);
+  const [searchHistory, setSearchHistory] = useState<string[]>([]);
 
-  const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+  const [query, setQuery] = useState<string>("");
+  const [inputText, setInputText] = useState<string>("");
+  const [isMyCardSet, setIsMyCardSet] = useState<number>(0);
+  const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
+  const [selectedCardSetId, setSelectedCardSetId] = useState<number | null>(null);
+  const [sortType, setSortType] = useState<"latest" | "popularity" | "fork">("latest");
 
-  const handleDropZoneDrop = () => {
-    setIsDragging(false);
-    setShowDeleteModal(true);
+  const saveSearchKeyword = (keyword: string) => {
+    if (!keyword.trim()) return;
+
+    const stored = localStorage.getItem("searchHistory");
+    const parsed: string[] = stored ? JSON.parse(stored) : [];
+
+    const updated = [keyword, ...parsed.filter((item) => item !== keyword)];
+    localStorage.setItem("searchHistory", JSON.stringify(updated.slice(0, 10)));
   };
 
-  const handleDeleteConfirm = async () => {
-    try {
-      await Promise.all(selectedItems.map((id) => deleteCardSet(id)));
-      setCardSetList((prev) => prev.filter((card) => !selectedItems.includes(card.cardSetId)));
-      setSelectedItems([]);
-    } catch (err) {
-      console.error("삭제 실패:", err);
-    } finally {
-      setShowDeleteModal(false);
+  useEffect(() => {
+    if (isFocused) {
+      const stored = localStorage.getItem("searchHistory");
+      if (stored) {
+        setSearchHistory(JSON.parse(stored));
+      }
     }
-  };
+  }, [isFocused]);
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+      setIsFocused(false);
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.history.pushState(null, "", window.location.href);
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   return (
-    <div className="flex flex-col w-full min-h-screen overflow-hidden relative">
-      <Toaster />
-      <CardViewHeader selectedTab={selectedTab} setSelectedTab={setSelectedTab} />
+    <>
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
+        <nav className="h-full mx-auto">
+          <ul className="flex justify-center items-center w-full min-h-14 px-5 relative">
+            <DefaultBread />
+          </ul>
+        </nav>
+      </header>
 
-      <div className="relative flex-1 overflow-hidden">
-        <div
-          className="flex w-[200%] h-full transition-transform duration-300"
-          style={{ transform: `translateX(-${selectedTab * 50}%)` }}
-        >
-          <div className="w-1/2 shrink-0 overflow-y-auto">
-            <MyCardSetPage
-              isEditing={isEditing}
-              setIsEditing={setIsEditing}
-              selectedItems={selectedItems}
-              setSelectedItems={setSelectedItems}
-              isDragging={isDragging}
-              setIsDragging={setIsDragging}
-              showDeleteModal={showDeleteModal}
-              setShowDeleteModal={setShowDeleteModal}
-              cardSetList={cardSetList}
-              setCardSetList={setCardSetList}
+      <div
+        className={`flex flex-col items-start fixed max-w-[598px] w-full mx-auto p-5 bg-white z-40 ${
+          isFocused && !folderSelect ? "transition-all duration-300" : ""
+        } ${isFocused || folderSelect ? "h-full top-0 py-0" : "pb-0 top-[57px]"}`}
+      >
+        <div className="flex w-full">
+          {isFocused ? (
+            <div className="flex items-center h-14">
+              <ArrowLeft
+                className="cursor-pointer"
+                onClick={() => {
+                  setIsFocused(false);
+                  setFolderSelect(false);
+                }}
+              />
+            </div>
+          ) : null}
+
+          {selectedCardSetId === null && !folderSelect && (
+            <Input
+              placeholder="검색어를 입력해주세요"
+              onFocus={() => setIsFocused(true)}
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  setQuery(inputText);
+                  saveSearchKeyword(inputText);
+                  setIsFocused(false);
+                  e.currentTarget.blur();
+                }
+              }}
+              className={`${
+                isFocused ? "border-0 ring-0 shadow-none focus-visible:ring-0 h-14" : "bg-white"
+              }`}
             />
-          </div>
-          <div className="w-1/2 shrink-0 overflow-y-auto">
-            <TotalCardSetPage />
-          </div>
+          )}
+
+          {isMyCardSet === 0 && !isFocused && !folderSelect && !selectedCardSetId && (
+            <Button className="ml-5" variant="primary" onClick={() => setFolderSelect(true)}>
+              폴더 선택
+            </Button>
+          )}
+
+          {folderSelect && (
+            <SelectFolder
+              selectedCardSetId={selectedCardSetId}
+              setFolderSelect={setFolderSelect}
+              setSelectedFolderId={setSelectedFolderId}
+            />
+          )}
+
+          {selectedCardSetId !== null && !folderSelect && (
+            <CardSetDetail
+              nickname={nickname}
+              isMyCardSet={isMyCardSet === 0 ? true : false}
+              selectedCardSetId={selectedCardSetId}
+              setSelectedCardSetId={setSelectedCardSetId}
+              setFolderSelect={setFolderSelect}
+            />
+          )}
+
+          {isFocused ? (
+            <div className="flex items-center h-14">
+              <Search
+                className="cursor-pointer"
+                onClick={(e) => {
+                  setQuery(inputText);
+                  saveSearchKeyword(inputText);
+                  setIsFocused(false);
+                  e.currentTarget.blur();
+                }}
+              />
+            </div>
+          ) : null}
         </div>
+
+        {!selectedCardSetId &&
+          !folderSelect &&
+          (isFocused ? (
+            <div className="flex flex-col w-full gap-5">
+              <OrderSelector sortType={sortType} setSortType={setSortType} />
+              {searchHistory.length > 0 && (
+                <RecentSearchList
+                  searchHistory={searchHistory}
+                  setSearchHistory={setSearchHistory}
+                />
+              )}
+            </div>
+          ) : (
+            <div className="relative w-full flex gap-1 border-b">
+              {tabs.map((tab, index) => (
+                <div
+                  key={index}
+                  className={`flex-1 p-2 text-center cursor-pointer ${
+                    isMyCardSet === index ? "font-bold text-primary-500" : "text-neutral-500"
+                  }`}
+                  onClick={() => setIsMyCardSet(index)}
+                >
+                  {tab}
+                </div>
+              ))}
+              <div
+                className="absolute bottom-0 h-1 bg-primary-500 transition-all duration-300"
+                style={{ width: "50%", left: `${isMyCardSet * 50}%` }}
+              />
+            </div>
+          ))}
       </div>
 
-      {selectedTab === 0 && isEditing && selectedItems.length > 0 && (
-        <div className="fixed bottom-20 left-0 right-0 flex justify-center items-center z-50">
-          {isMobile ? (
-            <button
-              className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/90 shadow-md"
-              onClick={() => setShowDeleteModal(true)}
+      {!selectedCardSetId && (
+        <div
+          className="flex flex-col justify-start w-full mt-[190px]"
+          style={{ minHeight: "calc(100vh - 260px)" }}
+        >
+          <div className="relative flex-1 overflow-hidden">
+            <div
+              className="flex w-[200%] h-full transition-transform duration-300"
+              style={{ transform: `translateX(-${isMyCardSet * 50}%)` }}
             >
-              <Trash2 size={28} />
-            </button>
-          ) : (
-            isDragging && (
-              <div
-                onDragOver={(e) => e.preventDefault()}
-                onDrop={handleDropZoneDrop}
-                className="w-14 h-14 rounded-full flex items-center justify-center bg-gray-200/90 shadow-md"
-              >
-                <Trash2 size={28} />
+              <div className="w-1/2 shrink-0 overflow-y-auto">
+                <CardSetList
+                  isMyCardSet={true}
+                  folderId={selectedFolderId ?? 0}
+                  query={query}
+                  sortType={sortType}
+                  setNickname={setNickname}
+                  setSelectedCardSetId={setSelectedCardSetId}
+                />
               </div>
-            )
-          )}
+              <div
+                className={`w-1/2 shrink-0 overflow-y-auto transition-all duration-300 ${
+                  isMyCardSet === 0 ? "max-h-0" : ""
+                }`}
+              >
+                <CardSetList
+                  isMyCardSet={false}
+                  folderId={selectedFolderId ?? 0}
+                  query={query}
+                  sortType={sortType}
+                  setNickname={setNickname}
+                  setSelectedCardSetId={setSelectedCardSetId}
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
-
-      <ConfirmDeleteModal
-        open={showDeleteModal}
-        message="선택한 카드셋을 삭제하시겠습니까?"
-        onConfirm={handleDeleteConfirm}
-        onCancel={() => setShowDeleteModal(false)}
-      />
-    </div>
+    </>
   );
 };
 
