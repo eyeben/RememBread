@@ -13,14 +13,10 @@ import CreateFromTextFPage from "@/pages/createIndexCard/CreateFromTextPage";
 import CreateFromImageFPage from "@/pages/createIndexCard/CreateFromImagePage";
 import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
-import CardSetDetailPage from "@/pages/indexCardSetView/CardSetDetailPage";
-import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
-import CardTTSPage from "@/pages/indexCardSetView/CardTTSPage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import CardTestConceptPage from "@/pages/cardTest/CardTestConceptPage";
 import CardTestExplanePage from "@/pages/cardTest/CardTestExplanePage";
 import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
-import CardSinglePage from "@/pages/indexCardSetView/CardSinglePage";
 import GameModePage from "@/pages/games/GameModePage";
 import GameHomePage from "@/pages/games/GameHomePage";
 import MemoryGamePage from "@/pages/games/MemoryGamePage";
@@ -29,6 +25,7 @@ import CompareGamePage from "@/pages/games/CompareGamePage";
 import GameDetectivePage from "@/pages/games/DetectiveGamePage";
 import GameShadowPage from "@/pages/games/ShadowGamePage";
 import RankPage from "@/pages/games/RankPage";
+import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -126,7 +123,7 @@ const router = createBrowserRouter([
           {
             index: true,
             element: <CardViewPage />,
-            handle: { header: true, footer: true },
+            handle: { header: false, footer: true },
           },
           {
             path: "create",
@@ -149,15 +146,11 @@ const router = createBrowserRouter([
           {
             path: "card-view",
             element: <CardViewPage />,
-            handle: { header: true, footer: true },
+            handle: { header: false, footer: true },
           },
           {
-            path: "card-view/:indexCardId",
-            element: <CardSetDetailPage />,
-            children: [
-              { path: "study", element: <CardStudyPage /> },
-              { path: "tts", element: <CardTTSPage /> },
-            ],
+            path: "study/:cardSetId",
+            element: <CardStudyPage />,
           },
           {
             path: "test/:indexCardId",
@@ -165,10 +158,6 @@ const router = createBrowserRouter([
               { path: "concept", element: <CardTestConceptPage /> },
               { path: "explane", element: <CardTestExplanePage /> },
             ],
-          },
-          {
-            path: "card-view/:indexCardId/card",
-            element: <CardSinglePage />,
           },
           {
             path: "profile",
