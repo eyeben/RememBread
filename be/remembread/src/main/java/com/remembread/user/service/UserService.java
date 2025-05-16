@@ -10,6 +10,7 @@ import com.remembread.user.dto.response.UserCharacterResponse;
 import com.remembread.user.dto.response.UserResponse;
 import com.remembread.user.entity.Character;
 import com.remembread.user.entity.User;
+import com.remembread.user.entity.UserCharacter;
 import com.remembread.user.repository.CharacterRepository;
 import com.remembread.user.repository.UserCharacterRepository;
 import com.remembread.user.repository.UserRepository;
@@ -90,5 +91,26 @@ public class UserService {
     public void deleteUser(User user) {
         // TODO: image delete
         userRepository.delete(user);
+    }
+
+    public Boolean isLocationAccept(User user) {
+        return Boolean.TRUE.equals(userRepository.findNotificationTimeEnableById(user.getId()));
+    }
+
+    public int countMissionCharacter(User user) {
+        List<Long> missionCharacterIds = List.of(3L, 4L, 5L);
+        return userCharacterRepository.countByUserAndCharacter_IdIn(user, missionCharacterIds);
+    }
+
+    public void addUserCharacter(User user, Long characterId) {
+        Character character = characterRepository.findById(characterId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.NOT_FOUND_CHARACTER));
+
+        UserCharacter userCharacter = UserCharacter.builder()
+                .user(user)
+                .character(character)
+                .build();
+
+        userCharacterRepository.save(userCharacter);
     }
 }

@@ -5,8 +5,11 @@ import com.remembread.user.entity.User;
 import com.remembread.user.entity.UserCharacter;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface UserCharacterRepository extends JpaRepository<UserCharacter, Long> {
     Optional<UserCharacter> findByUserAndCharacter(User user, Character character);
+
+    int countByUserAndCharacter_IdIn(User user, List<Long> missionCharacterIds);
 }

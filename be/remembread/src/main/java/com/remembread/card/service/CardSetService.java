@@ -451,4 +451,8 @@ public class CardSetService {
         }
         return cardSet;
     }
+
+    public int countCardSet(User user) {
+        return cardSetRepository.countByUser(user);
+    }
 }
