@@ -18,8 +18,8 @@ export const useCurrentLocation = () => {
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
         setLocation({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          latitude: Number(position.coords.latitude.toFixed(6)),
+          longitude: Number(position.coords.longitude.toFixed(6)),
         });
         setError(null);
       },
@@ -28,7 +28,7 @@ export const useCurrentLocation = () => {
         console.error("Geolocation error:", err);
       },
       {
-        enableHighAccuracy: true,
+        enableHighAccuracy: false, // 셀룰러 방식
         timeout: 10000,
         maximumAge: 10000,
       },
