@@ -16,7 +16,7 @@ const CurrentLocationBtn = ({ onClick }: Props) => {
 
   return (
     <button
-      className="absolute bottom-16 left-5 z-10 bg-white text-primary-500 border border-primary-500 shadow-xl w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-100 transition"
+      className="z-10 bg-white text-primary-500 border border-primary-500 shadow-xl w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-100 transition"
       onClick={handleClick}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
