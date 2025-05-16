@@ -11,7 +11,7 @@ import { convertGameTypeToKorean } from "@/utils/breadGame";
 const GameHistory = () => {
   const { nickname, mainCharacterId, mainCharacterImageUrl } = useProfileStore();
   const [gameHistory, setGameHistory] = useState<GameHistoryType[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   useEffect(() => {
     const fetchGameHistory = async () => {
@@ -29,7 +29,7 @@ const GameHistory = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center w-full webkit-scrollbar-hide">
+    <div className="flex flex-col items-center w-full">
       {/* 프로필 영역 */}
       <div className="flex flex-col items-center mt-4 mb-6">
         <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} className="w-24 h-24 mb-2" />
@@ -57,10 +57,12 @@ const GameHistory = () => {
             >
               <Game className="w-10 h-10 mr-4" />
               <div className="flex-1">
-                <div className="text-xs text-neutral-400 mb-1">{convertGameTypeToKorean(item.gameType)}</div>
-                <div className="text-xs text-neutral-400 mb-1">{item.playedAt.split('T')[0]}</div>
+                <div className="flex items-center gap-3">
+                  <div className="text-md font-semibold text-neutral-700">{convertGameTypeToKorean(item.gameType)}</div>
+                  <div className="text-xs text-neutral-400">{item.playedAt.split('T')[0]}</div>
+                </div>
                 <div className="text-md font-semibold">
-                  게임 성적 <span className="font-bold">{item.score}</span>
+                  게임 성적&nbsp;:&nbsp;<span className="font-bold text-lg text-primary-700">{item.score}</span>
                 </div>
               </div>
             </div>
