@@ -2,26 +2,65 @@ import { useEffect, useState } from "react";
 import { getRanks } from "@/services/gameService";
 import { LeaderboardType } from "@/types/game";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
+import { getUser } from "@/services/userService";
+
+interface MyRankType {
+  rank: number;
+  nickname: string;
+  maxScore: number;
+  playedAt: string;
+  mainCharacterImageUrl: string;
+}
 
 const tabs = ["순간기억", "가격비교", "그림자빵", "빵 탐정"];
+
+
 
 const RankPage = () => {
   const [selectedTab, setSelectedTab] = useState<number>(0);
   const [Leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
+  const [nickname, setNickname] = useState<string>("암기빵");
+  const [myRank, setMyRank] = useState<MyRankType>();
 
   const gameTypes = ["MEMORY", "COMPARE", "SHADOW", "DETECTIVE"];
 
   useEffect(() => {
+    const getNickname = async () => {
+      try {
+        const response = await getUser();
+        console.log("유저 정보 조회 완료", response);
+        setNickname(response.result.nickname);
+        return response.result.nickname;
+      } catch (error) {
+        console.error("유저 정보 조회 중 오류 발생:", error);
+        return nickname; // 에러 발생시 현재 상태의 nickname 반환
+      }
+    };
+
     const getLeaderboard = async () => {
       try {
         const response = await getRanks(gameTypes[selectedTab]);
         console.log("게임 랭킹 조회 완료", response);
         setLeaderboard(response.result);
+        return response.result;
       } catch (error) {
         console.error("게임 랭킹 조회 중 오류 발생:", error);
+        return [];
       }
     };
-    getLeaderboard();
+
+    const initializeData = async () => {
+      const [currentNickname, leaderboardData] = await Promise.all([
+        getNickname(),
+        getLeaderboard()
+      ]);
+      
+      const userRank = leaderboardData.find((rank) => rank.nickname === currentNickname);
+      setMyRank(userRank);
+      console.log("내 정보 조회 완료", userRank);
+    };
+
+    initializeData();
   }, [selectedTab]);
 
   return (
@@ -53,6 +92,31 @@ const RankPage = () => {
         </div>
         <div className="w-full max-w-md mx-auto bg-white rounded-lg border-2 border-primary-200 p-6">
           <div className="space-y-2 overflow-y-auto pr-2">
+
+            {/* 내 점수 */}
+            {myRank ? (
+              <div className="flex items-center gap-4 p-3 border-b-2 border-primary-200">
+                <div className="w-8 text-center font-bold">{myRank?.rank}</div>
+                <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
+                  <img 
+                    src={myRank?.mainCharacterImageUrl} 
+                    alt="User" 
+                    className="w-full h-full object-cover" 
+                  />
+                </div>
+                <div className="flex-1">
+                  <div className="font-semibold">{myRank?.nickname}</div>
+                  <div className="text-xs text-neutral-400">{myRank?.playedAt.split('T')[0]}</div>
+                </div>
+                <div className="font-bold text-primary-500">{myRank?.maxScore}</div>
+              </div>
+            ) : (
+              <div className="flex flex-col items-center justify-center py-10 text-center text-neutral-400">
+                <p className="text-sm font-medium">게임 기록이 없습니다</p>
+              </div>
+            )}
+
+            {/* 랭킹 목록 */}
             {Leaderboard.map((player, index) => (
               <div 
                 key={index}
