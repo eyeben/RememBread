@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from "react";
+import { useLocation } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
+import { Bell, LocateFixed, MapPin } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
 import { searchMyCardSet, SearchMyCardSetParams } from "@/services/cardSet";
 import { getRoutes, patchNotificationLocation } from "@/services/map";
@@ -8,7 +10,6 @@ import useGeocode from "@/hooks/useGeocode";
 import { Toaster } from "@/components/ui/toaster";
 import CurrentLocation from "@/components/studyMap/CurrentLocation";
 import CurrentLocationBtn from "@/components/studyMap/CurrentLocationBtn";
-import AlertLocationBtn from "@/components/studyMap/AlertLocationBtn";
 import AlertLocationDrawer from "@/components/studyMap/AlertLocationDrawer";
 import MarkerStudyBread from "@/components/svgs/breads/MarkerStudyBread";
 import {
@@ -35,12 +36,16 @@ const MapView = () => {
   const [isManualMode, setIsManualMode] = useState<boolean>(false);
   const [manualAddress, setManualAddress] = useState<string>("");
   const [addressMarker, setAddressMarker] = useState<naver.maps.Marker | null>(null);
+  const [isPinMode, setIsPinMode] = useState<boolean>(false);
+  const [isAlertOptionsOpen, setIsAlertOptionsOpen] = useState<boolean>(false);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
+  const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
 
   const { geocodeAddress } = useGeocode();
+  const location = useLocation();
 
   const lineColors = [
     "#3B82F6",
@@ -69,6 +74,33 @@ const MapView = () => {
       console.error("내 카드셋 조회 실패:", err);
     }
   };
+
+  // 시작 시 현재 위치로 가기
+  // useEffect(() => {
+  //   if (!mapRef.current) return;
+
+  //   navigator.geolocation.getCurrentPosition(
+  //     (pos) => {
+  //       const lat = Number(pos.coords.latitude.toFixed(6));
+  //       const lng = Number(pos.coords.longitude.toFixed(6));
+  //       const currentPosition = new naver.maps.LatLng(lat, lng);
+  //       mapRef.current?.setCenter(currentPosition);
+  //       setCurLatitude(lat);
+  //       setCurLongitude(lng);
+  //     },
+  //     (err) => {
+  //       console.warn("위치 정보를 가져오지 못했습니다:", err);
+  //     },
+  //     { enableHighAccuracy: false, timeout: 3000, maximumAge: 10000 },
+  //   );
+  // }, [isMapLoaded]);
+
+  // MapView 경로일 때마다 위치 마커 강제 리렌더링
+  useEffect(() => {
+    if (location.pathname.includes("map")) {
+      setLocationKey((prev) => prev + 1);
+    }
+  }, [location.pathname]);
 
   useEffect(() => {
     if (!selectedCardSet) return;
@@ -187,28 +219,103 @@ const MapView = () => {
   };
 
   // 현재 위치로 위치 알람 설정
-  const handleSetCurrentLocation = async () => {
-    navigator.geolocation.getCurrentPosition(async (pos) => {
-      const latitude = Number(pos.coords.latitude.toFixed(6));
-      const longitude = Number(pos.coords.longitude.toFixed(6));
+  const handleSetCurrentLocation = () => {
+    const updatePosition = (lat: number, lng: number) => {
+      setCurLatitude(lat);
+      setCurLongitude(lng);
+      const position = new naver.maps.LatLng(lat, lng);
+      mapRef.current?.setCenter(position);
 
-      try {
-        await patchNotificationLocation(latitude, longitude, isAlarmEnabled);
-        mapRef.current?.setCenter(new naver.maps.LatLng(latitude, longitude));
+      // 기존 마커가 있으면 위치만 갱신, 없으면 생성
+      if (currentLocationMarkerRef.current) {
+        currentLocationMarkerRef.current.setPosition(position);
+      } else {
+        const marker = new naver.maps.Marker({
+          position,
+          map: mapRef.current!,
+          title: "현재 위치",
+          icon: {
+            content: `
+      <div style="position: relative; width: 20px; height: 20px;">
+        <!-- 중심 점 -->
+        <div style="
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background-color: #3B82F6;
+          border: 2px solid white;
+          border-radius: 50%;
+          z-index: 2;
+          box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
+        "></div>
 
-        toast({
-          variant: "success",
-          title: "알림 위치 설정 완료",
-          description: "현재 위치로 알림 위치가 설정되었습니다.",
+        <!-- 퍼짐 애니메이션 -->
+        <div style="
+          position: absolute;
+          width: 20px;
+          height: 20px;
+          background-color: rgba(59, 130, 246, 0.4);
+          border-radius: 50%;
+          animation: pulseRing 1.5s infinite ease-out;
+          z-index: 1;
+        "></div>
+      </div>
+
+      <!-- 애니메이션 정의 -->
+      <style>
+        @keyframes pulseRing {
+          0% {
+            transform: scale(1);
+            opacity: 0.6;
+          }
+          100% {
+            transform: scale(2.5);
+            opacity: 0;
+          }
+        }
+      </style>
+    `,
+            size: new naver.maps.Size(20, 20),
+            anchor: new naver.maps.Point(10, 10),
+          },
         });
-      } catch (error) {
-        toast({
-          variant: "destructive",
-          title: "위치 설정 실패",
-          description: "알림 위치 설정 중 오류가 발생했습니다.",
-        });
+        currentLocationMarkerRef.current = marker;
       }
-    });
+    };
+
+    // fallback용 watchPosition
+    const fallbackWatch = () => {
+      const watchId = navigator.geolocation.watchPosition(
+        (pos) => {
+          updatePosition(pos.coords.latitude, pos.coords.longitude);
+          navigator.geolocation.clearWatch(watchId);
+        },
+        (err) => {
+          console.error("📛 watchPosition 실패:", err);
+          alert("위치 정보를 가져오지 못했습니다.");
+        },
+        {
+          enableHighAccuracy: false,
+          timeout: 5000,
+          maximumAge: 0,
+        },
+      );
+    };
+
+    navigator.geolocation.getCurrentPosition(
+      (pos) => {
+        updatePosition(pos.coords.latitude, pos.coords.longitude);
+      },
+      (err) => {
+        console.warn("⚠ getCurrentPosition 실패, fallback 실행:", err);
+        fallbackWatch();
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 5000,
+        maximumAge: 0,
+      },
+    );
   };
 
   // 위치 입력으로 위치 알람 설정
@@ -257,10 +364,39 @@ const MapView = () => {
         map: mapRef.current!,
         title: "알림 위치",
         icon: {
-          content:
-            '<div style="background-color: red; width: 10px; height: 10px; border-radius: 50%; z-index:999; position:absolute"></div>',
-          size: new naver.maps.Size(10, 10),
-          anchor: new naver.maps.Point(5, 5),
+          content: `
+            <div style="
+              width: 40px;
+              height: 40px;
+              background-color: white;
+              border: 2px solid #ffaa64;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+              animation: pulse-ring 2s infinite;
+            ">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffaa64" viewBox="0 0 24 24">
+                <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4v-3a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.5A6 6 0 0 0 6 11v3a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1" />
+              </svg>
+            </div>
+            <style>
+              @keyframes pulse-ring {
+                0% {
+                  box-shadow: 0 0 0 0 rgba(255,170,100, 0.6);
+                }
+                70% {
+                  box-shadow: 0 0 0 10px rgba(255,170,100, 0);
+                }
+                100% {
+                  box-shadow: 0 0 0 0 rgba(255,170,100, 0);
+                }
+              }
+            </style>
+          `,
+          size: new naver.maps.Size(40, 40),
+          anchor: new naver.maps.Point(20, 20),
         },
       });
 
@@ -281,6 +417,84 @@ const MapView = () => {
       console.error(error);
     }
   };
+
+  // 핀 위치 기반으로 알람 설정
+  const handleSetPinLocation = async () => {
+    if (!mapRef.current) return;
+
+    const center = mapRef.current.getCenter() as naver.maps.LatLng;
+    const lat = Number(center.lat().toFixed(6));
+    const lng = Number(center.lng().toFixed(6));
+
+    try {
+      await patchNotificationLocation(lat, lng, isAlarmEnabled);
+      setIsAlertDrawerOpen(false);
+      setIsPinMode(false);
+
+      // 기존 마커 제거
+      if (addressMarker) {
+        addressMarker.setMap(null);
+      }
+
+      // 새로운 마커 생성 및 표시
+      const marker = new naver.maps.Marker({
+        position: new naver.maps.LatLng(lat, lng),
+        map: mapRef.current,
+        title: "알림 위치",
+        icon: {
+          content: `
+            <div style="
+              width: 40px;
+              height: 40px;
+              background-color: white;
+              border: 2px solid #ffaa64;
+              border-radius: 50%;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+              animation: pulse-ring 2s infinite;
+            ">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffaa64" viewBox="0 0 24 24">
+                <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4v-3a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.5A6 6 0 0 0 6 11v3a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1" />
+              </svg>
+            </div>
+            <style>
+              @keyframes pulse-ring {
+                0% {
+                  box-shadow: 0 0 0 0 rgba(255,170,100, 0.6);
+                }
+                70% {
+                  box-shadow: 0 0 0 10px rgba(255,170,100, 0);
+                }
+                100% {
+                  box-shadow: 0 0 0 0 rgba(255,170,100, 0);
+                }
+              }
+            </style>
+          `,
+          size: new naver.maps.Size(40, 40),
+          anchor: new naver.maps.Point(20, 20),
+        },
+      });
+
+      setAddressMarker(marker);
+
+      toast({
+        variant: "success",
+        title: "알림 위치 설정 완료",
+        description: "알림이 설정되었습니다.",
+      });
+    } catch (err) {
+      toast({
+        variant: "destructive",
+        title: "알림 설정 실패",
+        description: "위치 설정 중 문제가 발생했습니다.",
+      });
+    }
+  };
+
+  const handleSetManualLocation = () => {};
 
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
@@ -346,15 +560,100 @@ const MapView = () => {
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
       {isMapLoaded && mapRef.current && (
         <>
-          <CurrentLocation
+          {/* <CurrentLocation
             key={locationKey}
             map={mapRef.current}
             onUpdatePosition={handleLocationUpdate}
-          />
-          <CurrentLocationBtn onClick={() => setLocationKey((prev) => prev + 1)} />
-          <AlertLocationBtn onClick={() => setIsAlertDrawerOpen(true)} />
+          /> */}
+          <div className="flex flex-col items-center space-y-1 absolute bottom-28 left-5 z-20">
+            <CurrentLocationBtn onClick={handleSetCurrentLocation} />
+            <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
+              현재 위치
+            </span>
+          </div>
+
+          <div className="absolute bottom-6 left-5 z-20 flex items-end gap-2">
+            <div className="flex flex-col items-center space-y-1">
+              <button
+                className="bg-white text-primary-500 border border-primary-500 shadow-xl w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-100 transition"
+                onClick={() => {
+                  setIsAlertOptionsOpen((prev) => {
+                    const next = !prev;
+                    if (!next) {
+                      setIsPinMode(false); // 옵션 닫을 때 핀 모드도 종료
+                    }
+                    return next;
+                  });
+                }}
+              >
+                <Bell className="w-6 h-6" />
+              </button>
+              <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
+                알림 설정
+              </span>
+            </div>
+
+            {isAlertOptionsOpen && (
+              <>
+                <div className="flex flex-col items-center space-y-1">
+                  <button
+                    className="bg-white text-primary-500 border border-primary-500 shadow-xl w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-100 transition"
+                    onClick={() => {
+                      setIsPinMode(true);
+                      setIsAlertOptionsOpen(false);
+                    }}
+                  >
+                    <MapPin className="w-6 h-6" />
+                  </button>
+                  <span className="text-xs text-white bg-gray-600/80 px-2 py-1 rounded-md shadow">
+                    직접 설정
+                  </span>
+                </div>
+
+                <div className="flex flex-col items-center space-y-1">
+                  <button
+                    className="bg-white text-primary-500 border border-primary-500 shadow-xl w-12 h-12 rounded-full flex items-center justify-center hover:bg-primary-100 transition"
+                    onClick={() => {
+                      setIsAlertDrawerOpen(true);
+                      setIsAlertOptionsOpen(false);
+                    }}
+                  >
+                    <LocateFixed className="w-6 h-6" />
+                  </button>
+                  <span className="text-xs text-white bg-gray-600/80 px-2 py-1 rounded-md shadow">
+                    주소 입력
+                  </span>
+                </div>
+              </>
+            )}
+          </div>
         </>
       )}
+      {isPinMode && (
+        <>
+          {/* 중앙 핀 아이콘 */}
+          <div className="absolute z-20 top-1/2 left-1/2 -translate-x-1/2 -translate-y-full">
+            <MapPin className="w-10 h-16 text-negative-600 drop-shadow-md" />
+          </div>
+
+          {/* 하단 저장/취소 버튼 */}
+          <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex gap-4">
+            <button
+              className="px-5 py-2.5 bg-gray-200 text-gray-800 font-semibold text-sm rounded-lg shadow-md hover:bg-gray-300 transition"
+              onClick={() => setIsPinMode(false)}
+            >
+              취소
+            </button>
+            <button
+              className="px-5 py-2.5 bg-primary-500 text-white font-semibold text-sm rounded-lg shadow-md hover:bg-primary-600 transition"
+              onClick={handleSetPinLocation}
+            >
+              알림 설정
+            </button>
+          </div>
+        </>
+      )}
+
       <AlertLocationDrawer
         open={isAlertDrawerOpen}
         onOpenChange={setIsAlertDrawerOpen}
@@ -362,6 +661,10 @@ const MapView = () => {
         onToggleEnabled={setIsAlarmEnabled}
         onSetCurrentLocation={handleSetCurrentLocation}
         onSetAddressLocation={handleSetAddressLocation}
+        onSetManualLocation={handleSetManualLocation}
+        onSetPinLocation={handleSetPinLocation}
+        isPinMode={isPinMode}
+        setIsPinMode={setIsPinMode}
         manualAddress={manualAddress}
         setManualAddress={setManualAddress}
       />

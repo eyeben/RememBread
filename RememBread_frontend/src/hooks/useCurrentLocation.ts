@@ -29,7 +29,7 @@ export const useCurrentLocation = () => {
       },
       {
         enableHighAccuracy: false, // 셀룰러 방식
-        timeout: 10000,
+        timeout: 5000,
         maximumAge: 10000,
       },
     );
