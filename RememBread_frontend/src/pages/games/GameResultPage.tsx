@@ -95,11 +95,12 @@ const GameResultPage = () => {
           <div className="space-y-2 h-[200px] sm:h-[270px] overflow-y-auto pr-2">
             {Leaderboard.map((player, index) => (
               <div 
+                key={index}
                 className={`flex items-center gap-4 p-3 rounded-lg ${
                   player.nickname === userProfile?.nickname ? 'bg-gray-200' : 'hover:bg-gray-50'
                 }`}
               >
-                <div className="w-8 text-center font-bold">{index + 1}</div>
+                <div className="w-8 text-center font-bold">{player.rank}</div>
                 <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
                 {userProfile?.mainCharacterImageUrl ? (
               <img 
@@ -113,6 +114,7 @@ const GameResultPage = () => {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold">{player.nickname}</div>
+                  <div className="text-xs text-neutral-400">{player.playedAt.split('T')[0]}</div>
                 </div>
                 <div className="font-bold text-primary-500">{player.maxScore}</div>
               </div>

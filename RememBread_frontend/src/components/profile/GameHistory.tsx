@@ -4,6 +4,7 @@ import Game from "@/components/svgs/footer/Game";
 import useProfileStore from "@/stores/profileStore";
 import { getGameHistory } from "@/services/gameService";
 import { GameHistoryType } from "@/types/game";
+import { convertGameTypeToKorean } from "@/utils/breadGame";
 
 
 
@@ -43,8 +44,8 @@ const GameHistory = () => {
             >
               <Game className="w-10 h-10 mr-4" />
               <div className="flex-1">
-                <div className="text-xs text-neutral-400 mb-1">{item.gameType}</div>
-                <div className="text-xs text-neutral-400 mb-1">{item.playedAt}</div>
+                <div className="text-xs text-neutral-400 mb-1">{convertGameTypeToKorean(item.gameType)}</div>
+                <div className="text-xs text-neutral-400 mb-1">{item.playedAt.split('T')[0]}</div>
                 <div className="text-md font-semibold">
                   게임 성적 <span className="font-bold">{item.score}</span>
                 </div>
