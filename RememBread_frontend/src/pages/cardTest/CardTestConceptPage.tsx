@@ -36,7 +36,7 @@ const CardTestConceptPage = () => {
     } catch (error) {
       console.error(error);
     } finally {
-      navigate(`/card-view/${cardSetId}`);
+      navigate("/card-view");
     }
   };
 
