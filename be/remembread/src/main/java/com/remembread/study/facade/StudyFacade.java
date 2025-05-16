@@ -19,6 +19,7 @@ import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.dto.response.StudyLogResponse;
+import com.remembread.study.dto.response.SummaryLogResponse;
 import com.remembread.study.entity.CardStudyLog;
 import com.remembread.study.entity.StudySession;
 import com.remembread.study.service.CardStudyLogService;
@@ -32,6 +33,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -220,6 +222,13 @@ public class StudyFacade {
                 .name(cardSet.getName())
                 .logs(studySessionList)
                 .build();
+    }
+
+    @Transactional(readOnly = true)
+    public SummaryLogResponse getLogs(LocalDate startDate, LocalDate endDate, User user) {
+        List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> dayLogResponses =
+                cardStudyLogService.getDayLogResponses(startDate, endDate, user.getId());
+        return StudyConverter.toSummaryLogResponse(dayLogResponses);
     }
 
     public void addPoint(User user, Double longitude, Double latitude) {
