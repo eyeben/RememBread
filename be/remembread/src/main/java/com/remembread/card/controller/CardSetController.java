@@ -2,11 +2,8 @@ package com.remembread.card.controller;
 
 import com.remembread.apipayload.ApiResponse;
 import com.remembread.auth.annotation.AuthUser;
-import com.remembread.card.dto.request.CardSetCreateRequest;
-import com.remembread.card.dto.request.CardSetDeleteManyRequest;
-import com.remembread.card.dto.request.CardSetUpdateRequest;
+import com.remembread.card.dto.request.*;
 import com.remembread.card.dto.response.*;
-import com.remembread.card.dto.request.ForkCardSetRequest;
 import com.remembread.card.enums.CardSetSortType;
 import com.remembread.card.service.CardSetService;
 import com.remembread.user.entity.User;
@@ -137,6 +134,12 @@ public class CardSetController {
     @DeleteMapping("/delete-many")
     public ApiResponse<Void> deleteCardSetMany(@RequestBody CardSetDeleteManyRequest request, @AuthUser User user) {
         cardSetService.deleteCardSetMany(request, user);
+        return ApiResponse.onSuccess(null);
+    }
+
+    @PatchMapping("/move")
+    public ApiResponse<Void> moveCardSet(@RequestBody CardSetMoveRequest request, @AuthUser User user){
+        cardSetService.moveCardSet(request, user);
         return ApiResponse.onSuccess(null);
     }
 }

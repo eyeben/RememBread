@@ -17,4 +17,6 @@ public interface CardRepository extends JpaRepository<Card, Long> {
     List<Card> findAllByCardSetOrderByRetentionRate(CardSet cardSet, Limit limit);
 
     void deleteAllByCardSetIdIn(List<Long> cardSetIds);
+
+    List<Card> findByCardSetIdOrderByNumber(Long id);
 }
