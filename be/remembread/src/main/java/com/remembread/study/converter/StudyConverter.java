@@ -43,7 +43,7 @@ public class StudyConverter {
                 .build();
     }
 
-    public static SummaryLogResponse toSummaryLogResponse(List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> dayLogResponses) {
+    public static SummaryLogResponse toSummaryLogResponse(List<DayLogProjection> dayLogProjections) {
         Integer monthTotalCorrect = 0;
         Integer monthTotalSolved = 0;
         Integer yearTotalCorrect = 0;
@@ -55,13 +55,13 @@ public class StudyConverter {
         List<SummaryLogResponse.YearLogResponse> years = new ArrayList<>();
         List<SummaryLogResponse.YearLogResponse.MonthLogResponse> months = new ArrayList<>();
         List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> days = new ArrayList<>();
-        for (SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse dayLogResponse : dayLogResponses) {
-            LocalDate studiedAt = dayLogResponse.getDay();
+        for (DayLogProjection dayLogProjection : dayLogProjections) {
+            LocalDate studiedAt = dayLogProjection.getDay();
             int year = studiedAt.getYear();
             int month = studiedAt.getMonthValue();
-            days.add(dayLogResponse);
-            monthTotalCorrect += dayLogResponse.getTotalCorrect();
-            monthTotalSolved += dayLogResponse.getTotalSolved();
+            days.add(toDayLogResponseList(dayLogProjection));
+            monthTotalCorrect += dayLogProjection.getTotalCorrect();
+            monthTotalSolved += dayLogProjection.getTotalSolved();
             if (lastMonth != month) {
                 SummaryLogResponse.YearLogResponse.MonthLogResponse monthLogResponse = SummaryLogResponse.YearLogResponse.MonthLogResponse.builder()
                         .month(month)
@@ -119,15 +119,11 @@ public class StudyConverter {
                 .build();
     }
 
-    public static List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> toDayLogResponseList(List<DayLogProjection> projections) {
-        List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> dayLogResponses = new ArrayList<>();
-        for (DayLogProjection projection : projections) {
-            dayLogResponses.add(SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse.builder()
-                    .day(projection.getDay())
-                    .totalCorrect(projection.getTotalCorrect())
-                    .totalSolved(projection.getTotalSolved())
-                    .build());
-        }
-        return dayLogResponses;
+    public static SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse toDayLogResponseList(DayLogProjection projection) {
+        return SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse.builder()
+                .day(projection.getDay().getDayOfMonth())
+                .totalCorrect(projection.getTotalCorrect())
+                .totalSolved(projection.getTotalSolved())
+                .build();
     }
 }

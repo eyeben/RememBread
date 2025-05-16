@@ -226,9 +226,7 @@ public class StudyFacade {
 
     @Transactional(readOnly = true)
     public SummaryLogResponse getLogs(LocalDate startDate, LocalDate endDate, User user) {
-        List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> dayLogResponses =
-                cardStudyLogService.getDayLogResponses(startDate, endDate, user.getId());
-        return StudyConverter.toSummaryLogResponse(dayLogResponses);
+        return cardStudyLogService.getDayLogResponses(startDate, endDate, user.getId());
     }
 
     public void addPoint(User user, Double longitude, Double latitude) {

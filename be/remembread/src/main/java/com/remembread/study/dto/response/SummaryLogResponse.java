@@ -2,14 +2,12 @@ package com.remembread.study.dto.response;
 
 import lombok.*;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class SummaryLogResponse {
     @Builder.Default
     private Integer totalCorrect = 0;
@@ -21,7 +19,6 @@ public class SummaryLogResponse {
     @Builder
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class YearLogResponse {
         private Integer year;
         @Builder.Default
@@ -34,7 +31,6 @@ public class SummaryLogResponse {
         @Builder
         @NoArgsConstructor
         @AllArgsConstructor
-        @ToString
         public static class MonthLogResponse {
             private Integer month;
             @Builder.Default
@@ -47,9 +43,8 @@ public class SummaryLogResponse {
             @Builder
             @NoArgsConstructor
             @AllArgsConstructor
-            @ToString
             public static class DayLogResponse {
-                private LocalDate day;
+                private Integer day;
                 @Builder.Default
                 private Integer totalCorrect = 0;
                 @Builder.Default

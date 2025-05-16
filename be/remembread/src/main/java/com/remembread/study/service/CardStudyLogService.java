@@ -22,10 +22,10 @@ public class CardStudyLogService {
     }
 
     @Transactional(readOnly = true)
-    public List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> getDayLogResponses(
+    public SummaryLogResponse getDayLogResponses(
             LocalDate start, LocalDate end, Long userId
     ) {
-        return StudyConverter.toDayLogResponseList(cardStudyLogRepository.findDailyStudyStatsByUserIdAndStudiedAtBetween(userId, start, end));
+        return StudyConverter.toSummaryLogResponse(cardStudyLogRepository.findDailyStudyStatsByUserIdAndStudiedAtBetween(userId, start, end));
     }
 
 }
