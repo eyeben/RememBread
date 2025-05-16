@@ -13,6 +13,7 @@ import com.remembread.study.dto.response.StudyLogResponse;
 import com.remembread.study.dto.response.SummaryLogResponse;
 import com.remembread.study.facade.StudyFacade;
 import com.remembread.user.entity.User;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,7 +28,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/start")
     public ApiResponse<Void> startStudySession(
             @PathVariable("cardSetId") Long cardSetId,
-            @RequestBody StudyStartRequest request,
+            @Valid @RequestBody StudyStartRequest request,
             @AuthUser User user
             ) {
         studyFacade.startStudySession(cardSetId, request, user);
@@ -37,7 +38,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/stop")
     public ApiResponse<Void> stopStudySession(
             @PathVariable("cardSetId") Long cardSetId,
-            @RequestBody StudyStopRequest request,
+            @Valid @RequestBody StudyStopRequest request,
             @AuthUser User user
             ) {
         studyFacade.stopStudySession(cardSetId, request, user);
@@ -65,7 +66,7 @@ public class StudyController {
     @PostMapping("/{cardSetId}/location")
     public ApiResponse<Void> addPoint(
             @PathVariable Long cardSetId,
-            @RequestBody LocationRequest request,
+            @Valid @RequestBody LocationRequest request,
             @AuthUser User user
     ) {
         studyFacade.addPoint(user, request.getLongitude(), request.getLatitude());
