@@ -25,6 +25,7 @@ import CompareGamePage from "@/pages/games/CompareGamePage";
 import GameDetectivePage from "@/pages/games/DetectiveGamePage";
 import GameShadowPage from "@/pages/games/ShadowGamePage";
 import RankPage from "@/pages/games/RankPage";
+import CardStudyPage from "@/pages/indexCardSetView/CardStudyPage";
 
 // 보호된 라우트 Wrapper
 const ProtectedOutlet = () => {
@@ -144,6 +145,10 @@ const router = createBrowserRouter([
             path: "card-view",
             element: <CardViewPage />,
             handle: { header: false, footer: true },
+          },
+          {
+            path: "study/:cardSetId",
+            element: <CardStudyPage />,
           },
           {
             path: "test/:indexCardId",

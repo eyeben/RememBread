@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import { toast } from "@/hooks/use-toast";
@@ -38,6 +39,8 @@ const CardSetDetail = ({
   setSelectedCardSetId,
   setFolderSelect,
 }: CardSetDetailProps) => {
+  const navigate = useNavigate();
+
   const [name, setName] = useState<string>("");
   const [hashtags, setHashTags] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<boolean>(false);
@@ -357,7 +360,11 @@ const CardSetDetail = ({
           </div>
 
           <div className="flex w-full mb-5 gap-5">
-            <Button className="w-full" variant="primary-outline">
+            <Button
+              className="w-full"
+              variant="primary-outline"
+              onClick={() => navigate(`/study/${selectedCardSetId}`)}
+            >
               학습하기
             </Button>
             <TestSettingDialog indexCardId={selectedCardSetId} />
