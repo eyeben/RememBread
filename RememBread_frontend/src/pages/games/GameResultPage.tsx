@@ -21,30 +21,26 @@ const GameResultPage = () => {
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const [Leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
   
-  const gameType = location.state?.game.toUpperCase() || "memory";
-  const score = gameType === "memory" ? memoryScore : 
-                gameType === "compare" ? compareScore : 
-                gameType === "detective" ? detectiveScore :
+  const gameType = location.state?.game.toUpperCase();
+  const score = gameType === "MEMORY" ? memoryScore : 
+                gameType === "COMPARE" ? compareScore : 
+                gameType === "DETECTIVE" ? detectiveScore :
                 shadowScore;
 
   useEffect(() => {
     const sendGameResult = async () => {
       try {
-        console.log("게임 결과 저장 시작", score, gameType)
         const response = await postGameResult({
           gameType: gameType,
           score: score
         });
         setUserProfile(response.result)
-        console.log("게임 결과 저장 완료", response);
       } catch (error) {
-        console.error("게임 결과 저장 중 오류 발생:", error);
       }
     };
     const getLeaderboard = async () => {
       try {
         const response = await getRanks(gameType);
-        console.log("게임 랭킹 조회 완료", response);
         setLeaderboard(response.result);
       } catch (error) {
         console.error("게임 랭킹 조회 중 오류 발생:", error);
@@ -56,15 +52,15 @@ const GameResultPage = () => {
   }, [gameType, score]);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-126px)] flex flex-col items-center justify-center p-4">
       <header>
         <div className="flex justify-center mb-2">
           <ClearBread className="w-16 h-16" />
         </div>
         <span className="flex text-2xl font-bold mb-4 justify-center">
-          {gameType === "memory" ? "순간기억" : 
-          gameType === "compare" ? "가격비교" : 
-          gameType === "detective" ? "빵 탐정" :
+          {gameType === "MEMORY" ? "순간기억" : 
+          gameType === "COMPARE" ? "가격비교" : 
+          gameType === "DETECTIVE" ? "빵 탐정" :
           "그림자빵"}
         </span>
       </header>
@@ -95,11 +91,12 @@ const GameResultPage = () => {
           <div className="space-y-2 h-[200px] sm:h-[270px] overflow-y-auto pr-2">
             {Leaderboard.map((player, index) => (
               <div 
+                key={index}
                 className={`flex items-center gap-4 p-3 rounded-lg ${
                   player.nickname === userProfile?.nickname ? 'bg-gray-200' : 'hover:bg-gray-50'
                 }`}
               >
-                <div className="w-8 text-center font-bold">{index + 1}</div>
+                <div className="w-8 text-center font-bold">{player.rank}</div>
                 <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
                 {userProfile?.mainCharacterImageUrl ? (
               <img 
@@ -113,6 +110,7 @@ const GameResultPage = () => {
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold">{player.nickname}</div>
+                  <div className="text-xs text-neutral-400">{player.playedAt.split('T')[0]}</div>
                 </div>
                 <div className="font-bold text-primary-500">{player.maxScore}</div>
               </div>

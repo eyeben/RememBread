@@ -130,3 +130,18 @@ export const getRandomPos = () => {
     y: centerY + offsetY
   };
 };
+
+export const convertGameTypeToKorean = (gameType: string): string => {
+  switch (gameType) {
+    case 'MEMORY':
+      return '순간기억';
+    case 'COMPARE':
+      return '가격비교';
+    case 'DETECTIVE':
+      return '빵 탐정';
+    case 'SHADOW':
+      return '그림자빵';
+    default:
+      return gameType;
+  }
+};
