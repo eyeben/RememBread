@@ -168,6 +168,20 @@ export const deleteCard = async (cardId: number) => {
   }
 };
 
+// 여러 카드 삭제하기
+export const deleteCards = async (cardIds: number[]) => {
+  try {
+    const { data } = await http.delete("/cards/delete-many", {
+      data: { cardIds },
+    });
+
+    return data;
+  } catch (error) {
+    console.error("카드 삭제 중 오류:", error);
+    throw new Error("카드 삭제에 실패했습니다.");
+  }
+};
+
 // 카드 수정하기
 export const patchCard = async (cardId: number, card: Partial<indexCard>) => {
   try {
