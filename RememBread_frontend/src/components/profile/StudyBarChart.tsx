@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Select,
@@ -7,15 +7,13 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getStudyHistory } from "@/services/userService";
+import { StudyHistoryYear } from "@/types/profile";
+
 
 // 더미 데이터 생성 함수
 const getDailyData = () =>
   Array.from({ length: 31 }, (_, i) => ({ day: i + 1, study: Math.floor(Math.random() * 120) }));
-const getWeeklyData = () =>
-  Array.from({ length: 12 }, (_, i) => ({
-    week: `${i + 1}주차`,
-    study: Math.floor(Math.random() * 800),
-  }));
 const getMonthlyData = () =>
   Array.from({ length: 12 }, (_, i) => ({
     month: `${i + 1}월`,
@@ -24,27 +22,44 @@ const getMonthlyData = () =>
 
 const StudyBarChart = () => {
   const [year, setYear] = useState<number>(2025);
-  const [month, setMonth] = useState<number>(4);
-  const [viewType, setViewType] = useState<"day" | "week" | "month">("day");
-  // 일별: 15일 슬라이드, 주별: 12주, 월별: 12달
+  const [month, setMonth] = useState<number>(1);
+  const [viewType, setViewType] = useState<"day" | "month">("day");
+  // 일별: 15일 슬라이드
   const [dayStartIdx, setDayStartIdx] = useState<number>(0); // 일별 슬라이드 인덱스
-  const [weekStartIdx, setWeekStartIdx] = useState<number>(0); // 주별 슬라이드 인덱스(3달치 12주)
 
   // 드래그 상태
   const dragStartX = useRef<number | null>(null);
   const dragging = useRef<boolean>(false);
 
+  // 학습 기록 데이터
+  const [studyHistoryData, setStudyHistoryData] = useState<StudyHistoryYear[]>([]);
+
+  // 학습 기록 조회 데이터 준비
+  useEffect(() => {
+    const fetchStudyHistory = async () => {
+      let startDate = "";
+      let endDate = "";
+      if (viewType === "month") {
+        startDate = `${year}-01-01`;
+        endDate = `${year+1}-01-01`;
+      } else {
+        startDate = `${year}-${month}-01`;
+        endDate = `${year}-${month+1}-01`;
+      }
+      const response = await getStudyHistory(startDate, endDate);
+      setStudyHistoryData(response.result.years);
+    };
+    fetchStudyHistory();
+  }, [viewType, year, month]);
+
   // 데이터 준비
   const dailyData = getDailyData(); // 1~31일 더미
-  const weeklyData = getWeeklyData(); // 12주 더미
   const monthlyData = getMonthlyData(); // 12달 더미
 
   // 일별: 15일치만 보여줌
   const visibleDailyData = dailyData.slice(dayStartIdx, dayStartIdx + 15);
-  // 주별: 12주(최근 3달치)
-  const visibleWeeklyData = weeklyData.slice(weekStartIdx, weekStartIdx + 12);
 
-  // 드래그 이벤트 핸들러 (일별/주별)
+  // 드래그 이벤트 핸들러 (일별)
   const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
     dragging.current = true;
     if ("touches" in e) {
@@ -70,14 +85,6 @@ const StudyBarChart = () => {
         setDayStartIdx(dayStartIdx + 1);
         dragStartX.current = clientX;
       }
-    } else if (viewType === "week") {
-      if (diff > 20 && weekStartIdx > 0) {
-        setWeekStartIdx(weekStartIdx - 1);
-        dragStartX.current = clientX;
-      } else if (diff < -20 && weekStartIdx < weeklyData.length - 12) {
-        setWeekStartIdx(weekStartIdx + 1);
-        dragStartX.current = clientX;
-      }
     }
   };
   const handleDragEnd = () => {
@@ -99,7 +106,6 @@ const StudyBarChart = () => {
     setYear(newYear);
     setMonth(newMonth);
     setDayStartIdx(0); // 월 바뀌면 일별 인덱스 초기화
-    setWeekStartIdx(0); // 월 바뀌면 주별 인덱스 초기화
     // 실제로는 이곳에서 해당 월 데이터를 백엔드에서 받아와야 함
   };
   const handleYearChange = (dir: "prev" | "next") => {
@@ -108,21 +114,17 @@ const StudyBarChart = () => {
   };
 
   // 차트 데이터/축 설정
-  // let chartData: any[] = visibleDailyData;
   let chartData: any[] | null = null;
   let xKey = "day";
   let xTickFormatter = (v: any) => `${v}`;
   let tooltipLabelFormatter = (label: any) => `${label}일`;
-  if (viewType === "week") {
-    chartData = visibleWeeklyData;
-    xKey = "week";
-    xTickFormatter = (v: any) => `${v}`;
-    tooltipLabelFormatter = (label: any) => label;
-  } else if (viewType === "month") {
+  if (viewType === "month") {
     chartData = monthlyData;
     xKey = "month";
     xTickFormatter = (v: any) => v;
     tooltipLabelFormatter = (label: any) => label;
+  } else {
+    chartData = visibleDailyData;
   }
 
   return (
@@ -137,9 +139,8 @@ const StudyBarChart = () => {
             <Select
               value={viewType}
               onValueChange={(value) => {
-                setViewType(value as "day" | "week" | "month");
+                setViewType(value as "day" | "month");
                 setDayStartIdx(0);
-                setWeekStartIdx(0);
               }}
             >
               <SelectTrigger className="w-[120px] bg-transparent">
@@ -147,7 +148,6 @@ const StudyBarChart = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="day">일별 기록</SelectItem>
-                <SelectItem value="week">주별 기록</SelectItem>
                 <SelectItem value="month">월별 기록</SelectItem>
               </SelectContent>
             </Select>

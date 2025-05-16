@@ -22,6 +22,7 @@ export const AUTH_END_POINT = {
  * DELETE_USER : /users
  * GET_CHARACTERS : /users/characters
  * PATCH_FCM_TOKEN : /users/fcm-token
+ * GET_STUDY_HISTORY : /users/study-history
  */
 export const USER_END_POINT = {
     COMPLETE_AGREE: '/users/agree',
@@ -30,6 +31,7 @@ export const USER_END_POINT = {
     DELETE_USER: '/users',
     GET_CHARACTERS: '/users/characters',
     PATCH_FCM_TOKEN: '/users/fcm-token',
+    GET_STUDY_HISTORY: (startDate: string, endDate: string) => `/studies/logs?startDate=${startDate}&endDate=${endDate}`,
 }
 
 /**

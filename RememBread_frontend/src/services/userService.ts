@@ -1,5 +1,6 @@
 import http from "@/services/httpCommon";
 import { USER_END_POINT } from "@/services/endPoints";
+import { StudyHistoryYear } from "@/types/profile";
 
 interface AgreeResponse {
   isSuccess: boolean;
@@ -43,6 +44,17 @@ interface FcmTokenResponse {
   code: string;
   message: string;
   result: {}
+}
+
+interface StudyHistoryResponse {
+  isSuccess: boolean;
+  code: string;
+  message: string;
+  result: {
+  total_correct: number;
+  total_solved: number;
+  years: StudyHistoryYear[];
+  }
 }
 
 /**
@@ -126,6 +138,22 @@ export const patchFcmToken = async (body: { fcmToken: string|null }): Promise<Fc
     const response = await http.patch<FcmTokenResponse>(USER_END_POINT.PATCH_FCM_TOKEN, body);
     return response.data;
   } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * 학습 기록 조회
+ * 
+ * 학습 기록 조회 요청 (startDate, endDate 기준)
+ */
+export const getStudyHistory = async (startDate: string, endDate: string): Promise<StudyHistoryResponse> => {
+  try {
+    const response = await http.get<StudyHistoryResponse>(USER_END_POINT.GET_STUDY_HISTORY(startDate, endDate));
+    console.log("학습 기록 조회", response.data);
+    return response.data;
+  } catch (error) {
+    console.log("학습 기록 조회 오류", error);
     throw error;
   }
 };
