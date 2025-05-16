@@ -6,14 +6,14 @@ import { Input } from "@/components/ui/input";
 interface HashtagInputProps {
   hashtags: string[];
   hashtagInput: string;
-  setHashtags: Dispatch<SetStateAction<string[]>>;
+  setHashTags: (hashTags: string[]) => void;
   setHashtagInput: Dispatch<SetStateAction<string>>;
 }
 
 const HashtagInput = ({
   hashtags,
   hashtagInput,
-  setHashtags,
+  setHashTags,
   setHashtagInput,
 }: HashtagInputProps) => {
   const maxHashtags = 5;
@@ -26,13 +26,13 @@ const HashtagInput = ({
 
   const handleAddHashtag = () => {
     if (hashtagInput.trim() !== "" && !hashtags.includes(hashtagInput.trim())) {
-      setHashtags([...hashtags, hashtagInput.trim()]);
+      setHashTags([...hashtags, hashtagInput.trim()]);
       setHashtagInput("");
     }
   };
 
   const handleRemoveHashtag = (hashtag: string) => {
-    setHashtags(hashtags.filter((tag) => tag !== hashtag));
+    setHashTags(hashtags.filter((tag) => tag !== hashtag));
   };
 
   const handleHashtagInputKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
