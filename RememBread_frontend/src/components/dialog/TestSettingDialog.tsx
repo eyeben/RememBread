@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 import {
   Dialog,
@@ -14,18 +14,19 @@ import {
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import Button from "@/components/common/Button";
 
-const TestSettingDialog = () => {
+interface TestSettingDialogProps {
+  indexCardId: number;
+}
+
+const TestSettingDialog = ({ indexCardId }: TestSettingDialogProps) => {
   const navigate = useNavigate();
-  const { indexCardId } = useParams();
 
   const [count, setCount] = useState([100]);
   const [selectedMode, setSelectedMode] = useState<string>("CONCEPT");
 
   const handleStartTest = () => {
-    // console.log("문제 수:", count[0]);
-    // console.log("선택한 모드:", selectedMode);
-
     if (selectedMode === "CONCEPT") {
       navigate(`/test/${indexCardId}/concept`);
     } else if (selectedMode === "EXPLANE") {
@@ -36,14 +37,14 @@ const TestSettingDialog = () => {
   return (
     <Dialog aaria-hidden="false">
       <DialogTrigger asChild>
-        <button className="bg-white w-1/3 border-2 border-primary-600 text-primary-600 pc:text-md text-xs py-2 font-semibold rounded-full hover:bg-primary-600 hover:text-white">
+        <Button className="w-full" variant="primary-outline">
           테스트하기
-        </button>
+        </Button>
       </DialogTrigger>
       <DialogContent className="max-w-xs rounded-lg">
         <DialogHeader>
-          <DialogTitle>테스트하기</DialogTitle>
-          <DialogDescription>테스트하기 설정입니다.</DialogDescription>
+          <DialogTitle>테스트설정</DialogTitle>
+          <DialogDescription></DialogDescription>
         </DialogHeader>
         <div className="flex flex-col gap-2 text-start my-2">
           <span>최대 문제 수: {count[0]} 문제</span>
