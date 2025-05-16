@@ -4,8 +4,17 @@ export interface Bread {
     type: string;
   }
   
- export interface LeaderboardEntry {
-    id: number;
-    name: string;
-    score: number;
+export interface LeaderboardType {
+    nickname: string;
+    mainCharacterImageUrl: string;
+    rank: number;
+    maxScore: number;
+    playedAt: string;
   }
+
+export interface GameHistoryType {
+  id: number;
+  playedAt: string;
+  score: number;
+  gameType: string;
+}

@@ -43,6 +43,7 @@ const MapView = () => {
   const markersRef = useRef<naver.maps.Marker[]>([]);
   const polylineRef = useRef<naver.maps.Polyline | null>(null);
   const currentLocationMarkerRef = useRef<naver.maps.Marker | null>(null);
+  const watchIdRef = useRef<number | null>(null);
 
   const { geocodeAddress } = useGeocode();
   const location = useLocation();
@@ -76,24 +77,81 @@ const MapView = () => {
   };
 
   // 시작 시 현재 위치로 가기
-  // useEffect(() => {
-  //   if (!mapRef.current) return;
+  useEffect(() => {
+    if (!mapRef.current) return;
 
-  //   navigator.geolocation.getCurrentPosition(
-  //     (pos) => {
-  //       const lat = Number(pos.coords.latitude.toFixed(6));
-  //       const lng = Number(pos.coords.longitude.toFixed(6));
-  //       const currentPosition = new naver.maps.LatLng(lat, lng);
-  //       mapRef.current?.setCenter(currentPosition);
-  //       setCurLatitude(lat);
-  //       setCurLongitude(lng);
-  //     },
-  //     (err) => {
-  //       console.warn("위치 정보를 가져오지 못했습니다:", err);
-  //     },
-  //     { enableHighAccuracy: false, timeout: 3000, maximumAge: 10000 },
-  //   );
-  // }, [isMapLoaded]);
+    const watchId = navigator.geolocation.watchPosition(
+      (pos) => {
+        const lat = Number(pos.coords.latitude.toFixed(6));
+        const lng = Number(pos.coords.longitude.toFixed(6));
+        const position = new naver.maps.LatLng(lat, lng);
+        mapRef.current?.setCenter(position);
+        setCurLatitude(lat);
+        setCurLongitude(lng);
+
+        // ✅ 마커 생성 추가
+        if (currentLocationMarkerRef.current) {
+          currentLocationMarkerRef.current.setPosition(position);
+        } else {
+          const marker = new naver.maps.Marker({
+            position,
+            map: mapRef.current!,
+            title: "현재 위치",
+            icon: {
+              content: `
+              <div style="position: relative; width: 20px; height: 20px;">
+                <div style="
+                  position: absolute;
+                  width: 20px;
+                  height: 20px;
+                  background-color: #3B82F6;
+                  border: 2px solid white;
+                  border-radius: 50%;
+                  z-index: 2;
+                  box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
+                "></div>
+                <div style="
+                  position: absolute;
+                  width: 20px;
+                  height: 20px;
+                  background-color: rgba(59, 130, 246, 0.4);
+                  border-radius: 50%;
+                  animation: pulseRing 1.5s infinite ease-out;
+                  z-index: 1;
+                "></div>
+              </div>
+              <style>
+                @keyframes pulseRing {
+                  0% {
+                    transform: scale(1);
+                    opacity: 0.6;
+                  }
+                  100% {
+                    transform: scale(2.5);
+                    opacity: 0;
+                  }
+                }
+              </style>
+            `,
+              size: new naver.maps.Size(20, 20),
+              anchor: new naver.maps.Point(10, 10),
+            },
+          });
+          currentLocationMarkerRef.current = marker;
+        }
+
+        navigator.geolocation.clearWatch(watchId);
+      },
+      (err) => {
+        console.warn("초기 위치 설정 실패:", err);
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 3000,
+        maximumAge: 10000,
+      },
+    );
+  }, [isMapLoaded]);
 
   // MapView 경로일 때마다 위치 마커 강제 리렌더링
   useEffect(() => {
@@ -213,11 +271,6 @@ const MapView = () => {
     };
   }, [isManualMode, isAlarmEnabled]);
 
-  const handleLocationUpdate = (lat: number, lng: number) => {
-    setCurLatitude(lat);
-    setCurLongitude(lng);
-  };
-
   // 현재 위치로 위치 알람 설정
   const handleSetCurrentLocation = () => {
     const updatePosition = (lat: number, lng: number) => {
@@ -226,7 +279,6 @@ const MapView = () => {
       const position = new naver.maps.LatLng(lat, lng);
       mapRef.current?.setCenter(position);
 
-      // 기존 마커가 있으면 위치만 갱신, 없으면 생성
       if (currentLocationMarkerRef.current) {
         currentLocationMarkerRef.current.setPosition(position);
       } else {
@@ -236,45 +288,40 @@ const MapView = () => {
           title: "현재 위치",
           icon: {
             content: `
-      <div style="position: relative; width: 20px; height: 20px;">
-        <!-- 중심 점 -->
-        <div style="
-          position: absolute;
-          width: 20px;
-          height: 20px;
-          background-color: #3B82F6;
-          border: 2px solid white;
-          border-radius: 50%;
-          z-index: 2;
-          box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
-        "></div>
-
-        <!-- 퍼짐 애니메이션 -->
-        <div style="
-          position: absolute;
-          width: 20px;
-          height: 20px;
-          background-color: rgba(59, 130, 246, 0.4);
-          border-radius: 50%;
-          animation: pulseRing 1.5s infinite ease-out;
-          z-index: 1;
-        "></div>
-      </div>
-
-      <!-- 애니메이션 정의 -->
-      <style>
-        @keyframes pulseRing {
-          0% {
-            transform: scale(1);
-            opacity: 0.6;
-          }
-          100% {
-            transform: scale(2.5);
-            opacity: 0;
-          }
-        }
-      </style>
-    `,
+            <div style="position: relative; width: 20px; height: 20px;">
+              <div style="
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background-color: #3B82F6;
+                border: 2px solid white;
+                border-radius: 50%;
+                z-index: 2;
+                box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
+              "></div>
+              <div style="
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background-color: rgba(59, 130, 246, 0.4);
+                border-radius: 50%;
+                animation: pulseRing 1.5s infinite ease-out;
+                z-index: 1;
+              "></div>
+            </div>
+            <style>
+              @keyframes pulseRing {
+                0% {
+                  transform: scale(1);
+                  opacity: 0.6;
+                }
+                100% {
+                  transform: scale(2.5);
+                  opacity: 0;
+                }
+              }
+            </style>
+          `,
             size: new naver.maps.Size(20, 20),
             anchor: new naver.maps.Point(10, 10),
           },
@@ -283,37 +330,22 @@ const MapView = () => {
       }
     };
 
-    // fallback용 watchPosition
-    const fallbackWatch = () => {
-      const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          updatePosition(pos.coords.latitude, pos.coords.longitude);
-          navigator.geolocation.clearWatch(watchId);
-        },
-        (err) => {
-          console.error("📛 watchPosition 실패:", err);
-          alert("위치 정보를 가져오지 못했습니다.");
-        },
-        {
-          enableHighAccuracy: false,
-          timeout: 5000,
-          maximumAge: 0,
-        },
-      );
-    };
-
-    navigator.geolocation.getCurrentPosition(
+    watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         updatePosition(pos.coords.latitude, pos.coords.longitude);
+        if (watchIdRef.current !== null) {
+          navigator.geolocation.clearWatch(watchIdRef.current);
+          watchIdRef.current = null;
+        }
       },
       (err) => {
-        console.warn("⚠ getCurrentPosition 실패, fallback 실행:", err);
-        fallbackWatch();
+        console.error("📛 위치 감지 실패:", err);
+        alert("위치 정보를 가져올 수 없습니다.");
       },
       {
         enableHighAccuracy: false,
-        timeout: 5000,
-        maximumAge: 0,
+        timeout: 3000,
+        maximumAge: 10000,
       },
     );
   };
@@ -365,32 +397,36 @@ const MapView = () => {
         title: "알림 위치",
         icon: {
           content: `
-            <div style="
-              width: 40px;
-              height: 40px;
-              background-color: white;
-              border: 2px solid #ffaa64;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-              animation: pulse-ring 2s infinite;
-            ">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffaa64" viewBox="0 0 24 24">
-                <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4v-3a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.5A6 6 0 0 0 6 11v3a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1" />
-              </svg>
+            <div style="position: relative; width: 20px; height: 20px;">
+              <div style="
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background-color: #3B82F6;
+                border: 2px solid white;
+                border-radius: 50%;
+                z-index: 2;
+                box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
+              "></div>
+              <div style="
+                position: absolute;
+                width: 20px;
+                height: 20px;
+                background-color: rgba(59, 130, 246, 0.4);
+                border-radius: 50%;
+                animation: pulseRing 1.5s infinite ease-out;
+                z-index: 1;
+              "></div>
             </div>
             <style>
-              @keyframes pulse-ring {
+              @keyframes pulseRing {
                 0% {
-                  box-shadow: 0 0 0 0 rgba(255,170,100, 0.6);
-                }
-                70% {
-                  box-shadow: 0 0 0 10px rgba(255,170,100, 0);
+                  transform: scale(1);
+                  opacity: 0.6;
                 }
                 100% {
-                  box-shadow: 0 0 0 0 rgba(255,170,100, 0);
+                  transform: scale(2.5);
+                  opacity: 0;
                 }
               }
             </style>
