@@ -86,4 +86,6 @@ public class Card extends BaseEntity {
         this.retentionRate = cardCache.getRetentionRate();
         this.stability = cardCache.getStability();
     }
+
+    public void updateNumber(Integer number) {this.number = number;}
 }
