@@ -70,3 +70,16 @@ export const patchNotificationLocation = async (
   });
   return response.data;
 };
+
+export const sendNotificationByLocation = async (
+  latitude: number,
+  longitude: number,
+): Promise<RecordResponse<boolean>> => {
+  const response = await http.post("/notifications", null, {
+    params: {
+      latitude,
+      longitude,
+    },
+  });
+  return response.data;
+};
