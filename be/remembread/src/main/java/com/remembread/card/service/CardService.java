@@ -251,4 +251,19 @@ public class CardService {
 
         em.createNativeQuery(sql.toString()).executeUpdate();
     }
+
+    @Transactional(readOnly = true)
+    public List<Card> findAllByCardSet(CardSet cardSet) {
+        return cardRepository.findAllByCardSet(cardSet);
+    }
+
+    @Transactional(readOnly = true)
+    public Card findById(Long id) {
+        return cardRepository.findById(id).orElseThrow(() -> new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+    }
+
+    @Transactional(readOnly = true)
+    public List<Card> findAllById(List<Long> ids) {
+        return cardRepository.findAllById(ids);
+    }
 }

@@ -10,7 +10,7 @@ import com.remembread.study.dto.request.StudyStopRequest;
 import com.remembread.study.dto.response.RemainingCardCountResponse;
 import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.dto.response.StudyLogResponse;
-import com.remembread.study.service.StudyService;
+import com.remembread.study.facade.StudyFacade;
 import com.remembread.user.entity.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/studies")
 @RequiredArgsConstructor
 public class StudyController {
-    private final StudyService studyService;
+    private final StudyFacade studyFacade;
 
     @PostMapping("/{cardSetId}/start")
     public ApiResponse<Void> startStudySession(
@@ -27,7 +27,7 @@ public class StudyController {
             @RequestBody StudyStartRequest request,
             @AuthUser User user
             ) {
-        studyService.startStudySession(cardSetId, request, user);
+        studyFacade.startStudySession(cardSetId, request, user);
         return ApiResponse.onSuccess(null);
     }
 
@@ -37,7 +37,7 @@ public class StudyController {
             @RequestBody StudyStopRequest request,
             @AuthUser User user
             ) {
-        studyService.stopStudySession(cardSetId, request, user);
+        studyFacade.stopStudySession(cardSetId, request, user);
         return ApiResponse.onSuccess(null);
     }
 
@@ -48,7 +48,7 @@ public class StudyController {
             @RequestBody AnswerResultRequest request,
             @AuthUser User user
     ) {
-        return ApiResponse.onSuccess(studyService.submitAnswer(cardSetId, cardId, request, user));
+        return ApiResponse.onSuccess(studyFacade.submitAnswer(cardSetId, cardId, request, user));
     }
 
     @GetMapping("/{cardSetId}/next")
@@ -56,7 +56,7 @@ public class StudyController {
             @PathVariable Long cardSetId,
             @AuthUser User user
     ) {
-        return ApiResponse.onSuccess(studyService.getNextCard(cardSetId, user));
+        return ApiResponse.onSuccess(studyFacade.getNextCard(cardSetId, user));
     }
 
     @PostMapping("/{cardSetId}/location")
@@ -65,7 +65,7 @@ public class StudyController {
             @RequestBody LocationRequest request,
             @AuthUser User user
     ) {
-        studyService.addPoint(user, request.getLongitude(), request.getLatitude());
+        studyFacade.addPoint(user, request.getLongitude(), request.getLatitude());
         return ApiResponse.onSuccess(null);
     }
 
@@ -76,7 +76,7 @@ public class StudyController {
             @RequestParam Integer size,
             @AuthUser User user
             ) {
-        return ApiResponse.onSuccess(studyService.getRoutes(cardSetId, page, size, user));
+        return ApiResponse.onSuccess(studyFacade.getRoutes(cardSetId, page, size, user));
     }
 
     @GetMapping("/{cardSetId}/logs")
@@ -86,6 +86,6 @@ public class StudyController {
             @RequestParam Integer size,
             @AuthUser User user
     ) {
-        return ApiResponse.onSuccess(studyService.getLogsByCardSet(cardSetId, user, page, size));
+        return ApiResponse.onSuccess(studyFacade.getLogsByCardSet(cardSetId, user, page, size));
     }
 }
