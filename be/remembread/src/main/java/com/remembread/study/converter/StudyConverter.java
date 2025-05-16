@@ -1,5 +1,6 @@
 package com.remembread.study.converter;
 
+import com.remembread.study.dto.response.DayLogProjection;
 import com.remembread.study.dto.response.RouteResponse;
 import com.remembread.study.dto.response.SummaryLogResponse;
 import com.remembread.study.entity.StudySession;
@@ -116,5 +117,17 @@ public class StudyConverter {
                 .totalSolved(totalSolved)
                 .years(years)
                 .build();
+    }
+
+    public static List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> toDayLogResponseList(List<DayLogProjection> projections) {
+        List<SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse> dayLogResponses = new ArrayList<>();
+        for (DayLogProjection projection : projections) {
+            dayLogResponses.add(SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse.builder()
+                    .day(projection.getDay())
+                    .totalCorrect(projection.getTotalCorrect())
+                    .totalSolved(projection.getTotalSolved())
+                    .build());
+        }
+        return dayLogResponses;
     }
 }
