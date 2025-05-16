@@ -28,7 +28,6 @@ const RankPage = () => {
     const getNickname = async () => {
       try {
         const response = await getUser();
-        console.log("유저 정보 조회 완료", response);
         setNickname(response.result.nickname);
         return response.result.nickname;
       } catch (error) {
@@ -40,7 +39,6 @@ const RankPage = () => {
     const getLeaderboard = async () => {
       try {
         const response = await getRanks(gameTypes[selectedTab]);
-        console.log("게임 랭킹 조회 완료", response);
         setLeaderboard(response.result);
         return response.result;
       } catch (error) {
@@ -57,7 +55,6 @@ const RankPage = () => {
       
       const userRank = leaderboardData.find((rank) => rank.nickname === currentNickname);
       setMyRank(userRank);
-      console.log("내 정보 조회 완료", userRank);
     };
 
     initializeData();

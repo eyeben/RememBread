@@ -21,30 +21,26 @@ const GameResultPage = () => {
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const [Leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
   
-  const gameType = location.state?.game.toUpperCase() || "memory";
-  const score = gameType === "memory" ? memoryScore : 
-                gameType === "compare" ? compareScore : 
-                gameType === "detective" ? detectiveScore :
+  const gameType = location.state?.game.toUpperCase();
+  const score = gameType === "MEMORY" ? memoryScore : 
+                gameType === "COMPARE" ? compareScore : 
+                gameType === "DETECTIVE" ? detectiveScore :
                 shadowScore;
 
   useEffect(() => {
     const sendGameResult = async () => {
       try {
-        console.log("게임 결과 저장 시작", score, gameType)
         const response = await postGameResult({
           gameType: gameType,
           score: score
         });
         setUserProfile(response.result)
-        console.log("게임 결과 저장 완료", response);
       } catch (error) {
-        console.error("게임 결과 저장 중 오류 발생:", error);
       }
     };
     const getLeaderboard = async () => {
       try {
         const response = await getRanks(gameType);
-        console.log("게임 랭킹 조회 완료", response);
         setLeaderboard(response.result);
       } catch (error) {
         console.error("게임 랭킹 조회 중 오류 발생:", error);
@@ -56,15 +52,15 @@ const GameResultPage = () => {
   }, [gameType, score]);
 
   return (
-    <div className="flex flex-col items-center justify-center p-4">
+    <div className="min-h-[calc(100vh-126px)] flex flex-col items-center justify-center p-4">
       <header>
         <div className="flex justify-center mb-2">
           <ClearBread className="w-16 h-16" />
         </div>
         <span className="flex text-2xl font-bold mb-4 justify-center">
-          {gameType === "memory" ? "순간기억" : 
-          gameType === "compare" ? "가격비교" : 
-          gameType === "detective" ? "빵 탐정" :
+          {gameType === "MEMORY" ? "순간기억" : 
+          gameType === "COMPARE" ? "가격비교" : 
+          gameType === "DETECTIVE" ? "빵 탐정" :
           "그림자빵"}
         </span>
       </header>
