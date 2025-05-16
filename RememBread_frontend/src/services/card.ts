@@ -34,6 +34,22 @@ export const getCardsByCardSet = async (
   }
 };
 
+// 카드셋에 카드 한개 추가
+export const postCard = async (cardSetId: number, concept: string, description: string) => {
+  try {
+    const response = await http.post("/cards", {
+      cardSetId,
+      concept,
+      description,
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("카드 병합 중 오류:", error);
+    throw new Error("카드 병합 실패");
+  }
+};
+
 // 카드셋에 여러 카드 추가
 export const postCards = async (cardSetId: number, cards: indexCard[]) => {
   try {
