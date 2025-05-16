@@ -1,6 +1,5 @@
 import {
   AlertDialog,
-  AlertDialogTrigger,
   AlertDialogPortal,
   AlertDialogContent,
   AlertDialogHeader,
@@ -21,22 +20,25 @@ const StopStudyModal = ({ open, onOpenChange, cardSetId, onConfirm }: StopStudyM
   return (
     <AlertDialog open={open} onOpenChange={onOpenChange}>
       <AlertDialogPortal>
-        <AlertDialogContent className="w-[90%] rounded-md">
+        <AlertDialogContent className="w-[90%] max-w-sm rounded-md p-6">
           <AlertDialogHeader>
-            <AlertDialogTitle className="text-center text-lg">학습 종료 확인</AlertDialogTitle>
+            <AlertDialogTitle className="text-center text-lg font-semibold">
+              학습 종료 확인
+            </AlertDialogTitle>
           </AlertDialogHeader>
 
-          <div className="text-center text-sm text-muted-foreground my-4">
-            {cardSetId}번 카드셋의 학습을 종료하시겠습니까?
+          <div className="pc:my-5 my-2 text-center text-sm text-muted-foreground">
+            <span className="font-medium text-primary-700">{cardSetId}번</span> 카드셋의 학습을
+            종료하시겠습니까?
           </div>
 
-          <AlertDialogFooter className="flex justify-between gap-2">
-            <AlertDialogCancel className="w-1/2 bg-neutral-300 text-black hover:bg-neutral-400">
+          <AlertDialogFooter className="">
+            <AlertDialogCancel className="w-full rounded-md bg-neutral-300 text-black hover:bg-neutral-400">
               취소
             </AlertDialogCancel>
             <AlertDialogAction
               onClick={onConfirm}
-              className="w-1/2 bg-primary-700 text-white hover:bg-primary-800"
+              className="w-full rounded-md bg-primary-700 text-white hover:bg-primary-800"
             >
               확인
             </AlertDialogAction>
