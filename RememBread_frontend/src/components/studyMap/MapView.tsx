@@ -3,8 +3,9 @@ import { useLocation } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import { Bell, LocateFixed, MapPin } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
-import { searchMyCardSet, SearchMyCardSetParams } from "@/services/cardSet";
+import { currentLocationIcon } from "@/utils/currentLocationIcon";
 import { getRoutes, patchNotificationLocation } from "@/services/map";
+import { searchMyCardSet, SearchMyCardSetParams } from "@/services/cardSet";
 import { toast } from "@/hooks/use-toast";
 import useGeocode from "@/hooks/useGeocode";
 import { Toaster } from "@/components/ui/toaster";
@@ -96,45 +97,7 @@ const MapView = () => {
             position,
             map: mapRef.current!,
             title: "현재 위치",
-            icon: {
-              content: `
-              <div style="position: relative; width: 20px; height: 20px;">
-                <div style="
-                  position: absolute;
-                  width: 20px;
-                  height: 20px;
-                  background-color: #3B82F6;
-                  border: 2px solid white;
-                  border-radius: 50%;
-                  z-index: 2;
-                  box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
-                "></div>
-                <div style="
-                  position: absolute;
-                  width: 20px;
-                  height: 20px;
-                  background-color: rgba(59, 130, 246, 0.4);
-                  border-radius: 50%;
-                  animation: pulseRing 1.5s infinite ease-out;
-                  z-index: 1;
-                "></div>
-              </div>
-              <style>
-                @keyframes pulseRing {
-                  0% {
-                    transform: scale(1);
-                    opacity: 0.6;
-                  }
-                  100% {
-                    transform: scale(2.5);
-                    opacity: 0;
-                  }
-                }
-              </style>
-            `,
-              size: new naver.maps.Size(20, 20),
-              anchor: new naver.maps.Point(10, 10),
-            },
+            icon: currentLocationIcon(20),
           });
           currentLocationMarkerRef.current = marker;
         }
@@ -287,45 +250,7 @@ const MapView = () => {
           position,
           map: mapRef.current!,
           title: "현재 위치",
-          icon: {
-            content: `
-            <div style="position: relative; width: 20px; height: 20px;">
-              <div style="
-                position: absolute;
-                width: 20px;
-                height: 20px;
-                background-color: #3B82F6;
-                border: 2px solid white;
-                border-radius: 50%;
-                z-index: 2;
-                box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
-              "></div>
-              <div style="
-                position: absolute;
-                width: 20px;
-                height: 20px;
-                background-color: rgba(59, 130, 246, 0.4);
-                border-radius: 50%;
-                animation: pulseRing 1.5s infinite ease-out;
-                z-index: 1;
-              "></div>
-            </div>
-            <style>
-              @keyframes pulseRing {
-                0% {
-                  transform: scale(1);
-                  opacity: 0.6;
-                }
-                100% {
-                  transform: scale(2.5);
-                  opacity: 0;
-                }
-              }
-            </style>
-          `,
-            size: new naver.maps.Size(20, 20),
-            anchor: new naver.maps.Point(10, 10),
-          },
+          icon: currentLocationIcon(20),
         });
         currentLocationMarkerRef.current = marker;
       }
@@ -343,7 +268,7 @@ const MapView = () => {
         if (!isAlerted) {
           isAlerted = true;
           toast({
-            title: "위치 정보를 가져올 수 없습니다.",
+            title: "위치 정보를 가져오지 못했어요.",
             description: "잠시 후 다시 시도해주세요.",
             variant: "destructive",
           });
@@ -402,45 +327,7 @@ const MapView = () => {
         position,
         map: mapRef.current!,
         title: "알림 위치",
-        icon: {
-          content: `
-            <div style="position: relative; width: 20px; height: 20px;">
-              <div style="
-                position: absolute;
-                width: 20px;
-                height: 20px;
-                background-color: #3B82F6;
-                border: 2px solid white;
-                border-radius: 50%;
-                z-index: 2;
-                box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
-              "></div>
-              <div style="
-                position: absolute;
-                width: 20px;
-                height: 20px;
-                background-color: rgba(59, 130, 246, 0.4);
-                border-radius: 50%;
-                animation: pulseRing 1.5s infinite ease-out;
-                z-index: 1;
-              "></div>
-            </div>
-            <style>
-              @keyframes pulseRing {
-                0% {
-                  transform: scale(1);
-                  opacity: 0.6;
-                }
-                100% {
-                  transform: scale(2.5);
-                  opacity: 0;
-                }
-              }
-            </style>
-          `,
-          size: new naver.maps.Size(40, 40),
-          anchor: new naver.maps.Point(20, 20),
-        },
+        icon: currentLocationIcon(20),
       });
 
       setAddressMarker(marker);

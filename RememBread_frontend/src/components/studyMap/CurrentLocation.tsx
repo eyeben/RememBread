@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { toast } from "@/hooks/use-toast";
+import { currentLocationIcon } from "@/utils/currentLocationIcon";
 
 interface Props {
   map: naver.maps.Map | null;
@@ -26,45 +27,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
           position: latlng,
           map,
           title: "현재 위치",
-          icon: {
-            content: `
-              <div style="position: relative; width: 20px; height: 20px;">
-                <div style="
-                  position: absolute;
-                  width: 20px;
-                  height: 20px;
-                  background-color: #3B82F6;
-                  border: 2px solid white;
-                  border-radius: 50%;
-                  z-index: 2;
-                  box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
-                "></div>
-                <div style="
-                  position: absolute;
-                  width: 20px;
-                  height: 20px;
-                  background-color: rgba(59, 130, 246, 0.4);
-                  border-radius: 50%;
-                  animation: pulseRing 1.5s infinite ease-out;
-                  z-index: 1;
-                "></div>
-              </div>
-              <style>
-                @keyframes pulseRing {
-                  0% {
-                    transform: scale(1);
-                    opacity: 0.6;
-                  }
-                  100% {
-                    transform: scale(2.5);
-                    opacity: 0;
-                  }
-                }
-              </style>
-            `,
-            size: new naver.maps.Size(20, 20),
-            anchor: new naver.maps.Point(10, 10),
-          },
+          icon: currentLocationIcon(20),
         });
       } else {
         marker.setPosition(latlng);
@@ -86,7 +49,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
           if (!received && !isAlerted) {
             isAlerted = true;
             toast({
-              title: "위치 정보를 가져올 수 없습니다.",
+              title: "위치 정보를 가져오지 못했어요.",
               description: "잠시 후 다시 시도해주세요.",
               variant: "destructive",
             });
@@ -120,7 +83,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
       if (!received && !isAlerted) {
         isAlerted = true;
         toast({
-          title: "위치 정보를 가져올 수 없습니다.",
+          title: "위치 정보를 가져오지 못했어요.",
           description: "잠시 후 다시 시도해주세요.",
           variant: "destructive",
         });
