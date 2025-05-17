@@ -26,7 +26,7 @@ const Layout = () => {
         setLocation(lat, lng);
       },
       (err) => {
-        console.error("위치 추적 실패", err);
+        // console.error("위치 추적 실패", err);
       },
       {
         enableHighAccuracy: false,
@@ -40,12 +40,11 @@ const Layout = () => {
 
   // 30초마다 위치 전송
   const { latitude, longitude } = useLocationStore();
+
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (latitude != null && longitude != null) {
-        patchNotificationLocation(latitude, longitude, true).then(() =>
-          console.log("위치 전송 성공:", { latitude, longitude }),
-        );
+        patchNotificationLocation(latitude, longitude, true).then(() => {});
       } else {
         console.warn("위치 정보가 없어 전송 생략");
       }

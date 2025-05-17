@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
-import { useLocation } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import { Bell, LocateFixed, MapPin } from "lucide-react";
+import { useLocationStore } from "@/stores/useLocationStore";
 import { indexCardSet } from "@/types/indexCard";
 import { alertLocationIcon } from "@/utils/alertLocationIcon";
 import { currentLocationIcon } from "@/utils/currentLocationIcon";
@@ -22,11 +22,8 @@ import {
 } from "@/components/ui/select";
 
 const MapView = () => {
-  // const location = useLocation();
-  // const [locationKey, setLocationKey] = useState<number>(0);
+  const { latitude, longitude } = useLocationStore();
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
-  const [curLatitude, setCurLatitude] = useState<number>(37.5665);
-  const [curLongitude, setCurLongitude] = useState<number>(126.978);
 
   const [totalCount, setTotalCount] = useState<number>(0);
   const [myCardSets, setMyCardSets] = useState<indexCardSet[]>([]);
@@ -35,11 +32,11 @@ const MapView = () => {
   const [selectedDateTime, setSelectedDateTime] = useState<string>("");
   const [isAlarmEnabled, setIsAlarmEnabled] = useState<boolean>(true);
   const [isAlertDrawerOpen, setIsAlertDrawerOpen] = useState<boolean>(false);
+  const [isPinMode, setIsPinMode] = useState<boolean>(false);
+  const [isAlertOptionsOpen, setIsAlertOptionsOpen] = useState<boolean>(false);
   const [isManualMode, setIsManualMode] = useState<boolean>(false);
   const [manualAddress, setManualAddress] = useState<string>("");
   const [addressMarker, setAddressMarker] = useState<naver.maps.Marker | null>(null);
-  const [isPinMode, setIsPinMode] = useState<boolean>(false);
-  const [isAlertOptionsOpen, setIsAlertOptionsOpen] = useState<boolean>(false);
 
   const mapRef = useRef<naver.maps.Map | null>(null);
   const markersRef = useRef<naver.maps.Marker[]>([]);
@@ -83,7 +80,7 @@ const MapView = () => {
     if (!mapElement) return;
     if (!mapRef.current) {
       mapRef.current = new naver.maps.Map(mapElement, {
-        center: new naver.maps.LatLng(curLatitude, curLongitude),
+        center: new naver.maps.LatLng(latitude ?? 37.501274, longitude ?? 127.039585),
         zoom: 15,
         zoomControl: false,
       });
@@ -94,49 +91,22 @@ const MapView = () => {
 
   // 시작 시 현재 위치로 가기
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || latitude == null || longitude == null) return;
 
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const lat = Number(pos.coords.latitude.toFixed(6));
-        const lng = Number(pos.coords.longitude.toFixed(6));
-        const position = new naver.maps.LatLng(lat, lng);
-        mapRef.current?.setCenter(position); // 지도 중심 이동
-        setCurLatitude(lat); // 현재 위도 업데이트
-        setCurLongitude(lng); // 현재 경도 업데이트
+    const position = new naver.maps.LatLng(latitude ?? 37.501274, longitude ?? 127.039585);
+    mapRef.current.setCenter(position);
 
-        // 현재 위치 마커가 있으면 위치만 갱신
-        if (currentLocationMarkerRef.current) {
-          currentLocationMarkerRef.current.setPosition(position);
-        } else {
-          const marker = new naver.maps.Marker({
-            position,
-            map: mapRef.current!,
-            title: "현재 위치",
-            icon: currentLocationIcon(20),
-          });
-          currentLocationMarkerRef.current = marker;
-        }
-
-        navigator.geolocation.clearWatch(watchId); // 위치 1회만 추적 후 정지
-      },
-      (err) => {
-        console.warn("초기 위치 설정 실패:", err);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 3000,
-        maximumAge: 10000,
-      },
-    );
-  }, [isMapLoaded]);
-
-  // MapView 경로일 때마다 위치 마커 강제 리렌더링
-  // useEffect(() => {
-  //   if (location.pathname.includes("map")) {
-  //     setLocationKey((prev) => prev + 1);
-  //   }
-  // }, [location.pathname]);
+    if (!currentLocationMarkerRef.current) {
+      currentLocationMarkerRef.current = new naver.maps.Marker({
+        position,
+        map: mapRef.current,
+        title: "현재 위치",
+        icon: currentLocationIcon(20),
+      });
+    } else {
+      currentLocationMarkerRef.current.setPosition(position);
+    }
+  }, [isMapLoaded, latitude, longitude]);
 
   useEffect(() => {
     if (!selectedCardSet) return;
@@ -226,6 +196,11 @@ const MapView = () => {
         const lng = e.coord.lng();
 
         await patchNotificationLocation(lat, lng, isAlarmEnabled);
+
+        localStorage.setItem(
+          "alert-location",
+          JSON.stringify({ lat, lng, enabled: isAlarmEnabled }),
+        );
         setIsManualMode(false);
       },
     );
@@ -237,12 +212,8 @@ const MapView = () => {
 
   // 현재 위치를 지도 중앙에 표시하고 마커를 갱신
   const handleSetCurrentLocation = () => {
-    let isAlerted = false;
-
-    const updatePosition = (lat: number, lng: number) => {
-      setCurLatitude(lat);
-      setCurLongitude(lng);
-      const position = new naver.maps.LatLng(lat, lng);
+    if (latitude != null && longitude != null) {
+      const position = new naver.maps.LatLng(latitude, longitude);
       mapRef.current?.setCenter(position);
 
       if (currentLocationMarkerRef.current) {
@@ -256,15 +227,33 @@ const MapView = () => {
         });
         currentLocationMarkerRef.current = marker;
       }
-    };
 
+      return; //  store 값으로 이동 완료
+    }
+
+    // fallback: store에 값이 없을 때만 watchPosition
+    let isAlerted = false;
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
-        updatePosition(pos.coords.latitude, pos.coords.longitude);
-        if (watchIdRef.current !== null) {
-          navigator.geolocation.clearWatch(watchIdRef.current);
-          watchIdRef.current = null;
+        const lat = Number(pos.coords.latitude.toFixed(6));
+        const lng = Number(pos.coords.longitude.toFixed(6));
+        const position = new naver.maps.LatLng(lat, lng);
+        mapRef.current?.setCenter(position);
+
+        if (currentLocationMarkerRef.current) {
+          currentLocationMarkerRef.current.setPosition(position);
+        } else {
+          const marker = new naver.maps.Marker({
+            position,
+            map: mapRef.current!,
+            title: "현재 위치",
+            icon: currentLocationIcon(20),
+          });
+          currentLocationMarkerRef.current = marker;
         }
+
+        navigator.geolocation.clearWatch(watchIdRef.current!);
+        watchIdRef.current = null;
       },
       (err) => {
         if (!isAlerted) {
@@ -318,11 +307,14 @@ const MapView = () => {
 
       await patchNotificationLocation(lat, lng, isAlarmEnabled);
 
+      localStorage.setItem("alert-location", JSON.stringify({ lat, lng, enabled: isAlarmEnabled }));
+
       const position = new naver.maps.LatLng(lat, lng);
       mapRef.current?.setCenter(position);
 
       if (addressMarker) {
         addressMarker.setMap(null);
+        setAddressMarker(null);
       }
 
       const marker = new naver.maps.Marker({
@@ -331,7 +323,6 @@ const MapView = () => {
         title: "알림 위치",
         icon: alertLocationIcon(40),
       });
-
       setAddressMarker(marker);
       setIsAlertDrawerOpen(false);
 
@@ -360,12 +351,14 @@ const MapView = () => {
 
     try {
       await patchNotificationLocation(lat, lng, isAlarmEnabled);
+      localStorage.setItem("alert-location", JSON.stringify({ lat, lng, enabled: isAlarmEnabled }));
       setIsAlertDrawerOpen(false);
       setIsPinMode(false);
 
       // 기존 마커 제거
       if (addressMarker) {
         addressMarker.setMap(null);
+        setAddressMarker(null);
       }
 
       // 새로운 마커 생성 및 표시
@@ -375,7 +368,6 @@ const MapView = () => {
         title: "알림 위치",
         icon: alertLocationIcon(40),
       });
-
       setAddressMarker(marker);
 
       toast({
@@ -391,6 +383,44 @@ const MapView = () => {
       });
     }
   };
+
+  // 알림 위치 복원
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const stored = localStorage.getItem("alert-location");
+    if (!stored) return;
+
+    try {
+      const { lat, lng, enabled } = JSON.parse(stored);
+      if (!lat || !lng) return;
+
+      if (addressMarker) {
+        addressMarker.setMap(null);
+        setAddressMarker(null);
+      }
+
+      const position = new naver.maps.LatLng(lat, lng);
+      const marker = new naver.maps.Marker({
+        position,
+        map: mapRef.current,
+        title: "알림 위치",
+        icon: alertLocationIcon(40),
+      });
+      setAddressMarker(marker);
+      setIsAlarmEnabled(enabled);
+    } catch (e) {
+      console.error("알림 위치 복원 실패", e);
+    }
+  }, [isMapLoaded]);
+
+  if (latitude == null || longitude == null) {
+    return (
+      <div className="flex justify-center items-center h-full text-muted-foreground">
+        위치 정보를 불러오는 중입니다...
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
