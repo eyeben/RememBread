@@ -81,13 +81,13 @@ const GameResultPage = () => {
           </div>
           <div className="flex-1">
             <div className="text-lg font-bold">{userProfile?.nickname}</div>
-            <div className="text-xl font-bold text-gray-600">{score} Pts</div>
+            <div className="text-xl font-bold text-gray-600">{score} 점</div>
           </div>
         </div>
 
-        {/* 리더보드 */}
+        {/* 전체 순위 */}
         <div>
-          <h3 className="text-xl font-bold mb-4">리더보드</h3>
+          <h3 className="text-xl font-bold mb-4">전체 순위</h3>
           <div className="space-y-2 h-[200px] sm:h-[270px] overflow-y-auto pr-2">
             {Leaderboard.map((player, index) => (
               <div 
