@@ -51,8 +51,8 @@ interface StudyHistoryResponse {
   code: string;
   message: string;
   result: {
-  total_correct: number;
-  total_solved: number;
+  totalCorrect: number;
+  totalSolved: number;
   years: StudyHistoryYear[];
   }
 }

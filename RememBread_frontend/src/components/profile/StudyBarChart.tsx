@@ -10,19 +10,15 @@ import {
 import { getStudyHistory } from "@/services/userService";
 import { StudyHistoryYear } from "@/types/profile";
 
-
-// 더미 데이터 생성 함수
-const getDailyData = () =>
-  Array.from({ length: 31 }, (_, i) => ({ day: i + 1, study: Math.floor(Math.random() * 120) }));
-const getMonthlyData = () =>
-  Array.from({ length: 12 }, (_, i) => ({
-    month: `${i + 1}월`,
-    study: Math.floor(Math.random() * 2500),
-  }));
+interface ChartDataPoint {
+  day?: number;
+  month?: number;
+  study: number;
+}
 
 const StudyBarChart = () => {
   const [year, setYear] = useState<number>(2025);
-  const [month, setMonth] = useState<number>(1);
+  const [month, setMonth] = useState<number>(5);
   const [viewType, setViewType] = useState<"day" | "month">("day");
   // 일별: 15일 슬라이드
   const [dayStartIdx, setDayStartIdx] = useState<number>(0); // 일별 슬라이드 인덱스
@@ -33,18 +29,27 @@ const StudyBarChart = () => {
 
   // 학습 기록 데이터
   const [studyHistoryData, setStudyHistoryData] = useState<StudyHistoryYear[]>([]);
+  const [dailyData, setDailyData] = useState<ChartDataPoint[]>([]);
+  const [monthlyData, setMonthlyData] = useState<ChartDataPoint[]>([]);
 
   // 학습 기록 조회 데이터 준비
   useEffect(() => {
     const fetchStudyHistory = async () => {
       let startDate = "";
       let endDate = "";
+      
+      
       if (viewType === "month") {
         startDate = `${year}-01-01`;
         endDate = `${year+1}-01-01`;
       } else {
-        startDate = `${year}-${month}-01`;
-        endDate = `${year}-${month+1}-01`;
+        startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+        // 12월인 경우 다음 해 1월로 처리
+        if (month === 12) {
+          endDate = `${year+1}-01-01`;
+        } else {
+          endDate = `${year}-${(month+1).toString().padStart(2, '0')}-01`;
+        }
       }
       const response = await getStudyHistory(startDate, endDate);
       setStudyHistoryData(response.result.years);
@@ -52,9 +57,31 @@ const StudyBarChart = () => {
     fetchStudyHistory();
   }, [viewType, year, month]);
 
-  // 데이터 준비
-  const dailyData = getDailyData(); // 1~31일 더미
-  const monthlyData = getMonthlyData(); // 12달 더미
+  // studyHistoryData를 차트 데이터로 가공
+  useEffect(() => {
+    if (!studyHistoryData.length) return;
+
+    if (viewType === "month") {
+      // 월별 데이터 가공
+      const yearData = studyHistoryData.find(y => y.year === year);
+      const monthlyChartData: ChartDataPoint[] = Array.from({ length: 12 }, (_, i) => ({
+        month: i + 1,
+        study: yearData?.months[i]?.totalSolved || 0
+      }));
+      setMonthlyData(monthlyChartData);
+    } else {
+      // 일별 데이터 가공
+      const yearData = studyHistoryData.find(y => y.year === year);
+      const monthData = yearData?.months[month - 1];
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      const dailyChartData: ChartDataPoint[] = Array.from({ length: daysInMonth }, (_, i) => ({
+        day: i + 1,
+        study: monthData?.days[i]?.totalSolved || 0
+      }));
+      setDailyData(dailyChartData);
+    }
+  }, [studyHistoryData, viewType, year, month]);
 
   // 일별: 15일치만 보여줌
   const visibleDailyData = dailyData.slice(dayStartIdx, dayStartIdx + 15);
@@ -133,7 +160,7 @@ const StudyBarChart = () => {
         <div className="text-xl font-bold">
           공부 기록
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
-            (예정)
+            (총 문제 수)
           </span>
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
             <Select
@@ -159,7 +186,7 @@ const StudyBarChart = () => {
               <button onClick={() => handleMonthChange("prev")} className="hover:text-neutral-600">
                 &#60;
               </button>
-              <span>
+              <span className="text-neutral-400 text-sm">
                 {year}년 {month}월
               </span>
               <button onClick={() => handleMonthChange("next")} className="hover:text-neutral-600">
@@ -171,7 +198,7 @@ const StudyBarChart = () => {
               <button onClick={() => handleYearChange("prev")} className="hover:text-neutral-600">
                 &#60;
               </button>
-              <span>{year}년</span>
+              <span className="text-neutral-400 text-sm">{year}년</span>
               <button onClick={() => handleYearChange("next")} className="hover:text-neutral-600">
                 &#62;
               </button>
@@ -208,7 +235,7 @@ const StudyBarChart = () => {
               />
               <YAxis tick={{ fontSize: 13 }} axisLine={false} tickLine={false} />
               <Tooltip
-                formatter={(value: number) => `${value}분`}
+                formatter={(value: number) => `${value}문제`}
                 labelFormatter={tooltipLabelFormatter}
               />
               <Bar dataKey="study" fill="#D2A06E" radius={[4, 4, 0, 0]} barSize={18} />

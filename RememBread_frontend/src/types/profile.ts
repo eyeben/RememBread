@@ -14,20 +14,20 @@ export interface CharacterImageProps {
 
 export interface StudyHistoryDay {
   day: string;
-  total_correct: number;
-  total_solved: number;
+  totalCorrect: number;
+  totalSolved: number;
 }
 
 export interface StudyHistoryMonth {
   month: number;
-  total_correct: number;
-  total_solved: number;
+  totalCorrect: number;
+  totalSolved: number;
   days: StudyHistoryDay[];
 }
 
 export interface StudyHistoryYear {
   year: number;
-  total_correct: number;
-  total_solved: number;
+  totalCorrect: number;
+  totalSolved: number;
   months: StudyHistoryMonth[];
 }
