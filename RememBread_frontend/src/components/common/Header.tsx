@@ -1,7 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { ChevronLeft } from "lucide-react";
-import { patchNotificationLocation, stopRecord } from "@/services/map";
+import { stopRecord } from "@/services/map";
 import { useStudyStore } from "@/stores/studyRecord";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
@@ -46,24 +46,6 @@ const Header = () => {
     pendingAction?.();
     setPendingAction(null);
   };
-
-  // 30초마다 현재 위치 전송
-  useEffect(() => {
-    if (!currentLocation) return;
-
-    const intervalId = setInterval(() => {
-      const { latitude, longitude } = currentLocation;
-      patchNotificationLocation(latitude, longitude, true)
-        .then(() => {
-          console.log("위치 전송 성공:", { latitude, longitude });
-        })
-        .catch((err) => {
-          console.error("위치 전송 실패:", err);
-        });
-    }, 30000); // 30초
-
-    return () => clearInterval(intervalId); // cleanup
-  }, [currentLocation]);
 
   return (
     <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-[env(safe-area-inset-top)] top-0 left-0 right-0">

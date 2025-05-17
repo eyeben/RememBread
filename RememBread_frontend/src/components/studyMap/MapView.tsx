@@ -3,6 +3,7 @@ import { useLocation } from "react-router-dom";
 import ReactDOMServer from "react-dom/server";
 import { Bell, LocateFixed, MapPin } from "lucide-react";
 import { indexCardSet } from "@/types/indexCard";
+import { alertLocationIcon } from "@/utils/alertLocationIcon";
 import { currentLocationIcon } from "@/utils/currentLocationIcon";
 import { getRoutes, patchNotificationLocation } from "@/services/map";
 import { searchMyCardSet, SearchMyCardSetParams } from "@/services/cardSet";
@@ -21,7 +22,8 @@ import {
 } from "@/components/ui/select";
 
 const MapView = () => {
-  const [locationKey, setLocationKey] = useState<number>(0);
+  // const location = useLocation();
+  // const [locationKey, setLocationKey] = useState<number>(0);
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
   const [curLatitude, setCurLatitude] = useState<number>(37.5665);
   const [curLongitude, setCurLongitude] = useState<number>(126.978);
@@ -46,7 +48,6 @@ const MapView = () => {
   const watchIdRef = useRef<number | null>(null);
 
   const { geocodeAddress } = useGeocode();
-  const location = useLocation();
 
   const lineColors = [
     "#3B82F6",
@@ -61,6 +62,7 @@ const MapView = () => {
     "#F43F5E",
   ];
 
+  // 카드셋 목록 조회
   const fetchMyCardSets = async () => {
     try {
       const params: SearchMyCardSetParams = {
@@ -76,6 +78,20 @@ const MapView = () => {
     }
   };
 
+  useEffect(() => {
+    const mapElement = document.getElementById("map");
+    if (!mapElement) return;
+    if (!mapRef.current) {
+      mapRef.current = new naver.maps.Map(mapElement, {
+        center: new naver.maps.LatLng(curLatitude, curLongitude),
+        zoom: 15,
+        zoomControl: false,
+      });
+      setIsMapLoaded(true); // 맵 로드 완료
+    }
+    fetchMyCardSets();
+  }, []);
+
   // 시작 시 현재 위치로 가기
   useEffect(() => {
     if (!mapRef.current) return;
@@ -85,11 +101,11 @@ const MapView = () => {
         const lat = Number(pos.coords.latitude.toFixed(6));
         const lng = Number(pos.coords.longitude.toFixed(6));
         const position = new naver.maps.LatLng(lat, lng);
-        mapRef.current?.setCenter(position);
-        setCurLatitude(lat);
-        setCurLongitude(lng);
+        mapRef.current?.setCenter(position); // 지도 중심 이동
+        setCurLatitude(lat); // 현재 위도 업데이트
+        setCurLongitude(lng); // 현재 경도 업데이트
 
-        // 마커 생성 추가
+        // 현재 위치 마커가 있으면 위치만 갱신
         if (currentLocationMarkerRef.current) {
           currentLocationMarkerRef.current.setPosition(position);
         } else {
@@ -102,7 +118,7 @@ const MapView = () => {
           currentLocationMarkerRef.current = marker;
         }
 
-        navigator.geolocation.clearWatch(watchId);
+        navigator.geolocation.clearWatch(watchId); // 위치 1회만 추적 후 정지
       },
       (err) => {
         console.warn("초기 위치 설정 실패:", err);
@@ -116,11 +132,11 @@ const MapView = () => {
   }, [isMapLoaded]);
 
   // MapView 경로일 때마다 위치 마커 강제 리렌더링
-  useEffect(() => {
-    if (location.pathname.includes("map")) {
-      setLocationKey((prev) => prev + 1);
-    }
-  }, [location.pathname]);
+  // useEffect(() => {
+  //   if (location.pathname.includes("map")) {
+  //     setLocationKey((prev) => prev + 1);
+  //   }
+  // }, [location.pathname]);
 
   useEffect(() => {
     if (!selectedCardSet) return;
@@ -186,20 +202,6 @@ const MapView = () => {
   }, [selectedDateTime]);
 
   useEffect(() => {
-    const mapElement = document.getElementById("map");
-    if (!mapElement) return;
-    if (!mapRef.current) {
-      mapRef.current = new naver.maps.Map(mapElement, {
-        center: new naver.maps.LatLng(curLatitude, curLongitude),
-        zoom: 15,
-        zoomControl: false,
-      });
-      setIsMapLoaded(true);
-    }
-    fetchMyCardSets();
-  }, []);
-
-  useEffect(() => {
     if (routesByCardSet.length > 0) {
       setSelectedDateTime(routesByCardSet[0].studiedAt);
     }
@@ -233,7 +235,7 @@ const MapView = () => {
     };
   }, [isManualMode, isAlarmEnabled]);
 
-  // 현재 위치로 위치 알람 설정
+  // 현재 위치를 지도 중앙에 표시하고 마커를 갱신
   const handleSetCurrentLocation = () => {
     let isAlerted = false;
 
@@ -327,7 +329,7 @@ const MapView = () => {
         position,
         map: mapRef.current!,
         title: "알림 위치",
-        icon: currentLocationIcon(20),
+        icon: alertLocationIcon(40),
       });
 
       setAddressMarker(marker);
@@ -371,41 +373,7 @@ const MapView = () => {
         position: new naver.maps.LatLng(lat, lng),
         map: mapRef.current,
         title: "알림 위치",
-        icon: {
-          content: `
-            <div style="
-              width: 40px;
-              height: 40px;
-              background-color: white;
-              border: 2px solid #ffaa64;
-              border-radius: 50%;
-              display: flex;
-              align-items: center;
-              justify-content: center;
-              box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
-              animation: pulse-ring 2s infinite;
-            ">
-              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#ffaa64" viewBox="0 0 24 24">
-                <path d="M15 17h5l-1.4-1.4a2 2 0 0 1-.6-1.4v-3a6 6 0 0 0-4-5.7V5a2 2 0 1 0-4 0v.5A6 6 0 0 0 6 11v3a2 2 0 0 1-.6 1.4L4 17h5m6 0v1a3 3 0 1 1-6 0v-1" />
-              </svg>
-            </div>
-            <style>
-              @keyframes pulse-ring {
-                0% {
-                  box-shadow: 0 0 0 0 rgba(255,170,100, 0.6);
-                }
-                70% {
-                  box-shadow: 0 0 0 10px rgba(255,170,100, 0);
-                }
-                100% {
-                  box-shadow: 0 0 0 0 rgba(255,170,100, 0);
-                }
-              }
-            </style>
-          `,
-          size: new naver.maps.Size(40, 40),
-          anchor: new naver.maps.Point(20, 20),
-        },
+        icon: alertLocationIcon(40),
       });
 
       setAddressMarker(marker);
@@ -423,8 +391,6 @@ const MapView = () => {
       });
     }
   };
-
-  const handleSetManualLocation = () => {};
 
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
@@ -490,11 +456,6 @@ const MapView = () => {
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
       {isMapLoaded && mapRef.current && (
         <>
-          {/* <CurrentLocation
-            key={locationKey}
-            map={mapRef.current}
-            onUpdatePosition={handleLocationUpdate}
-          /> */}
           <div className="flex flex-col items-center space-y-1 absolute bottom-28 left-5 z-20">
             <CurrentLocationBtn onClick={handleSetCurrentLocation} />
             <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
@@ -589,12 +550,7 @@ const MapView = () => {
         onOpenChange={setIsAlertDrawerOpen}
         isEnabled={isAlarmEnabled}
         onToggleEnabled={setIsAlarmEnabled}
-        onSetCurrentLocation={handleSetCurrentLocation}
         onSetAddressLocation={handleSetAddressLocation}
-        onSetManualLocation={handleSetManualLocation}
-        onSetPinLocation={handleSetPinLocation}
-        isPinMode={isPinMode}
-        setIsPinMode={setIsPinMode}
         manualAddress={manualAddress}
         setManualAddress={setManualAddress}
       />
