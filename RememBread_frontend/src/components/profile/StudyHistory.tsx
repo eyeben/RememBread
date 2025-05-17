@@ -13,6 +13,7 @@ const StudyHistory = () => {
         <div className="text-lg font-bold mb-2">{nickname}</div>
         <div className="w-full h-1.5 bg-primary-300 mb-2" />
       </div>
+      {/* 학습 기록 영역 */}
       <StudyBarChart />
     </div>
   );
