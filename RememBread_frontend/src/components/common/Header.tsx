@@ -1,10 +1,11 @@
 import { useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { ChevronLeft } from "lucide-react";
+import { ChevronLeft, HelpCircle } from "lucide-react";
 import { stopRecord } from "@/services/map";
 import { useStudyStore } from "@/stores/studyRecord";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
+import TutorialModal from "@/components/tutorial/TutorialModal";
 import StopStudyModal from "@/components/studyMap/StopStudyModal";
 
 const Header = () => {
@@ -13,6 +14,7 @@ const Header = () => {
 
   const { location: currentLocation } = useCurrentLocation();
   const [showStopModal, setShowStopModal] = useState<boolean>(false);
+  const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
   const { isRecording, cardSetId, lastCardId, stopRecording } = useStudyStore();
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
@@ -75,6 +77,12 @@ const Header = () => {
               <DefaultBread />
             </button>
           </li>
+
+          <li className="flex items-center ml-auto">
+            <button onClick={() => setIsTutorialOpen(true)} className="p-1">
+              <HelpCircle size={25} className="text-neutral-400" />
+            </button>
+          </li>
         </ul>
       </nav>
       <StopStudyModal
@@ -86,6 +94,7 @@ const Header = () => {
         cardSetId={cardSetId ?? 0}
         onConfirm={handleStopConfirm}
       />
+      <TutorialModal isOpen={isTutorialOpen} onClose={() => setIsTutorialOpen(false)} />
     </header>
   );
 };
