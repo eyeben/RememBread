@@ -24,8 +24,7 @@ export const useCurrentLocation = () => {
         setError(null);
       },
       (err) => {
-        setError("위치 정보를 가져올 수 없습니다.");
-        console.error("Geolocation error:", err);
+        setError("위치 정보를 가져올 수 없습니다. 잠시 후 다시 시도해주세요.");
       },
       {
         enableHighAccuracy: false, // 셀룰러 방식

@@ -1,4 +1,5 @@
 import { useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
 
 interface Props {
   map: naver.maps.Map | null;
@@ -13,6 +14,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
     let watchId: number | null = null;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     let received = false;
+    let isAlerted = false;
 
     const updatePosition = (lat: number, lng: number) => {
       const latlng = new naver.maps.LatLng(lat, lng);
@@ -81,6 +83,14 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
         },
         (err) => {
           console.error("📛 watchPosition 실패:", err);
+          if (!received && !isAlerted) {
+            isAlerted = true;
+            toast({
+              title: "위치 정보를 가져올 수 없습니다.",
+              description: "잠시 후 다시 시도해주세요.",
+              variant: "destructive",
+            });
+          }
         },
         {
           enableHighAccuracy: false,
@@ -107,8 +117,13 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
 
     // 만약 fallback에서도 위치 못 받으면 알려주기
     timeoutId = setTimeout(() => {
-      if (!received) {
-        alert("위치 정보를 가져오지 못했습니다. 위치 설정을 확인해주세요.");
+      if (!received && !isAlerted) {
+        isAlerted = true;
+        toast({
+          title: "위치 정보를 가져올 수 없습니다.",
+          description: "잠시 후 다시 시도해주세요.",
+          variant: "destructive",
+        });
         if (watchId !== null) navigator.geolocation.clearWatch(watchId);
       }
     }, 10000);

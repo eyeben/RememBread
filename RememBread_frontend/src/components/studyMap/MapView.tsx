@@ -8,7 +8,6 @@ import { getRoutes, patchNotificationLocation } from "@/services/map";
 import { toast } from "@/hooks/use-toast";
 import useGeocode from "@/hooks/useGeocode";
 import { Toaster } from "@/components/ui/toaster";
-import CurrentLocation from "@/components/studyMap/CurrentLocation";
 import CurrentLocationBtn from "@/components/studyMap/CurrentLocationBtn";
 import AlertLocationDrawer from "@/components/studyMap/AlertLocationDrawer";
 import MarkerStudyBread from "@/components/svgs/breads/MarkerStudyBread";
@@ -89,7 +88,7 @@ const MapView = () => {
         setCurLatitude(lat);
         setCurLongitude(lng);
 
-        // ✅ 마커 생성 추가
+        // 마커 생성 추가
         if (currentLocationMarkerRef.current) {
           currentLocationMarkerRef.current.setPosition(position);
         } else {
@@ -273,6 +272,8 @@ const MapView = () => {
 
   // 현재 위치로 위치 알람 설정
   const handleSetCurrentLocation = () => {
+    let isAlerted = false;
+
     const updatePosition = (lat: number, lng: number) => {
       setCurLatitude(lat);
       setCurLongitude(lng);
@@ -339,8 +340,14 @@ const MapView = () => {
         }
       },
       (err) => {
-        console.error("📛 위치 감지 실패:", err);
-        alert("위치 정보를 가져올 수 없습니다.");
+        if (!isAlerted) {
+          isAlerted = true;
+          toast({
+            title: "위치 정보를 가져올 수 없습니다.",
+            description: "잠시 후 다시 시도해주세요.",
+            variant: "destructive",
+          });
+        }
       },
       {
         enableHighAccuracy: false,
