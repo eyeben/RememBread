@@ -6,15 +6,92 @@ import Bread from "@/components/svgs/game/Bread";
 import Baguette from "@/components/svgs/game/Baguette";
 import Croissant from "@/components/svgs/game/Croissant";
 import Bread2 from "@/components/svgs/game/Bread2";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
+import { useEffect, useState } from "react";
 
 const GameModePage = () => {
   const navigate = useNavigate();
+  const controls = useAnimation();
+  const [showSpeechBubble, setShowSpeechBubble] = useState(false);
+
+  const messages = [
+    "오늘도 열심히 해봐요!",
+    "힘내세요!",
+    "잘하고 있어요!",
+    "최고예요!",
+    "파이팅!",
+  ];
+
+  useEffect(() => {
+    controls.start({
+      y: [10, -40, 10],
+      transition: {
+        duration: 0.8,
+        ease: ["easeOut", "easeIn"],
+        repeat: Infinity,
+        repeatType: "loop",
+      },
+    });
+  }, [controls]);
+
+  useEffect(() => {
+    if (showSpeechBubble) {
+      const timer = setTimeout(() => setShowSpeechBubble(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [showSpeechBubble]);
+
+  const handleGameClick = async () => {
+    setShowSpeechBubble(true);
+
+    controls.stop();
+    await controls.start({
+      rotate: 360,
+      transition: {
+        duration: 0.8,
+        ease: "easeInOut",
+      },
+    });
+    controls.stop();
+    await controls.start({
+      rotate: 0,
+      y: [10, -40, 10],
+      transition: {
+        y: {
+          duration: 0.8,
+          ease: ["easeOut", "easeIn"],
+          repeat: Infinity,
+          repeatType: "loop",
+        },
+      },
+    });
+  };
+
   return (
     <div className="min-h-[calc(100vh-126px)] flex flex-col items-center px-4">
       <div className="flex w-full flex-col items-center">
-        <SpeechBubble text="오늘도 열심히 해봐요!" />
-        <div className="flex flex-col items-center mt-4">
-          <Game className="w-36 h-36" />
+        <div className="relative flex flex-col items-center mt-4 mb-4">
+          <AnimatePresence>
+            {showSpeechBubble && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 0 }}
+                transition={{ duration: 0.3 }}
+                className="absolute z-10"
+              >
+                <SpeechBubble text={messages[Math.floor(Math.random() * messages.length)]} />
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <motion.div
+            animate={controls}
+            initial={{ y: 10 }}
+            onClick={handleGameClick}
+            style={{ cursor: "pointer" }}
+          >
+            <Game className="w-48 h-48" />
+          </motion.div>
         </div>
       </div>
       <div className="w-full flex flex-col max-w-[384px] mt-4">
