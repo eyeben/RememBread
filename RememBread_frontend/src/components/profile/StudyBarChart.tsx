@@ -133,11 +133,9 @@ const StudyBarChart = () => {
     setYear(newYear);
     setMonth(newMonth);
     setDayStartIdx(0); // 월 바뀌면 일별 인덱스 초기화
-    // 실제로는 이곳에서 해당 월 데이터를 백엔드에서 받아와야 함
   };
   const handleYearChange = (dir: "prev" | "next") => {
     setYear(dir === "prev" ? year - 1 : year + 1);
-    // 실제로는 이곳에서 해당 연도 데이터를 받아와야 함
   };
 
   // 차트 데이터/축 설정
@@ -238,7 +236,24 @@ const StudyBarChart = () => {
                 formatter={(value: number) => `${value}문제`}
                 labelFormatter={tooltipLabelFormatter}
               />
-              <Bar dataKey="study" fill="#D2A06E" radius={[4, 4, 0, 0]} barSize={18} />
+              <Bar 
+                dataKey="study" 
+                fill="#D2A06E" 
+                radius={[4, 4, 0, 0]} 
+                barSize={18}
+                onMouseEnter={(index) => {
+                  const bar = document.querySelector(`path[index="${index}"]`) as SVGPathElement;
+                  if (bar) {
+                    bar.setAttribute('fill', '#A67B51'); // 더 진한 갈색으로 변경
+                  }
+                }}
+                onMouseLeave={(index) => {
+                  const bar = document.querySelector(`path[index="${index}"]`) as SVGPathElement;
+                  if (bar) {
+                    bar.setAttribute('fill', '#D2A06E');
+                  }
+                }}
+              />
             </BarChart>
           </ResponsiveContainer>
         )}
