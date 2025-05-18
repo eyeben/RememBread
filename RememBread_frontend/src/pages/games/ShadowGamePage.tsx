@@ -57,7 +57,7 @@ useEffect(() => {
   if (isGameStarted && solvedBreads.length === 0) {
     generateNewProblem();
   }
-}, [isGameStarted, level, solvedBreads]);
+}, [isGameStarted, level]);
 
   // 애니메이션 효과
   useEffect(() => {
@@ -113,11 +113,10 @@ useEffect(() => {
         setScore(prev => prev + 1);
         setLevelScore(prev => prev + 1);
   
-        // 레벨업이 필요한지 확인
         if (levelScore + 1 >= 3 && level < 6) {
           setTimeout(() => {
-            setLevel(prev => prev + 1); // 레벨업
-            setLevelScore(0); // 레벨 점수 초기화
+            setLevel(prev => prev + 1);
+            setLevelScore(0);
             setShowResultModal(false);
             setSolvedBreads([]);
           }, 1000);
@@ -125,7 +124,7 @@ useEffect(() => {
           setTimeout(() => {
             setShowResultModal(false);
             setSolvedBreads([]);
-            // 여기서 generateNewProblem()을 호출하지 않음!
+            generateNewProblem(); // 정답일 때 명시적으로 호출
           }, 1000);
         }
       }
@@ -135,6 +134,7 @@ useEffect(() => {
       setTimeout(() => {
         setShowResultModal(false);
         setSolvedBreads([]);
+        generateNewProblem(); // 오답일 때도 호출
       }, 1000);
     }
   };

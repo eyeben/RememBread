@@ -122,16 +122,16 @@ const GameResultPage = () => {
       <div className="flex flex-grid gap-4 w-full max-w-md">
         <button
           onClick={() => {
-            if (gameType === "memory") {
+            if (gameType === "MEMORY") {
               resetMemoryScore();
               navigate("/games/memory");
-            } else if (gameType === "compare") {
+            } else if (gameType === "COMPARE") {
               resetCompareScore();
               navigate("/games/compare");
-            } else if (gameType === "detective") {
+            } else if (gameType === "DETECTIVE") {
               resetDetectiveScore();
               navigate("/games/detective");
-            } else if (gameType === "shadow") {
+            } else if (gameType === "SHADOW") {
               resetShadowScore();
               navigate("/games/shadow");
             }
