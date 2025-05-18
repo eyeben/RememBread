@@ -37,7 +37,12 @@ const Footer = () => {
   };
 
   const handleOvenClick = () => {
-    setIsOvenOpen(!isOvenOpen);
+    if (isRecording) {
+      setPendingPath("/create");
+      setShowStopModal(true);
+      return;
+    }
+    setIsOvenOpen((prev) => !prev);
   };
 
   const handleCloseModal = () => {
