@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import { toast } from "@/hooks/use-toast";
+import { currentLocationIcon } from "@/utils/currentLocationIcon";
 
 interface Props {
   map: naver.maps.Map | null;
@@ -13,6 +15,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
     let watchId: number | null = null;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
     let received = false;
+    let isAlerted = false;
 
     const updatePosition = (lat: number, lng: number) => {
       const latlng = new naver.maps.LatLng(lat, lng);
@@ -24,45 +27,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
           position: latlng,
           map,
           title: "현재 위치",
-          icon: {
-            content: `
-              <div style="position: relative; width: 20px; height: 20px;">
-                <div style="
-                  position: absolute;
-                  width: 20px;
-                  height: 20px;
-                  background-color: #3B82F6;
-                  border: 2px solid white;
-                  border-radius: 50%;
-                  z-index: 2;
-                  box-shadow: 0 0 6px rgba(59, 130, 246, 0.8);
-                "></div>
-                <div style="
-                  position: absolute;
-                  width: 20px;
-                  height: 20px;
-                  background-color: rgba(59, 130, 246, 0.4);
-                  border-radius: 50%;
-                  animation: pulseRing 1.5s infinite ease-out;
-                  z-index: 1;
-                "></div>
-              </div>
-              <style>
-                @keyframes pulseRing {
-                  0% {
-                    transform: scale(1);
-                    opacity: 0.6;
-                  }
-                  100% {
-                    transform: scale(2.5);
-                    opacity: 0;
-                  }
-                }
-              </style>
-            `,
-            size: new naver.maps.Size(20, 20),
-            anchor: new naver.maps.Point(10, 10),
-          },
+          icon: currentLocationIcon(20),
         });
       } else {
         marker.setPosition(latlng);
@@ -81,6 +46,14 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
         },
         (err) => {
           console.error("📛 watchPosition 실패:", err);
+          if (!received && !isAlerted) {
+            isAlerted = true;
+            toast({
+              title: "위치 정보를 가져오지 못했어요.",
+              description: "잠시 후 다시 시도해주세요.",
+              variant: "destructive",
+            });
+          }
         },
         {
           enableHighAccuracy: false,
@@ -107,8 +80,13 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
 
     // 만약 fallback에서도 위치 못 받으면 알려주기
     timeoutId = setTimeout(() => {
-      if (!received) {
-        alert("위치 정보를 가져오지 못했습니다. 위치 설정을 확인해주세요.");
+      if (!received && !isAlerted) {
+        isAlerted = true;
+        toast({
+          title: "위치 정보를 가져오지 못했어요.",
+          description: "잠시 후 다시 시도해주세요.",
+          variant: "destructive",
+        });
         if (watchId !== null) navigator.geolocation.clearWatch(watchId);
       }
     }, 10000);

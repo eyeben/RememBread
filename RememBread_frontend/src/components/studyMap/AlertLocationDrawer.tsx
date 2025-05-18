@@ -16,12 +16,7 @@ interface AlertLocationDrawerProps {
   onOpenChange: (open: boolean) => void;
   isEnabled: boolean;
   onToggleEnabled: (enabled: boolean) => void;
-  onSetCurrentLocation: () => void;
-  onSetManualLocation: () => void;
   onSetAddressLocation: () => void;
-  onSetPinLocation: () => void;
-  isPinMode: boolean;
-  setIsPinMode: (val: boolean) => void;
   manualAddress: string;
   setManualAddress: (val: string) => void;
 }
