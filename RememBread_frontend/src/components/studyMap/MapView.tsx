@@ -379,7 +379,7 @@ const MapView = () => {
       toast({
         variant: "destructive",
         title: "알림 설정 실패",
-        description: "위치 설정 중 문제가 발생했습니다.",
+        description: "알람 설정에 실패하였습니다. 잠시 후 다시 시도해주세요!",
       });
     }
   };
