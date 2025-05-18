@@ -125,7 +125,7 @@ const Footer = () => {
           onClick={() => handleNavigate("/games")}
           activeIcon={<Game className="w-10 h-10" />}
           inactiveIcon={<GameBlack className="w-10 h-10" />}
-          label="두뇌게임"
+          label="두뇌 게임"
         />
         <FooterItem
           isActive={isActive("/profile")}
