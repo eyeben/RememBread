@@ -100,11 +100,13 @@ public class StudyFacade {
     public void stopStudySession(Long cardSetId, StudyStopRequest request, User user) {
         CardSet cardSet = cardSetService.validateCardSetOwner(cardSetId, user);
         Card lastCard = cardService.findById(request.getLastCardId());
+        String modeKey = redisPrefix + "::study-mode::" + user.getId();
+        if (!redisService.hasKey(modeKey))
+            throw new GeneralException(ErrorStatus.STUDY_NOT_FOUND);
         Long studySessionId = ((Number) redisService.getValue(redisPrefix + "::study-log::" + user.getId() + "::session-id::")).longValue();
         StudySession studySession = studySessionService.findById(studySessionId);
         cardSet.updateLastViewedCard(lastCard);
-
-        String mode = (String) redisService.getValue(redisPrefix + "::study-mode::" + user.getId());
+        String mode = (String) redisService.getValue(modeKey);
         if (!mode.equals("STUDY")) {    // 테스트 모드 진행할 경우 카드를 저장한다
             Set<Object> cardJsons = redisService.getZSetRange(
                     redisPrefix + "::study::" + user.getId() + "::sorted-set::", 0, -1);
@@ -159,7 +161,8 @@ public class StudyFacade {
             stability = Math.min(stability * INCREASE_RATE, S_MAX);
             Double retentionRate = RetentionUtil.calcRetentionRate(lastViewedTime, stability);
             int correctCount = (int) redisService.getHash(cardKey, "correctCount");
-            if (0.9 <= retentionRate && RetentionUtil.calcThreshold(stability) <= correctCount) {
+            int solvedCount = (int) redisService.getHash(cardKey, "solvedCount");
+            if (solvedCount == 1 || 0.9 <= retentionRate && RetentionUtil.calcThreshold(stability) <= correctCount) {
                 redisService.removeFromZSet(zSetKey, cardKey);
             }
         } else {
@@ -240,7 +243,8 @@ public class StudyFacade {
         String listKey = redisPrefix + "::study-log::" + user.getId() + "::route::";
         String studySessionKey = redisPrefix + "::study-log::" + user.getId() + "::session-id::";
         String modeKey = redisPrefix + "::study-mode::" + user.getId();
-        redisService.expire(modeKey, Duration.ofMinutes(3));
+        if (!redisService.expire(modeKey, Duration.ofMinutes(3)))
+            throw new GeneralException(ErrorStatus.STUDY_NOT_FOUND);
         redisService.pushList(listKey, longitude + "," + latitude);
         Long length = redisService.size(listKey);
         if (length % 5 == 1) {
