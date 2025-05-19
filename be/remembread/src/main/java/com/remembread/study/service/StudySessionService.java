@@ -79,7 +79,7 @@ public class StudySessionService {
         return studySessionRepository.fetchLogsByStudySessionId(studySessionId);
     }
 
-    public Boolean checkExistByUser(User user) {
-        return studySessionRepository.existsByUser(user);
+    public Boolean checkExistValidByUser(User user) {
+        return studySessionRepository.existsByUserWithValidRoute(user.getId());
     }
 }
