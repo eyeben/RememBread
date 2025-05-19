@@ -7,6 +7,7 @@ import com.remembread.user.dto.request.UserFcmTokenRequest;
 import com.remembread.user.dto.request.UserLocationRequest;
 import com.remembread.user.dto.request.UserRequest;
 import com.remembread.user.dto.response.UserCharacterResponse;
+import com.remembread.user.dto.response.UserLocationResponse;
 import com.remembread.user.dto.response.UserResponse;
 import com.remembread.user.entity.User;
 import com.remembread.user.facade.UserFacadeService;
@@ -56,6 +57,12 @@ public class UserController {
     public ApiResponse<Void> modifyFcmToken(@AuthUser User user, @RequestBody @Valid UserFcmTokenRequest userFcmTokenRequest) {
         userService.updateUserFcmToken(user, userFcmTokenRequest);
         return ApiResponse.onSuccess(null);
+    }
+
+    @GetMapping("/location")
+    @Operation(summary = "위치 관련 정보 조회 API", description = "위치 알림 수신 여부, 기준점 위치 정보를 조회하는 API 입니다.")
+    public ApiResponse<UserLocationResponse> getLocation(@AuthUser User user) {
+        return ApiResponse.onSuccess(UserConverter.toUserLocationResponse(user));
     }
 
     @PatchMapping("/location")
