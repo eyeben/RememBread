@@ -44,6 +44,7 @@ public class UserService {
                 .map(character -> UserCharacterResponse.builder()
                         .id(character.getId())
                         .name(character.getName())
+                        .description(character.getDescription())
                         .imageUrl(character.getImageUrl())
                         .isLocked(userCharacterRepository.findByUserAndCharacter(user, character).isEmpty())
                         .build())
