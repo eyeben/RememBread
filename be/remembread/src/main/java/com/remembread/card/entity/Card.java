@@ -77,6 +77,10 @@ public class Card extends BaseEntity {
     }
 
     public void update(CardUpdateRequest request) {
+        if (!request.getConcept().equals(this.concept) || !request.getDescription().equals(this.description)) {
+            this.ttsFileUrl = null;
+        }
+
         if (request.getNumber() != null) this.number = request.getNumber();
         if (request.getConcept() != null) this.concept = request.getConcept();
         if (request.getDescription() != null) this.description = request.getDescription();
