@@ -31,5 +31,16 @@ public interface StudySessionRepository extends JpaRepository<StudySession, Long
         """, nativeQuery = true)
     List<CardStudyLogResponse> fetchLogsByStudySessionId(@Param("studySessionId") Long studySessionId);
 
-    Boolean existsByUser(User user);
+    @Query(value = """
+    SELECT EXISTS (
+        SELECT 1
+        FROM study_sessions s
+        WHERE s.user_id = :userId
+        AND s.route IS NOT NULL
+        AND NOT ST_Equals(s.route, ST_GeomFromText('LINESTRING(0 0, 0 0)', 4326))
+    )
+    """, nativeQuery = true)
+    boolean existsByUserWithValidRoute(@Param("userId") Long userId);
+
+
 }
