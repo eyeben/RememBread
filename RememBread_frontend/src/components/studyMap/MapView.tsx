@@ -94,7 +94,13 @@ const MapView = () => {
   useEffect(() => {
     if (!mapRef.current || latitude == null || longitude == null) return;
 
-    const position = new naver.maps.LatLng(latitude ?? 37.501274, longitude ?? 127.039585);
+    // 방어: 0,0일 경우 무시하거나 기본 위치 사용
+    const isInvalid = latitude === 0 && longitude === 0;
+    const position = new naver.maps.LatLng(
+      isInvalid ? 37.501274 : latitude,
+      isInvalid ? 127.039585 : longitude,
+    );
+
     mapRef.current.setCenter(position);
 
     if (!currentLocationMarkerRef.current) {
@@ -209,7 +215,7 @@ const MapView = () => {
 
   // 현재 위치를 지도 중앙에 표시하고 마커를 갱신
   const handleSetCurrentLocation = () => {
-    if (latitude != null && longitude != null) {
+    if (latitude != null && longitude != null && (latitude !== 0 || longitude !== 0)) {
       const position = new naver.maps.LatLng(latitude, longitude);
       mapRef.current?.setCenter(position);
 
@@ -225,28 +231,35 @@ const MapView = () => {
         currentLocationMarkerRef.current = marker;
       }
 
-      return; //  store 값으로 이동 완료
+      return;
     }
 
-    // fallback: store에 값이 없을 때만 watchPosition
+    // fallback: 위치 정보 없거나 0,0인 경우
+    const defaultLat = 37.501274;
+    const defaultLng = 127.039585;
     let isAlerted = false;
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const lat = Number(pos.coords.latitude.toFixed(6));
         const lng = Number(pos.coords.longitude.toFixed(6));
+
+        if (lat === 0 && lng === 0) {
+          console.warn("망망대해 위치 감지됨. 무시합니다.");
+          return;
+        }
+
         const position = new naver.maps.LatLng(lat, lng);
         mapRef.current?.setCenter(position);
 
         if (currentLocationMarkerRef.current) {
           currentLocationMarkerRef.current.setPosition(position);
         } else {
-          const marker = new naver.maps.Marker({
+          currentLocationMarkerRef.current = new naver.maps.Marker({
             position,
             map: mapRef.current!,
             title: "현재 위치",
             icon: currentLocationIcon(20),
           });
-          currentLocationMarkerRef.current = marker;
         }
 
         navigator.geolocation.clearWatch(watchIdRef.current!);
