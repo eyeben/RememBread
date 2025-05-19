@@ -5,7 +5,7 @@ import { indexCard, indexCardSet } from "@/types/indexCard";
 import { getCardsByCardSet } from "@/services/card";
 import { getTTSFiles } from "@/services/study";
 import { startRecord, postLocation, stopRecord } from "@/services/map";
-import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { useLocationStore } from "@/stores/useLocationStore";
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 import StopStudyModal from "@/components/studyMap/StopStudyModal";
@@ -21,8 +21,9 @@ import {
 const CardStudyPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { location: currentLocation } = useCurrentLocation();
   const cardSet: indexCardSet | undefined = location.state?.card;
+
+  const { latitude, longitude } = useLocationStore();
 
   const [api, setApi] = useState<CarouselApi>();
   const [cards, setCards] = useState<indexCard[]>([]);
@@ -50,15 +51,15 @@ const CardStudyPage = () => {
       if (!isRecordingRef.current || !cardSet?.cardSetId) return;
       stopRecord(cardSet.cardSetId, {
         lastCardId,
-        latitude: currentLocation?.latitude ?? 0,
-        longitude: currentLocation?.longitude ?? 0,
+        latitude: latitude ?? 0,
+        longitude: longitude ?? 0,
       });
       e.preventDefault();
       e.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [lastCardId, currentLocation]);
+  }, [lastCardId, latitude, longitude, cardSet?.cardSetId]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -108,31 +109,36 @@ const CardStudyPage = () => {
   };
 
   useEffect(() => {
-    if (!cardSet?.cardSetId || !currentLocation || hasStarted) return;
+    if (!cardSet?.cardSetId || latitude == null || longitude == null) return;
+    if (hasStarted) return;
+
     const start = async () => {
       await startRecord(cardSet.cardSetId, {
         mode: "STUDY",
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
+        latitude,
+        longitude,
       });
       isRecordingRef.current = true;
       setHasStarted(true);
       useStudyStore.getState().setRecording(cardSet.cardSetId);
+
       const intervalId = setInterval(() => {
-        if (!currentLocation) return;
-        postLocation(cardSet.cardSetId, currentLocation.latitude, currentLocation.longitude);
+        const { latitude: lat, longitude: lng } = useLocationStore.getState();
+        console.log("📍 위치 전송 중:", lat, lng);
+        postLocation(cardSet.cardSetId, lat, lng);
       }, 2 * 60 * 1000);
       setLocationIntervalId(intervalId);
     };
+
     start();
-  }, [cardSet?.cardSetId, currentLocation, hasStarted]);
+  }, [cardSet?.cardSetId, hasStarted]);
 
   const handleStopConfirm = async () => {
     if (!cardSet?.cardSetId) return;
     await stopRecord(cardSet.cardSetId, {
       lastCardId,
-      latitude: currentLocation?.latitude ?? 0,
-      longitude: currentLocation?.longitude ?? 0,
+      latitude: latitude ?? 0,
+      longitude: longitude ?? 0,
     });
     useStudyStore.getState().stopRecording();
     if (locationIntervalId) clearInterval(locationIntervalId);
@@ -216,7 +222,6 @@ const CardStudyPage = () => {
         {currentIndex} / {cards.length}
       </div>
 
-      {/* TTS 제어 UI */}
       {!isTTSMode && (
         <div className="flex gap-4 justify-center">
           <Button
@@ -239,12 +244,11 @@ const CardStudyPage = () => {
               if (ttsMode === "sequence" && currentIndex < cards.length) {
                 setTimeout(() => {
                   api?.scrollNext();
-                }, 1000); // 1초 뒤에 카드 넘김 (기다림 보장)
+                }, 1000);
               }
             }}
             className="w-4/5 pc:h-12 h-8 rounded-md "
           />
-
           <div className="w-4/5 mx-auto flex justify-between gap-2 mt-1">
             <Button
               onClick={() => setTtsMode("single")}
