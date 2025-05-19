@@ -20,6 +20,6 @@ public final class RetentionUtil {
     }
 
     public static Double calcThreshold(Double stability) {
-        return Math.max(5.5 + Math.exp(-1.4 * stability) + 1, 1);
+        return 3.8 * Math.exp(-1.4 * stability);
     }
 }

@@ -115,8 +115,8 @@ public class RedisService {
         redisTemplate.opsForSet().remove(key, value);
     }
 
-    public void expire(String key, Duration ttl) {
-        redisTemplate.expire(key, ttl);
+    public Boolean expire(String key, Duration ttl) {
+        return redisTemplate.expire(key, ttl);
     }
 
 }

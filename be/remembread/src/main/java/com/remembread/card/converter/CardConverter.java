@@ -21,15 +21,16 @@ public class CardConverter {
             .build();
     }
 
-    public static CardListResponse toCardListResponse(List<Card> cards) {
-        List<CardResponse> cardResponses = new ArrayList<CardResponse>();
+    public static CardListResponse toCardListResponse(List<Card> cards, boolean hasNext) {
+        List<CardResponse> cardResponses = new ArrayList<>();
         for (Card card : cards) {
-            CardResponse cardResponse = toCardResponse(card);
-            cardResponses.add(cardResponse);
+            cardResponses.add(toCardResponse(card));
         }
+
         return CardListResponse.builder()
                 .total(cards.size())
                 .cards(cardResponses)
+                .hasNext(hasNext)
                 .build();
     }
 
