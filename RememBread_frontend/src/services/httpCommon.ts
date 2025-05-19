@@ -28,6 +28,7 @@ const addRefreshSubscriber = (callback: (token: string) => void) => {
 // 요청 인터셉터: accessToken 자동 추가
 http.interceptors.request.use((config: InternalAxiosRequestConfig) => {
     const accessToken = tokenUtils.getToken();
+    console.log("현재 accessToken", accessToken);
     
     // headers가 undefined일 수 있으므로 기본값 설정
     config.headers = config.headers || {};

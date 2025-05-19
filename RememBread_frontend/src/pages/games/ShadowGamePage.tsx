@@ -131,6 +131,9 @@ useEffect(() => {
     } else {
       setIsCorrect(false);
       setShowResultModal(true);
+      if (score > 0) {
+        setScore(prev => prev - 1);
+      }
       setTimeout(() => {
         setShowResultModal(false);
         setSolvedBreads([]);
