@@ -72,12 +72,13 @@ const CardViewPage = () => {
             </div>
 
             {/* 오른쪽 물음표 버튼 */}
-            <button onClick={() => setIsTutorialOpen(true)} className="p-1 ml-auto">
+            <button onClick={() => setIsTutorialOpen(true)} className="ml-auto">
               <HelpCircle size={24} className="text-neutral-400" />
             </button>
           </div>
         </nav>
       </header>
+
       <TutorialModal isOpen={isTutorialOpen} onClose={() => setIsTutorialOpen(false)} />
       <div
         className={`flex flex-col items-start fixed max-w-[598px] w-full mx-auto p-5 bg-white z-40 ${
