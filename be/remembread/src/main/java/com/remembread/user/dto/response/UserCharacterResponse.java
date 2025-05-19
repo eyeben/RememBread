@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 public class UserCharacterResponse {
     Long id;
     String name;
+    String description;
     String imageUrl;
     Boolean isLocked;
 
