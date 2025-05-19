@@ -228,6 +228,8 @@ const CardSetDetail = ({
                   setHashTags={setHashTags}
                   isPublic={isPublic}
                   setIsPublic={setIsPublic}
+                  setFolderSelect={setFolderSelect}
+                  setSelectedCardSetId={setSelectedCardSetId}
                 />
               )}
             </div>
