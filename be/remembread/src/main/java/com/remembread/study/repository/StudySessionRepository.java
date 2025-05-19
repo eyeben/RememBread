@@ -37,7 +37,7 @@ public interface StudySessionRepository extends JpaRepository<StudySession, Long
         FROM study_sessions s
         WHERE s.user_id = :userId
         AND s.route IS NOT NULL
-        AND ST_AsText(s.route) <> 'LINESTRING(0 0, 0 0)'
+        AND NOT ST_Equals(s.route, ST_GeomFromText('LINESTRING(0 0, 0 0)', 4326))
     )
     """, nativeQuery = true)
     boolean existsByUserWithValidRoute(@Param("userId") Long userId);
