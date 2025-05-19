@@ -63,6 +63,11 @@ public class StudySessionService {
         studySessionRepository.save(studySession);
     }
 
+    @Transactional
+    public void updateStudyTime(StudySession studySession) {
+        studySession.updateStudyDurationSeconds(LocalDateTime.now());
+    }
+
     @Transactional(readOnly = true)
     public StudySession findById(Long id) {
         return studySessionRepository.findById(id).orElseThrow(() -> new GeneralException(ErrorStatus.STUDY_NOT_FOUND));
