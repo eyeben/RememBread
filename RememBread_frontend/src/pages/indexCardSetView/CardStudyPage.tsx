@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useStudyStore } from "@/stores/studyRecord";
 import { indexCard, indexCardSet } from "@/types/indexCard";
 import { getCardsByCardSet } from "@/services/card";
+import { getTTSFiles } from "@/services/study";
 import { startRecord, postLocation, stopRecord } from "@/services/map";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 import Button from "@/components/common/Button";
@@ -38,6 +39,9 @@ const CardStudyPage = () => {
 
   const isRecordingRef = useRef<boolean>(false);
   const [showStopModal, setShowStopModal] = useState<boolean>(false);
+
+  const [ttsUrl, setTtsUrl] = useState<string | undefined>();
+  const [ttsMap, setTtsMap] = useState<Record<number, string>>({});
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -159,6 +163,44 @@ const CardStudyPage = () => {
     navigate(`/card-view`);
   };
 
+  // TTS로 학습하기
+  const handleTTSClick = async () => {
+    if (!cardSet?.cardSetId) return;
+
+    try {
+      const res = await getTTSFiles(cardSet.cardSetId);
+      if (res.result.length === 0) {
+        alert("TTS 파일이 존재하지 않습니다.");
+      } else {
+        setTtsUrl(res.result[0].ttsFileUrl); // 버튼 대신 player로 대체
+      }
+    } catch (e) {
+      console.error("TTS 파일 조회 실패", e);
+      alert("TTS 파일을 불러오는 데 실패했습니다.");
+    }
+  };
+
+  // TTS 파일 로딩
+  useEffect(() => {
+    if (!cardSet?.cardSetId) return;
+    const loadTTS = async () => {
+      const res = await getTTSFiles(cardSet.cardSetId);
+      const map: Record<number, string> = {};
+      res.result.forEach((item: { id: number; ttsFileUrl: string }) => {
+        map[item.id] = item.ttsFileUrl;
+      });
+      setTtsMap(map);
+    };
+    loadTTS();
+  }, [cardSet?.cardSetId]);
+
+  // 카드 넘길 때마다 TTS URL 갱신
+  useEffect(() => {
+    const currentCard = cards[currentIndex - 1];
+    const tts = currentCard?.cardId ? ttsMap[currentCard.cardId] : undefined;
+    setTtsUrl(tts);
+  }, [currentIndex, ttsMap, cards]);
+
   return (
     <div className="flex flex-col justify-between w-full text-center gap-2">
       <Button
@@ -208,9 +250,21 @@ const CardStudyPage = () => {
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
       <div className="flex gap-4 justify-center mt-2 ">
+        {ttsUrl && (
+          <div className="flex gap-4 justify-center mt-2">
+            <audio
+              controls
+              autoPlay
+              src={ttsUrl}
+              className="w-4/5 rounded-md border border-primary-600 shadow-md"
+            />
+          </div>
+        )}
+      </div>
+      <div className="flex gap-4 justify-center mt-2 ">
         <Button
           onClick={() => setShowStopModal(true)}
-          className="w-2/3 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition"
+          className="w-4/5 pc:mt-5 mt-1 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition"
         >
           기록 종료하기
         </Button>

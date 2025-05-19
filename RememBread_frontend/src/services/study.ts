@@ -60,3 +60,8 @@ export const postStopTest = async (cardSetId: number) => {
 
   return;
 };
+
+export const getTTSFiles = async (cardSetId: number) => {
+  const response = await http.get(`/tss/${cardSetId}`);
+  return response.data;
+};
