@@ -42,11 +42,12 @@ public class StudyConverter {
                 .build();
     }
 
-    public static SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse toDayLogResponseList(DayLogProjection projection) {
+    public static SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse toDayLogResponse(DayLogProjection projection) {
         return SummaryLogResponse.YearLogResponse.MonthLogResponse.DayLogResponse.builder()
-                .day(projection.getDay().getDayOfMonth())
+                .day(projection.getDate().getDayOfMonth())
                 .totalCorrect(projection.getTotalCorrect())
                 .totalSolved(projection.getTotalSolved())
+                .totalStudyMinutes(projection.getStudyTime() / 60)
                 .build();
     }
 }

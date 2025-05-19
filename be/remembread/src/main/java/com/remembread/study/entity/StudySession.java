@@ -6,6 +6,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.locationtech.jts.geom.LineString;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 
 @Entity
@@ -31,10 +32,22 @@ public class StudySession {
     @Column(name = "studied_at", nullable = false)
     private LocalDateTime studiedAt;
 
+    @Column(name = "study_duration_seconds", columnDefinition = "INTEGER DEFAULT 0")
+    @Builder.Default
+    private Integer studyDurationSeconds = 0;
+
     @Column(columnDefinition = "geometry(LINESTRING, 4326)")
     private LineString route;
 
     public void updateRoute(LineString route) {
         this.route = route;
+    }
+
+    public void updateStudyDurationSeconds(Integer studyDurationSeconds) {
+        this.studyDurationSeconds = studyDurationSeconds;
+    }
+
+    public void updateStudyDurationSeconds(LocalDateTime stoppedAt) {
+        this.studyDurationSeconds = (int) Duration.between(studiedAt, stoppedAt).toSeconds();
     }
 }
