@@ -168,15 +168,6 @@ const CardStudyPage = () => {
 
   return (
     <div className="flex flex-col justify-between h-full w-full text-center gap-2 pc:p-4 p-2">
-      <Button
-        className="text-primary-500 text-2xl font-bold m-3 py-5"
-        variant="primary-outline"
-        onClick={handleFlip}
-        disabled={isButtonDisabled}
-      >
-        {!isFront ? "concept" : "description"}
-      </Button>
-
       <div>
         {currentIndex} / {cards.length}
       </div>
