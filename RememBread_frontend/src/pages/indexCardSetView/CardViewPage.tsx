@@ -72,12 +72,13 @@ const CardViewPage = () => {
             </div>
 
             {/* 오른쪽 물음표 버튼 */}
-            <button onClick={() => setIsTutorialOpen(true)} className="p-1 ml-auto">
+            <button onClick={() => setIsTutorialOpen(true)} className="ml-auto">
               <HelpCircle size={24} className="text-neutral-400" />
             </button>
           </div>
         </nav>
       </header>
+
       <TutorialModal isOpen={isTutorialOpen} onClose={() => setIsTutorialOpen(false)} />
       <div
         className={`flex flex-col items-start fixed max-w-[598px] w-full mx-auto p-5 bg-white z-40 ${
@@ -99,7 +100,7 @@ const CardViewPage = () => {
 
           {selectedCardSetId === null && !folderSelect && (
             <Input
-              placeholder="검색어를 입력해주세요"
+              placeholder={isFocused ? "검색어 | @작성자 | #해시태그" : "검색어를 입력해주세요"}
               onFocus={() => setIsFocused(true)}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -165,6 +166,9 @@ const CardViewPage = () => {
                 <RecentSearchList
                   searchHistory={searchHistory}
                   setSearchHistory={setSearchHistory}
+                  setQuery={setQuery}
+                  setInputText={setInputText}
+                  setIsFocused={setIsFocused}
                 />
               )}
             </div>
