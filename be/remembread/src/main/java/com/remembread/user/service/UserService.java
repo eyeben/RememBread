@@ -37,7 +37,7 @@ public class UserService {
 
     @Transactional(readOnly = true)
     public List<UserCharacterResponse> getUserCharacter(User user) {
-        List<Character> characterList = characterRepository.findAll();
+        List<Character> characterList = characterRepository.findAllByOrderByIdAsc();
 
         return characterList.stream()
                 .map(character -> UserCharacterResponse.builder()
