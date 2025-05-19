@@ -40,7 +40,7 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
       ),
       bottomText: "생성",
       path: "/create/pdf",
-      disabled: true,
+      disabled: false,
     },
     {
       topText: (
@@ -52,7 +52,7 @@ const FooterModal = ({ isOpen, onClose }: FooterModalProps) => {
       ),
       bottomText: "생성",
       path: "/create/image",
-      disabled: true,
+      disabled: false,
     },
   ];
 

@@ -4,9 +4,18 @@ import { X } from "lucide-react";
 type RecentSearchListProps = {
   searchHistory: string[];
   setSearchHistory: Dispatch<SetStateAction<string[]>>;
+  setQuery: Dispatch<SetStateAction<string>>;
+  setInputText: Dispatch<SetStateAction<string>>;
+  setIsFocused: Dispatch<SetStateAction<boolean>>;
 };
 
-const RecentSearchList = ({ searchHistory, setSearchHistory }: RecentSearchListProps) => {
+const RecentSearchList = ({
+  searchHistory,
+  setSearchHistory,
+  setQuery,
+  setInputText,
+  setIsFocused,
+}: RecentSearchListProps) => {
   const handleClear = () => {
     localStorage.removeItem("searchHistory");
     setSearchHistory([]);
@@ -28,10 +37,21 @@ const RecentSearchList = ({ searchHistory, setSearchHistory }: RecentSearchListP
       </div>
       <ul className="flex flex-wrap gap-2 text-sm text-neutral-600">
         {searchHistory.map((word, i) => (
-          <li key={i} className="flex items-center px-3 py-1 bg-neutral-100 rounded-full gap-1">
+          <li
+            key={i}
+            className="flex items-center px-3 py-1 bg-neutral-100 rounded-full gap-1 cursor-pointer"
+            onClick={() => {
+              setQuery(word);
+              setInputText(word);
+              setIsFocused(false);
+            }}
+          >
             <span>{word}</span>
             <button
-              onClick={() => handleDelete(word)}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleDelete(word);
+              }}
               className="text-neutral-400 hover:text-neutral-600 ml-1"
             >
               <X size={14} />

@@ -42,7 +42,10 @@ const FolderPathBreadcrumb = ({ path, toggleFolder }: FolderPathBreadcrumbProps)
               className="min-w-0 cursor-pointer"
               onClick={() => toggleFolder(Number(segments[0].split(SEPARATOR)[0]))}
             >
-              <p className="truncate">{"📁 " + segments[0].split(SEPARATOR)[1]}</p>
+              <p className="truncate">
+                {segments[0].split(SEPARATOR)[1] === "즐겨찾기" ? "⭐ " : "📁 "}
+                {segments[0].split(SEPARATOR)[1]}
+              </p>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>

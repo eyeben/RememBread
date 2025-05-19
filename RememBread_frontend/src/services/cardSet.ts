@@ -6,6 +6,7 @@ interface CardSetListResponse {
   code: string;
   message: string;
   result: {
+    hasNext: boolean;
     cardSets: indexCardSet[];
   };
 }
@@ -25,7 +26,7 @@ interface UpdateCardSetResponse {
 }
 
 export interface SearchCardSetParams {
-  query: string; // 검색어
+  query?: string; // 검색어
   page: number; // 페이지 번호 (0부터 시작)
   size: number; // 한 페이지당 카드셋 개수
   cardSetSortType: "최신순" | "인기순" | "포크순";
@@ -36,6 +37,7 @@ export interface SearchCardSetResponse {
   code: string;
   message: string;
   result: {
+    hasNext: boolean;
     cardSets: indexCardSet[];
   };
 }
@@ -52,6 +54,7 @@ export interface SearchMyCardSetResponse {
   code: string;
   message: string;
   result: {
+    hasNext: boolean;
     cardSets: indexCardSet[];
   };
 }
@@ -202,6 +205,21 @@ export const getCardSetById = async (cardSetId: number): Promise<GetCardSetRespo
   } catch (error) {
     console.error("카드셋 단건 조회 중 오류:", error);
     throw new Error("카드셋 조회 요청에 실패했습니다.");
+  }
+};
+
+// 카드셋 즐겨찾기 조회
+export const getLikeCardSet = async (
+  params: SearchCardSetParams,
+): Promise<SearchCardSetResponse> => {
+  try {
+    const response = await http.get<SearchCardSetResponse>("/card-sets/like", {
+      params,
+    });
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 검색 API 오류:", error);
+    throw new Error("카드셋 검색 중 오류가 발생했습니다.");
   }
 };
 

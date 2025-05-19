@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Star } from "lucide-react";
 
 import CardSet2 from "@/components/svgs/indexCardView/CardSet2";
@@ -7,6 +7,7 @@ import {
   getCardSetList,
   searchCardSet,
   searchMyCardSet,
+  getLikeCardSet,
   postLikeCardSet,
   deleteLikeCardSet,
 } from "@/services/cardSet";
@@ -37,53 +38,68 @@ const CardSetList = ({
 }: CardSetListProps) => {
   const [cardSetList, setCardSetList] = useState<indexCardSet[]>([]);
 
-  const fetchBySearch = async () => {
-    const res = await searchMyCardSet({
-      query,
-      page: 0,
-      size: 48,
-      cardSetSortType: sortMap[sortType],
-    });
+  const [page, setPage] = useState<number>(0);
+  const [hasNext, setHasNext] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
-    const filtered =
-      folderId !== 0
-        ? res.result.cardSets.filter((c) => c.folderId === folderId)
-        : res.result.cardSets;
-
-    setCardSetList(filtered);
-  };
-
-  const fetchByFolder = async () => {
-    const res = await getCardSetList({
-      folderId,
-      page: 0,
-      size: 48,
-      sort: sortMap[sortType],
-    });
-
-    setCardSetList(res.result.cardSets);
-  };
+  const observerRef = useRef<HTMLDivElement | null>(null);
 
   const fetchCardSets = async () => {
+    if (isLoading || !hasNext) return;
+
+    setIsLoading(true);
     try {
+      let res;
+      let fetchedCardSets: indexCardSet[] = [];
+
       if (isMyCardSet) {
-        if (folderId === 0 || query.trim()) {
-          await fetchBySearch();
+        if (folderId === -1) {
+          res = await getLikeCardSet({
+            page: page,
+            size: 12,
+            cardSetSortType: sortMap[sortType],
+          });
+
+          fetchedCardSets = res.result.cardSets;
+        } else if (folderId === 0 || query.trim()) {
+          res = await searchMyCardSet({
+            query,
+            page: page,
+            size: 12,
+            cardSetSortType: sortMap[sortType],
+          });
+
+          fetchedCardSets =
+            folderId !== 0
+              ? res.result.cardSets.filter((c) => c.folderId === folderId)
+              : res.result.cardSets;
         } else {
-          await fetchByFolder();
+          res = await getCardSetList({
+            folderId,
+            page: page,
+            size: 12,
+            sort: sortMap[sortType],
+          });
+
+          fetchedCardSets = res.result.cardSets;
         }
       } else {
-        const res = await searchCardSet({
+        res = await searchCardSet({
           query,
-          page: 0,
-          size: 96,
+          page: page,
+          size: 12,
           cardSetSortType: sortMap[sortType],
         });
-
-        setCardSetList(res.result.cardSets);
+        fetchedCardSets = res.result.cardSets;
       }
+
+      setCardSetList((prev) => [...prev, ...fetchedCardSets]);
+      setHasNext(res.result.hasNext);
+      setPage((prev) => prev + 1);
     } catch (e) {
       console.error("카드셋 조회 실패:", e);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -109,8 +125,33 @@ const CardSetList = ({
   };
 
   useEffect(() => {
-    fetchCardSets();
-  }, [isMyCardSet, folderId, query, sortType]);
+    setCardSetList([]);
+    setPage(0);
+    setHasNext(true);
+  }, [isMyCardSet, folderId, query, sortType, folderId]);
+
+  useEffect(() => {
+    if (page === 0) fetchCardSets();
+  }, [page]);
+
+  useEffect(() => {
+    if (!observerRef.current || !hasNext) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchCardSets();
+        }
+      },
+      { threshold: 1.0 },
+    );
+
+    observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) observer.unobserve(observerRef.current);
+    };
+  }, [observerRef.current, hasNext, page]);
 
   return (
     <div className="flex flex-col items-center w-full px-5 mb-5">
@@ -159,6 +200,8 @@ const CardSetList = ({
               </div>
             </div>
           ))}
+
+          {hasNext && <div ref={observerRef} className="h-5" />}
         </div>
       )}
     </div>
