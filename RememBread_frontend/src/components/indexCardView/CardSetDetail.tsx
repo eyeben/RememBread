@@ -425,25 +425,23 @@ const CardSetDetail = ({
           </div>
 
           <div className="flex w-full mb-5 gap-5">
-            {isMyCardSet && (
-              <Button
-                className="w-full"
-                variant="primary-outline"
-                onClick={() =>
-                  navigate(`/study/${selectedCardSetId}`, {
-                    state: {
-                      card: {
-                        cardSetId: selectedCardSetId,
-                      },
+            <Button
+              className="w-full"
+              variant="primary-outline"
+              onClick={() =>
+                navigate(`/study/${selectedCardSetId}`, {
+                  state: {
+                    card: {
+                      cardSetId: selectedCardSetId,
                     },
-                  })
-                }
-              >
-                학습하기
-              </Button>
-            )}
+                  },
+                })
+              }
+            >
+              학습하기
+            </Button>
 
-            <TestSettingDialog indexCardId={selectedCardSetId} />
+            {isMyCardSet && <TestSettingDialog indexCardId={selectedCardSetId} />}
           </div>
         </div>
       )}
