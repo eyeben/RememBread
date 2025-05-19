@@ -74,10 +74,10 @@ const GameModePage = () => {
           <AnimatePresence>
             {showSpeechBubble && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, y: 0 }}
+                animate={{ opacity: 1, y: -20 }}
+                exit={{ opacity: 0, y: -40 }}
+                transition={{ duration: 1 }}
                 className="absolute z-10"
               >
                 <SpeechBubble text={messages[Math.floor(Math.random() * messages.length)]} />
