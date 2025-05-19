@@ -72,23 +72,14 @@ const Footer = () => {
       longitude,
     };
 
-    console.log("[STOP] stopRecord 호출 준비됨", {
-      cardSetId,
-      ...payload,
-    });
-
     try {
       await stopRecord(cardSetId, payload);
-      console.log("[STOP] stopRecord 호출 성공");
-    } catch (e) {
-      console.error("[STOP] stopRecord 호출 실패", e);
-    }
+    } catch (e) {}
 
     stopRecording();
     setShowStopModal(false);
 
     if (pendingPath) {
-      console.log("[STOP] navigate 실행:", pendingPath);
       navigate(pendingPath);
       setPendingPath(null);
     }

@@ -7,7 +7,7 @@ interface LocationState {
 }
 
 export const useLocationStore = create<LocationState>((set) => ({
-  latitude: 0,
-  longitude: 0,
+  latitude: 37.501274,
+  longitude: 127.039585,
   setLocation: (lat, lng) => set({ latitude: lat, longitude: lng }),
 }));
