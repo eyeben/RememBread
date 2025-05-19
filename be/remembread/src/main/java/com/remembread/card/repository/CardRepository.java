@@ -24,6 +24,4 @@ public interface CardRepository extends JpaRepository<Card, Long> {
 
     List<Card> findByCardSetIdOrderByNumber(Long id);
 
-    int countByCardSet_User(User user);
-
 }

@@ -2,6 +2,7 @@ package com.remembread.user.facade;
 
 import com.remembread.card.service.CardService;
 import com.remembread.card.service.CardSetService;
+import com.remembread.study.service.StudySessionService;
 import com.remembread.user.dto.response.UserCharacterResponse;
 import com.remembread.user.entity.User;
 import com.remembread.user.service.UserService;
@@ -16,6 +17,7 @@ public class UserFacadeService {
     private final UserService userService;
     private final CardSetService cardSetService;
     private final CardService cardService;
+    private final StudySessionService studySessionService;
 
     public List<UserCharacterResponse> getUserCharacter(User user) {
         List<UserCharacterResponse> response = userService.getUserCharacter(user);
@@ -35,7 +37,7 @@ public class UserFacadeService {
             return cardSetService.countCardSet(user) >= 3;
         }
         else if (characterId == 4L) {
-            return cardService.countCard(user) >= 10;
+            return studySessionService.checkExistByUser(user);
         }
         else if (characterId == 5L) {
             return userService.isLocationAccept(user);
