@@ -58,6 +58,10 @@ public class Card extends BaseEntity {
     @Column(name = "description_image_url", length = 1024)
     private String descriptionImageUrl;
 
+    @Setter
+    @Column(length = 1024)
+    private String ttsFileUrl;
+
     public Card(CardSet cardSet, Integer number, String concept, String description, String conceptImageUrl, String descriptionImageUrl) {
         this.cardSet = cardSet;
         this.number = number;
@@ -73,6 +77,10 @@ public class Card extends BaseEntity {
     }
 
     public void update(CardUpdateRequest request) {
+        if (!request.getConcept().equals(this.concept) || !request.getDescription().equals(this.description)) {
+            this.ttsFileUrl = null;
+        }
+
         if (request.getNumber() != null) this.number = request.getNumber();
         if (request.getConcept() != null) this.concept = request.getConcept();
         if (request.getDescription() != null) this.description = request.getDescription();
