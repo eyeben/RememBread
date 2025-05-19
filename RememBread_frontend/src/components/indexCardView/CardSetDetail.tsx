@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
@@ -45,6 +45,12 @@ const CardSetDetail = ({
   const [hashtags, setHashTags] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<boolean>(false);
 
+  const [page, setPage] = useState<number>(0);
+  const [hasNext, setHasNext] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
+
+  const observerRef = useRef<HTMLDivElement | null>(null);
+
   const [cards, setCards] = useState<indexCard[]>([]);
   const [selected, setSelected] = useState<number[]>([]);
 
@@ -77,6 +83,8 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 추가되었습니다.",
       });
 
+      setPage(0);
+      setHasNext(true);
       fetchCard();
 
       setEditingCardId(null);
@@ -106,6 +114,8 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 수정되었습니다.",
       });
 
+      setPage(0);
+      setHasNext(true);
       fetchCard();
 
       setEditingCardId(null);
@@ -130,35 +140,83 @@ const CardSetDetail = ({
   };
 
   const fetchCard = async () => {
+    if (isLoading || !hasNext) return;
+
+    setIsLoading(true);
     try {
-      const response = await getCardsByCardSet(selectedCardSetId, 0, 100, "asc");
-      setCards(response.result.cards);
+      const response = await getCardsByCardSet(selectedCardSetId, page, 100, "asc");
+
+      setCards((prev) => [...prev, ...response.result.cards]);
+      setHasNext(response.result.hasNext);
+      setPage((prev) => prev + 1);
     } catch (e) {
       console.error("카드 불러오기 실패:", e);
+    } finally {
+      setIsLoading(false);
     }
+  };
+
+  const handleBack = () => {
+    if (typeof editingCardId === "number") {
+      setEditingCardId(null);
+      return;
+    }
+
+    setSelectedCardSetId(null);
   };
 
   useEffect(() => {
     fetchCardSet();
+    setPage(0);
+    setHasNext(true);
     fetchCard();
   }, [selectedCardSetId]);
+
+  useEffect(() => {
+    if (!observerRef.current || !hasNext) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          fetchCard();
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1.0,
+      },
+    );
+
+    observer.observe(observerRef.current);
+
+    return () => {
+      if (observerRef.current) {
+        observer.unobserve(observerRef.current);
+      }
+    };
+  }, [observerRef.current, hasNext, page]);
+
+  useEffect(() => {
+    const handlePopState = (e: PopStateEvent) => {
+      e.preventDefault();
+
+      handleBack();
+    };
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, [editingCardId]);
 
   return (
     <>
       <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
         <nav className="h-full mx-auto">
           <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
-            <ArrowLeft
-              className="cursor-pointer"
-              onClick={() => {
-                if (typeof editingCardId === "number") {
-                  setEditingCardId(null);
-                  return;
-                }
-
-                setSelectedCardSetId(null);
-              }}
-            />
+            <ArrowLeft className="cursor-pointer" onClick={handleBack} />
             <h1 className="text-xl font-bold">{name}</h1>
             <div className="flex justify-center items-center w-8 h-8">
               {isMyCardSet && (
@@ -353,6 +411,13 @@ const CardSetDetail = ({
                         </TableCell>
                       </TableRow>
                     )}
+                    {hasNext && (
+                      <TableRow>
+                        <TableCell colSpan={3} className="text-center">
+                          <div ref={observerRef} className="h-5" />
+                        </TableCell>
+                      </TableRow>
+                    )}
                   </TableBody>
                 </Table>
               </div>
@@ -360,21 +425,24 @@ const CardSetDetail = ({
           </div>
 
           <div className="flex w-full mb-5 gap-5">
-            <Button
-              className="w-full"
-              variant="primary-outline"
-              onClick={() =>
-                navigate(`/study/${selectedCardSetId}`, {
-                  state: {
-                    card: {
-                      cardSetId: selectedCardSetId,
+            {isMyCardSet && (
+              <Button
+                className="w-full"
+                variant="primary-outline"
+                onClick={() =>
+                  navigate(`/study/${selectedCardSetId}`, {
+                    state: {
+                      card: {
+                        cardSetId: selectedCardSetId,
+                      },
                     },
-                  },
-                })
-              }
-            >
-              학습하기
-            </Button>
+                  })
+                }
+              >
+                학습하기
+              </Button>
+            )}
+
             <TestSettingDialog indexCardId={selectedCardSetId} />
           </div>
         </div>
