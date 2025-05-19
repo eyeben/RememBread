@@ -202,11 +202,13 @@ const Profile = () => {
     // 24시간 형식으로 변환
     let hour24 = parseInt(newHour);
     if (newAmpm === "오후") {
-      hour24 += 12;
-    }
-
+      if (hour24 !== 12) {
+        hour24 += 12;
+      }
+    } else {
       if (hour24 === 12) {
         hour24 = 0;
+      }
     }
     // HH:mm:00 형식으로 변환
     const formattedTime = `${hour24.toString().padStart(2, '0')}:${newMinute}:00`;

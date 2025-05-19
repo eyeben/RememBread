@@ -36,6 +36,7 @@ interface CharacterResponse {
     name: string;
     imageUrl: string;
     isLocked: boolean;
+    description: string;
   }[];
 }
 
