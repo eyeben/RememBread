@@ -2,6 +2,7 @@ package com.remembread.card.converter;
 
 import com.remembread.card.dto.response.CardListResponse;
 import com.remembread.card.dto.response.CardResponse;
+import com.remembread.card.dto.response.TTSResponse;
 import com.remembread.card.entity.Card;
 import com.remembread.study.dto.CardCache;
 
@@ -47,6 +48,13 @@ public class CardConverter {
                 .retentionRate(card.getRetentionRate())
                 .stability(card.getStability())
                 .lastViewedTime(card.getUpdatedAt())
+                .build();
+    }
+
+    public static TTSResponse toTTSResponse(Card card) {
+        return TTSResponse.builder()
+                .id(card.getId())
+                .ttsFileUrl(card.getTtsFileUrl())
                 .build();
     }
 
