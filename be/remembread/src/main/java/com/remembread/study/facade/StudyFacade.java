@@ -142,6 +142,7 @@ public class StudyFacade {
 
         this.addPoint(user, request.getLongitude(), request.getLatitude());
         studySessionService.updateRoute(user.getId(), studySession);
+        studySessionService.updateStudyTime(studySession);
         this.deleteStudySession(user.getId());
     }
 
@@ -172,7 +173,10 @@ public class StudyFacade {
         redisService.putHash(cardKey, "stability", stability);
         updateAllCardCaches(user);
         RemainingCardCountResponse response = new RemainingCardCountResponse();
-        response.setRemainingCardCount(redisService.getZSetSize(zSetKey));
+        Long remainingCardCount = redisService.getZSetSize(zSetKey);
+        response.setRemainingCardCount(remainingCardCount);
+        if (remainingCardCount == 0)
+            this.deleteStudySession(user.getId());
 
         return response;
     }

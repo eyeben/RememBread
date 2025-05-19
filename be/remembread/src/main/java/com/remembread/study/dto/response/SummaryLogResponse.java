@@ -2,6 +2,7 @@ package com.remembread.study.dto.response;
 
 import lombok.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Getter
@@ -13,7 +14,17 @@ public class SummaryLogResponse {
     private Integer totalCorrect = 0;
     @Builder.Default
     private Integer totalSolved = 0;
-    private List<YearLogResponse> years;
+    @Builder.Default
+    private Integer totalStudyMinutes = 0;
+    @Builder.Default
+    private List<YearLogResponse> years = new ArrayList<>();
+
+    public void addYear(YearLogResponse yearLogResponse) {
+        this.totalCorrect += yearLogResponse.getTotalCorrect();
+        this.totalSolved += yearLogResponse.getTotalSolved();
+        this.totalStudyMinutes += yearLogResponse.getTotalStudyMinutes();
+        this.years.add(yearLogResponse);
+    }
 
     @Getter
     @Builder
@@ -25,7 +36,17 @@ public class SummaryLogResponse {
         private Integer totalCorrect = 0;
         @Builder.Default
         private Integer totalSolved = 0;
-        private List<MonthLogResponse> months;
+        @Builder.Default
+        private Integer totalStudyMinutes = 0;
+        @Builder.Default
+        private List<MonthLogResponse> months = new ArrayList<>();
+
+        public void addMonth(MonthLogResponse monthLogResponse) {
+            this.totalCorrect += monthLogResponse.getTotalCorrect();
+            this.totalSolved += monthLogResponse.getTotalSolved();
+            this.totalStudyMinutes += monthLogResponse.getTotalStudyMinutes();
+            this.months.add(monthLogResponse);
+        }
 
         @Getter
         @Builder
@@ -37,7 +58,17 @@ public class SummaryLogResponse {
             private Integer totalCorrect = 0;
             @Builder.Default
             private Integer totalSolved = 0;
-            private List<DayLogResponse> days;
+            @Builder.Default
+            private Integer totalStudyMinutes = 0;
+            @Builder.Default
+            private List<DayLogResponse> days = new ArrayList<>();
+
+            public void addDay(DayLogResponse dayLogResponse) {
+                this.totalCorrect += dayLogResponse.getTotalCorrect();
+                this.totalSolved += dayLogResponse.getTotalSolved();
+                this.totalStudyMinutes += dayLogResponse.getTotalStudyMinutes();
+                this.days.add(dayLogResponse);
+            }
 
             @Getter
             @Builder
@@ -49,6 +80,8 @@ public class SummaryLogResponse {
                 private Integer totalCorrect = 0;
                 @Builder.Default
                 private Integer totalSolved = 0;
+                @Builder.Default
+                private Integer totalStudyMinutes = 0;
             }
         }
     }

@@ -13,15 +13,16 @@ public interface CardStudyLogRepository extends JpaRepository<CardStudyLog, Long
 
     @Query(value = """
         SELECT 
-            ss.studied_at::DATE AS day, 
+            ss.studied_at::DATE AS date, 
+            SUM(DISTINCT ss.study_duration_seconds) AS studyTime, 
             SUM(csl.correct_count) AS totalCorrect, 
             SUM(csl.solved_count) AS totalSolved 
         FROM study_sessions ss 
         JOIN card_study_logs csl ON ss.id = csl.study_session_id 
         WHERE ss.user_id = :userId 
-        AND :start <= ss.studied_at AND ss.studied_at < :end 
-        GROUP BY ss.studied_at::DATE 
-        ORDER BY ss.studied_at::DATE ASC 
+        AND :start <= ss.studied_at::DATE AND ss.studied_at::DATE < :end 
+        GROUP BY date 
+        ORDER BY date ASC 
         """, nativeQuery = true)
     List<DayLogProjection> findDailyStudyStatsByUserIdAndStudiedAtBetween(
             @Param("userId") Long userId,
