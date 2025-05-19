@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ArrowLeft, Search } from "lucide-react";
+import { ArrowLeft, HelpCircle, Search } from "lucide-react";
 
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
@@ -9,6 +9,7 @@ import CardSetList from "@/components/indexCardView/CardSetList";
 import CardSetDetail from "@/components/indexCardView/CardSetDetail";
 import OrderSelector from "@/components/indexCardView/OrderSelector";
 import RecentSearchList from "@/components/indexCardView/RecentSearchList";
+import TutorialModal from "@/components/tutorial/TutorialModal";
 
 const tabs = ["내카드", "카드 둘러보기"];
 
@@ -24,6 +25,7 @@ const CardViewPage = () => {
   const [selectedFolderId, setSelectedFolderId] = useState<number | null>(null);
   const [selectedCardSetId, setSelectedCardSetId] = useState<number | null>(null);
   const [sortType, setSortType] = useState<"latest" | "popularity" | "fork">("latest");
+  const [isTutorialOpen, setIsTutorialOpen] = useState<boolean>(false);
 
   const saveSearchKeyword = (keyword: string) => {
     if (!keyword.trim()) return;
@@ -63,12 +65,20 @@ const CardViewPage = () => {
     <>
       <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
         <nav className="h-full mx-auto">
-          <ul className="flex justify-center items-center w-full min-h-14 px-5 relative">
-            <DefaultBread />
-          </ul>
+          <div className="flex justify-between items-center w-full min-h-14 px-5 relative">
+            {/* 가운데 로고를 absolute로 배치 */}
+            <div className="absolute left-1/2 transform -translate-x-1/2">
+              <DefaultBread className="hover:cursor-pointer" />
+            </div>
+
+            {/* 오른쪽 물음표 버튼 */}
+            <button onClick={() => setIsTutorialOpen(true)} className="p-1 ml-auto">
+              <HelpCircle size={24} className="text-neutral-400" />
+            </button>
+          </div>
         </nav>
       </header>
-
+      <TutorialModal isOpen={isTutorialOpen} onClose={() => setIsTutorialOpen(false)} />
       <div
         className={`flex flex-col items-start fixed max-w-[598px] w-full mx-auto p-5 bg-white z-40 ${
           isFocused && !folderSelect ? "transition-all duration-300" : ""
