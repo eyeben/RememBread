@@ -16,6 +16,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 @Slf4j
 @Service
@@ -39,9 +41,12 @@ public class TTSService {
 
         for (Card card : cardList) {
             if (card.getTtsFileUrl() == null) {
+                String concept = enhanceSSML(card.getConcept());
+                String description = enhanceSSML(card.getDescription());
+
                 card.setTtsFileUrl(pollyService.synthesizeAndUpload(
                         "ssml",
-                        "<speak><p><s>" + card.getConcept() + "</s><break time=\"700ms\"/><s>" + card.getDescription() + "</s></p></speak>",
+                        "<speak><p><s>" + concept + "</s><break time=\"700ms\"/><s>" + description + "</s></p></speak>",
                         "Seoyeon",
                         "tts/" + cardSetId + "_" + card.getId() + "_" + card.getConcept() + ".mp3"
                 ));
@@ -51,5 +56,20 @@ public class TTSService {
         return cardList.stream()
                 .map(CardConverter::toTTSResponse)
                 .toList();
+    }
+
+    public static String enhanceSSML(String inputText) {
+        Pattern englishPattern = Pattern.compile("([a-zA-Z]+(?:\\s+[a-zA-Z]+)*)");
+        Matcher matcher = englishPattern.matcher(inputText);
+
+        StringBuffer result = new StringBuffer();
+
+        while (matcher.find()) {
+            String word = matcher.group(1);
+            matcher.appendReplacement(result, "<lang xml:lang=\"en-US\">" + word + "</lang>");
+        }
+
+        matcher.appendTail(result);
+        return result.toString();
     }
 }
