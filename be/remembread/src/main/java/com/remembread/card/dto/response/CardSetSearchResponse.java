@@ -10,7 +10,8 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class CardSetSearchResponse {
-    List<CardSet> cardSets;
+    private List<CardSet> cardSets;
+    private Boolean hasNext;
 
     @Data
     public static class CardSet {

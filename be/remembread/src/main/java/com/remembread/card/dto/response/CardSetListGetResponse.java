@@ -11,6 +11,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CardSetListGetResponse {
     private List<CardSet> cardSets;
+    private Boolean hasNext;
 
     @Data
     @Builder

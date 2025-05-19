@@ -13,5 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class CardListResponse {
     private Integer total;
+    private Boolean hasNext;
     private List<CardResponse> cards;
 }
