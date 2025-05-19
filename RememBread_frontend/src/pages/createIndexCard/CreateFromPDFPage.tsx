@@ -87,7 +87,7 @@ const CreateFromPDFPage = () => {
   return (
     <div
       className="flex flex-col justify-between w-full text-center"
-      style={{ minHeight: "calc(100vh - 120px)" }}
+      style={{ minHeight: "calc(100vh - 126px)" }}
     >
       <h1 className="text-primary-500 text-2xl font-bold m-5">PDF파일을 재료로 넣어봐뽱</h1>
 

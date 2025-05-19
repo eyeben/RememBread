@@ -245,6 +245,21 @@ export const deleteLikeCardSet = async (cardSetId: number): Promise<LikeCardSetR
   }
 };
 
+// 카드셋 move
+export const patchMoveCardSet = async (targetFolderId: number, cardSetIds: number) => {
+  try {
+    const response = await http.patch("/card-sets/move", {
+      targetFolderId,
+      cardSetIds: [cardSetIds],
+    });
+
+    return response.data;
+  } catch (error) {
+    console.error("카드셋 이동 요청 실패:", error);
+    throw new Error("카드셋 이동 중 오류가 발생했습니다.");
+  }
+};
+
 // 카드셋 fork
 export const postForkCardSet = async (
   cardSetId: number,

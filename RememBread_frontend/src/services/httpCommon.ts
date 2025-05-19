@@ -45,9 +45,12 @@ http.interceptors.response.use(
         console.log("응답 인터셉터 실행");
         console.log(error);
         console.log("error.response", error.response);
-        const originalRequest = error.config as InternalAxiosRequestConfig & { _retry?: boolean };
 
-        if ((error.response?.status === 401 || error.request?.status === 401) && !originalRetry) {
+        const originalRequest = error.config as InternalAxiosRequestConfig
+
+        if ((error.response?.status === 401 || error.request?.status === 401)) {
+            console.log("401 에러 발생", error.response?.status);
+            console.log("isRefreshing", isRefreshing);
             if (isRefreshing) {
                 // 이미 재발급 진행 중이면 대기열에 추가
                 return new Promise((resolve) => {
@@ -58,8 +61,6 @@ http.interceptors.response.use(
                     });
                 });
             }
-
-            originalRequest._retry = true;
             isRefreshing = true;
             originalRetry = true;
 
