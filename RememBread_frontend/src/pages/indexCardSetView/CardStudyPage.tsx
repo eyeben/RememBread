@@ -168,10 +168,7 @@ const CardStudyPage = () => {
 
   return (
     <div className="flex flex-col justify-between h-full w-full text-center gap-2 pc:p-4 p-2">
-      <div className="flex justify-between items-center px-4 pt-2">
-        <div className="text-sm text-gray-600">
-          {currentIndex} / {cards.length}
-        </div>
+      <div className="flex justify-end items-center px-4 pt-2">
         <Button
           onClick={() => setShowStopModal(true)}
           className="bg-primary-600 text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-primary-700 transition text-sm pc:text-base"
@@ -284,15 +281,6 @@ const CardStudyPage = () => {
           </div>
         </div>
       )}
-
-      {/* <div className="flex gap-4 justify-center mt-2 ">
-        <Button
-          onClick={() => setShowStopModal(true)}
-          className="w-4/5 pc:mt-3 mt-1 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
-        >
-          기록 종료하기
-        </Button>
-      </div> */}
 
       <StopStudyModal
         open={showStopModal}
