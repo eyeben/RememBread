@@ -3,6 +3,7 @@ package com.remembread.study.repository;
 import com.remembread.card.entity.CardSet;
 import com.remembread.study.dto.response.CardStudyLogResponse;
 import com.remembread.study.entity.StudySession;
+import com.remembread.user.entity.User;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -29,4 +30,6 @@ public interface StudySessionRepository extends JpaRepository<StudySession, Long
         ORDER BY c.number ASC
         """, nativeQuery = true)
     List<CardStudyLogResponse> fetchLogsByStudySessionId(@Param("studySessionId") Long studySessionId);
+
+    Boolean existsByUser(User user);
 }
