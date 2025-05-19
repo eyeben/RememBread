@@ -64,21 +64,27 @@ const StudyBarChart = () => {
     if (viewType === "month") {
       // 월별 데이터 가공
       const yearData = studyHistoryData.find(y => y.year === year);
-      const monthlyChartData: ChartDataPoint[] = Array.from({ length: 12 }, (_, i) => ({
-        month: i + 1,
-        study: yearData?.months[i]?.totalSolved || 0
-      }));
+      const monthlyChartData: ChartDataPoint[] = Array.from({ length: 12 }, (_, i) => {
+        const monthData = yearData?.months.find(m => m.month === i + 1);
+        return {
+          month: i + 1,
+          study: monthData?.totalStudyMinutes || 0
+        };
+      });
       setMonthlyData(monthlyChartData);
     } else {
       // 일별 데이터 가공
       const yearData = studyHistoryData.find(y => y.year === year);
-      const monthData = yearData?.months[month - 1];
+      const monthData = yearData?.months.find(m => m.month === month);
       const daysInMonth = new Date(year, month, 0).getDate();
       
-      const dailyChartData: ChartDataPoint[] = Array.from({ length: daysInMonth }, (_, i) => ({
-        day: i + 1,
-        study: monthData?.days[i]?.totalSolved || 0
-      }));
+      const dailyChartData: ChartDataPoint[] = Array.from({ length: daysInMonth }, (_, i) => {
+        const dayData = monthData?.days?.find(d => d.day === i + 1);
+        return {
+          day: i + 1,
+          study: dayData?.totalStudyMinutes || 0
+        };
+      });
       setDailyData(dailyChartData);
     }
   }, [studyHistoryData, viewType, year, month]);
@@ -146,8 +152,8 @@ const StudyBarChart = () => {
   if (viewType === "month") {
     chartData = monthlyData;
     xKey = "month";
-    xTickFormatter = (v: any) => v;
-    tooltipLabelFormatter = (label: any) => label;
+    xTickFormatter = (v: any) => `${v}`;
+    tooltipLabelFormatter = (label: any) => `${label}월`;
   } else {
     chartData = visibleDailyData;
   }
@@ -158,7 +164,7 @@ const StudyBarChart = () => {
         <div className="text-xl font-bold">
           공부 기록
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
-            (총 문제 수)
+            (학습 시간)
           </span>
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
             <Select
@@ -226,14 +232,16 @@ const StudyBarChart = () => {
             <BarChart data={chartData} margin={{ top: 10, right: 20, left: 0, bottom: 0 }}>
               <XAxis
                 dataKey={xKey}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 10 }}
                 axisLine={false}
                 tickLine={false}
                 tickFormatter={xTickFormatter}
+                interval={0}
+                minTickGap={1}
               />
               <YAxis tick={{ fontSize: 13 }} axisLine={false} tickLine={false} />
               <Tooltip
-                formatter={(value: number) => `${value}문제`}
+                formatter={(value: number) => `${value}분`}
                 labelFormatter={tooltipLabelFormatter}
                 cursor={{ fill: 'transparent' }}
               />
@@ -241,8 +249,9 @@ const StudyBarChart = () => {
                 dataKey="study" 
                 fill="#D2A06E" 
                 radius={[4, 4, 0, 0]} 
-                barSize={18}
+                barSize={16}
                 activeBar={{ fill: '#A67B51' }}
+                isAnimationActive={false}
               />
             </BarChart>
           </ResponsiveContainer>
