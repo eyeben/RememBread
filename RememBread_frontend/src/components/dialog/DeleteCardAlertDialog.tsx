@@ -48,7 +48,7 @@ const DeleteCardAlertDialog = ({
             <span className="text-primary-500 font-bold">{selected.length}개</span>의 카드가
             선택되었어요
             <br />
-            정말 삭제할까요?
+            카드가 삭제되면 복구할 수 없어요
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

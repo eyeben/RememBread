@@ -126,6 +126,7 @@ const CardViewPage = () => {
 
           {folderSelect && (
             <SelectFolder
+              isMyCardSet={isMyCardSet === 0 ? true : false}
               selectedCardSetId={selectedCardSetId}
               setFolderSelect={setFolderSelect}
               setSelectedFolderId={setSelectedFolderId}
