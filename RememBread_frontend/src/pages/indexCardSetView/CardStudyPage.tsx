@@ -41,7 +41,7 @@ const CardStudyPage = () => {
 
   const [ttsUrl, setTtsUrl] = useState<string | undefined>();
   const [ttsMap, setTtsMap] = useState<Record<number, string>>({});
-  const [isTTSMode, setIsTTSMode] = useState(false);
+  const [isTTSMode, setIsTTSMode] = useState<boolean>(false);
   const [ttsMode, setTtsMode] = useState<"single" | "sequence" | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
 
