@@ -15,10 +15,10 @@ public interface CardStudyLogRepository extends JpaRepository<CardStudyLog, Long
         SELECT 
             ss.studied_at::DATE AS date, 
             SUM(DISTINCT ss.study_duration_seconds) AS studyTime, 
-            SUM(csl.correct_count) AS totalCorrect, 
-            SUM(csl.solved_count) AS totalSolved 
+            COALESCE(SUM(csl.correct_count), 0) AS totalCorrect, 
+            COALESCE(SUM(csl.solved_count), 0) AS totalSolved 
         FROM study_sessions ss 
-        JOIN card_study_logs csl ON ss.id = csl.study_session_id 
+        LEFT JOIN card_study_logs csl ON ss.id = csl.study_session_id 
         WHERE ss.user_id = :userId 
         AND :start <= ss.studied_at::DATE AND ss.studied_at::DATE < :end 
         GROUP BY date 
