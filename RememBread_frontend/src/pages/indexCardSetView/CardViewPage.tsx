@@ -100,7 +100,7 @@ const CardViewPage = () => {
 
           {selectedCardSetId === null && !folderSelect && (
             <Input
-              placeholder="검색어를 입력해주세요"
+              placeholder={isFocused ? "검색어 | @작성자 | #해시태그" : "검색어를 입력해주세요"}
               onFocus={() => setIsFocused(true)}
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
@@ -166,6 +166,9 @@ const CardViewPage = () => {
                 <RecentSearchList
                   searchHistory={searchHistory}
                   setSearchHistory={setSearchHistory}
+                  setQuery={setQuery}
+                  setInputText={setInputText}
+                  setIsFocused={setIsFocused}
                 />
               )}
             </div>
