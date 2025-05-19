@@ -10,6 +10,7 @@ import com.remembread.auth.service.LoginService;
 import com.remembread.common.enums.SocialLoginType;
 import com.remembread.user.entity.User;
 import io.swagger.v3.oas.annotations.Operation;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +74,17 @@ public class LoginController {
 
     @PostMapping(value = "/logout")
     @Operation(summary = "로그아웃 API", description = "소셜 로그인으로부터 로그아웃하는 API 입니다.")
-    public ApiResponse<Long> logout(@AuthUser User user) {
+    public ApiResponse<Long> logout(@AuthUser User user, HttpServletResponse response) {
+        // 쿠키 만료시키기
+        ResponseCookie cookie = ResponseCookie.from("refresh-token", null)
+                .maxAge(0)
+                .httpOnly(true)
+                .sameSite("None")
+                .secure(true)
+                .path("/")
+                .build();
+
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
         return ApiResponse.onSuccess(loginService.logout(user));
     }
 }
