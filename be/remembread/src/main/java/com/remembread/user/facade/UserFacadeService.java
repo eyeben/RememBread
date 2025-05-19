@@ -37,7 +37,7 @@ public class UserFacadeService {
             return cardSetService.countCardSet(user) >= 3;
         }
         else if (characterId == 4L) {
-            return studySessionService.checkExistByUser(user);
+            return studySessionService.checkExistValidByUser(user);
         }
         else if (characterId == 5L) {
             return userService.isLocationAccept(user);
