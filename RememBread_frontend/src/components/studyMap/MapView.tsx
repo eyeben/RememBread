@@ -5,10 +5,11 @@ import { useLocationStore } from "@/stores/useLocationStore";
 import { indexCardSet } from "@/types/indexCard";
 import { alertLocationIcon } from "@/utils/alertLocationIcon";
 import { currentLocationIcon } from "@/utils/currentLocationIcon";
-import { getRoutes, patchNotificationLocation } from "@/services/map";
 import { searchMyCardSet, SearchMyCardSetParams } from "@/services/cardSet";
+import { getLocationAlertPosition, getRoutes, patchNotificationLocation } from "@/services/map";
 import { toast } from "@/hooks/use-toast";
 import useGeocode from "@/hooks/useGeocode";
+import { Switch } from "@/components/ui/switch";
 import { Toaster } from "@/components/ui/toaster";
 import CurrentLocationBtn from "@/components/studyMap/CurrentLocationBtn";
 import AlertLocationDrawer from "@/components/studyMap/AlertLocationDrawer";
@@ -197,10 +198,6 @@ const MapView = () => {
 
         await patchNotificationLocation(lat, lng, isAlarmEnabled);
 
-        localStorage.setItem(
-          "alert-location",
-          JSON.stringify({ lat, lng, enabled: isAlarmEnabled }),
-        );
         setIsManualMode(false);
       },
     );
@@ -307,8 +304,6 @@ const MapView = () => {
 
       await patchNotificationLocation(lat, lng, isAlarmEnabled);
 
-      localStorage.setItem("alert-location", JSON.stringify({ lat, lng, enabled: isAlarmEnabled }));
-
       const position = new naver.maps.LatLng(lat, lng);
       mapRef.current?.setCenter(position);
 
@@ -351,7 +346,6 @@ const MapView = () => {
 
     try {
       await patchNotificationLocation(lat, lng, isAlarmEnabled);
-      localStorage.setItem("alert-location", JSON.stringify({ lat, lng, enabled: isAlarmEnabled }));
       setIsAlertDrawerOpen(false);
       setIsPinMode(false);
 
@@ -384,34 +378,42 @@ const MapView = () => {
     }
   };
 
-  // 알림 위치 복원
+  // 알림 위치 가져오기
   useEffect(() => {
-    if (!mapRef.current) return;
+    if (!mapRef.current || !isMapLoaded) return;
 
-    const stored = localStorage.getItem("alert-location");
-    if (!stored) return;
+    const fetchAlertLocation = async () => {
+      try {
+        const { result } = await getLocationAlertPosition();
 
-    try {
-      const { lat, lng, enabled } = JSON.parse(stored);
-      if (!lat || !lng) return;
+        if (!result.notificationLocationLatitude || !result.notificationLocationLongitude) return;
 
-      if (addressMarker) {
-        addressMarker.setMap(null);
-        setAddressMarker(null);
+        const position = new naver.maps.LatLng(
+          result.notificationLocationLatitude,
+          result.notificationLocationLongitude,
+        );
+
+        // 기존 마커 제거
+        if (addressMarker) {
+          addressMarker.setMap(null);
+          setAddressMarker(null);
+        }
+
+        const marker = new naver.maps.Marker({
+          position,
+          map: mapRef.current!,
+          title: "알림 위치",
+          icon: alertLocationIcon(40),
+        });
+
+        setAddressMarker(marker);
+        setIsAlarmEnabled(result.notificationLocationEnable);
+      } catch (e) {
+        console.error("알림 위치 불러오기 실패", e);
       }
+    };
 
-      const position = new naver.maps.LatLng(lat, lng);
-      const marker = new naver.maps.Marker({
-        position,
-        map: mapRef.current,
-        title: "알림 위치",
-        icon: alertLocationIcon(40),
-      });
-      setAddressMarker(marker);
-      setIsAlarmEnabled(enabled);
-    } catch (e) {
-      console.error("알림 위치 복원 실패", e);
-    }
+    fetchAlertLocation();
   }, [isMapLoaded]);
 
   if (latitude == null || longitude == null) {
@@ -484,6 +486,10 @@ const MapView = () => {
       </div>
 
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
+      <div className="absolute top-16 right-6 z-30 flex items-center gap-2">
+        <span className="text-sm text-muted-foreground font-bold">알림</span>
+        <Switch checked={isAlarmEnabled} onCheckedChange={setIsAlarmEnabled} />
+      </div>
       {isMapLoaded && mapRef.current && (
         <>
           <div className="flex flex-col items-center space-y-1 absolute bottom-28 left-5 z-20">
