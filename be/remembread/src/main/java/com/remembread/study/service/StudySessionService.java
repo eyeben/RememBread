@@ -78,4 +78,8 @@ public class StudySessionService {
     public List<CardStudyLogResponse> fetchLogsByStudySessionId(Long studySessionId) {
         return studySessionRepository.fetchLogsByStudySessionId(studySessionId);
     }
+
+    public Boolean checkExistByUser(User user) {
+        return studySessionRepository.existsByUser(user);
+    }
 }
