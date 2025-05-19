@@ -59,6 +59,9 @@ const GameDetectivePage = () => {
       setResultModalType("success");
     } else {
       setResultModalType("fail");
+      if (score > 0) {
+        setScore(prev => prev - 1);
+      }
     }
   };
 

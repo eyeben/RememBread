@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
+import Button from "@/components/common/Button";
 import {
   Dialog,
   DialogClose,
@@ -14,7 +15,9 @@ import {
 import { Label } from "@/components/ui/label";
 import { Slider } from "@/components/ui/slider";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import Button from "@/components/common/Button";
+
+import { postStartTest } from "@/services/study";
+import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 
 interface TestSettingDialogProps {
   indexCardId: number;
@@ -22,15 +25,28 @@ interface TestSettingDialogProps {
 
 const TestSettingDialog = ({ indexCardId }: TestSettingDialogProps) => {
   const navigate = useNavigate();
+  const { location: currentLocation } = useCurrentLocation();
 
   const [count, setCount] = useState([100]);
   const [selectedMode, setSelectedMode] = useState<string>("CONCEPT");
 
-  const handleStartTest = () => {
-    if (selectedMode === "CONCEPT") {
-      navigate(`/test/${indexCardId}/concept`);
-    } else if (selectedMode === "EXPLANE") {
-      navigate(`/test/${indexCardId}/explane`);
+  const handleStartTest = async () => {
+    try {
+      await postStartTest(
+        indexCardId,
+        count[0],
+        selectedMode,
+        currentLocation?.latitude ?? 0,
+        currentLocation?.longitude ?? 0,
+      );
+
+      if (selectedMode === "CONCEPT") {
+        navigate(`/test/${indexCardId}/concept`);
+      } else if (selectedMode === "EXPLAIN") {
+        navigate(`/test/${indexCardId}/explain`);
+      }
+    } catch (error) {
+      console.error("테스트 시작 중 오류:", error);
     }
   };
 
@@ -56,12 +72,12 @@ const TestSettingDialog = ({ indexCardId }: TestSettingDialogProps) => {
           <RadioGroup value={selectedMode} onValueChange={setSelectedMode}>
             <div className="flex justify-between space-y-2">
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="CONCEPT" id="concept" />
-                <Label htmlFor="concept">개념 맞히기</Label>
+                <RadioGroupItem value="CONCEPT" id="CONCEPT" />
+                <Label htmlFor="CONCEPT">개념 맞히기</Label>
               </div>
               <div className="flex items-center space-x-2">
-                <RadioGroupItem value="EXPLANE" id="explane" />
-                <Label htmlFor="explane">설명 해보기</Label>
+                <RadioGroupItem value="EXPLAIN" id="EXPLAIN" />
+                <Label htmlFor="EXPLAIN">설명 해보기</Label>
               </div>
             </div>
           </RadioGroup>

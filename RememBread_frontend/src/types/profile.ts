@@ -12,3 +12,23 @@ export interface CharacterImageProps {
   className?: string;
   isGrayscale?: boolean;
 }
+
+export interface StudyHistoryDay {
+  day: string;
+  totalCorrect: number;
+  totalSolved: number;
+}
+
+export interface StudyHistoryMonth {
+  month: number;
+  totalCorrect: number;
+  totalSolved: number;
+  days: StudyHistoryDay[];
+}
+
+export interface StudyHistoryYear {
+  year: number;
+  totalCorrect: number;
+  totalSolved: number;
+  months: StudyHistoryMonth[];
+}

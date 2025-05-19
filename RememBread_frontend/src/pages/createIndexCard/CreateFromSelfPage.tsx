@@ -150,7 +150,7 @@ const CreateFromSelfPage = () => {
       ) : (
         <div
           className="flex flex-col justify-between w-full mt-14 text-center"
-          style={{ minHeight: "calc(100vh - 120px)" }}
+          style={{ minHeight: "calc(100vh - 126px)" }}
         >
           <div>
             <div className="flex mt-5 mx-5 gap-5">

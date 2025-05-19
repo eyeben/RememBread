@@ -1,6 +1,7 @@
 export const alertLocationIcon = (
   size: number = 40,
   color: string = "#ffaa64",
+  dimmed: boolean = false,
 ): naver.maps.MarkerOptions["icon"] => {
   const half = size / 2;
 
@@ -17,6 +18,8 @@ export const alertLocationIcon = (
         justify-content: center;
         box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
         animation: pulse-ring 2s infinite;
+        opacity: ${dimmed ? 0.4 : 1}; 
+        transition: opacity 0.3s;
       ">
         <svg xmlns="http://www.w3.org/2000/svg" width="${size / 2}" height="${
       size / 2
