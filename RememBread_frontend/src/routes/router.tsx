@@ -15,7 +15,7 @@ import SaveCardPage from "@/pages/createIndexCard/SaveCardPage";
 import ProfilePage from "@/pages/profile/ProfilePage";
 import SocialCallbackPage from "@/pages/login/SocialCallbackPage";
 import CardTestConceptPage from "@/pages/cardTest/CardTestConceptPage";
-import CardTestExplanePage from "@/pages/cardTest/CardTestExplanePage";
+import CardTestExplainPage from "@/pages/cardTest/CardTestExplainPage";
 import CardViewPage from "@/pages/indexCardSetView/CardViewPage";
 import GameModePage from "@/pages/games/GameModePage";
 import GameHomePage from "@/pages/games/GameHomePage";
@@ -156,8 +156,9 @@ const router = createBrowserRouter([
             path: "test/:indexCardId",
             children: [
               { path: "concept", element: <CardTestConceptPage /> },
-              { path: "explane", element: <CardTestExplanePage /> },
+              { path: "explain", element: <CardTestExplainPage /> },
             ],
+            handle: { header: false, footer: true },
           },
           {
             path: "profile",

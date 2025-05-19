@@ -3,22 +3,19 @@ import { useParams, useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import Button from "@/components/common/Button";
-import { Input } from "@/components/ui/input";
 import { getCardSetById } from "@/services/cardSet";
 import { getNextCard, postAnswer, postStopTest, postLocation } from "@/services/study";
 import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 
-const CardTestConceptPage = () => {
+const CardTestExplainPage = () => {
   const navigate = useNavigate();
   const { indexCardId } = useParams();
   const cardSetId = Number(indexCardId);
   const { location: currentLocation } = useCurrentLocation();
 
   const [name, setName] = useState<string | undefined>("");
-  const [answer, setAnswer] = useState<string>("");
   const [cardId, setCardId] = useState<number>(0);
   const [concept, setConcept] = useState<string>("");
-  const [description, setDescription] = useState<string>("");
   const [remainingCardCount, setRemainingCardCount] = useState<number>(101);
 
   const [isCorrect, setIsCorrect] = useState<null | boolean>(null);
@@ -29,7 +26,6 @@ const CardTestConceptPage = () => {
 
       setCardId(data.cardId);
       setConcept(data.concept);
-      setDescription(data.description);
 
       const response = await getCardSetById(cardSetId);
 
@@ -54,20 +50,14 @@ const CardTestConceptPage = () => {
     }
   };
 
-  const handleSubmitAnswer = async () => {
-    const trimmedAnswer = answer.replace(/\s/g, "");
-    const trimmedConcept = concept.replace(/\s/g, "");
-    const correct = trimmedAnswer === trimmedConcept;
-
+  const handleSubmitAnswer = async (correct: boolean) => {
     setIsCorrect(correct);
 
     setTimeout(() => {
       setIsCorrect(null);
     }, 1000);
 
-    setAnswer("");
-
-    const response = await postAnswer(cardSetId, cardId, trimmedAnswer === trimmedConcept);
+    const response = await postAnswer(cardSetId, cardId, correct);
 
     if (remainingCardCount === 0) {
       handleStopTest();
@@ -136,47 +126,34 @@ const CardTestConceptPage = () => {
 
           <div className="flex flex-1 justify-center w-full overflow-auto rounded-xl">
             <div className="flex w-full min-h-full mx-5 p-2 bg-[#BA7E4E] rounded-2xl">
-              <div className="w-full min-h-full bg-[#FDF0CF] border-8 border-[#F0A365] p-4 rounded-xl">
-                <div className="w-full max-h-full overflow-auto scrollbar-hide">{description}</div>
+              <div className="flex items-center justify-center w-full min-h-full bg-[#FDF0CF] border-8 border-[#F0A365] p-4 rounded-xl">
+                <div className="flex items-center justify-center w-full max-h-full overflow-auto scrollbar-hide text-2xl font-bold">
+                  {concept}
+                </div>
               </div>
             </div>
           </div>
 
           <div className="flex flex-col m-5 gap-5">
-            <div>
-              <Input
-                type="text"
-                value={answer}
-                onChange={(e) => setAnswer(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") {
-                    e.preventDefault();
-                    handleSubmitAnswer();
-                  }
-                }}
-                placeholder="정답 입력"
-              />
+            <div className="flex justify-between gap-5">
+              <Button
+                variant="negative"
+                className="w-full"
+                onClick={() => handleSubmitAnswer(false)}
+              >
+                몰라요
+              </Button>
+              <Button
+                variant="positive"
+                className="w-full"
+                onClick={() => handleSubmitAnswer(true)}
+              >
+                알아요
+              </Button>
             </div>
-
-            {remainingCardCount > 0 ? (
-              <div className="flex justify-between gap-5">
-                <Button variant="neutral" className="w-full" onClick={handleStopTest}>
-                  그만하기
-                </Button>
-                <Button variant="primary" className="w-full" onClick={handleSubmitAnswer}>
-                  제출하기
-                </Button>
-              </div>
-            ) : (
-              <div className="flex justify-between gap-5">
-                <Button variant="neutral" className="w-full" onClick={handleStopTest}>
-                  그만하기
-                </Button>
-                <Button variant="primary" className="w-full" onClick={handleSubmitAnswer}>
-                  제출하고 종료하기
-                </Button>
-              </div>
-            )}
+            <Button variant="neutral" className="w-full" onClick={handleStopTest}>
+              그만하기
+            </Button>
           </div>
         </div>
       </div>
@@ -184,4 +161,4 @@ const CardTestConceptPage = () => {
   );
 };
 
-export default CardTestConceptPage;
+export default CardTestExplainPage;
