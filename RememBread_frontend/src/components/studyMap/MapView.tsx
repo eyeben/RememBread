@@ -435,7 +435,7 @@ const MapView = () => {
   }
 
   return (
-    <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
+    <div className="relative w-full" style={{ height: "calc(100vh - 126px)" }}>
       <Toaster />
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
         <div className="w-3/5 bg-white opacity-100 rounded-md">
