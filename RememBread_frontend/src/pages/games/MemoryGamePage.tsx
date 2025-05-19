@@ -14,8 +14,9 @@ const MemoryGamePage = () => {
   const [difficulty, setDifficulty] = useState<number>(3); // 초기 난이도 3개
   const [score, setLocalScore] = useState<number>(0);
   const [userInput, setUserInput] = useState<(string|number)[]>([]);
-  const [resultModalType, setResultModalType] = useState<"success"|"fail"|null>(null);
+  const [resultModalType, setResultModalType] = useState<"success" | "fail" | null>(null);
   const [successCount, setSuccessCount] = useState<number>(0); // 현재 난이도에서의 성공 횟수
+  const [inputResults, setInputResults] = useState<boolean[]>([]); // 각 입력값의 정답 여부를 저장
   
   // 사용 가능한 모든 아이템
   const allItems = [1,2,3,4,5,6,7,8,9,'🍞','🥖','🥐'];
@@ -58,28 +59,50 @@ const MemoryGamePage = () => {
     if (userInput.length >= answer.length) return;
     const next = [...userInput, val];
     setUserInput(next);
+    
+    // 현재 입력한 값의 정답 여부 확인
+    const currentIndex = next.length - 1;
+    const isCorrect = val === answer[currentIndex];
+    const newInputResults = [...inputResults, isCorrect];
+    setInputResults(newInputResults);
+
+    // 틀린 경우 즉시 실패 처리
+    if (!isCorrect) {
+      setResultModalType("fail");
+      // 실패 시 새로운 문제 출제
+      setAnswer(generateRandomCombination(difficulty));
+      return;
+    }
+
+    // 모든 답을 맞췄을 경우
     if (next.length === answer.length) {
-      const isCorrect = next.every((v, i) => v === answer[i]);
-      if (isCorrect) {
-        setResultModalType("success");
-        setLocalScore((prev) => prev + 1);
-        const newSuccessCount = successCount + 1;
-        setSuccessCount(newSuccessCount);
-        
-        // 3번 성공하면 난이도 증가
-        if (newSuccessCount >= 3 && difficulty < 10) {
-          // 난이도 증가는 모달이 닫힐 때 처리
-        } else {
-          // 같은 난이도에서 새로운 문제 출제
-          setAnswer(generateRandomCombination(difficulty));
-        }
-      } else {
-        setResultModalType("fail");
-        // 실패 시에도 새로운 문제 출제
-        setAnswer(generateRandomCombination(difficulty));
-      }
+      setResultModalType("success");
+      setLocalScore((prev) => prev + 1);
+      const newSuccessCount = successCount + 1;
+      setSuccessCount(newSuccessCount);
     }
   };
+
+  // 모달이 닫힐 때 상태 초기화
+  const handleModalClose = () => {
+    setResultModalType(null);
+    setUserInput([]);
+    setInputResults([]); // 입력 결과도 초기화
+    setShowQuiz(true);
+    
+    // 3번 성공했고 최대 난이도가 아닐 경우 난이도 증가
+    if (successCount >= 3 && difficulty < 10) {
+      setDifficulty(prev => prev + 1);
+    } else {
+      setAnswer(generateRandomCombination(difficulty));
+    }
+  };
+
+  // 새로운 문제가 생성될 때마다 입력 결과 초기화
+  useEffect(() => {
+    setUserInput([]);
+    setInputResults([]);
+  }, [answer]);
 
   const handleTimeEnd = () => {
     setMemoryScore(score);
@@ -98,7 +121,7 @@ const MemoryGamePage = () => {
               <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
             </span>
           </div>
-          <div className="w-full max-w-[376px] h-[90px] sm:h-[108px] flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-2 sm:gap-4 py-4 mb-4 text-white text-2xl sm:text-3xl font-bold">
+          <div className="w-full max-w-[376px] h-[90px] sm:h-[108px] flex-shrink-0 bg-primary-600 rounded-xl flex flex-row items-center justify-center gap-2 sm:gap-4 py-4 mb-4 text-white text-3xl sm:text-3xl font-bold">
             {showQuiz ? (
               <>
                 {answer.map((item, idx) => (
@@ -106,22 +129,23 @@ const MemoryGamePage = () => {
                 ))}
               </>
             ) : (
-              <div className="flex flex-col items-center w-full">
-                <div className="flex flex-row items-center justify-center gap-4 sm:gap-6 text-white text-xl sm:text-2xl font-bold h-8 mb-2">
-                  {answer.map((_, idx) => (
-                    <span key={idx} className="w-6 sm:w-8 text-center">
-                      {userInput[idx] !== undefined ? userInput[idx] : ""}
-                    </span>
-                  ))}
-                </div>
-                <div className="flex flex-row items-end justify-center gap-4 sm:gap-6">
-                  {answer.map((_, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-block w-6 sm:w-8 h-1 rounded bg-white opacity-80"
-                    ></span>
-                  ))}
-                </div>
+              <div className="flex gap-1 justify-center">
+                {userInput.map((input, index) => (
+                  <div
+                    key={index}
+                    className={`w-10 h-12 flex items-center justify-center border-2 rounded-lg text-3xl font-bold
+                      ${inputResults[index] === undefined ? 'border-gray-300' : 
+                        inputResults[index] ? 'border-green-500 bg-primary-100 text-neutral-700' : 'border-red-500 bg-red-50 text-neutral-700'}`}
+                  >
+                    {input}
+                  </div>
+                ))}
+                {[...Array(answer.length - userInput.length)].map((_, index) => (
+                  <div
+                    key={`empty-${index}`}
+                    className="w-10 h-12 border-2 border-gray-300 rounded-lg"
+                  />
+                ))}
               </div>
             )}
           </div>
@@ -140,17 +164,7 @@ const MemoryGamePage = () => {
           <GameResultModal
             open={!!resultModalType}
             type={resultModalType === "success" ? "success" : "fail"}
-            onClose={() => {
-              setResultModalType(null);
-              setUserInput([]);
-              setShowQuiz(true);
-              
-              if (successCount >= 3 && difficulty < 10) {
-                setDifficulty(prev => prev + 1);
-              } else {
-                setAnswer(generateRandomCombination(difficulty));
-              }
-            }}
+            onClose={handleModalClose}
           />
         </>
       )}
