@@ -1,4 +1,6 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import SpeechBubble from "@/components/common/SpeechBubble";
 import CustomButton from "@/components/common/CustomButton";
 import Game from "@/components/svgs/footer/Game";
@@ -6,13 +8,11 @@ import Bread from "@/components/svgs/game/Bread";
 import Baguette from "@/components/svgs/game/Baguette";
 import Croissant from "@/components/svgs/game/Croissant";
 import Bread2 from "@/components/svgs/game/Bread2";
-import { motion, useAnimation, AnimatePresence } from "framer-motion";
-import { useEffect, useState } from "react";
 
 const GameModePage = () => {
   const navigate = useNavigate();
   const controls = useAnimation();
-  const [showSpeechBubble, setShowSpeechBubble] = useState(false);
+  const [showSpeechBubble, setShowSpeechBubble] = useState<boolean>(false);
 
   const messages = [
     "오늘도 열심히 해봐요!",
