@@ -36,12 +36,14 @@ const CardStudyPage = () => {
 
   const [hasStarted, setHasStarted] = useState<boolean>(false);
   const [locationIntervalId, setLocationIntervalId] = useState<NodeJS.Timeout | null>(null);
-
   const isRecordingRef = useRef<boolean>(false);
   const [showStopModal, setShowStopModal] = useState<boolean>(false);
 
   const [ttsUrl, setTtsUrl] = useState<string | undefined>();
   const [ttsMap, setTtsMap] = useState<Record<number, string>>({});
+  const [isTTSMode, setIsTTSMode] = useState(false);
+  const [ttsMode, setTtsMode] = useState<"single" | "sequence" | null>(null);
+  const audioRef = useRef<HTMLAudioElement | null>(null);
 
   useEffect(() => {
     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
@@ -74,12 +76,8 @@ const CardStudyPage = () => {
       return;
     }
     const fetchCards = async () => {
-      try {
-        const res = await getCardsByCardSet(cardSet.cardSetId, 0, 100, "asc");
-        setCards(res.result.cards);
-      } catch (e) {
-        console.error("[카드 로딩 실패]", e);
-      }
+      const res = await getCardsByCardSet(cardSet.cardSetId, 0, 100, "asc");
+      setCards(res.result.cards);
     };
     fetchCards();
   }, [cardSet?.cardSetId, navigate]);
@@ -109,78 +107,40 @@ const CardStudyPage = () => {
     }, 310);
   };
 
-  // 학습 시작
   useEffect(() => {
     if (!cardSet?.cardSetId || !currentLocation || hasStarted) return;
     const start = async () => {
-      try {
-        await startRecord(cardSet.cardSetId, {
-          mode: "STUDY",
-          latitude: currentLocation.latitude,
-          longitude: currentLocation.longitude,
-        });
-        console.log("[START] startRecord 호출됨", {
-          cardSetId: cardSet.cardSetId,
-          currentLocation,
-        });
-        isRecordingRef.current = true;
-        setHasStarted(true);
-        useStudyStore.getState().setRecording(cardSet.cardSetId);
-        const intervalId = setInterval(() => {
-          if (!currentLocation) return;
-          postLocation(cardSet.cardSetId, currentLocation.latitude, currentLocation.longitude)
-            .then(() => console.log("위치 전송 완료"))
-            .catch((e) => console.error("위치 전송 실패", e));
-        }, 2 * 60 * 1000);
-        setLocationIntervalId(intervalId);
-      } catch (e) {
-        console.error("학습 시작 실패", e);
-      }
+      await startRecord(cardSet.cardSetId, {
+        mode: "STUDY",
+        latitude: currentLocation.latitude,
+        longitude: currentLocation.longitude,
+      });
+      isRecordingRef.current = true;
+      setHasStarted(true);
+      useStudyStore.getState().setRecording(cardSet.cardSetId);
+      const intervalId = setInterval(() => {
+        if (!currentLocation) return;
+        postLocation(cardSet.cardSetId, currentLocation.latitude, currentLocation.longitude);
+      }, 2 * 60 * 1000);
+      setLocationIntervalId(intervalId);
     };
     start();
   }, [cardSet?.cardSetId, currentLocation, hasStarted]);
 
   const handleStopConfirm = async () => {
     if (!cardSet?.cardSetId) return;
-
-    const stopPayload = {
+    await stopRecord(cardSet.cardSetId, {
       lastCardId,
       latitude: currentLocation?.latitude ?? 0,
       longitude: currentLocation?.longitude ?? 0,
-    };
-
-    console.log("[STOP] stopRecord 호출됨", {
-      cardSetId: cardSet.cardSetId,
-      ...stopPayload,
     });
-
-    await stopRecord(cardSet.cardSetId, stopPayload);
     useStudyStore.getState().stopRecording();
     if (locationIntervalId) clearInterval(locationIntervalId);
     isRecordingRef.current = false;
     setShowStopModal(false);
-
     navigate(`/card-view`);
   };
 
-  // TTS로 학습하기
-  const handleTTSClick = async () => {
-    if (!cardSet?.cardSetId) return;
-
-    try {
-      const res = await getTTSFiles(cardSet.cardSetId);
-      if (res.result.length === 0) {
-        alert("TTS 파일이 존재하지 않습니다.");
-      } else {
-        setTtsUrl(res.result[0].ttsFileUrl); // 버튼 대신 player로 대체
-      }
-    } catch (e) {
-      console.error("TTS 파일 조회 실패", e);
-      alert("TTS 파일을 불러오는 데 실패했습니다.");
-    }
-  };
-
-  // TTS 파일 로딩
   useEffect(() => {
     if (!cardSet?.cardSetId) return;
     const loadTTS = async () => {
@@ -194,32 +154,39 @@ const CardStudyPage = () => {
     loadTTS();
   }, [cardSet?.cardSetId]);
 
-  // 카드 넘길 때마다 TTS URL 갱신
   useEffect(() => {
     const currentCard = cards[currentIndex - 1];
     const tts = currentCard?.cardId ? ttsMap[currentCard.cardId] : undefined;
     setTtsUrl(tts);
   }, [currentIndex, ttsMap, cards]);
 
+  useEffect(() => {
+    if (ttsMode === "sequence" && audioRef.current) {
+      audioRef.current.play().catch(() => {});
+    }
+  }, [ttsUrl]);
+
   return (
-    <div className="flex flex-col justify-between w-full text-center gap-2">
+    <div className="flex flex-col justify-between h-full w-full text-center gap-3 pc:p-4 p-2">
       <Button
-        className="text-primary-500 text-2xl font-bold pc:m-2 m-5 py-5"
+        className="text-primary-500 text-2xl font-bold m-3 py-5"
         variant="primary-outline"
         onClick={handleFlip}
         disabled={isButtonDisabled}
       >
         {!isFront ? "concept" : "description"}
       </Button>
+
       <div>
         {currentIndex} / {cards.length}
       </div>
+
       <Carousel
         setApi={setApi}
         opts={{ align: "center", loop: false }}
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
-        <CarouselContent className="aspect-square">
+        <CarouselContent className="aspect-square pc:mb-4 mb-2">
           {cards.map((card, index) => (
             <CarouselItem key={card.cardId ?? index} className="relative">
               <div className="relative w-full h-full hover:cursor-pointer" onClick={handleFlip}>
@@ -249,26 +216,82 @@ const CardStudyPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
-      <div className="flex gap-4 justify-center mt-2 ">
-        {ttsUrl && (
-          <div className="flex gap-4 justify-center mt-2">
-            <audio
-              controls
-              autoPlay
-              src={ttsUrl}
-              className="w-4/5 rounded-md border border-primary-600 shadow-md"
-            />
+
+      {/* TTS 제어 UI */}
+      {!isTTSMode && (
+        <div className="flex gap-4 justify-center mt-2 ">
+          <Button
+            onClick={() => setIsTTSMode(true)}
+            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
+          >
+            TTS 시작하기
+          </Button>
+        </div>
+      )}
+
+      {isTTSMode && ttsUrl && (
+        <div className="flex flex-col pc:gap-2 gap-1 items-center mt-2 ">
+          <audio
+            ref={audioRef}
+            controls
+            autoPlay
+            src={ttsUrl}
+            onEnded={() => {
+              if (ttsMode === "sequence" && currentIndex < cards.length) {
+                setTimeout(() => {
+                  api?.scrollNext();
+                }, 1000); // 1초 뒤에 카드 넘김 (기다림 보장)
+              }
+            }}
+            className="w-4/5 pc:h-12 h-8 rounded-md "
+          />
+
+          <div className="w-4/5 mx-auto flex justify-between gap-2 mt-2">
+            <Button
+              onClick={() => setTtsMode("single")}
+              className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
+              ${
+                ttsMode === "single"
+                  ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
+                  : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
+              }`}
+            >
+              하나씩 재생
+            </Button>
+            <Button
+              onClick={() => setTtsMode("sequence")}
+              className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
+                ${
+                  ttsMode === "sequence"
+                    ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
+                    : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
+                }`}
+            >
+              연속 재생
+            </Button>
+            <Button
+              onClick={() => {
+                audioRef.current?.pause();
+                setIsTTSMode(false);
+                setTtsMode(null);
+              }}
+              className="flex-1 text-sm pc:text-base bg-white text-red-600 border border-red-300 px-3 py-2 rounded-lg font-medium hover:bg-red-50 transition pc:h-10 h-6"
+            >
+              종료
+            </Button>
           </div>
-        )}
-      </div>
+        </div>
+      )}
+
       <div className="flex gap-4 justify-center mt-2 ">
         <Button
           onClick={() => setShowStopModal(true)}
-          className="w-4/5 pc:mt-5 mt-1 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition"
+          className="w-4/5 pc:mt-3 mt-1 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
         >
           기록 종료하기
         </Button>
       </div>
+
       <StopStudyModal
         open={showStopModal}
         onOpenChange={(open) => setShowStopModal(open)}
