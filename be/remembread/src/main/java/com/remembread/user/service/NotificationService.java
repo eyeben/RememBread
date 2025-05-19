@@ -51,7 +51,7 @@ public class NotificationService {
                 && GeoUtil.isWithin200m(latitude, longitude, user.getNotificationLocationLatitude(), user.getNotificationLocationLongitude())) {
 
             String fcmToken = user.getFcmToken();
-            String message = user.getNickname() + "님, 이 장소 뭔가 익숙한데요? 슬슬 공부 시작해봐요!";
+            String message = user.getNickname() + "님, 이 장소 뭔가 익숙한데요? 슬슬 공부를 시작해봐요!";
             String path = "/card-view";
 
             if (fcmToken != null && !fcmToken.isBlank()) {
