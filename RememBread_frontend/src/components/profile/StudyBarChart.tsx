@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect, MouseEvent, TouchEvent } from "react";
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import {
   Select,
@@ -7,45 +7,87 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { getStudyHistory } from "@/services/userService";
+import { StudyHistoryYear } from "@/types/profile";
 
-// 더미 데이터 생성 함수
-const getDailyData = () =>
-  Array.from({ length: 31 }, (_, i) => ({ day: i + 1, study: Math.floor(Math.random() * 120) }));
-const getWeeklyData = () =>
-  Array.from({ length: 12 }, (_, i) => ({
-    week: `${i + 1}주차`,
-    study: Math.floor(Math.random() * 800),
-  }));
-const getMonthlyData = () =>
-  Array.from({ length: 12 }, (_, i) => ({
-    month: `${i + 1}월`,
-    study: Math.floor(Math.random() * 2500),
-  }));
+interface ChartDataPoint {
+  day?: number;
+  month?: number;
+  study: number;
+}
 
 const StudyBarChart = () => {
   const [year, setYear] = useState<number>(2025);
-  const [month, setMonth] = useState<number>(4);
-  const [viewType, setViewType] = useState<"day" | "week" | "month">("day");
-  // 일별: 15일 슬라이드, 주별: 12주, 월별: 12달
+  const [month, setMonth] = useState<number>(5);
+  const [viewType, setViewType] = useState<"day" | "month">("day");
+  // 일별: 15일 슬라이드
   const [dayStartIdx, setDayStartIdx] = useState<number>(0); // 일별 슬라이드 인덱스
-  const [weekStartIdx, setWeekStartIdx] = useState<number>(0); // 주별 슬라이드 인덱스(3달치 12주)
 
   // 드래그 상태
   const dragStartX = useRef<number | null>(null);
   const dragging = useRef<boolean>(false);
 
-  // 데이터 준비
-  const dailyData = getDailyData(); // 1~31일 더미
-  const weeklyData = getWeeklyData(); // 12주 더미
-  const monthlyData = getMonthlyData(); // 12달 더미
+  // 학습 기록 데이터
+  const [studyHistoryData, setStudyHistoryData] = useState<StudyHistoryYear[]>([]);
+  const [dailyData, setDailyData] = useState<ChartDataPoint[]>([]);
+  const [monthlyData, setMonthlyData] = useState<ChartDataPoint[]>([]);
+
+  // 학습 기록 조회 데이터 준비
+  useEffect(() => {
+    const fetchStudyHistory = async () => {
+      let startDate = "";
+      let endDate = "";
+      
+      
+      if (viewType === "month") {
+        startDate = `${year}-01-01`;
+        endDate = `${year+1}-01-01`;
+      } else {
+        startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+        // 12월인 경우 다음 해 1월로 처리
+        if (month === 12) {
+          endDate = `${year+1}-01-01`;
+        } else {
+          endDate = `${year}-${(month+1).toString().padStart(2, '0')}-01`;
+        }
+      }
+      const response = await getStudyHistory(startDate, endDate);
+      setStudyHistoryData(response.result.years);
+    };
+    fetchStudyHistory();
+  }, [viewType, year, month]);
+
+  // studyHistoryData를 차트 데이터로 가공
+  useEffect(() => {
+    if (!studyHistoryData.length) return;
+
+    if (viewType === "month") {
+      // 월별 데이터 가공
+      const yearData = studyHistoryData.find(y => y.year === year);
+      const monthlyChartData: ChartDataPoint[] = Array.from({ length: 12 }, (_, i) => ({
+        month: i + 1,
+        study: yearData?.months[i]?.totalSolved || 0
+      }));
+      setMonthlyData(monthlyChartData);
+    } else {
+      // 일별 데이터 가공
+      const yearData = studyHistoryData.find(y => y.year === year);
+      const monthData = yearData?.months[month - 1];
+      const daysInMonth = new Date(year, month, 0).getDate();
+      
+      const dailyChartData: ChartDataPoint[] = Array.from({ length: daysInMonth }, (_, i) => ({
+        day: i + 1,
+        study: monthData?.days[i]?.totalSolved || 0
+      }));
+      setDailyData(dailyChartData);
+    }
+  }, [studyHistoryData, viewType, year, month]);
 
   // 일별: 15일치만 보여줌
   const visibleDailyData = dailyData.slice(dayStartIdx, dayStartIdx + 15);
-  // 주별: 12주(최근 3달치)
-  const visibleWeeklyData = weeklyData.slice(weekStartIdx, weekStartIdx + 12);
 
-  // 드래그 이벤트 핸들러 (일별/주별)
-  const handleDragStart = (e: React.MouseEvent | React.TouchEvent) => {
+  // 드래그 이벤트 핸들러 (일별)
+  const handleDragStart = (e: MouseEvent | TouchEvent) => {
     dragging.current = true;
     if ("touches" in e) {
       dragStartX.current = e.touches[0].clientX;
@@ -53,7 +95,7 @@ const StudyBarChart = () => {
       dragStartX.current = e.clientX;
     }
   };
-  const handleDragMove = (e: React.MouseEvent | React.TouchEvent) => {
+  const handleDragMove = (e: MouseEvent | TouchEvent) => {
     if (!dragging.current || dragStartX.current === null) return;
     let clientX;
     if ("touches" in e) {
@@ -68,14 +110,6 @@ const StudyBarChart = () => {
         dragStartX.current = clientX;
       } else if (diff < -20 && dayStartIdx < dailyData.length - 15) {
         setDayStartIdx(dayStartIdx + 1);
-        dragStartX.current = clientX;
-      }
-    } else if (viewType === "week") {
-      if (diff > 20 && weekStartIdx > 0) {
-        setWeekStartIdx(weekStartIdx - 1);
-        dragStartX.current = clientX;
-      } else if (diff < -20 && weekStartIdx < weeklyData.length - 12) {
-        setWeekStartIdx(weekStartIdx + 1);
         dragStartX.current = clientX;
       }
     }
@@ -99,30 +133,23 @@ const StudyBarChart = () => {
     setYear(newYear);
     setMonth(newMonth);
     setDayStartIdx(0); // 월 바뀌면 일별 인덱스 초기화
-    setWeekStartIdx(0); // 월 바뀌면 주별 인덱스 초기화
-    // 실제로는 이곳에서 해당 월 데이터를 백엔드에서 받아와야 함
   };
   const handleYearChange = (dir: "prev" | "next") => {
     setYear(dir === "prev" ? year - 1 : year + 1);
-    // 실제로는 이곳에서 해당 연도 데이터를 받아와야 함
   };
 
   // 차트 데이터/축 설정
-  // let chartData: any[] = visibleDailyData;
   let chartData: any[] | null = null;
   let xKey = "day";
   let xTickFormatter = (v: any) => `${v}`;
   let tooltipLabelFormatter = (label: any) => `${label}일`;
-  if (viewType === "week") {
-    chartData = visibleWeeklyData;
-    xKey = "week";
-    xTickFormatter = (v: any) => `${v}`;
-    tooltipLabelFormatter = (label: any) => label;
-  } else if (viewType === "month") {
+  if (viewType === "month") {
     chartData = monthlyData;
     xKey = "month";
     xTickFormatter = (v: any) => v;
     tooltipLabelFormatter = (label: any) => label;
+  } else {
+    chartData = visibleDailyData;
   }
 
   return (
@@ -131,15 +158,14 @@ const StudyBarChart = () => {
         <div className="text-xl font-bold">
           공부 기록
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
-            (예정)
+            (총 문제 수)
           </span>
           <span className="text-base font-normal text-neutral-400 ml-2 cursor-pointer select-none">
             <Select
               value={viewType}
               onValueChange={(value) => {
-                setViewType(value as "day" | "week" | "month");
+                setViewType(value as "day" | "month");
                 setDayStartIdx(0);
-                setWeekStartIdx(0);
               }}
             >
               <SelectTrigger className="w-[120px] bg-transparent">
@@ -147,7 +173,6 @@ const StudyBarChart = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="day">일별 기록</SelectItem>
-                <SelectItem value="week">주별 기록</SelectItem>
                 <SelectItem value="month">월별 기록</SelectItem>
               </SelectContent>
             </Select>
@@ -159,7 +184,7 @@ const StudyBarChart = () => {
               <button onClick={() => handleMonthChange("prev")} className="hover:text-neutral-600">
                 &#60;
               </button>
-              <span>
+              <span className="text-neutral-400 text-sm">
                 {year}년 {month}월
               </span>
               <button onClick={() => handleMonthChange("next")} className="hover:text-neutral-600">
@@ -171,7 +196,7 @@ const StudyBarChart = () => {
               <button onClick={() => handleYearChange("prev")} className="hover:text-neutral-600">
                 &#60;
               </button>
-              <span>{year}년</span>
+              <span className="text-neutral-400 text-sm">{year}년</span>
               <button onClick={() => handleYearChange("next")} className="hover:text-neutral-600">
                 &#62;
               </button>
@@ -208,10 +233,17 @@ const StudyBarChart = () => {
               />
               <YAxis tick={{ fontSize: 13 }} axisLine={false} tickLine={false} />
               <Tooltip
-                formatter={(value: number) => `${value}분`}
+                formatter={(value: number) => `${value}문제`}
                 labelFormatter={tooltipLabelFormatter}
+                cursor={{ fill: 'transparent' }}
               />
-              <Bar dataKey="study" fill="#D2A06E" radius={[4, 4, 0, 0]} barSize={18} />
+              <Bar 
+                dataKey="study" 
+                fill="#D2A06E" 
+                radius={[4, 4, 0, 0]} 
+                barSize={18}
+                activeBar={{ fill: '#A67B51' }}
+              />
             </BarChart>
           </ResponsiveContainer>
         )}
@@ -221,3 +253,4 @@ const StudyBarChart = () => {
 };
 
 export default StudyBarChart;
+

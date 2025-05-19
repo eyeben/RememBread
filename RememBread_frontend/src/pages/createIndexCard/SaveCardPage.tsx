@@ -205,7 +205,7 @@ const SaveCardPage = () => {
 
       <div
         className="flex flex-col justify-between w-full h-full mt-14 text-center"
-        style={{ minHeight: "calc(100vh - 120px)" }}
+        style={{ minHeight: "calc(100vh - 126px)" }}
       >
         <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 196px)" }}>
           {/* 경로 표시 */}

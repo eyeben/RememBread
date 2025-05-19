@@ -92,7 +92,7 @@ const RankPage = () => {
 
             {/* 내 점수 */}
             {myRank ? (
-              <div className="flex items-center gap-4 p-3 border-b-2 border-primary-200">
+              <div className="flex items-center gap-4 p-3 border-b-2 border-primary-200 bg-blue-50 rounded-lg">
                 <div className="w-8 text-center font-bold">{myRank?.rank}</div>
                 <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
                   <img 
@@ -105,7 +105,7 @@ const RankPage = () => {
                   <div className="font-semibold">{myRank?.nickname}</div>
                   <div className="text-xs text-neutral-400">{myRank?.playedAt.split('T')[0]}</div>
                 </div>
-                <div className="font-bold text-primary-500">{myRank?.maxScore}</div>
+                <div className="font-bold text-primary-500">{myRank?.maxScore} 점</div>
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center py-10 text-center text-neutral-400">

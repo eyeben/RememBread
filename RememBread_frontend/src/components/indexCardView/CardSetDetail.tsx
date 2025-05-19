@@ -183,7 +183,7 @@ const CardSetDetail = ({
       {typeof editingCardId === "number" ? (
         <div
           className="flex flex-col justify-between w-full text-center"
-          style={{ minHeight: "calc(100vh - 142px)" }}
+          style={{ minHeight: "calc(100vh - 146px)" }}
         >
           <div
             className="flex flex-col flex-grow overflow-hidden"
@@ -244,7 +244,7 @@ const CardSetDetail = ({
       ) : (
         <div
           className="flex flex-col justify-between w-full text-center"
-          style={{ minHeight: "calc(100vh - 142px)" }}
+          style={{ minHeight: "calc(100vh - 146px)" }}
         >
           <div>
             {isMyCardSet ? (

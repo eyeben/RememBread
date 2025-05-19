@@ -75,6 +75,9 @@ const MemoryGamePage = () => {
         }
       } else {
         setResultModalType("fail");
+        if (score > 0) {
+          setLocalScore(prev => prev - 1);
+        }
         // 실패 시에도 새로운 문제 출제
         setAnswer(generateRandomCombination(difficulty));
       }
