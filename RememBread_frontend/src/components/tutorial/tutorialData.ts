@@ -8,9 +8,17 @@ export interface TutorialPage {
 export const tutorialPages: TutorialPage[] = [
   {
     title: "1. 인덱스카드 생성하기",
-    componentKey: "Tutorial1",
-    description: "원하는 방식으로 카드를 만들어보세요!",
+    subTitle: "1-1. 직접입력",
+    componentKey: "MakeCardTutorial",
+    description: "직접 입력하여 카드를 만들어보세요.",
   },
+  {
+    title: "1. 인덱스카드 생성하기",
+    subTitle: "1-2. 대량 텍스트",
+    componentKey: "MakeLargeStringTutoria",
+    description: "대량 텍스트를 넣어서 카드를 만들어보세요.",
+  },
+
   {
     title: "2. 인덱스카드 보기",
     subTitle: "2-1. 학습하기",
@@ -50,11 +58,13 @@ export const tutorialPages: TutorialPage[] = [
   },
   {
     title: "5. 프로필",
+    subTitle: "5-1. 프로필 조회",
     componentKey: "ProfileTutorial",
     description: "나의 프로필을 설정하고 학습기록을 확인해보세요.",
   },
   {
     title: "5. 프로필",
+    subTitle: "5-2. 캐릭터 해금",
     componentKey: "CharacterTutorial",
     description: "쉿 비밀인데 캐릭터가 6종이나 있다는 사실!",
   },

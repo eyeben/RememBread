@@ -1,7 +1,8 @@
 import { JSX, useState } from "react";
 import { tutorialPages } from "@/components/tutorial/tutorialData";
 
-import Tutorial1 from "@/components/svgs/tutorial/Tutorial1";
+import MakeCardTutorial from "@/components/svgs/tutorial/MakeCardTutorial";
+import MakeLargeStringTutoria from "@/components/svgs/tutorial/MakeLargeStringTutoria";
 import StudyTutorial from "@/components/svgs/tutorial/StudyTutorial";
 import TestTutorial from "@/components/svgs/tutorial/TestTutorial";
 import TakeCardSetTutorial from "@/components/svgs/tutorial/TakeCardSetTutorial";
@@ -13,7 +14,8 @@ import CharacterTutorial from "@/components/svgs/tutorial/CharacterTutorial";
 
 // 문자열 key를 컴포넌트에 매핑
 const componentMap: Record<string, JSX.Element> = {
-  Tutorial1: <Tutorial1 className="w-full h-auto max-h-full" />,
+  MakeCardTutorial: <MakeCardTutorial className="w-full h-auto max-h-full" />,
+  MakeLargeStringTutoria: <MakeLargeStringTutoria className="w-full h-auto max-h-full" />,
   StudyTutorial: <StudyTutorial className="w-full h-auto max-h-full" />,
   TestTutorial: <TestTutorial className="w-full h-auto max-h-full" />,
   TakeCardSetTutorial: <TakeCardSetTutorial className="w-full h-auto max-h-full" />,
