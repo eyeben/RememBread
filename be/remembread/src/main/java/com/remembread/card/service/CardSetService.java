@@ -23,6 +23,7 @@ import com.remembread.hashtag.repository.HashtagRepository;
 import com.remembread.user.entity.User;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -179,13 +180,14 @@ public class CardSetService {
                 Sort.by("number").ascending();
 
         Pageable pageable = PageRequest.of(page, size, sort);
-        List<Card> cards = cardRepository.findAllByCardSet(cardSet, pageable);
-
+        Page<Card> cardPage = cardRepository.findAllByCardSet(cardSet, pageable);
+        boolean hasNext = cardPage.hasNext();
+        List<Card> cards = cardPage.getContent();
         // 자기 카드셋 아니면 조회수 로직 수행
         if(!user.getId().equals(cardSet.getUser().getId()))
             updateViews(user.getId(), cardSet.getId());
 
-        return CardConverter.toCardListResponse(cards);
+        return CardConverter.toCardListResponse(cards, hasNext);
     }
 
     @Transactional
@@ -229,6 +231,11 @@ public class CardSetService {
         // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
         // 1. flat 결과 가져오기
         List<CardSetFlatDto> flatResults = cardSetRepository.getCardSetSorted(folderId, column, size, offset);
+        Boolean hasNext = false;
+        if(flatResults.size() > size){
+            hasNext = true;
+            flatResults = flatResults.subList(0, size);
+        }
 
         // 2. 중복 제거 + 해시태그 병합
         Map<Long, CardSetListGetResponse.CardSet> map = new LinkedHashMap<>();
@@ -260,7 +267,7 @@ public class CardSetService {
         }
 
         // 3. 최종 응답 구성
-        return new CardSetListGetResponse(new ArrayList<>(map.values()));
+        return new CardSetListGetResponse(new ArrayList<>(map.values()), hasNext);
     }
 
     @Transactional(readOnly = true)
@@ -279,13 +286,19 @@ public class CardSetService {
             searchCategory = SearchCategory.작성자;
         }
 
-        CardSetSearchResponse response;
+        List<CardSetSearchResponse.CardSet> cardSets;
         switch (searchCategory) {
-            case 제목 -> response = new CardSetSearchResponse(cardSetRepository.searchByTitle(query, sortColumn, size, offset, userId));
-            case 작성자 -> response = new CardSetSearchResponse(cardSetRepository.searchByAuthor(query, sortColumn, size, offset, userId));
-            case 해시태그 -> response = new CardSetSearchResponse(cardSetRepository.searchByHashtag(query, sortColumn, size, offset, userId));
+            case 제목 -> cardSets = cardSetRepository.searchByTitle(query, sortColumn, size, offset, userId);
+            case 작성자 -> cardSets = cardSetRepository.searchByAuthor(query, sortColumn, size, offset, userId);
+            case 해시태그 -> cardSets = cardSetRepository.searchByHashtag(query, sortColumn, size, offset, userId);
             default -> throw new GeneralException(ErrorStatus.ENUM_NOT_FOUND);
         }
+        Boolean hasNext = false;
+        if (size < cardSets.size()){
+            hasNext = true;
+            cardSets = cardSets.subList(0, size);
+        }
+        CardSetSearchResponse response = new CardSetSearchResponse(cardSets, hasNext);
 
         // 캐시된 애들 조회수 추가
         for(CardSetSearchResponse.CardSet itm: response.getCardSets())
@@ -313,7 +326,13 @@ public class CardSetService {
     public CardSetSearchMyResponse searchMyCardSets(String query, int page, int size, CardSetSortType cardSetSortType, Long userId) {
         int offset = page * size;
         String sortColumn = cardSetSortType.getColumn();
-        CardSetSearchMyResponse response = new CardSetSearchMyResponse(cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset));
+        List<CardSetSearchMyResponse.CardSet> flatResults =  cardSetRepository.searchMyCardSetByTitle(userId, query, sortColumn, size, offset);
+        Boolean hasNext = false;
+        if(flatResults.size() > size) {
+            hasNext = true;
+            flatResults = flatResults.subList(0, size);
+        }
+        CardSetSearchMyResponse response = new CardSetSearchMyResponse(flatResults, hasNext);
 
         // 캐시된 애들 조회수 추가
         for(CardSetSearchMyResponse.CardSet itm: response.getCardSets())
@@ -350,7 +369,11 @@ public class CardSetService {
         List<CardSetFlatDto> flatResults = cardSetRepository.getLikeCardSetSorted(user.getId(), column, size, offset);
         // flat → response 변환 (Map을 사용해 중복 제거 + 그룹핑)
         Map<Long, CardSetListGetResponse.CardSet> map = new LinkedHashMap<>();
-
+        Boolean hasNext = false;
+        if(flatResults.size() > size) {
+            hasNext = true;
+            flatResults = flatResults.subList(0, size);
+        }
         for (CardSetFlatDto row : flatResults) {
             Long id = row.getCardSetId();
 
@@ -376,7 +399,7 @@ public class CardSetService {
                 dto.getHashTags().add(tag);
             }
         }
-        return new CardSetListGetResponse(new ArrayList<>(map.values()));
+        return new CardSetListGetResponse(new ArrayList<>(map.values()), hasNext);
     }
 
     private void updateViews(Long userId, Long cardSetId) {

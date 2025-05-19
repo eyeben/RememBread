@@ -35,7 +35,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         CASE WHEN :column = 'views' THEN cs.views END DESC,
         CASE WHEN :column = 'forks' THEN cs.forks END DESC,
         CASE WHEN :column = 'name' THEN cs.name END ASC
-    LIMIT :size OFFSET :offset
+    LIMIT :size + 1 OFFSET :offset
     """, nativeQuery = true)
     List<CardSetFlatDto> getCardSetSorted(
             @Param("folderId") Long folderId,
@@ -60,7 +60,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     ORDER BY
         CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
         CASE WHEN :column = 'views' THEN cs.views END DESC,
-        CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size OFFSET :offset
+        CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size + 1 OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByTitle(
             @Param("query") String query,
@@ -87,7 +87,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
             CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
             CASE WHEN :column = 'views' THEN cs.views END DESC,
             CASE WHEN :column = 'forks' THEN cs.forks END DESC 
-        LIMIT :size OFFSET :offset
+        LIMIT :size + 1 OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByAuthor(
             @Param("query") String query,
@@ -119,7 +119,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
         CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
         CASE WHEN :column = 'views' THEN cs.views END DESC,
         CASE WHEN :column = 'forks' THEN cs.forks END DESC
-    LIMIT :size OFFSET :offset
+    LIMIT :size + 1 OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchResponse.CardSet> searchByHashtag(
             @Param("query") String query,
@@ -153,7 +153,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     ORDER BY
         CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
         CASE WHEN :column = 'views' THEN cs.views END DESC,
-        CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size OFFSET :offset
+        CASE WHEN :column = 'forks' THEN cs.forks END DESC    LIMIT :size + 1 OFFSET :offset
     """, nativeQuery = true)
     List<CardSetSearchMyResponse.CardSet> searchMyCardSetByTitle(
             @Param("userId") long userId,
@@ -185,7 +185,7 @@ public interface CardSetRepository extends JpaRepository<CardSet, Long> {
     ORDER BY 
         CASE WHEN :column = 'created_at' THEN cs.created_at END DESC,
         CASE WHEN :column = 'name' THEN cs.name END ASC
-    LIMIT :size OFFSET :offset
+    LIMIT :size + 1 OFFSET :offset
     """, nativeQuery = true)
     List<CardSetFlatDto> getLikeCardSetSorted(
             @Param("userId") Long userId,

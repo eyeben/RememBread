@@ -12,6 +12,7 @@ import java.util.List;
 @AllArgsConstructor
 public class CardSetSearchMyResponse {
     List<CardSet> cardSets = new ArrayList<CardSet>();
+    Boolean hasNext;
 
     @Data
     public static class CardSet {
