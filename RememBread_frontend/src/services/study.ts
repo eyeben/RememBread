@@ -82,3 +82,8 @@ export const postLocation = async (cardSetId: number, latitude: number, longitud
     throw new Error("위치 전송 실패");
   }
 };
+
+export const getTTSFiles = async (cardSetId: number) => {
+  const response = await http.get(`/tss/${cardSetId}`);
+  return response.data;
+};

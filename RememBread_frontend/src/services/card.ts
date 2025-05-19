@@ -8,6 +8,7 @@ interface CardListResponse {
   code: string;
   message: string;
   result: {
+    hasNext: boolean;
     total: number;
     cards: indexCard[];
   };

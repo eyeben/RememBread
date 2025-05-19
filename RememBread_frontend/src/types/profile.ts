@@ -3,6 +3,7 @@ export interface Character {
   name: string;
   imageUrl: string;
   isLocked: boolean;
+  description: string;
 }
 
 export interface CharacterImageProps {

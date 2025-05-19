@@ -37,7 +37,6 @@ export async function getDeviceToken() {
     });
 
     if (currentToken) {
-      console.log("토큰: ", currentToken);
       return currentToken;
     } else {
       console.log("토큰을 가져오지 못했습니다. 권한을 다시 요청하세요.");
