@@ -23,7 +23,7 @@ export const useCurrentLocation = () => {
         });
         setError(null);
       },
-      (err) => {
+      () => {
         setError("위치 정보를 가져오지 못했어요. 잠시 후 다시 시도해주세요.");
       },
       {

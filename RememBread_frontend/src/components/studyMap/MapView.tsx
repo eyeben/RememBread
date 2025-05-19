@@ -252,7 +252,7 @@ const MapView = () => {
         navigator.geolocation.clearWatch(watchIdRef.current!);
         watchIdRef.current = null;
       },
-      (err) => {
+      () => {
         if (!isAlerted) {
           isAlerted = true;
           toast({
@@ -316,7 +316,7 @@ const MapView = () => {
         position,
         map: mapRef.current!,
         title: "알림 위치",
-        icon: alertLocationIcon(40),
+        icon: alertLocationIcon(40, "#ffaa64", !isAlarmEnabled),
       });
       setAddressMarker(marker);
       setIsAlertDrawerOpen(false);
@@ -360,7 +360,7 @@ const MapView = () => {
         position: new naver.maps.LatLng(lat, lng),
         map: mapRef.current,
         title: "알림 위치",
-        icon: alertLocationIcon(40),
+        icon: alertLocationIcon(40, "#ffaa64", !isAlarmEnabled),
       });
       setAddressMarker(marker);
 
@@ -403,7 +403,7 @@ const MapView = () => {
           position,
           map: mapRef.current!,
           title: "알림 위치",
-          icon: alertLocationIcon(40),
+          icon: alertLocationIcon(40, "#ffaa64", !result.notificationLocationEnable),
         });
 
         setAddressMarker(marker);
@@ -487,12 +487,65 @@ const MapView = () => {
 
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
       <div className="absolute top-16 right-6 z-30 flex items-center gap-2">
-        <span className="text-sm text-muted-foreground font-bold">알림</span>
-        <Switch checked={isAlarmEnabled} onCheckedChange={setIsAlarmEnabled} />
+        <span className="text-xl text-muted-foreground font-bold">알림</span>
+        <Switch
+          className="scale-125"
+          checked={isAlarmEnabled}
+          onCheckedChange={async (checked) => {
+            setIsAlarmEnabled(checked);
+
+            try {
+              const { result } = await getLocationAlertPosition();
+
+              if (
+                result.notificationLocationLatitude == null ||
+                result.notificationLocationLongitude == null
+              ) {
+                toast({
+                  title: "알림 위치 정보 없음",
+                  description: "먼저 알림 위치를 설정해주세요.",
+                  variant: "destructive",
+                });
+                return;
+              }
+
+              await patchNotificationLocation(
+                result.notificationLocationLatitude,
+                result.notificationLocationLongitude,
+                checked,
+              );
+
+              // 마커 스타일 업데이트
+              if (addressMarker) {
+                addressMarker.setIcon(alertLocationIcon(40, "#ffaa64", !checked)!);
+              }
+
+              toast({
+                title: "알림 설정 변경됨",
+                description: checked
+                  ? "위치 알림이 활성화되었습니다."
+                  : "위치 알림이 비활성화되었습니다.",
+                variant: "default",
+              });
+            } catch (err) {
+              setIsAlarmEnabled((prev) => !prev);
+
+              toast({
+                title: "알림 설정 실패",
+                description: "서버와 통신 중 문제가 발생했습니다.",
+                variant: "destructive",
+              });
+            }
+          }}
+        />
       </div>
       {isMapLoaded && mapRef.current && (
         <>
           <div className="flex flex-col items-center space-y-1 absolute bottom-28 left-5 z-20">
+            {/* <div className="flex gap-2 items-center">
+              <span className="text-sm text-muted-foreground font-bold">알림</span>
+              <Switch checked={isAlarmEnabled} onCheckedChange={handleToggleAlarmEnabled} />
+            </div> */}
             <CurrentLocationBtn onClick={handleSetCurrentLocation} />
             <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
               현재 위치
@@ -513,8 +566,9 @@ const MapView = () => {
                   });
                 }}
               >
-                <Bell className="w-6 h-6" />
+                <Bell className="w-8 h-8" />
               </button>
+
               <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
                 알림 설정
               </span>
@@ -584,8 +638,6 @@ const MapView = () => {
       <AlertLocationDrawer
         open={isAlertDrawerOpen}
         onOpenChange={setIsAlertDrawerOpen}
-        isEnabled={isAlarmEnabled}
-        onToggleEnabled={setIsAlarmEnabled}
         onSetAddressLocation={handleSetAddressLocation}
         manualAddress={manualAddress}
         setManualAddress={setManualAddress}

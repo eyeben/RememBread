@@ -36,7 +36,7 @@ const Layout = () => {
         const lng = Number(position.coords.longitude.toFixed(6));
         setLocation(lat, lng);
       },
-      (err) => {
+      () => {
         // console.error("위치 추적 실패", err);
       },
       {

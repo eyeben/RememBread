@@ -1,6 +1,28 @@
-// features/tutorial/TutorialModal.tsx
-import { useState } from "react";
+import { JSX, useState } from "react";
 import { tutorialPages } from "@/components/tutorial/tutorialData";
+
+import Tutorial1 from "@/components/svgs/tutorial/Tutorial1";
+import StudyTutorial from "@/components/svgs/tutorial/StudyTutorial";
+import TestTutorial from "@/components/svgs/tutorial/TestTutorial";
+import TakeCardSetTutorial from "@/components/svgs/tutorial/TakeCardSetTutorial";
+import MapTutorial from "@/components/svgs/tutorial/MapTutorial";
+import LocationAlert from "@/components/svgs/tutorial/LocationAlert";
+import BrainGameTutorial from "@/components/svgs/tutorial/BrainGameTutorial";
+import ProfileTutorial from "@/components/svgs/tutorial/ProfileTutorial";
+import CharacterTutorial from "@/components/svgs/tutorial/CharacterTutorial";
+
+// 문자열 key를 컴포넌트에 매핑
+const componentMap: Record<string, JSX.Element> = {
+  Tutorial1: <Tutorial1 className="w-full h-auto max-h-full" />,
+  StudyTutorial: <StudyTutorial className="w-full h-auto max-h-full" />,
+  TestTutorial: <TestTutorial className="w-full h-auto max-h-full" />,
+  TakeCardSetTutorial: <TakeCardSetTutorial className="w-full h-auto max-h-full" />,
+  MapTutorial: <MapTutorial className="w-full h-auto max-h-full" />,
+  LocationAlert: <LocationAlert className="w-full h-auto max-h-full" />,
+  BrainGameTutorial: <BrainGameTutorial className="w-full h-auto max-h-full" />,
+  ProfileTutorial: <ProfileTutorial className="w-full h-auto max-h-full" />,
+  CharacterTutorial: <CharacterTutorial className="w-full h-auto max-h-full" />,
+};
 
 interface Props {
   isOpen: boolean;
@@ -12,6 +34,8 @@ const TutorialModal = ({ isOpen, onClose }: Props) => {
   const current = tutorialPages[page];
 
   if (!isOpen) return null;
+
+  const MediaComponent = componentMap[current.componentKey];
 
   return (
     <div
@@ -26,59 +50,50 @@ const TutorialModal = ({ isOpen, onClose }: Props) => {
         onClick={(e) => e.stopPropagation()}
       >
         {/* 제목 */}
-        <h2 className="pc:text-2xl text-xl font-bold mb-1">{current.title}</h2>
+        <div>
+          <h2 className="text-xl pc:text-2xl font-bold mb-1">{current.title}</h2>
+          {current.subTitle && <h3 className="text-sm text-gray-500 mb-2">{current.subTitle}</h3>}
+        </div>
 
-        {/* 미디어 */}
-        <div className="flex justify-center items-center h-2/3">
-          {current.media.endsWith(".mp4") ? (
-            <video
-              src={current.media}
-              controls
-              className="rounded h-full max-h-full object-contain"
-            />
-          ) : (
-            <img
-              src={current.media}
-              alt={current.subTitle}
-              className="rounded h-full max-h-full object-contain"
-            />
-          )}
+        {/* 미디어 (SVG 컴포넌트) */}
+        <div className="flex justify-center items-center h-2/3 overflow-hidden">
+          {MediaComponent ?? <div>미디어를 불러올 수 없습니다.</div>}
         </div>
 
         {/* 설명 */}
-        <p className="text-primary-600 pc:text-base text-xs whitespace-pre-line">
+        <p className="text-primary-600 text-xs pc:text-base whitespace-pre-line my-2">
           {current.description}
         </p>
 
-        {/* 페이지 이동 버튼 */}
-        <div>
-          <div className="flex justify-around items-center">
+        {/* 하단 버튼 */}
+        <div className="flex flex-col gap-2 mt-2">
+          <div className="flex justify-around items-center text-sm">
             <button
               onClick={() => setPage((p) => Math.max(0, p - 1))}
               disabled={page === 0}
-              className="text-primary-700 hover:text-primary-500 hover:underline hover:cursor-pointer"
+              className="text-primary-700 hover:text-primary-500 hover:underline disabled:opacity-40 disabled:pointer-events-none"
             >
               이전
             </button>
-            <span>
+            <span className="text-gray-700">
               {page + 1} / {tutorialPages.length}
             </span>
             <button
               onClick={() => setPage((p) => Math.min(tutorialPages.length - 1, p + 1))}
               disabled={page === tutorialPages.length - 1}
-              className="text-primary-700 hover:text-primary-500 hover:underline hover:cursor-pointer"
+              className="text-primary-700 hover:text-primary-500 hover:underline disabled:opacity-40 disabled:pointer-events-none"
             >
               다음
             </button>
           </div>
           <button
             onClick={() => {
-              setPage(0); // 페이지 초기화
+              setPage(0);
               onClose();
             }}
-            className="pc:mt-3 mt-2 w-full bg-primary-700 text-white py-2 rounded"
+            className="w-full bg-primary-700 text-white py-2 rounded text-sm"
           >
-            종료
+            튜토리얼 종료
           </button>
         </div>
       </div>
