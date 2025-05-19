@@ -43,7 +43,9 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
               {character.isLocked ? (
                 <Popover>
                   <PopoverTrigger asChild>
-                    <div className="relative cursor-pointer p-2 aspect-square opacity-50">
+                    <div 
+                    tabIndex={0}
+                    className="relative cursor-pointer p-2 aspect-square opacity-50">
                       <CharacterImage 
                         characterId={character.id} 
                         characterImageUrl={character.imageUrl}
@@ -59,7 +61,14 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
                   <PopoverContent className="w-60">
                     <div className="space-y-2">
                       <h4 className="font-medium">{character.name}</h4>
-                      <p className="text-sm text-gray-500">{character.description}</p>
+                      <p className="text-sm text-gray-500">
+                        {character.description.split(/[()]/).map((part, index) => {
+                          if (index % 2 === 1) {
+                            return <span key={index} className="text-positive-500">({part})</span>;
+                          }
+                          return part;
+                        })}
+                      </p>
                     </div>
                   </PopoverContent>
                 </Popover>
