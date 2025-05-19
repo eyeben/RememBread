@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useMatches } from "react-router-dom";
-import { patchNotificationLocation } from "@/services/map";
+import { sendNotificationByLocation } from "@/services/map";
 import { useLocationStore } from "@/stores/useLocationStore";
 import Header from "@/components/common/Header";
 import Footer from "@/components/common/Footer";
@@ -17,7 +17,18 @@ const Layout = () => {
   const headerComponent = layoutConfig.header ?? true ? <Header /> : null;
   const footerComponent = layoutConfig.footer ?? true ? <Footer /> : null;
   const setLocation = useLocationStore((state) => state.setLocation);
+  const { latitude, longitude } = useLocationStore();
 
+  // 위치 정보를 서버에 전송하는 함수로 추출
+  const sendLocationData = async (lat: number, lng: number) => {
+    try {
+      await sendNotificationByLocation(lat, lng);
+    } catch (err) {
+      console.warn("알림 전송 실패", err);
+    }
+  };
+
+  // 위치 추적 설정
   useEffect(() => {
     const watchId = navigator.geolocation.watchPosition(
       (position) => {
@@ -25,7 +36,7 @@ const Layout = () => {
         const lng = Number(position.coords.longitude.toFixed(6));
         setLocation(lat, lng);
       },
-      (err) => {
+      () => {
         // console.error("위치 추적 실패", err);
       },
       {
@@ -38,17 +49,16 @@ const Layout = () => {
     return () => navigator.geolocation.clearWatch(watchId);
   }, [setLocation]);
 
-  // 30초마다 위치 전송
-  const { latitude, longitude } = useLocationStore();
-
+  // 15초마다 위치 전송
   useEffect(() => {
     const intervalId = setInterval(() => {
       if (latitude != null && longitude != null) {
-        patchNotificationLocation(latitude, longitude, true).then(() => {});
+        sendLocationData(latitude, longitude);
       } else {
         console.warn("위치 정보가 없어 전송 생략");
       }
     }, 15000);
+
     return () => clearInterval(intervalId);
   }, [latitude, longitude]);
 
@@ -64,7 +74,6 @@ const Layout = () => {
         >
           <Outlet />
         </main>
-
         {footerComponent}
       </div>
     </>

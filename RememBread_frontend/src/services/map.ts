@@ -29,6 +29,12 @@ interface RecordResponse<T = any> {
   result: T;
 }
 
+interface LocationAlertResponse {
+  notificationLocationLatitude: number;
+  notificationLocationLongitude: number;
+  notificationLocationEnable: boolean;
+}
+
 export const getRoutes = async (cardSetId: number, page: number, size: number) => {
   const response = await http.get(`/studies/${cardSetId}/routes`, { params: { page, size } });
   return response.data;
@@ -68,5 +74,25 @@ export const patchNotificationLocation = async (
     notificationLocationLongitude: longitude,
     notificationLocationEnable: notificationEnable,
   });
+  return response.data;
+};
+
+export const sendNotificationByLocation = async (
+  latitude: number,
+  longitude: number,
+): Promise<RecordResponse<boolean>> => {
+  const response = await http.post("/notifications", null, {
+    params: {
+      latitude,
+      longitude,
+    },
+  });
+  return response.data;
+};
+
+export const getLocationAlertPosition = async (): Promise<
+  RecordResponse<LocationAlertResponse>
+> => {
+  const response = await http.get("/users/location");
   return response.data;
 };
