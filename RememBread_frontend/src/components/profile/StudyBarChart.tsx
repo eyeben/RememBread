@@ -7,7 +7,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-// import { getStudyHistory } from "@/services/userService";
+import { getStudyHistory } from "@/services/userService";
 import { StudyHistoryYear } from "@/types/profile";
 
 interface ChartDataPoint {
@@ -15,48 +15,6 @@ interface ChartDataPoint {
   month?: number;
   study: number;
 }
-
-// 더미 데이터 생성 함수
-const generateDummyData = (year: number, month: number, viewType: "day" | "month"): StudyHistoryYear[] => {
-  if (viewType === "month") {
-    // 월별 더미 데이터
-    const monthsData = Array.from({ length: 12 }, (_, i) => ({
-      month: i + 1,
-      totalSolved: Math.floor(Math.random() * 50) + 10, // 10~60 사이 랜덤값
-      totalCorrect: Math.floor(Math.random() * 40) + 5, // 5~45 사이 랜덤값
-      days: []
-    }));
-
-    return [{
-      year: year,
-      totalSolved: monthsData.reduce((acc, curr) => acc + curr.totalSolved, 0),
-      totalCorrect: monthsData.reduce((acc, curr) => acc + curr.totalCorrect, 0),
-      months: monthsData
-    }];
-  } else {
-    // 일별 더미 데이터
-    const daysInMonth = new Date(year, month, 0).getDate();
-    const daysData = Array.from({ length: daysInMonth }, (_, i) => ({
-      day: (i + 1).toString(), // day는 string 타입
-      totalSolved: Math.floor(Math.random() * 8) + 1, // 1~9 사이 랜덤값
-      totalCorrect: Math.floor(Math.random() * 6) + 1 // 1~7 사이 랜덤값
-    }));
-
-    const monthData = {
-      month: month,
-      totalSolved: daysData.reduce((acc, curr) => acc + curr.totalSolved, 0),
-      totalCorrect: daysData.reduce((acc, curr) => acc + curr.totalCorrect, 0),
-      days: daysData
-    };
-
-    return [{
-      year: year,
-      totalSolved: monthData.totalSolved,
-      totalCorrect: monthData.totalCorrect,
-      months: [monthData]
-    }];
-  }
-};
 
 const StudyBarChart = () => {
   const [year, setYear] = useState<number>(2025);
@@ -76,9 +34,27 @@ const StudyBarChart = () => {
 
   // 학습 기록 조회 데이터 준비
   useEffect(() => {
-    // 더미 데이터로 대체
-    const dummyData = generateDummyData(year, month, viewType);
-    setStudyHistoryData(dummyData);
+    const fetchStudyHistory = async () => {
+      let startDate = "";
+      let endDate = "";
+      
+      
+      if (viewType === "month") {
+        startDate = `${year}-01-01`;
+        endDate = `${year+1}-01-01`;
+      } else {
+        startDate = `${year}-${month.toString().padStart(2, '0')}-01`;
+        // 12월인 경우 다음 해 1월로 처리
+        if (month === 12) {
+          endDate = `${year+1}-01-01`;
+        } else {
+          endDate = `${year}-${(month+1).toString().padStart(2, '0')}-01`;
+        }
+      }
+      const response = await getStudyHistory(startDate, endDate);
+      setStudyHistoryData(response.result.years);
+    };
+    fetchStudyHistory();
   }, [viewType, year, month]);
 
   // studyHistoryData를 차트 데이터로 가공
@@ -277,3 +253,4 @@ const StudyBarChart = () => {
 };
 
 export default StudyBarChart;
+
