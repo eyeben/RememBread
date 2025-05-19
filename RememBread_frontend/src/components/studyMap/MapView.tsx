@@ -94,7 +94,13 @@ const MapView = () => {
   useEffect(() => {
     if (!mapRef.current || latitude == null || longitude == null) return;
 
-    const position = new naver.maps.LatLng(latitude ?? 37.501274, longitude ?? 127.039585);
+    // 방어: 0,0일 경우 무시하거나 기본 위치 사용
+    const isInvalid = latitude === 0 && longitude === 0;
+    const position = new naver.maps.LatLng(
+      isInvalid ? 37.501274 : latitude,
+      isInvalid ? 127.039585 : longitude,
+    );
+
     mapRef.current.setCenter(position);
 
     if (!currentLocationMarkerRef.current) {
@@ -209,7 +215,7 @@ const MapView = () => {
 
   // 현재 위치를 지도 중앙에 표시하고 마커를 갱신
   const handleSetCurrentLocation = () => {
-    if (latitude != null && longitude != null) {
+    if (latitude != null && longitude != null && (latitude !== 0 || longitude !== 0)) {
       const position = new naver.maps.LatLng(latitude, longitude);
       mapRef.current?.setCenter(position);
 
@@ -225,28 +231,32 @@ const MapView = () => {
         currentLocationMarkerRef.current = marker;
       }
 
-      return; //  store 값으로 이동 완료
+      return;
     }
 
-    // fallback: store에 값이 없을 때만 watchPosition
+    // fallback: 위치 정보 없거나 0,0인 경우
     let isAlerted = false;
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
         const lat = Number(pos.coords.latitude.toFixed(6));
         const lng = Number(pos.coords.longitude.toFixed(6));
+
+        if (lat === 0 && lng === 0) {
+          return;
+        }
+
         const position = new naver.maps.LatLng(lat, lng);
         mapRef.current?.setCenter(position);
 
         if (currentLocationMarkerRef.current) {
           currentLocationMarkerRef.current.setPosition(position);
         } else {
-          const marker = new naver.maps.Marker({
+          currentLocationMarkerRef.current = new naver.maps.Marker({
             position,
             map: mapRef.current!,
             title: "현재 위치",
             icon: currentLocationIcon(20),
           });
-          currentLocationMarkerRef.current = marker;
         }
 
         navigator.geolocation.clearWatch(watchIdRef.current!);
@@ -425,7 +435,7 @@ const MapView = () => {
   }
 
   return (
-    <div className="relative w-full" style={{ height: "calc(100vh - 7.5rem)" }}>
+    <div className="relative w-full" style={{ height: "calc(100vh - 126px)" }}>
       <Toaster />
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
         <div className="w-3/5 bg-white opacity-100 rounded-md">
@@ -499,7 +509,9 @@ const MapView = () => {
 
               if (
                 result.notificationLocationLatitude == null ||
-                result.notificationLocationLongitude == null
+                result.notificationLocationLongitude == null ||
+                (result.notificationLocationLatitude === 0 &&
+                  result.notificationLocationLongitude === 0)
               ) {
                 toast({
                   title: "알림 위치 정보 없음",
