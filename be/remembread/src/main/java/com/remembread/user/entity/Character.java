@@ -17,6 +17,9 @@ public class Character {
     @Column(nullable = false, length = 10)
     private String name;
 
+    @Column(length = 100)
+    private String description;
+
     @Column(nullable = false, length = 1024)
     private String imageUrl;
 
