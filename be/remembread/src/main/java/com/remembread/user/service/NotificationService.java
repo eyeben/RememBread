@@ -32,7 +32,7 @@ public class NotificationService {
 
         users.forEach(user -> {
             String fcmToken = user.getFcmToken();
-            String message = user.getNickname() + "님, 공부하실 시간이에요!";
+            String message = user.getNickname() + "님, 공부하실 시간이에요! 오늘도 힘내볼까요?";
             String path = "/card-view";
 
             if (fcmToken != null && !fcmToken.isBlank() && user.getNotificationTimeEnable()) {
@@ -51,7 +51,7 @@ public class NotificationService {
                 && GeoUtil.isWithin200m(latitude, longitude, user.getNotificationLocationLatitude(), user.getNotificationLocationLongitude())) {
 
             String fcmToken = user.getFcmToken();
-            String message = user.getNickname() + "님, 공부하실 시간이에요!";
+            String message = user.getNickname() + "님, 이 장소 뭔가 익숙한데요? 슬슬 공부 시작해봐요!";
             String path = "/card-view";
 
             if (fcmToken != null && !fcmToken.isBlank()) {
