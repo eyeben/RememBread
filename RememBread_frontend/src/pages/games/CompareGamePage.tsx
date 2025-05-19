@@ -51,6 +51,9 @@ const CompareGamePage = () => {
       setLocalScore((prev) => prev + 1);
     } else {
       setResultModalType("fail");
+      if (score > 0) {
+        setLocalScore((prev) => prev - 1);
+      }
     }
   };
 

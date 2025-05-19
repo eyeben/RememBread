@@ -62,7 +62,7 @@ const GameHistory = () => {
                   <div className="text-xs text-neutral-400">{item.playedAt.split('T')[0]}</div>
                 </div>
                 <div className="text-md font-semibold">
-                  게임 성적&nbsp;:&nbsp;<span className="font-bold text-lg text-primary-700">{item.score}</span>
+                  게임 성적&nbsp;:&nbsp;<span className="font-bold text-lg text-primary-700">{item.score} 점</span>
                 </div>
               </div>
             </div>
