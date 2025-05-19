@@ -4,7 +4,6 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import CharacterImage from "@/components/common/CharacterImage";
 import { Character } from "@/types/profile";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
-import { Lock } from "lucide-react";
 
 export interface ImageEditModalProps {
     isOpen: boolean;
@@ -53,9 +52,6 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
                         isGrayscale={true}
                       />
                       <div className="text-center mt-2 text-sm">{character.name}</div>
-                      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
-                        <Lock className="w-8 h-8 text-gray-400" />
-                      </div>
                     </div>
                   </PopoverTrigger>
                   <PopoverContent className="w-60">
