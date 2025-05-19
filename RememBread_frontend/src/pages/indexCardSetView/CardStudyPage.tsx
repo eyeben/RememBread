@@ -168,8 +168,16 @@ const CardStudyPage = () => {
 
   return (
     <div className="flex flex-col justify-between h-full w-full text-center gap-2 pc:p-4 p-2">
-      <div>
-        {currentIndex} / {cards.length}
+      <div className="flex justify-between items-center px-4 pt-2">
+        <div className="text-sm text-gray-600">
+          {currentIndex} / {cards.length}
+        </div>
+        <Button
+          onClick={() => setShowStopModal(true)}
+          className="bg-primary-600 text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-primary-700 transition text-sm pc:text-base"
+        >
+          학습 종료하기
+        </Button>
       </div>
 
       <Carousel
@@ -186,7 +194,7 @@ const CardStudyPage = () => {
                     isFront ? "rotate-y-0" : "rotate-y-180"
                   }`}
                 >
-                  <InputBread className="w-full h-full w-max-[640px] h-max-[640px] aspect-square" />
+                  <InputBread className="w-full h-full aspect-square" />
                   {!isRotating ? (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
                       {card.concept || "제목 없음"}
@@ -207,13 +215,16 @@ const CardStudyPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
+      <div className="text-center pc:text-md text-sm text-gray-600 mt-[-16px]">
+        {currentIndex} / {cards.length}
+      </div>
 
       {/* TTS 제어 UI */}
       {!isTTSMode && (
         <div className="flex gap-4 justify-center">
           <Button
             onClick={() => setIsTTSMode(true)}
-            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
+            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 my-2 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
           >
             TTS 시작하기
           </Button>
@@ -274,14 +285,14 @@ const CardStudyPage = () => {
         </div>
       )}
 
-      <div className="flex gap-4 justify-center mt-2 ">
+      {/* <div className="flex gap-4 justify-center mt-2 ">
         <Button
           onClick={() => setShowStopModal(true)}
           className="w-4/5 pc:mt-3 mt-1 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
         >
           기록 종료하기
         </Button>
-      </div>
+      </div> */}
 
       <StopStudyModal
         open={showStopModal}
