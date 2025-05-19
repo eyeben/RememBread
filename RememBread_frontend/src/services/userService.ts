@@ -54,6 +54,7 @@ interface StudyHistoryResponse {
   result: {
   totalCorrect: number;
   totalSolved: number;
+  totalStudyMinutes: number;
   years: StudyHistoryYear[];
   }
 }

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { socialLogin } from "@/services/authService";
 import { tokenUtils } from "@/lib/queryClient";
-import { getDeviceToken } from "@/lib/firebase/tokenFCM";
+import { getDeviceToken, handleAllowNotification } from "@/lib/firebase/tokenFCM";
 import { patchFcmToken } from "@/services/userService";
 
 const SocialCallbackPage = () => {
@@ -42,7 +42,11 @@ const SocialCallbackPage = () => {
           if (Notification.permission === "granted") {
             const token = await getDeviceToken();
             await patchFcmToken({ fcmToken: token });
-          } else{
+          } else if (Notification.permission === "default") { 
+            const token = await handleAllowNotification();
+            await patchFcmToken({ fcmToken: token });
+          }
+          else{
             const token = null;
             await patchFcmToken({ fcmToken: token });
           }
