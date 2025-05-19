@@ -235,8 +235,6 @@ const MapView = () => {
     }
 
     // fallback: 위치 정보 없거나 0,0인 경우
-    const defaultLat = 37.501274;
-    const defaultLng = 127.039585;
     let isAlerted = false;
     watchIdRef.current = navigator.geolocation.watchPosition(
       (pos) => {
@@ -244,7 +242,6 @@ const MapView = () => {
         const lng = Number(pos.coords.longitude.toFixed(6));
 
         if (lat === 0 && lng === 0) {
-          console.warn("망망대해 위치 감지됨. 무시합니다.");
           return;
         }
 
@@ -512,7 +509,9 @@ const MapView = () => {
 
               if (
                 result.notificationLocationLatitude == null ||
-                result.notificationLocationLongitude == null
+                result.notificationLocationLongitude == null ||
+                (result.notificationLocationLatitude === 0 &&
+                  result.notificationLocationLongitude === 0)
               ) {
                 toast({
                   title: "알림 위치 정보 없음",
