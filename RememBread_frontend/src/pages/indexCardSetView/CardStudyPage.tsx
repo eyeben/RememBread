@@ -167,7 +167,7 @@ const CardStudyPage = () => {
   }, [ttsUrl]);
 
   return (
-    <div className="flex flex-col justify-between h-full w-full text-center gap-3 pc:p-4 p-2">
+    <div className="flex flex-col justify-between h-full w-full text-center gap-2 pc:p-4 p-2">
       <Button
         className="text-primary-500 text-2xl font-bold m-3 py-5"
         variant="primary-outline"
@@ -186,7 +186,7 @@ const CardStudyPage = () => {
         opts={{ align: "center", loop: false }}
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
-        <CarouselContent className="aspect-square pc:mb-4 mb-2">
+        <CarouselContent className="aspect-square">
           {cards.map((card, index) => (
             <CarouselItem key={card.cardId ?? index} className="relative">
               <div className="relative w-full h-full hover:cursor-pointer" onClick={handleFlip}>
@@ -195,7 +195,7 @@ const CardStudyPage = () => {
                     isFront ? "rotate-y-0" : "rotate-y-180"
                   }`}
                 >
-                  <InputBread className="w-full h-full aspect-square" />
+                  <InputBread className="w-full h-full w-max-[640px] h-max-[640px] aspect-square" />
                   {!isRotating ? (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-2xl font-bold">
                       {card.concept || "제목 없음"}
@@ -219,7 +219,7 @@ const CardStudyPage = () => {
 
       {/* TTS 제어 UI */}
       {!isTTSMode && (
-        <div className="flex gap-4 justify-center mt-2 ">
+        <div className="flex gap-4 justify-center">
           <Button
             onClick={() => setIsTTSMode(true)}
             className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
@@ -230,7 +230,7 @@ const CardStudyPage = () => {
       )}
 
       {isTTSMode && ttsUrl && (
-        <div className="flex flex-col pc:gap-2 gap-1 items-center mt-2 ">
+        <div className="flex flex-col pc:gap-2 gap-1 items-center">
           <audio
             ref={audioRef}
             controls
@@ -246,7 +246,7 @@ const CardStudyPage = () => {
             className="w-4/5 pc:h-12 h-8 rounded-md "
           />
 
-          <div className="w-4/5 mx-auto flex justify-between gap-2 mt-2">
+          <div className="w-4/5 mx-auto flex justify-between gap-2 mt-1">
             <Button
               onClick={() => setTtsMode("single")}
               className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
