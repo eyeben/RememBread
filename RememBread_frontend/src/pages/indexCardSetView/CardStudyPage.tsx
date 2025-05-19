@@ -224,7 +224,7 @@ const CardStudyPage = () => {
         <div className="flex gap-4 justify-center">
           <Button
             onClick={() => setIsTTSMode(true)}
-            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 my-2 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
+            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 my-2 rounded-md shadow-md hover:bg-primary-600 hover:text-white transition pc:h-10 h-8"
           >
             TTS 시작하기
           </Button>
