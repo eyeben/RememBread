@@ -189,8 +189,8 @@ const CardStudyPage = () => {
   }, [ttsUrl]);
 
   return (
-    <div className="flex flex-col justify-between h-full w-full text-center gap-2 pc:p-4 p-2">
-      <div className="flex justify-end items-center px-4">
+    <div className="flex flex-col justify-between h-full w-full text-center pc:gap-2 gap-6 p-4">
+      <div className="flex justify-end items-center">
         <Button
           onClick={() => setShowStopModal(true)}
           className="bg-primary-600 text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-primary-700 transition text-sm pc:text-base"
@@ -234,7 +234,7 @@ const CardStudyPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
-      <div className="text-center pc:text-md text-sm text-gray-600 mt-[-16px]">
+      <div className="text-center pc:text-md text-sm text-gray-600 mt-[-32px]">
         {currentIndex} / {cards.length}
       </div>
 
@@ -269,7 +269,40 @@ const CardStudyPage = () => {
                 }}
                 className="w-4/5 pc:h-12 h-8 rounded-md"
               />
-              <div className="w-4/5 mx-auto flex justify-between gap-2 mt-1">{/* 버튼들 */}</div>
+              <div className="w-4/5 mx-auto flex justify-between gap-2 mt-1">
+                <Button
+                  onClick={() => setTtsMode("single")}
+                  className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
+                      ${
+                        ttsMode === "single"
+                          ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
+                          : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
+                      }`}
+                >
+                  하나씩 재생
+                </Button>
+                <Button
+                  onClick={() => setTtsMode("sequence")}
+                  className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
+                      ${
+                        ttsMode === "sequence"
+                          ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
+                          : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
+                      }`}
+                >
+                  연속 재생
+                </Button>
+                <Button
+                  onClick={() => {
+                    audioRef.current?.pause();
+                    setIsTTSMode(false);
+                    setTtsMode(null);
+                  }}
+                  className="flex-1 text-sm pc:text-base bg-white text-red-600 border border-red-300 px-3 py-2 rounded-lg font-medium hover:bg-red-50 transition pc:h-10 h-6"
+                >
+                  종료
+                </Button>
+              </div>
             </>
           )}
         </div>
