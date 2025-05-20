@@ -83,6 +83,7 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 추가되었습니다.",
       });
 
+      setCards([]);
       setPage(0);
       setHasNext(true);
       fetchCard();
