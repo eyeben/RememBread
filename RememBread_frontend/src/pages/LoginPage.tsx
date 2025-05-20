@@ -6,6 +6,7 @@ import NaverLogo from "@/components/svgs/login/NaverLogo";
 import GoogleLogo from "@/components/svgs/login/GoogleLogo";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
 import { tokenUtils } from "@/lib/queryClient";
+import Loading from "@/components/common/Loading";
 
 const LoginPage = () => {
   const location = useLocation();
@@ -44,12 +45,7 @@ const LoginPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-8 w-8 sm:h-12 sm:w-12 border-b-2 border-primary-500 mx-auto mb-4"></div>
-          <p className="text-base sm:text-lg">로딩 중...</p>
-        </div>
-      </div>
+        <Loading />
     );
   }
 

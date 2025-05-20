@@ -1,6 +1,15 @@
 import axios, { InternalAxiosRequestConfig, AxiosResponse, AxiosError } from 'axios';
 import { tokenUtils } from '@/lib/queryClient';
 
+// 토큰 재발급을 위한 별도의 axios 인스턴스
+const refreshHttp = axios.create({
+    baseURL: import.meta.env.VITE_APP_BASE_URL,
+    headers: {
+        'Content-Type': 'application/json',
+    },
+    withCredentials: true,
+});
+
 const http = axios.create({
     baseURL: import.meta.env.VITE_APP_BASE_URL,
     headers: {
@@ -66,7 +75,8 @@ http.interceptors.response.use(
 
             try {
                 console.log("토큰 재발급 시도");
-                const isRefreshed = await tokenUtils.tryRefreshToken();
+                // 토큰 재발급 요청은 refreshHttp 인스턴스를 사용
+                const isRefreshed = await tokenUtils.tryRefreshToken(refreshHttp);
                 console.log('토큰 재발급 결과:', isRefreshed);
                 
                 if (isRefreshed) {
@@ -99,4 +109,5 @@ http.interceptors.response.use(
         return Promise.reject(error);
     }
 );
+
 export default http; 

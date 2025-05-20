@@ -12,7 +12,6 @@ import ImageEditModal from "@/components/profile/ImageEditModal";
 import TimePicker from "@/components/profile/TimePicker";
 import useProfileStore from "@/stores/profileStore";
 import { useToast } from "@/hooks/use-toast";
-import { Toaster } from "@/components/ui/toaster";
 import { getDeviceToken } from "@/lib/firebase/tokenFCM";
 
 interface ApiError {
@@ -221,7 +220,6 @@ const Profile = () => {
 
   return (
     <div className="flex flex-col items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8 py-8 gap-5">
-        <Toaster />
         <div className="flex flex-col items-center w-full max-w-md mx-auto">
           {isEditable ? (
             <button

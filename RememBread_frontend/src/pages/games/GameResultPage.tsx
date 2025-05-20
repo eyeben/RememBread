@@ -49,7 +49,7 @@ const GameResultPage = () => {
     sendGameResult().then(() => {
       getLeaderboard();
     });
-  }, [gameType, score]);
+  }, []);
 
   return (
     <div className="min-h-[calc(100vh-126px)] flex flex-col items-center justify-center p-4">
@@ -146,7 +146,7 @@ const GameResultPage = () => {
             resetCompareScore();
             resetDetectiveScore();
             resetShadowScore();
-            navigate("/games");
+            navigate("/games", { replace: true });
           }}
           className="w-full px-6 py-2 bg-neutral-200 text-neutral-700 font-bold rounded-lg hover:bg-neutral-300"
         >
