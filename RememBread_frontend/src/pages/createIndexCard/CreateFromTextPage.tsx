@@ -13,7 +13,7 @@ const CreateFromTextPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [inputText, setInputText] = useState<string>("");
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const remainingChars = MAX_LENGTH - inputText.length;
 
   const handleCreateCard = async () => {

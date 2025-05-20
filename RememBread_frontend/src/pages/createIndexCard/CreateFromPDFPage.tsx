@@ -17,7 +17,7 @@ const CreateFromPDFPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = useState<number>(1);
   const [pageRange, setPageRange] = useState<[number, number]>([0, 0]);
 
