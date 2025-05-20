@@ -105,7 +105,7 @@ const GamesHomePage = () => {
         </div>
       </div>
       {/* 버튼 부분 */}
-      <div className="w-full flex flex-col gap-3 max-w-[384px] mt-4">
+      <div className="w-full flex flex-col gap-3 max-w-[384px] mt-2">
         <Button
           className="w-full h-[80px] flex-shrink-0 rounded-[30px] bg-primary-200 text-2xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
           onClick={handleRandomGame}
