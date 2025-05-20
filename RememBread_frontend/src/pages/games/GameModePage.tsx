@@ -99,28 +99,28 @@ const GameModePage = () => {
           title="순간기억"
           description="숫자와 빵을 기억하자"
           className="bg-primary-200"
-          icon={<Memory className="w-10 h-10 min-h-[50px] sm:w-12 sm:h-12 sm:min-h-[65px] flex-shrink-0 ml-2" />}
+          icon={<Memory className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/memory")}
         />
         <CustomButton
           title="가격비교"
           description="가격이 더 비싼 빵은?"
           className="bg-primary-200"
-          icon={<Compare className="w-10 h-10 min-h-[50px] sm:w-12 sm:h-12 sm:min-h-[65px]flex-shrink-0 ml-2" />}
+          icon={<Compare className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/compare")}
         />
         <CustomButton
           title="그림자빵"
           description="그림자로 변한 빵은?"
           className="bg-primary-200"
-          icon={<Shadow className="w-10 h-10 min-h-[50px] sm:w-12 sm:h-12 sm:min-h-[65px] flex-shrink-0 ml-2" />}
+          icon={<Shadow className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/shadow")}
         />
         <CustomButton
           title="빵 탐정"
           description="무슨 빵일까?"
           className="bg-primary-200"
-          icon={<Detective className="w-10 h-10 min-h-[50px] sm:w-12 sm:h-12 sm:min-h-[65px] flex-shrink-0 ml-2" />}
+          icon={<Detective className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/detective")}
         />
       </div>
