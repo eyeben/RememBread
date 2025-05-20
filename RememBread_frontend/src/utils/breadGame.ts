@@ -91,23 +91,25 @@ export function getAnswerButtons(answerIndices: number[]) {
   return allIndices;
 } 
 // 그림자 게임 SVG 크기 상수
-export const SVG_WIDTH = 160;
-export const SVG_HEIGHT = 160;
+export const SVG_WIDTH = 144; // 모바일에서는 120px, 데스크톱에서는 144px
+export const SVG_HEIGHT = 144;
 
 /**
  * 화면 크기에 따른 게임 영역 크기 계산 (그림자 게임)
  */
 export const getGameAreaDimensions = () => {
   const width = window.innerWidth;
-  if (width <= 320) {
+  if (width <= 375) {
     return {
-      width: 320,
-      height: 320
+      width: 280,
+      height: 280,
+      svgSize: 120
     };
   }
   return {
     width: 375,
-    height: 350
+    height: 350,
+    svgSize: 144
   };
 };
 
@@ -115,15 +117,15 @@ export const getGameAreaDimensions = () => {
  * 랜덤 위치 생성 (그림자 게임)
  */
 export const getRandomPos = () => {
-  const { width: parentW, height: parentH } = getGameAreaDimensions();
+  const { width: parentW, height: parentH, svgSize } = getGameAreaDimensions();
   
   // 중앙점 계산
-  const centerX = (parentW - SVG_WIDTH) / 2;
-  const centerY = (parentH - SVG_HEIGHT) / 2;
+  const centerX = (parentW - svgSize) / 2;
+  const centerY = (parentH - svgSize) / 2;
   
-  // 중앙에서부터 랜덤하게 이동할 거리 계산 (-50% ~ +50%)
-  const offsetX = (Math.random() * 1 - 0.5) * (parentW - SVG_WIDTH);
-  const offsetY = (Math.random() * 1 - 0.5) * (parentH - SVG_HEIGHT);
+  // 중앙에서부터 랜덤하게 이동할 거리 계산 (-60% ~ +40%)
+  const offsetX = (Math.random() * 1 - 0.55) * (parentW - svgSize);
+  const offsetY = (Math.random() * 1 - 0.55) * (parentH - svgSize);
   
   return {
     x: centerX + offsetX,

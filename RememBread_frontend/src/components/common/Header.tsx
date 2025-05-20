@@ -18,8 +18,9 @@ const Header = () => {
   const { isRecording, cardSetId, lastCardId, stopRecording } = useStudyStore();
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
-  // '/card-view/숫자' 형태의 경로에만 표시
-  const showBackButton = /^\/card-view\/\d+(\/.*)?$/.test(location.pathname);
+  // '/card-view/숫자' 형태의 경로와 games 관련 경로에서 표시
+  const showBackButton = /^\/card-view\/\d+(\/.*)?$/.test(location.pathname) || 
+    ['/games/rank', '/games/game-mode'].includes(location.pathname);
 
   const handleBack = () => {
     if (isRecording) {

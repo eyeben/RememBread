@@ -43,7 +43,6 @@ interface GameHistoryResponse {
 export const postGameResult = async (body: GameResultParams): Promise<GameResultResponse> => {
     try {
         const response = await http.post<GameResultResponse>(GAME_END_POINT.POST_GAME_RESULT, body);
-        console.log("게임 결과 저장", response.data);
         return response.data;
     } catch (error) {
         throw error;

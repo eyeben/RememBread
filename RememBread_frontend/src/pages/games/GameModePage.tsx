@@ -4,10 +4,10 @@ import { motion, useAnimation, AnimatePresence } from "framer-motion";
 import SpeechBubble from "@/components/common/SpeechBubble";
 import CustomButton from "@/components/common/CustomButton";
 import Game from "@/components/svgs/footer/Game";
-import Bread from "@/components/svgs/game/Bread";
-import Baguette from "@/components/svgs/game/Baguette";
-import Croissant from "@/components/svgs/game/Croissant";
-import Bread2 from "@/components/svgs/game/Bread2";
+import Memory from "@/components/svgs/game/mode/Memory";
+import Compare from "@/components/svgs/game/mode/Compare";
+import Shadow from "@/components/svgs/game/mode/Shadow";
+import Detective from "@/components/svgs/game/mode/Detective";
 
 const GameModePage = () => {
   const navigate = useNavigate();
@@ -68,7 +68,7 @@ const GameModePage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-126px)] flex flex-col items-center px-4">
+    <div className="min-h-[calc(100vh-126px)] flex flex-col justify-center items-center px-4">
       <div className="flex w-full flex-col items-center">
         <div className="relative flex flex-col items-center mt-4 mb-4">
           <AnimatePresence>
@@ -99,28 +99,28 @@ const GameModePage = () => {
           title="순간기억"
           description="숫자와 빵을 기억하자"
           className="bg-primary-200"
-          icon={<Bread className="w-11 h-11 flex-shrink-0 ml-4" />}
+          icon={<Memory className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/memory")}
         />
         <CustomButton
           title="가격비교"
           description="가격이 더 비싼 빵은?"
           className="bg-primary-200"
-          icon={<Baguette className="w-11 h-11 flex-shrink-0 ml-4" />}
+          icon={<Compare className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/compare")}
         />
         <CustomButton
           title="그림자빵"
           description="그림자로 변한 빵은?"
           className="bg-primary-200"
-          icon={<Croissant className="w-11 h-11 flex-shrink-0 ml-4" />}
+          icon={<Shadow className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/shadow")}
         />
         <CustomButton
           title="빵 탐정"
           description="무슨 빵일까?"
           className="bg-primary-200"
-          icon={<Bread2 className="w-11 h-11 flex-shrink-0 ml-4" />}
+          icon={<Detective className="w-12 h-12 sm:w-16 sm:h-16 flex-shrink-0 ml-2" />}
           onClick={() => navigate("/games/detective")}
         />
       </div>
