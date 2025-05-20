@@ -119,4 +119,7 @@ public class RedisService {
         return redisTemplate.expire(key, ttl);
     }
 
+    public Object getLastFromList(String key) {
+        return redisTemplate.opsForList().getLast(key);
+    }
 }
