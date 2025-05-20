@@ -148,6 +148,39 @@ export const postCardsByPDF = async (file: File) => {
   }
 };
 
+// PDF로 카드 생성 (범위)
+export const postCardsPageByPDF = async (file: File, startPage: number, endPage: number) => {
+  try {
+    if (!file) throw new Error("파일이 없습니다.");
+    if (startPage < 1 || endPage < startPage) {
+      throw new Error("페이지 범위가 올바르지 않습니다.");
+    }
+
+    const accessToken = tokenUtils.getToken();
+    const baseURL = import.meta.env.VITE_APP_BASE_URL;
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const queryParams = new URLSearchParams({
+      startPage: startPage.toString(),
+      endPage: endPage.toString(),
+    });
+
+    const response = await fetch(`${baseURL}/cards/pdf/pages?${queryParams.toString()}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+      body: formData,
+    });
+
+    await handleStreamedCards(response);
+  } catch (error) {
+    console.error("PDF 페이지 카드 생성 중 오류:", error);
+    throw new Error("카드 생성 실패");
+  }
+};
+
 // 이미지로 카드 생성
 export const postCardsByImage = async (images: File[]) => {
   try {

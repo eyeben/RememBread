@@ -1,8 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import useGameStore from "@/stores/gameStore";
-import ClearBread from "@/components/svgs/breads/ClearBread";
 import DefaultBread from "@/components/svgs/breads/DefaultBread";
+import Memory from "@/components/svgs/game/mode/Memory";
+import Compare from "@/components/svgs/game/mode/Compare";
+import Detective from "@/components/svgs/game/mode/Detective";
+import Shadow from "@/components/svgs/game/mode/Shadow";
 import { getRanks, postGameResult } from "@/services/gameService";
 import { LeaderboardType } from "@/types/game";
 
@@ -55,7 +58,10 @@ const GameResultPage = () => {
     <div className="min-h-[calc(100vh-126px)] flex flex-col items-center justify-center p-4">
       <header>
         <div className="flex justify-center mb-2">
-          <ClearBread className="w-16 h-16" />
+          {gameType === "MEMORY" ? <Memory className="w-24 h-24" /> :
+           gameType === "COMPARE" ? <Compare className="w-24 h-24" /> :
+           gameType === "DETECTIVE" ? <Detective className="w-24 h-24" /> :
+           <Shadow className="w-24 h-24" />}
         </div>
         <span className="flex text-2xl font-bold mb-4 justify-center">
           {gameType === "MEMORY" ? "순간기억" : 

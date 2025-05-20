@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
@@ -22,6 +21,7 @@ const CardTestConceptPage = () => {
   const [remainingCardCount, setRemainingCardCount] = useState<number>(101);
 
   const [isCorrect, setIsCorrect] = useState<null | boolean>(null);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
   const fetchCard = async () => {
     try {
@@ -55,28 +55,36 @@ const CardTestConceptPage = () => {
   };
 
   const handleSubmitAnswer = async () => {
+    if (isFlipped) return;
+
     const trimmedAnswer = answer.replace(/\s/g, "");
     const trimmedConcept = concept.replace(/\s/g, "");
     const correct = trimmedAnswer === trimmedConcept;
 
-    setIsCorrect(correct);
+    setIsFlipped(true);
 
+    // 결과 표시
     setTimeout(() => {
-      setIsCorrect(null);
+      setIsCorrect(correct);
     }, 1000);
 
-    setAnswer("");
+    // 앞면으로 회전
+    setTimeout(() => {
+      setIsCorrect(null);
+      setIsFlipped(false);
+    }, 2000);
 
-    const response = await postAnswer(cardSetId, cardId, trimmedAnswer === trimmedConcept);
-
-    if (remainingCardCount === 0) {
-      handleStopTest();
-      return;
-    }
-
-    setRemainingCardCount(response.remainingCardCount);
-
-    await fetchCard();
+    // 다음 카드 불러오기
+    setTimeout(async () => {
+      setAnswer("");
+      const response = await postAnswer(cardSetId, cardId, correct);
+      if (remainingCardCount === 0) {
+        handleStopTest();
+        return;
+      }
+      setRemainingCardCount(response.remainingCardCount);
+      await fetchCard();
+    }, 2200);
   };
 
   const submitLocation = async () => {
@@ -105,39 +113,61 @@ const CardTestConceptPage = () => {
     };
   }, [cardSetId, currentLocation]);
 
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const onPopState = (e: PopStateEvent) => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.addEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
   return (
     <>
       <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
         <nav className="h-full mx-auto">
-          <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
-            <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+          <ul className="flex justify-center items-center w-full min-h-14 px-5 relative">
             <h1 className="text-xl font-bold">{name}</h1>
-            <div className="w-8 h-8"></div>
           </ul>
         </nav>
       </header>
 
       <div
         className="flex flex-col justify-between w-full h-full mt-14 text-center"
-        style={{ minHeight: "calc(100vh - 126px)" }}
+        style={{ minHeight: "calc(100vh - 56px)" }}
       >
-        {isCorrect !== null && (
-          <div className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 text-[200px] z-50 pointer-events-none select-none">
-            {isCorrect ? "⭕" : "❌"}
-          </div>
-        )}
-
-        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 126px)" }}>
+        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 56px)" }}>
           <div className="flex justify-center p-5 text-xl font-bold">
             {remainingCardCount === 101
               ? "테스트가 시작됐어요"
               : `남은 문제: ${remainingCardCount}`}
           </div>
 
-          <div className="flex flex-1 justify-center w-full overflow-auto rounded-xl">
-            <div className="flex w-full min-h-full mx-5 p-2 bg-[#BA7E4E] rounded-2xl">
-              <div className="w-full min-h-full bg-[#FDF0CF] border-8 border-[#F0A365] p-4 rounded-xl">
+          <div className="flex flex-1 justify-center py-10 w-full overflow-auto rounded-xl perspective scrollbar-hide">
+            <div
+              className={`relative w-full mx-5 transition-transform duration-700 transform-style-preserve-3d ${
+                isFlipped ? "rotate-y-180" : ""
+              }`}
+            >
+              <div className="absolute w-full min-h-full backface-hidden bg-[#FDF0CF] border-8 border-[#F0A365] p-4 rounded-xl scrollbar-hide">
                 <div className="w-full max-h-full overflow-auto scrollbar-hide">{description}</div>
+              </div>
+
+              {isCorrect !== null && (
+                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[200px] z-50 pointer-events-none select-none">
+                  {isCorrect ? "⭕" : "❌"}
+                </div>
+              )}
+
+              <div className="absolute w-full h-full backface-hidden bg-[#FDF0CF] border-8 border-[#F0A365] p-4 rounded-xl transform rotate-y-180 scrollbar-hide">
+                <div className="w-full h-full flex items-center justify-center text-2xl font-bold">
+                  {concept}
+                </div>
               </div>
             </div>
           </div>
@@ -163,7 +193,12 @@ const CardTestConceptPage = () => {
                 <Button variant="neutral" className="w-full" onClick={handleStopTest}>
                   그만하기
                 </Button>
-                <Button variant="primary" className="w-full" onClick={handleSubmitAnswer}>
+                <Button
+                  variant="primary"
+                  className="w-full"
+                  onClick={handleSubmitAnswer}
+                  disabled={isFlipped}
+                >
                   제출하기
                 </Button>
               </div>

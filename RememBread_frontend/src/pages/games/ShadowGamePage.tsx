@@ -10,8 +10,6 @@ import { BREAD_SVG_LIST, BREAD_BLACK_SVG_LIST } from '@/constants/game';
 import { 
   getRandomIndices, 
   getAnswerButtons, 
-  SVG_WIDTH, 
-  SVG_HEIGHT,
   getRandomPos 
 } from '@/utils/breadGame';
 
@@ -189,13 +187,13 @@ useEffect(() => {
         <StartModal onCountdownEnd={handleGameStart} />
       ) : (
         <>
-          <div className="mb-4 text-2xl font-bold text-primary-700 flex items-center gap-2">
+          <div className="mb-2 sm:mb-4 text-xl sm:text-2xl font-bold text-primary-700 flex items-center gap-2">
             <span>그림자로 변한 빵은?</span>
-            <span className="ml-2 text-2xl text-neutral-500">
+            <span className="ml-2 text-xl sm:text-2xl text-neutral-500">
               <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
             </span>
           </div>
-          <div className="w-full max-w-[320px] h-[320px] sm:max-w-[375px] sm:h-[350px] flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-6 text-white text-3xl font-bold overflow-hidden">
+          <div className="w-full max-w-[280px] h-[280px] sm:max-w-[375px] sm:h-[350px] flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-4 sm:mb-6 text-white text-3xl font-bold overflow-hidden">
             <div className="relative w-full h-full">
               {randomIdx.map((idx, i) => {
                 const Svg = BREAD_SVG_LIST[idx];
@@ -203,12 +201,8 @@ useEffect(() => {
                 return (
                   <motion.div
                     key={`${idx}-${i}`}
-                    className="absolute"
+                    className="absolute w-[120px] h-[120px] sm:w-[144px] sm:h-[144px]"
                     animate={controls[i]}
-                    style={{ 
-                      width: `${SVG_WIDTH}px`, 
-                      height: `${SVG_HEIGHT}px`,
-                    }}
                   >
                     {!solvedBreads.includes(idx) 
                       ? <BlackSvg className="w-full h-full" />
@@ -219,7 +213,7 @@ useEffect(() => {
               })}
             </div>
           </div>
-          <div className={`w-full max-w-[320px] sm:max-w-[375px] grid grid-cols-3 gap-3`}>
+          <div className={`w-full max-w-[280px] sm:max-w-[375px] grid grid-cols-3 gap-2 sm:gap-3`}>
             {answerButtons.map((idx) => {
               const Svg = BREAD_SVG_LIST[idx];
               return (
@@ -228,7 +222,7 @@ useEffect(() => {
                   className="bg-white hover:bg-neutral-50 active:bg-neutral-100 shadow-md rounded-xl p-2"
                   onClick={() => handleAnswer(idx)}
                 >
-                  <Svg className="w-14 h-14 sm:w-16 sm:h-16" />
+                  <Svg className="w-12 h-12 sm:w-24 sm:h-24" />
                 </CustomButton>
               );
             })}

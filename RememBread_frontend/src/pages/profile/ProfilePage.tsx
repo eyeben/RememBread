@@ -21,7 +21,7 @@ const ProfilePage = () => {
 
   return (
     <>
-      <div className="relative flex gap-1 border-b my-2">
+      <div className="relative flex gap-1 border-b mt-2">
         {tabs.map((tab, index) => (
           <div
             key={index}
