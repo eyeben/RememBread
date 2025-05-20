@@ -1,9 +1,8 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { X } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 
 import Button from "@/components/common/Button";
-import InputBread from "@/components/svgs/breads/InputBread";
 import { Input } from "@/components/ui/input";
 import { postCardsByImage } from "@/services/card";
 import { useToast } from "@/hooks/use-toast";
@@ -12,6 +11,7 @@ const CreateFromImagePage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
@@ -38,6 +38,8 @@ const CreateFromImagePage = () => {
     setSelectedFiles(selectedFiles.filter((file) => file !== fileToRemove));
   };
   const handleCreateCard = () => {
+    setIsLoading(true);
+
     try {
       toast({
         title: "카드를 생성하는 중입니다.",
@@ -59,6 +61,8 @@ const CreateFromImagePage = () => {
             title: "카드 생성 실패",
             description: "카드 생성중 오류가 발생했어요",
           });
+
+          setIsLoading(false);
         });
     } catch (error) {
       console.error("카드 생성 중 오류:", error);
@@ -70,53 +74,74 @@ const CreateFromImagePage = () => {
   };
 
   return (
-    <div
-      className="flex flex-col justify-between w-full text-center"
-      style={{ minHeight: "calc(100vh - 126px)" }}
-    >
-      <h1 className="text-primary-500 text-2xl font-bold m-5">사진을 재료로 넣어봐뽱</h1>
+    <>
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-[env(safe-area-inset-top)] top-0 left-0 right-0">
+        <nav className="h-full mx-auto">
+          <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
+            <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+            <h1 className="text-xl font-bold">카드 생성</h1>
+            <div className="w-8 h-8"></div>
+          </ul>
+        </nav>
+      </header>
 
-      <div className="flex justify-center relative w-full px-5">
-        <InputBread className="w-full h-full max-w-md aspect-square" />
+      <div
+        className="flex flex-col justify-between w-full mt-14 text-center"
+        style={{ minHeight: "calc(100vh - 126px)" }}
+      >
+        <div className="flex justify-center p-5 text-xl font-bold">
+          이미지 파일을 재료로 넣어주세요
+        </div>
 
-        <Input
-          className="w-full h-full absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 cursor-pointer"
-          type="file"
-          onChange={handleFileChange}
-        />
-      </div>
-      {selectedFiles.length > 0 && (
-        <div className="m-5 gap-2">
-          <>
-            <h2 className="text-lg font-semibold">업로드된 이미지</h2>
-            <div className="flex gap-2 flex-wrap justify-between mb-4">
-              {selectedFiles.map((file, index) => (
-                <div
-                  key={index}
-                  className="w-16 h-16 bg-gray-100 border rounded flex flex-col items-center mb-4"
-                >
-                  <div className="relative w-16 h-16 cursor-pointer">
-                    <img
-                      src={URL.createObjectURL(file)}
-                      alt={file.name}
-                      className="object-fill w-16 h-16 rounded"
+        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 126px)" }}>
+          <div className="p-5">
+            <Input className="" type="file" onChange={handleFileChange} />
+          </div>
+
+          {selectedFiles.length > 0 && (
+            <div className="mx-5 gap-2">
+              <h2 className="text-lg font-semibold">업로드된 이미지</h2>
+              <div
+                className="grid grid-cols-3 pc:grid-cols-5 gap-2 gap-y-6 overflow-auto scrollbar-hide"
+                style={{ maxHeight: "calc(100vh - 374px)" }}
+              >
+                {selectedFiles.map((file, index) => (
+                  <div key={index} className="relative flex justify-center rounded-xl">
+                    <div className="flex p-1 bg-[#BA7E4E] rounded-2xl">
+                      <div className="flex flex-col p-1 bg-[#FDF0CF] border-8 border-[#F0A365] rounded-xl">
+                        <img
+                          src={URL.createObjectURL(file)}
+                          alt={file.name}
+                          className="object-fill w-16 h-16 rounded"
+                        />
+                      </div>
+                    </div>
+
+                    <X
+                      className="absolute top-1 right-2 stroke-gray-500"
+                      onClick={() => handleRemoveFile(file)}
                     />
-                    <X className="absolute top-0 right-0" onClick={() => handleRemoveFile(file)} />
-                    <p className="w-16 text-xs text-center overflow-hidden text-ellipsis whitespace-nowrap">
+
+                    <p className="absolute bottom-[-16px] max-x-16 text-xs font-bold w-full truncate">
                       {file.name}
                     </p>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </>
+          )}
         </div>
-      )}
 
-      <Button className="m-5" variant="primary" onClick={handleCreateCard}>
-        카드 생성하기
-      </Button>
-    </div>
+        <Button
+          className="m-5"
+          variant="primary"
+          onClick={handleCreateCard}
+          disabled={isLoading || selectedFiles.length === 0}
+        >
+          카드 생성하기
+        </Button>
+      </div>
+    </>
   );
 };
 

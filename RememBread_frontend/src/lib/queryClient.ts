@@ -1,5 +1,6 @@
 import { QueryClient } from "@tanstack/react-query";
 import { refreshToken } from "@/services/authService";
+import { AxiosInstance } from "axios";
 
 // accessToken을 관리할 키
 export const ACCESS_TOKEN_KEY = 'access-token';
@@ -37,9 +38,9 @@ export const tokenUtils = {
   },
 
   // refresh token으로 access token 갱신 시도
-  tryRefreshToken: async () => {
+  tryRefreshToken: async (axiosInstance?: AxiosInstance) => {
     try {
-      const response = await refreshToken();
+      const response = await refreshToken(axiosInstance);
       tokenUtils.setToken(response.result.accessToken);
       return true;
     } catch (error) {

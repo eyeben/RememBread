@@ -11,7 +11,7 @@ interface CardStore {
 }
 
 export const useCardStore = create<CardStore>((set) => ({
-  cardSet: [createEmptyCard()],
+  cardSet: [],
   setCardSet: (cards) => set({ cardSet: cards }),
   appendCard: (card) =>
     set((state) => {
@@ -22,6 +22,6 @@ export const useCardStore = create<CardStore>((set) => ({
         cardSet: [...state.cardSet, newCard],
       };
     }),
-  resetCardSet: () => set({ cardSet: [createEmptyCard()] }),
+  resetCardSet: () => set({ cardSet: [] }),
   clearCardSet: () => set({ cardSet: [] }),
 }));

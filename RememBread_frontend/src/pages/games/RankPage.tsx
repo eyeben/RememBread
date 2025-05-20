@@ -135,7 +135,7 @@ const RankPage = () => {
                   <div className="font-semibold">{player.nickname}</div>
                   <div className="text-xs text-neutral-400">{player.playedAt.split('T')[0]}</div>
                 </div>
-                <div className="font-bold text-primary-500">{player.maxScore}</div>
+                <div className="font-bold text-primary-500">{player.maxScore} 점</div>
               </div>
             ))}
           </div>

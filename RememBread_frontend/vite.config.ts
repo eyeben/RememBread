@@ -13,7 +13,7 @@ export default defineConfig({
     viteStaticCopy({
       targets: [
         {
-          src: "node_modules/pdfjs-dist/build/pdf.worker.min.js",
+          src: "node_modules/pdfjs-dist/build/pdf.worker.mjs",
           dest: "", // public 루트에 복사됨
         },
       ],
