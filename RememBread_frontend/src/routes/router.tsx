@@ -122,10 +122,6 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to="/card-view" replace />,
-          },
-          {
-            index: true,
             element: <CardViewPage />,
             handle: { header: false, footer: true },
           },

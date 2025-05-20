@@ -42,7 +42,7 @@ export const tutorialPages: TutorialPage[] = [
     title: "3. 학습 지도",
     subTitle: "3-1. 학습 경로 조회하기",
     componentKey: "MapTutorial",
-    description: "다른 친구가 만든 카드를 가져올 수도 있어요!",
+    description: "나의 학습 기록을 지도에서 확인해 보세요!",
   },
   {
     title: "3. 학습 지도",
