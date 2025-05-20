@@ -509,10 +509,10 @@ const MapView = () => {
       </div>
 
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
-      <div className="absolute top-16 right-6 z-30 flex items-center gap-2">
-        <span className="text-xl text-muted-foreground font-bold">알림</span>
+      <div className="absolute top-16 right-4 z-15 flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-md shadow-md">
+        <span className="text-md text-muted-foreground font-bold">알림</span>
         <Switch
-          className="scale-125"
+          className=""
           checked={isAlarmEnabled}
           onCheckedChange={async (checked) => {
             setIsAlarmEnabled(checked);
@@ -540,7 +540,6 @@ const MapView = () => {
                 checked,
               );
 
-              // 마커 스타일 업데이트
               if (addressMarker) {
                 addressMarker.setIcon(alertLocationIcon(40, "#ffaa64", !checked)!);
               }
@@ -564,13 +563,10 @@ const MapView = () => {
           }}
         />
       </div>
+
       {isMapLoaded && mapRef.current && (
         <>
           <div className="flex flex-col items-center space-y-1 absolute bottom-28 left-5 z-20">
-            {/* <div className="flex gap-2 items-center">
-              <span className="text-sm text-muted-foreground font-bold">알림</span>
-              <Switch checked={isAlarmEnabled} onCheckedChange={handleToggleAlarmEnabled} />
-            </div> */}
             <CurrentLocationBtn onClick={handleSetCurrentLocation} />
             <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
               현재 위치
