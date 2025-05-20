@@ -51,8 +51,8 @@ export const postAnswer = async (cardSetId: number, cardId: number, isCorrect: b
 export const postStopTest = async (
   cardSetId: number,
   lastCardId: number,
-  latitude: number,
-  longitude: number,
+  latitude: number | null,
+  longitude: number | null,
 ) => {
   try {
     const response = await http.post(`studies/${cardSetId}/stop`, {
@@ -69,7 +69,11 @@ export const postStopTest = async (
 };
 
 // 테스트 경로
-export const postLocation = async (cardSetId: number, latitude: number, longitude: number) => {
+export const postLocation = async (
+  cardSetId: number,
+  latitude: number | null,
+  longitude: number | null,
+) => {
   try {
     const response = await http.post(`studies/${cardSetId}/location`, {
       latitude,

@@ -4,13 +4,12 @@ import { useParams, useNavigate } from "react-router-dom";
 import Button from "@/components/common/Button";
 import { getCardSetById } from "@/services/cardSet";
 import { getNextCard, postAnswer, postStopTest, postLocation } from "@/services/study";
-import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { useLocationStore } from "@/stores/useLocationStore";
 
 const CardTestExplainPage = () => {
   const navigate = useNavigate();
   const { indexCardId } = useParams();
   const cardSetId = Number(indexCardId);
-  const { location: currentLocation } = useCurrentLocation();
 
   const [name, setName] = useState<string | undefined>("");
   const [cardId, setCardId] = useState<number>(0);
@@ -35,13 +34,10 @@ const CardTestExplainPage = () => {
   };
 
   const handleStopTest = async () => {
+    const { latitude: lat, longitude: lng } = useLocationStore.getState();
+
     try {
-      await postStopTest(
-        cardSetId,
-        cardId,
-        currentLocation?.latitude ?? 0,
-        currentLocation?.longitude ?? 0,
-      );
+      await postStopTest(cardSetId, cardId, lat, lng);
     } catch (error) {
       console.error(error);
     } finally {
@@ -69,12 +65,10 @@ const CardTestExplainPage = () => {
   };
 
   const submitLocation = async () => {
+    const { latitude: lat, longitude: lng } = useLocationStore.getState();
+
     try {
-      await postLocation(
-        cardSetId,
-        currentLocation?.latitude ?? 0,
-        currentLocation?.longitude ?? 0,
-      );
+      await postLocation(cardSetId, lat, lng);
     } catch (error) {
       console.error(error);
     }
@@ -92,12 +86,12 @@ const CardTestExplainPage = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [cardSetId, currentLocation]);
+  }, [cardSetId]);
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
 
-    const onPopState = (e: PopStateEvent) => {
+    const onPopState = () => {
       window.history.pushState(null, "", window.location.href);
     };
 
