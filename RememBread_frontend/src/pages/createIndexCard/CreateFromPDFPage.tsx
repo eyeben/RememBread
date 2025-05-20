@@ -4,7 +4,7 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 // import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // GlobalWorkerOptions.workerSrc = pdfWorkerPath;
-GlobalWorkerOptions.workerSrc = "/pdf.worker.min.mjs";
+GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
