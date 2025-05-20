@@ -85,7 +85,7 @@ const MapView = () => {
         zoom: 15,
         zoomControl: false,
       });
-      setIsMapLoaded(true); // 맵 로드 완료
+      setIsMapLoaded(true);
     }
     fetchMyCardSets();
   }, []);
