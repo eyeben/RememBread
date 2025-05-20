@@ -186,6 +186,16 @@ public class CardService {
         }
 
         // 삭제
+        Card lastViewedCard = cardSet.getLastViewedCard();
+        if (lastViewedCard != null) {
+            Long lastViewedCardId = lastViewedCard.getId();
+            for (Card card : cards) {
+                if (card.getId().equals(lastViewedCardId)) {
+                    cardSet.updateLastViewedCard(null);
+                    break;
+                }
+            }
+        }
         cardRepository.deleteAll(cards);
 
         // 삭제 후 남은 카드 번호 재정렬
