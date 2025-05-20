@@ -152,7 +152,6 @@ export const patchFcmToken = async (body: { fcmToken: string|null }): Promise<Fc
 export const getStudyHistory = async (startDate: string, endDate: string): Promise<StudyHistoryResponse> => {
   try {
     const response = await http.get<StudyHistoryResponse>(USER_END_POINT.GET_STUDY_HISTORY(startDate, endDate));
-    console.log("학습 기록 조회", response.data);
     return response.data;
   } catch (error) {
     console.log("학습 기록 조회 오류", error);
