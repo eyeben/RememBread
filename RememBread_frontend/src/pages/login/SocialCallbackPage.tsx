@@ -72,9 +72,7 @@ const SocialCallbackPage = () => {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-screen no-scrollbar">
         <Loading message="로그인 처리 중..."/>
-      </div>
     );
   }
 
