@@ -21,7 +21,14 @@ const StudyBarChart = () => {
   const [month, setMonth] = useState<number>(5);
   const [viewType, setViewType] = useState<"day" | "month">("day");
   // 일별: 15일 슬라이드
-  const [dayStartIdx, setDayStartIdx] = useState<number>(0); // 일별 슬라이드 인덱스
+  const [dayStartIdx, setDayStartIdx] = useState<number>(() => {
+    const today = new Date();
+    const currentDay = today.getDate();
+    const daysInMonth = new Date(year, month, 0).getDate();
+    // 오늘 날짜를 중앙에 오도록 설정
+    const centerIdx = Math.max(0, Math.min(currentDay - 8, daysInMonth - 15));
+    return centerIdx;
+  }); // 일별 슬라이드 인덱스
 
   // 드래그 상태
   const dragStartX = useRef<number | null>(null);
@@ -86,6 +93,12 @@ const StudyBarChart = () => {
         };
       });
       setDailyData(dailyChartData);
+
+      // 월이 변경될 때 오늘 날짜를 중앙에 오도록 설정
+      const today = new Date();
+      const currentDay = today.getDate();
+      const centerIdx = Math.max(0, Math.min(currentDay - 8, daysInMonth - 15));
+      setDayStartIdx(centerIdx);
     }
   }, [studyHistoryData, viewType, year, month]);
 
@@ -157,6 +170,8 @@ const StudyBarChart = () => {
   } else {
     chartData = visibleDailyData;
   }
+
+
 
   return (
     <div className="w-full min-h-[15rem] h-[30vh] bg-white rounded-xl px-4 relative">
