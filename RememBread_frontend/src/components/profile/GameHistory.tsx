@@ -1,6 +1,10 @@
 import { useState, useEffect } from "react";
 import CharacterImage from "@/components/common/CharacterImage";
 import Game from "@/components/svgs/footer/Game";
+import Memory from "@/components/svgs/game/mode/Memory";
+import Compare from "@/components/svgs/game/mode/Compare";
+import Detective from "@/components/svgs/game/mode/Detective";
+import Shadow from "@/components/svgs/game/mode/Shadow";
 import useProfileStore from "@/stores/profileStore";
 import { getGameHistory } from "@/services/gameService";
 import { GameHistoryType } from "@/types/game";
@@ -55,7 +59,10 @@ const GameHistory = () => {
               key={idx}
               className="flex items-center py-3 border-t-2 border-primary-300 last:border-b-0"
             >
-              <Game className="w-10 h-10 mr-4" />
+              {item.gameType === "MEMORY" ? <Memory className="w-14 h-14 mr-4" /> :
+               item.gameType === "COMPARE" ? <Compare className="w-14 h-14 mr-4" /> :
+               item.gameType === "DETECTIVE" ? <Detective className="w-14 h-14 mr-4" /> :
+               <Shadow className="w-14 h-14 mr-4" />}
               <div className="flex-1">
                 <div className="flex items-center gap-3">
                   <div className="text-md font-semibold text-neutral-700">{convertGameTypeToKorean(item.gameType)}</div>
