@@ -19,8 +19,14 @@ public class TTSController {
     private final TTSService ttsService;
 
     @GetMapping("/{cardSetId}")
-    @Operation(summary = "TTS 파일 조회 API", description = "카드셋에 대한 TTS 파일을 조회하는 API 입니다.")
-    public ApiResponse<List<TTSResponse>> getTTSFile(@AuthUser User user, @PathVariable Long cardSetId) {
-        return ApiResponse.onSuccess(ttsService.getTTSFile(user, cardSetId));
+    @Operation(summary = "카드셋별 TTS 파일 조회 API", description = "특정 카드셋에 대한 TTS 파일을 조회하는 API 입니다.")
+    public ApiResponse<List<TTSResponse>> getTTSFileByCardSet(@AuthUser User user, @PathVariable Long cardSetId) {
+        return ApiResponse.onSuccess(ttsService.getTTSFileByCardSet(user, cardSetId));
+    }
+
+    @GetMapping("/cards/{cardId}")
+    @Operation(summary = "카드별 TTS 파일 조회 API", description = "특정 카드에 대한 TTS 파일을 조회하는 API 입니다.")
+    public ApiResponse<TTSResponse> getTTSFileByCard(@AuthUser User user, @PathVariable Long cardId) {
+        return ApiResponse.onSuccess(ttsService.getTTSFileByCard(user, cardId));
     }
 }

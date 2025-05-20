@@ -29,7 +29,7 @@ public class TTSService {
     private final CardRepository cardRepository;
 
     @Transactional
-    public List<TTSResponse> getTTSFile(User user, Long cardSetId) {
+    public List<TTSResponse> getTTSFileByCardSet(User user, Long cardSetId) {
         CardSet cardSet = cardSetRepository.findById(cardSetId)
                 .orElseThrow(() -> new GeneralException(ErrorStatus.CARDSET_NOT_FOUND));
 
@@ -39,25 +39,36 @@ public class TTSService {
 
         List<Card> cardList = cardRepository.findByCardSetIdOrderByNumber(cardSetId);
 
-        for (Card card : cardList) {
-            if (card.getTtsFileUrl() == null) {
-                String concept = enhanceSSML(card.getConcept());
-                String description = enhanceSSML(card.getDescription());
-
-                card.setTtsFileUrl(pollyService.synthesizeAndUpload(
-                        "ssml",
-                        "<speak><p><s>" + concept + "</s><break time=\"700ms\"/><s>" + description + "</s></p></speak>",
-                        "Seoyeon",
-                        "tts/" + cardSetId + "_" + card.getId() + "_" + card.getConcept() + ".mp3"
-                ));
-            }
-        }
-
         return cardList.stream()
-                .map(CardConverter::toTTSResponse)
+                .map(card -> getTTSFileByCard(user, card.getId()))
                 .toList();
     }
 
+    @Transactional
+    public TTSResponse getTTSFileByCard(User user, Long cardId) {
+        Card card = cardRepository.findById(cardId)
+                .orElseThrow(() -> new GeneralException(ErrorStatus.CARD_NOT_FOUND));
+
+        if (card.getCardSet().getUser() != user) {
+            throw new GeneralException(ErrorStatus.CARD_FORBIDDEN);
+        }
+
+        if (card.getTtsFileUrl() == null) {
+            String concept = enhanceSSML(card.getConcept());
+            String description = enhanceSSML(card.getDescription());
+
+            card.setTtsFileUrl(pollyService.synthesizeAndUpload(
+                    "ssml",
+                    "<speak><p><s>" + concept + "</s><break time=\"700ms\"/><s>" + description + "</s></p></speak>",
+                    "Seoyeon",
+                    "tts/" + cardId + "_" + card.getConcept() + ".mp3"
+            ));
+        }
+
+        return CardConverter.toTTSResponse(card);
+    }
+
+    // 영어 발음을 위한 태그 추가
     public static String enhanceSSML(String inputText) {
         Pattern englishPattern = Pattern.compile("([a-zA-Z]+(?:\\s+[a-zA-Z]+)*)");
         Matcher matcher = englishPattern.matcher(inputText);
