@@ -79,10 +79,7 @@ public class JwtUtil {
     public boolean validateAccessToken(String accessToken) {
         try {
             parseToken(accessToken);
-        } catch (ExpiredJwtException e) {
-            //Refresh token에 종속되어 있음
-            return true;
-        } catch (JwtException e) {
+        } catch (Exception e) {
             return false;
         }
         return true;
