@@ -80,7 +80,7 @@ const GamesHomePage = () => {
   return (
     <div className="flex flex-col items-center px-4 min-h-[calc(100vh-126px)]">
       <div className="flex w-full flex-col items-center">
-        <div className="relative flex flex-col items-center mt-4 mb-4">
+        <div className="relative flex flex-col items-center mb-4">
           <AnimatePresence>
             {showSpeechBubble && (
               <motion.div
