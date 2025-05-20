@@ -63,9 +63,9 @@ export const socialLogin = async ({ code, socialType, redirectUri }: SocialLogin
  * Refresh Token을 기반으로 새로운 Access Token을 발급받음.
  * refresh-token은 쿠키로 전송
  */
-export const refreshToken = async (): Promise<RefreshTokenResponse> => {
+export const refreshToken = async (axiosInstance = http): Promise<RefreshTokenResponse> => {
   try {
-    const response = await http.post<RefreshTokenResponse>(AUTH_END_POINT.REFRESH_TOKEN);
+    const response = await axiosInstance.post<RefreshTokenResponse>(AUTH_END_POINT.REFRESH_TOKEN);
     return response.data;
   } catch (error) {
     throw error

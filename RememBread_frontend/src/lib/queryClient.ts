@@ -37,9 +37,9 @@ export const tokenUtils = {
   },
 
   // refresh token으로 access token 갱신 시도
-  tryRefreshToken: async () => {
+  tryRefreshToken: async (axiosInstance?: any) => {
     try {
-      const response = await refreshToken();
+      const response = await refreshToken(axiosInstance);
       tokenUtils.setToken(response.result.accessToken);
       return true;
     } catch (error) {

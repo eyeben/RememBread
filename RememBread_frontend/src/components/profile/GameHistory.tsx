@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import CharacterImage from "@/components/common/CharacterImage";
 import Game from "@/components/svgs/footer/Game";
+import Loading from "@/components/common/Loading";
 import useProfileStore from "@/stores/profileStore";
 import { getGameHistory } from "@/services/gameService";
 import { GameHistoryType } from "@/types/game";
@@ -39,10 +40,7 @@ const GameHistory = () => {
       {/* 게임 히스토리 리스트 */}
       <div className="w-full px-4">
         {isLoading ? (
-          <div className="flex flex-col items-center justify-center py-10">
-            <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin"></div>
-            <p className="text-sm text-neutral-400 mt-4">게임 기록을 불러오는 중...</p>
-          </div>
+          <Loading message="게임 기록을 불러오는 중..." />
         ) : gameHistory.length < 2 ? (
           <div className="flex flex-col items-center justify-center py-10 text-center text-neutral-400">
             <Game className="w-12 h-12 mb-4 opacity-30" />
