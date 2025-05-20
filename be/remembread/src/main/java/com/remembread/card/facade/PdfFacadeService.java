@@ -1,5 +1,7 @@
 package com.remembread.card.facade;
 
+import com.remembread.apipayload.code.status.ErrorStatus;
+import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.card.service.TextService;
 import lombok.RequiredArgsConstructor;
@@ -32,7 +34,7 @@ public class PdfFacadeService {
             return textService.createCardListStream(text, globalIndex);
 
         } catch (Exception e) {
-            throw new RuntimeException("PDF 텍스트 추출 실패", e);
+            throw new GeneralException(ErrorStatus.PDF_EXTRACT_FAILED);
         }
     }
 
@@ -51,7 +53,7 @@ public class PdfFacadeService {
             return textService.createCardListStream(text, globalIndex);
 
         } catch (Exception e) {
-            throw new RuntimeException("PDF 텍스트 추출 실패", e);
+            throw new GeneralException(ErrorStatus.PDF_EXTRACT_FAILED);
         }
     }
 

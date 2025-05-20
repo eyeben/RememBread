@@ -1,5 +1,7 @@
 package com.remembread.card.controller;
 
+import com.remembread.apipayload.code.status.ErrorStatus;
+import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.auth.annotation.AuthUser;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.card.facade.ImageFacadeService;
@@ -23,6 +25,10 @@ public class ImageController {
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     @Operation(summary = "이미지로 생성 스트림 API", description = "이미지 입력 시 주제별로 하나씩 스트림 방식으로 반환하는 API 입니다.")
     public Flux<CardResponse> streamCards(@AuthUser User user, @RequestPart(name = "image") List<MultipartFile> images) {
+        if (images.size() > 5) {
+            throw new GeneralException(ErrorStatus.TOO_MANY_IMAGES);
+        }
+
         return imageFacadeService.createCardListStream(images);
     }
 }
