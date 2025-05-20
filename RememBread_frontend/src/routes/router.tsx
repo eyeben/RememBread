@@ -61,9 +61,7 @@ const ProtectedOutlet = () => {
   }, []);
 
   if (isLoading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   if (shouldRedirect) {
@@ -154,7 +152,7 @@ const router = createBrowserRouter([
               { path: "concept", element: <CardTestConceptPage /> },
               { path: "explain", element: <CardTestExplainPage /> },
             ],
-            handle: { header: false, footer: true },
+            handle: { header: false, footer: false },
           },
           {
             path: "profile",

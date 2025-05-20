@@ -113,6 +113,18 @@
     transform-style: preserve-3d;
     backface-visibility: hidden;
   }
+
+  .transform-style-preserve-3d {
+    transform-style: preserve-3d;
+  }
+
+  .backface-hidden {
+    backface-visibility: hidden;
+  }
+
+  .perspective {
+    perspective: 1000px;
+  }
 }
 
 @keyframes shine {
