@@ -68,7 +68,7 @@ const CardSetDetail = ({
 
   const handleEditCard = (index: number) => {
     const card = cards[index];
-    setEditingCardId(card.cardId);
+    setEditingCardId(card.cardId!);
     setEditConcept(card.concept);
     setEditDescription(card.description);
   };
@@ -83,6 +83,7 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 추가되었습니다.",
       });
 
+      setCards([]);
       setPage(0);
       setHasNext(true);
       fetchCard();
@@ -114,6 +115,7 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 수정되었습니다.",
       });
 
+      setCards([]);
       setPage(0);
       setHasNext(true);
       fetchCard();
@@ -126,6 +128,13 @@ const CardSetDetail = ({
         description: "카드 저장 중 문제가 발생했습니다.",
       });
     }
+  };
+
+  const onDeleteSuccess = () => {
+    setCards([]);
+    setPage(0);
+    setHasNext(true);
+    fetchCard();
   };
 
   const fetchCardSet = async () => {
@@ -320,7 +329,7 @@ const CardSetDetail = ({
                     <DeleteCardAlertDialog
                       selected={selected}
                       setSelected={setSelected}
-                      fetchCard={fetchCard}
+                      onDeleteSuccess={onDeleteSuccess}
                     />
                   ) : (
                     <Button
@@ -387,8 +396,8 @@ const CardSetDetail = ({
                           {isMyCardSet && (
                             <TableCell className="text-center p-0">
                               <Checkbox
-                                checked={selected.includes(card.cardId)}
-                                onCheckedChange={() => handleCheckboxChange(card.cardId)}
+                                checked={selected.includes(card.cardId!)}
+                                onCheckedChange={() => handleCheckboxChange(card.cardId!)}
                               />
                             </TableCell>
                           )}

@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 
 import Button from "@/components/common/Button";
 import { useCardStore } from "@/stores/cardStore";
-import { createEmptyCard } from "@/utils/createEmptyCard";
+import { createCard } from "@/utils/createEmptyCard";
 
 import {
   Table,
@@ -27,9 +27,6 @@ const CreateFromSelfPage = () => {
   const isAllSelected = cardSet.length > 0 && selected.length === cardSet.length;
 
   const [inputText, setInputText] = useState<string>("");
-  const filteredCards = cardSet.filter(
-    (card) => card.concept.includes(inputText) || card.description.includes(inputText),
-  );
 
   const [editingIndex, setEditingIndex] = useState<number | null>(null);
   const [editConcept, setEditConcept] = useState<string>("");
@@ -50,8 +47,9 @@ const CreateFromSelfPage = () => {
   };
 
   const handleAddCard = () => {
-    const updated = [...cardSet, createEmptyCard()];
+    const updated = [...cardSet, createCard(inputText)];
     setCardSet(updated);
+    setInputText("");
   };
 
   const handleDeleteCard = () => {
@@ -86,7 +84,7 @@ const CreateFromSelfPage = () => {
 
   return (
     <>
-      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-[env(safe-area-inset-top)] top-0 left-0 right-0">
         <nav className="h-full mx-auto">
           <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
             {typeof editingIndex === "number" ? (
@@ -95,7 +93,7 @@ const CreateFromSelfPage = () => {
               <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
             )}
 
-            <h1 className="text-xl font-bold">빵 생성</h1>
+            <h1 className="text-xl font-bold">카드 생성</h1>
             <div className="w-8 h-8"></div>
           </ul>
         </nav>
@@ -104,7 +102,7 @@ const CreateFromSelfPage = () => {
       {typeof editingIndex === "number" ? (
         <div
           className="flex flex-col justify-between w-full mt-14 text-center"
-          style={{ minHeight: "calc(100vh - 120px)" }}
+          style={{ minHeight: "calc(100vh - 126px)" }}
         >
           <div
             className="flex flex-col flex-grow overflow-hidden pt-5"
@@ -171,7 +169,7 @@ const CreateFromSelfPage = () => {
             </div>
             <div
               className="m-5 overflow-auto scrollbar-hide"
-              style={{ maxHeight: "calc(100vh - 272px)" }}
+              style={{ maxHeight: "calc(100vh - 278px)" }}
             >
               <div className="text-left rounded-md border">
                 <Table className="table-fixed">
@@ -185,8 +183,8 @@ const CreateFromSelfPage = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {filteredCards.length > 0 ? (
-                      filteredCards.map((card, index) => (
+                    {cardSet.length > 0 ? (
+                      cardSet.map((card, index) => (
                         <TableRow key={index} className="h-10">
                           <TableCell className="text-center p-0">
                             <Checkbox

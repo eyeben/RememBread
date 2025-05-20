@@ -127,11 +127,11 @@ const router = createBrowserRouter([
           },
           {
             path: "create",
+            handle: { header: false, footer: true },
             children: [
               {
                 index: true,
                 element: <CreateFromSelfPage />,
-                handle: { header: false, footer: true },
               },
               { path: "pdf", element: <CreateFromPDFPage /> },
               { path: "text", element: <CreateFromTextFPage /> },
