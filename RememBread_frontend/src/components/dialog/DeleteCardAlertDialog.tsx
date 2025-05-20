@@ -17,20 +17,21 @@ import { deleteCards } from "@/services/card";
 interface DeleteCardAlertDialogProps {
   selected: number[];
   setSelected: Dispatch<SetStateAction<number[]>>;
-  fetchCard: () => Promise<void>;
+  onDeleteSuccess: () => void;
 }
 
 const DeleteCardAlertDialog = ({
   selected,
   setSelected,
-  fetchCard,
+  onDeleteSuccess,
 }: DeleteCardAlertDialogProps) => {
   const handleDeleteCards = async () => {
     try {
       await deleteCards(selected);
 
       setSelected([]);
-      await fetchCard();
+
+      onDeleteSuccess();
     } catch (e) {
       console.error("카드 삭제 실패:", e);
     }
