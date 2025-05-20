@@ -84,7 +84,7 @@ const CreateFromSelfPage = () => {
 
   return (
     <>
-      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-[env(safe-area-inset-top)] top-0 left-0 right-0">
         <nav className="h-full mx-auto">
           <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
             {typeof editingIndex === "number" ? (
@@ -93,7 +93,7 @@ const CreateFromSelfPage = () => {
               <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
             )}
 
-            <h1 className="text-xl font-bold">빵 생성</h1>
+            <h1 className="text-xl font-bold">카드 생성</h1>
             <div className="w-8 h-8"></div>
           </ul>
         </nav>
