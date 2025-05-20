@@ -40,6 +40,8 @@ const CreateFromTextPage = () => {
             title: "카드 생성 실패",
             description: "카드 생성중 오류가 발생했어요",
           });
+
+          setIsLoading(false);
         });
     } catch (error) {
       console.error("카드 생성 중 오류:", error);
