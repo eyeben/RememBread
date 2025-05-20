@@ -11,7 +11,7 @@ GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
 import { Slider } from "@/components/ui/slider";
-import { postCardsByPDF } from "@/services/card";
+import { postCardsPageByPDF } from "@/services/card";
 import { useToast } from "@/hooks/use-toast";
 
 const CreateFromPDFPage = () => {
@@ -20,7 +20,8 @@ const CreateFromPDFPage = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [pageCount, setPageCount] = useState<number>(1);
-  const [pageRange, setPageRange] = useState<[number, number]>([0, 0]);
+  const [pageRange, setPageRange] = useState<[number, number]>([1, 1]);
+  const [startPage, endPage] = pageRange;
 
   const handleFileChange = (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -38,7 +39,7 @@ const CreateFromPDFPage = () => {
             try {
               const pdf = await getDocument(typedarray).promise;
               setPageCount(pdf.numPages);
-              setPageRange([0, pdf.numPages]);
+              setPageRange([1, pdf.numPages]);
             } catch (error) {
               console.error("PDF 로딩 실패", error);
             }
@@ -64,7 +65,7 @@ const CreateFromPDFPage = () => {
         title: "카드를 생성하는 중입니다.",
         description: "카드 생성이 완료되면 알려드릴게요",
       });
-      postCardsByPDF(selectedFile!)
+      postCardsPageByPDF(selectedFile!, startPage, endPage)
         .then(() => {
           toast({
             variant: "success",
@@ -117,9 +118,12 @@ const CreateFromPDFPage = () => {
             <div className="m-5 gap-2">
               <>
                 <div className="flex flex-col gap-2 text-start">
-                  <span>페이지 설정 {`${pageRange[0]} - ${pageRange[1]}`}</span>
+                  <span>
+                    페이지 설정 {startPage} - {endPage}
+                  </span>
                   <Slider
                     defaultValue={[1, pageCount]}
+                    min={1}
                     max={pageCount}
                     step={1}
                     range={true}
