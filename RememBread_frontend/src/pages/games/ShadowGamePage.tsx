@@ -6,7 +6,7 @@ import StartModal from '@/components/game/StartModal';
 import GameResultModal from '@/components/game/GameResultModal';
 import useGameStore from '@/stores/gameStore';
 import CustomButton from '@/components/common/CustomButton';
-import { BREAD_SVG_LIST } from '@/constants/game';
+import { BREAD_SVG_LIST, BREAD_BLACK_SVG_LIST } from '@/constants/game';
 import { 
   getRandomIndices, 
   getAnswerButtons, 
@@ -14,6 +14,7 @@ import {
   SVG_HEIGHT,
   getRandomPos 
 } from '@/utils/breadGame';
+
 
 const GameShadowPage = () => {
   const navigate = useNavigate();
@@ -27,23 +28,21 @@ const GameShadowPage = () => {
   const [showResultModal, setShowResultModal] = useState<boolean>(false);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
   const [answerButtons, setAnswerButtons] = useState<number[]>([]);
-  const [windowWidth, setWindowWidth] = useState<number>(window.innerWidth);
   
-  // useAnimation을 최상위 레벨에서 호출
-  const controlsArray = Array.from({ length: 5 }, () => useAnimation());
+  // 각각의 useAnimation을 개별적으로 선언
+  const control1 = useAnimation();
+  const control2 = useAnimation();
+  const control3 = useAnimation();
+  const control4 = useAnimation();
+  const control5 = useAnimation();
+  const control6 = useAnimation();
   
   // controls 배열을 level에 따라 필터링
-  const controls = useMemo(() => controlsArray.slice(0, level), [level]);
+  const controls = useMemo(() => {
+    const allControls = [control1, control2, control3, control4, control5, control6];
+    return allControls.slice(0, level);
+  }, [level, control1, control2, control3, control4, control5, control6]);
 
-  // 화면 크기 변경 감지
-  useEffect(() => {
-    const handleResize = () => {
-      setWindowWidth(window.innerWidth);
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, []);
 
   const generateNewProblem = () => {
     const newIndices = getRandomIndices(level);
@@ -64,6 +63,7 @@ useEffect(() => {
     if (!isGameStarted || randomIdx.length === 0) return;
   
     let isCancelled = false;
+    const animationPromises: Promise<void>[] = [];
   
     // duration 계산 함수
     const getDuration = (level:number) => {
@@ -76,22 +76,30 @@ useEffect(() => {
     const startAnimations = async () => {
       for (const control of controls) {
         const firstPos = getRandomPos();
-        control.set({ x: firstPos.x, y: firstPos.y });
+        await control.set({ x: firstPos.x, y: firstPos.y });
         
         const animate = async () => {
-          while (!isCancelled) {
-            const newPos = getRandomPos();
-            await control.start({
-              x: newPos.x,
-              y: newPos.y,
-              transition: {
-                duration: getDuration(level),
-                ease: "easeInOut",
-              }
-            });
+          try {
+            while (!isCancelled) {
+              const newPos = getRandomPos();
+              await control.start({
+                x: newPos.x,
+                y: newPos.y,
+                transition: {
+                  duration: getDuration(level),
+                  ease: "easeInOut",
+                }
+              });
+            }
+          } catch (error) {
+            if (!isCancelled) {
+              console.error('Animation error:', error);
+            }
           }
         };
-        animate();
+        
+        const animationPromise = animate();
+        animationPromises.push(animationPromise);
       }
     };
 
@@ -99,7 +107,21 @@ useEffect(() => {
   
     return () => {
       isCancelled = true;
-      controls.forEach(control => control.stop());
+      // 모든 애니메이션 컨트롤 정리
+      controls.forEach(control => {
+        try {
+          control.stop();
+        } catch (error) {
+          console.error('Error stopping animation:', error);
+        }
+      });
+      
+      // 모든 애니메이션 Promise 정리
+      animationPromises.forEach(promise => {
+        promise.catch(() => {
+          // 이미 취소된 애니메이션의 에러는 무시
+        });
+      });
     };
   }, [isGameStarted, randomIdx, controls, level]);
   
@@ -113,18 +135,28 @@ useEffect(() => {
         setScore(prev => prev + 1);
         setLevelScore(prev => prev + 1);
   
-        if (levelScore + 1 >= 3 && level < 6) {
+        if (levelScore + 1 >= 3 && level < 5) {
+          // 모든 애니메이션 중지
+          controls.forEach(control => {
+            try {
+              control.stop();
+            } catch (error) {
+              console.error('Error stopping animation:', error);
+            }
+          });
+          
           setTimeout(() => {
             setLevel(prev => prev + 1);
             setLevelScore(0);
             setShowResultModal(false);
             setSolvedBreads([]);
+            setIsCorrect(false);
           }, 1000);
         } else {
           setTimeout(() => {
             setShowResultModal(false);
             setSolvedBreads([]);
-            generateNewProblem(); // 정답일 때 명시적으로 호출
+            generateNewProblem();
           }, 1000);
         }
       }
@@ -137,7 +169,7 @@ useEffect(() => {
       setTimeout(() => {
         setShowResultModal(false);
         setSolvedBreads([]);
-        generateNewProblem(); // 오답일 때도 호출
+        generateNewProblem();
       }, 1000);
     }
   };
@@ -163,10 +195,11 @@ useEffect(() => {
               <Timer initial={60} onEnd={handleTimeEnd}>{(v) => `${v}초`}</Timer>
             </span>
           </div>
-          <div className={`w-full ${windowWidth <= 320 ? 'max-w-[320px] h-[320px]' : 'max-w-[375px] h-[350px]'} flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-6 text-white text-3xl font-bold overflow-hidden`}>
+          <div className="w-full max-w-[320px] h-[320px] sm:max-w-[375px] sm:h-[350px] flex-shrink-0 bg-primary-200 rounded-xl relative flex items-center justify-center gap-4 py-4 mb-6 text-white text-3xl font-bold overflow-hidden">
             <div className="relative w-full h-full">
               {randomIdx.map((idx, i) => {
                 const Svg = BREAD_SVG_LIST[idx];
+                const BlackSvg = BREAD_BLACK_SVG_LIST[idx];
                 return (
                   <motion.div
                     key={`${idx}-${i}`}
@@ -177,13 +210,16 @@ useEffect(() => {
                       height: `${SVG_HEIGHT}px`,
                     }}
                   >
-                    <Svg className={`w-full h-full ${!solvedBreads.includes(idx) ? 'grayscale brightness-0 contrast-200 opacity-100' : ''}`} />
+                    {!solvedBreads.includes(idx) 
+                      ? <BlackSvg className="w-full h-full" />
+                      : <Svg className="w-full h-full" />
+                    }
                   </motion.div>
                 );
               })}
             </div>
           </div>
-          <div className={`w-full ${windowWidth <= 320 ? 'max-w-[320px]' : 'max-w-[375px]'} grid grid-cols-3 gap-3`}>
+          <div className={`w-full max-w-[320px] sm:max-w-[375px] grid grid-cols-3 gap-3`}>
             {answerButtons.map((idx) => {
               const Svg = BREAD_SVG_LIST[idx];
               return (
