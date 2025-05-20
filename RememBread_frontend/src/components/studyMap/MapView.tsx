@@ -24,6 +24,7 @@ import {
 const MapView = () => {
   const { latitude, longitude } = useLocationStore();
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
+  const [isAutoCentering, setIsAutoCentering] = useState<boolean>(true);
 
   const [totalCount, setTotalCount] = useState<number>(0);
   const [myCardSets, setMyCardSets] = useState<indexCardSet[]>([]);
@@ -91,7 +92,8 @@ const MapView = () => {
 
   // 시작 시 현재 위치로 가기
   useEffect(() => {
-    if (!mapRef.current || latitude == null || longitude == null) return;
+    if (!mapRef.current || !isMapLoaded || !isAutoCentering) return;
+    if (latitude == null || longitude == null) return;
 
     // 방어: 0,0일 경우 무시하거나 기본 위치 사용
     const isInvalid = latitude === 0 && longitude === 0;
@@ -112,7 +114,19 @@ const MapView = () => {
     } else {
       currentLocationMarkerRef.current.setPosition(position);
     }
-  }, [isMapLoaded, latitude, longitude]);
+  }, [isMapLoaded, latitude, longitude, isAutoCentering]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const listener = naver.maps.Event.addListener(mapRef.current, "dragstart", () => {
+      setIsAutoCentering(false);
+    });
+
+    return () => {
+      naver.maps.Event.removeListener(listener);
+    };
+  }, [isMapLoaded]);
 
   useEffect(() => {
     if (!selectedCardSet) return;
