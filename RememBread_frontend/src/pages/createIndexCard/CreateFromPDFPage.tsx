@@ -3,9 +3,10 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+// import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
-GlobalWorkerOptions.workerSrc = pdfWorkerPath;
+// GlobalWorkerOptions.workerSrc = pdfWorkerPath;
+GlobalWorkerOptions.workerSrc = "/pdf.worker.mjs";
 
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";

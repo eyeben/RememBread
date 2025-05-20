@@ -2,7 +2,6 @@ import { KeyboardEvent } from "react";
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from "@/components/ui/drawer";
 import { ButtonUI } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Toaster } from "@/components/ui/toaster";
 
 interface AlertLocationDrawerProps {
   open: boolean;
@@ -27,7 +26,7 @@ const AlertLocationDrawer = ({
 
   return (
     <Drawer open={open} onOpenChange={onOpenChange}>
-      <Toaster />
+      {/* <Toaster /> */}
       <DrawerContent className="pointer-events-none px-4 pb-4 pc:w-[598px] w-full mx-auto">
         <div className="pointer-events-auto flex flex-col items-center justify-center">
           <DrawerHeader className="text-center">

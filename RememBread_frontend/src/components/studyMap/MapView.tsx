@@ -10,7 +10,6 @@ import { getLocationAlertPosition, getRoutes, patchNotificationLocation } from "
 import { toast } from "@/hooks/use-toast";
 import useGeocode from "@/hooks/useGeocode";
 import { Switch } from "@/components/ui/switch";
-import { Toaster } from "@/components/ui/toaster";
 import CurrentLocationBtn from "@/components/studyMap/CurrentLocationBtn";
 import AlertLocationDrawer from "@/components/studyMap/AlertLocationDrawer";
 import MarkerStudyBread from "@/components/svgs/breads/MarkerStudyBread";
@@ -436,7 +435,7 @@ const MapView = () => {
 
   return (
     <div className="relative w-full" style={{ height: "calc(100vh - 126px)" }}>
-      <Toaster />
+      {/* <Toaster /> */}
       <div className="absolute top-4 left-4 right-4 z-10 flex gap-2">
         <div className="w-3/5 bg-white opacity-100 rounded-md">
           <Select
