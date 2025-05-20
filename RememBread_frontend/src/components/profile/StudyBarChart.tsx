@@ -159,7 +159,7 @@ const StudyBarChart = () => {
   }
 
   return (
-    <div className="w-full h-80 bg-white rounded-xl p-6 relative">
+    <div className="w-full min-h-[15rem] h-[30vh] bg-white rounded-xl px-4 relative">
       <div className="flex justify-between items-center mb-4">
         <div className="text-xl font-bold">
           공부 기록

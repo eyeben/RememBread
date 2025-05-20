@@ -41,7 +41,7 @@ const GameHistory = () => {
         <div className="w-full h-1.5 bg-primary-300 mb-2" />
       </div>
       {/* 게임 히스토리 리스트 */}
-      <div className="w-full px-4">
+      <div className="w-full px-4 h-[calc(100vh-23rem)] overflow-y-auto">
         {isLoading ? (
               <div className="flex flex-col items-center justify-center py-10">
                 <div className="w-8 h-8 border-4 border-primary-200 border-t-primary-500 rounded-full animate-spin"></div>
