@@ -1,5 +1,7 @@
 package com.remembread.card.facade;
 
+import com.remembread.apipayload.code.status.ErrorStatus;
+import com.remembread.apipayload.exception.GeneralException;
 import com.remembread.card.dto.response.CardResponse;
 import com.remembread.card.service.TextService;
 import lombok.RequiredArgsConstructor;
@@ -27,11 +29,31 @@ public class PdfFacadeService {
              PDDocument document = PDDocument.load(is)) {
 
             PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setSortByPosition(true); // 위치 기준 정렬 추가
             String text = stripper.getText(document).trim();
             return textService.createCardListStream(text, globalIndex);
 
         } catch (Exception e) {
-            throw new RuntimeException("PDF 텍스트 추출 실패", e);
+            throw new GeneralException(ErrorStatus.PDF_EXTRACT_FAILED);
+        }
+    }
+
+    public Flux<CardResponse> createCardListStreamByPage(MultipartFile file, Integer startPage, Integer endPage) {
+        AtomicInteger globalIndex = new AtomicInteger(1);
+
+        try (InputStream is = file.getInputStream();
+             PDDocument document = PDDocument.load(is)) {
+
+            PDFTextStripper stripper = new PDFTextStripper();
+            stripper.setStartPage(startPage);
+            stripper.setEndPage(endPage);
+            stripper.setSortByPosition(true); // 위치 기준 정렬 추가
+
+            String text = stripper.getText(document).trim();
+            return textService.createCardListStream(text, globalIndex);
+
+        } catch (Exception e) {
+            throw new GeneralException(ErrorStatus.PDF_EXTRACT_FAILED);
         }
     }
 

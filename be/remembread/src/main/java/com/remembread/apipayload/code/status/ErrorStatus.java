@@ -56,6 +56,13 @@ public enum ErrorStatus implements BaseErrorCode {
 
     STUDY_NOT_FOUND(HttpStatus.BAD_REQUEST, "STUDY4001", "학습 세션이 존재하지 않습니다."),
 
+    // PDF 관련 에러
+    TOO_MANY_PAGES(HttpStatus.BAD_REQUEST, "PDF4001", "PDF 페이지가 너무 많습니다."),
+    PDF_EXTRACT_FAILED(HttpStatus.BAD_REQUEST, "PDF4002", "PDF 텍스트 추출에 실패했습니다."),
+
+    // 이미지 관련 에러
+    TOO_MANY_IMAGES(HttpStatus.BAD_REQUEST, "IMAGE4001", "이미지가 너무 많습니다."),
+
     //이넘 에러
     ENUM_NOT_FOUND(HttpStatus.BAD_REQUEST, "ENUM4001", "enum값이 존재하지 않습니다."),
     ;
