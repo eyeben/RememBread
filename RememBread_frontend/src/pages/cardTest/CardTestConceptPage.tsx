@@ -21,7 +21,7 @@ const CardTestConceptPage = () => {
   const [remainingCardCount, setRemainingCardCount] = useState<number>(101);
 
   const [isCorrect, setIsCorrect] = useState<null | boolean>(null);
-  const [isFlipped, setIsFlipped] = useState(false);
+  const [isFlipped, setIsFlipped] = useState<boolean>(false);
 
   const fetchCard = async () => {
     try {
