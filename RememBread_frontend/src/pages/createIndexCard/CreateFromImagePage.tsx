@@ -102,29 +102,28 @@ const CreateFromImagePage = () => {
             <div className="mx-5 gap-2">
               <h2 className="text-lg font-semibold">업로드된 이미지</h2>
               <div
-                className="grid grid-cols-3 pc:grid-cols-5 gap-2 gap-y-6 overflow-auto scrollbar-hide"
+                className="grid grid-cols-3 pc:grid-cols-5 gap-2 gap-y-2 overflow-auto scrollbar-hide"
                 style={{ maxHeight: "calc(100vh - 374px)" }}
               >
                 {selectedFiles.map((file, index) => (
-                  <div key={index} className="relative flex justify-center rounded-xl">
-                    <div className="flex p-1 bg-[#BA7E4E] rounded-2xl">
-                      <div className="flex flex-col p-1 bg-[#FDF0CF] border-8 border-[#F0A365] rounded-xl">
-                        <img
-                          src={URL.createObjectURL(file)}
-                          alt={file.name}
-                          className="object-fill w-16 h-16 rounded"
-                        />
+                  <div>
+                    <div key={index} className="relative flex justify-center rounded-xl">
+                      <div className="flex p-1 bg-[#BA7E4E] rounded-2xl">
+                        <div className="flex flex-col p-1 bg-[#FDF0CF] border-8 border-[#F0A365] rounded-xl">
+                          <img
+                            src={URL.createObjectURL(file)}
+                            alt={file.name}
+                            className="object-fill w-16 h-16 rounded"
+                          />
+                        </div>
                       </div>
+
+                      <X
+                        className="absolute top-1 right-2 stroke-gray-500 cursor-pointer"
+                        onClick={() => handleRemoveFile(file)}
+                      />
                     </div>
-
-                    <X
-                      className="absolute top-1 right-2 stroke-gray-500"
-                      onClick={() => handleRemoveFile(file)}
-                    />
-
-                    <p className="absolute bottom-[-16px] max-x-16 text-xs font-bold w-full truncate">
-                      {file.name}
-                    </p>
+                    <p className="w-full text-xs text-center font-bold truncate">{file.name}</p>
                   </div>
                 ))}
               </div>
