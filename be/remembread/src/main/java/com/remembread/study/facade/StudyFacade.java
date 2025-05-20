@@ -11,6 +11,7 @@ import com.remembread.card.entity.CardSet;
 import com.remembread.card.service.CardService;
 import com.remembread.card.service.CardSetService;
 import com.remembread.common.service.RedisService;
+import com.remembread.common.util.GeoUtil;
 import com.remembread.study.converter.StudyConverter;
 import com.remembread.study.dto.CardCache;
 import com.remembread.study.dto.request.AnswerResultRequest;
@@ -247,12 +248,25 @@ public class StudyFacade {
         String listKey = redisPrefix + "::study-log::" + user.getId() + "::route::";
         String studySessionKey = redisPrefix + "::study-log::" + user.getId() + "::session-id::";
         String modeKey = redisPrefix + "::study-mode::" + user.getId();
-        if (!redisService.expire(modeKey, Duration.ofMinutes(3)))
+        if (!redisService.expire(modeKey, Duration.ofMinutes(3))) {
             throw new GeneralException(ErrorStatus.STUDY_NOT_FOUND);
-        redisService.pushList(listKey, longitude + "," + latitude);
+        }
         Long length = redisService.size(listKey);
-        if (length % 5 == 1) {
-            if (length == 1) redisService.pushList(listKey, longitude + "," + latitude);
+        if (length == 0) {
+            redisService.pushList(listKey, longitude + "," + latitude);
+            redisService.pushList(listKey, longitude + "," + latitude);
+        } else {
+            String[] lastPoint = ((String) redisService.getLastFromList(listKey)).split(",");
+            double lastLongitude = Double.parseDouble(lastPoint[0]);
+            double lastLatitude = Double.parseDouble(lastPoint[1]);
+            double distance = GeoUtil.haversine(lastLatitude, lastLongitude, latitude, longitude);
+            if (0 <= distance && distance < 50) {
+                return;
+            } else {
+                redisService.pushList(listKey, longitude + "," + latitude);
+            }
+        }
+        if (length % 5 == 0) {
             Long studySessionId = ((Number) redisService.getValue(studySessionKey)).longValue();
             StudySession studySession = studySessionService.findById(studySessionId);
             studySessionService.updateRoute(user.getId(), studySession);
