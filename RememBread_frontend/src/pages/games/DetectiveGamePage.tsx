@@ -95,8 +95,8 @@ const GameDetectivePage = () => {
           </div>
 
           {/* 중앙: 이미지 */}
-          <div className="flex flex-col items-center justify-center w-full max-w-[320px] sm:max-w-[360px] h-[360px]">
-            <div className="w-full h-full">
+          <div className="flex flex-col items-center justify-center w-full max-w-[280px] sm:max-w-[360px] h-[calc(100vh-400px)] min-h-[280px] max-h-[360px]">
+            <div className="w-full h-full flex items-center justify-center">
               <RandomImage 
                 key={problemNumber}
                 onImageSelect={setCurrentImage}
@@ -105,7 +105,7 @@ const GameDetectivePage = () => {
           </div>
 
           {/* 하단: 선택지 버튼 */}
-          <div className="w-full grid grid-cols-2 gap-2 pb-10 mt-2 ">
+          <div className="w-full grid grid-cols-2 gap-2 mt-2 ">
             {answers.map((answer, index) => (
               <CustomButton 
                 key={index}
