@@ -1,9 +1,10 @@
 import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
-import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
+// import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
-GlobalWorkerOptions.workerSrc = pdfWorkerPath;
+// GlobalWorkerOptions.workerSrc = pdfWorkerPath;
+GlobalWorkerOptions.workerSrc = "/pdf.worker.min.js";
 
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
