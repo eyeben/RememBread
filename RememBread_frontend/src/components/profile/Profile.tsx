@@ -219,7 +219,7 @@ const Profile = () => {
   };
 
   return (
-    <div className="flex flex-col items-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8 py-0 sm:py-8 gap-3 sm:gap-5">
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8 py-0 sm:py-8 gap-3 sm:gap-5">
         <div className="flex flex-col items-center w-full max-w-md mx-auto">
           {isEditable ? (
             <button

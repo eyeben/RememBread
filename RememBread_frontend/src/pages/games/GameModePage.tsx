@@ -68,7 +68,7 @@ const GameModePage = () => {
   };
 
   return (
-    <div className="min-h-[calc(100vh-126px)] flex flex-col items-center px-4">
+    <div className="min-h-[calc(100vh-126px)] flex flex-col justify-center items-center px-4">
       <div className="flex w-full flex-col items-center">
         <div className="relative flex flex-col items-center mt-4 mb-4">
           <AnimatePresence>
