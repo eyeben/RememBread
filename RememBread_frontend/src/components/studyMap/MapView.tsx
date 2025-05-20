@@ -24,6 +24,7 @@ import {
 const MapView = () => {
   const { latitude, longitude } = useLocationStore();
   const [isMapLoaded, setIsMapLoaded] = useState<boolean>(false);
+  const [isAutoCentering, setIsAutoCentering] = useState<boolean>(true);
 
   const [totalCount, setTotalCount] = useState<number>(0);
   const [myCardSets, setMyCardSets] = useState<indexCardSet[]>([]);
@@ -84,14 +85,15 @@ const MapView = () => {
         zoom: 15,
         zoomControl: false,
       });
-      setIsMapLoaded(true); // 맵 로드 완료
+      setIsMapLoaded(true);
     }
     fetchMyCardSets();
   }, []);
 
   // 시작 시 현재 위치로 가기
   useEffect(() => {
-    if (!mapRef.current || latitude == null || longitude == null) return;
+    if (!mapRef.current || !isMapLoaded || !isAutoCentering) return;
+    if (latitude == null || longitude == null) return;
 
     // 방어: 0,0일 경우 무시하거나 기본 위치 사용
     const isInvalid = latitude === 0 && longitude === 0;
@@ -112,7 +114,19 @@ const MapView = () => {
     } else {
       currentLocationMarkerRef.current.setPosition(position);
     }
-  }, [isMapLoaded, latitude, longitude]);
+  }, [isMapLoaded, latitude, longitude, isAutoCentering]);
+
+  useEffect(() => {
+    if (!mapRef.current) return;
+
+    const listener = naver.maps.Event.addListener(mapRef.current, "dragstart", () => {
+      setIsAutoCentering(false);
+    });
+
+    return () => {
+      naver.maps.Event.removeListener(listener);
+    };
+  }, [isMapLoaded]);
 
   useEffect(() => {
     if (!selectedCardSet) return;
@@ -495,10 +509,10 @@ const MapView = () => {
       </div>
 
       <div id="map" className="absolute top-0 left-0 w-full h-full z-0" />
-      <div className="absolute top-16 right-6 z-30 flex items-center gap-2">
-        <span className="text-xl text-muted-foreground font-bold">알림</span>
+      <div className="absolute top-16 right-4 z-15 flex items-center gap-2 px-4 py-2 bg-white/20 backdrop-blur-sm rounded-md shadow-md">
+        <span className="text-md text-muted-foreground font-bold">알림</span>
         <Switch
-          className="scale-125"
+          className=""
           checked={isAlarmEnabled}
           onCheckedChange={async (checked) => {
             setIsAlarmEnabled(checked);
@@ -526,7 +540,6 @@ const MapView = () => {
                 checked,
               );
 
-              // 마커 스타일 업데이트
               if (addressMarker) {
                 addressMarker.setIcon(alertLocationIcon(40, "#ffaa64", !checked)!);
               }
@@ -550,13 +563,10 @@ const MapView = () => {
           }}
         />
       </div>
+
       {isMapLoaded && mapRef.current && (
         <>
           <div className="flex flex-col items-center space-y-1 absolute bottom-28 left-5 z-20">
-            {/* <div className="flex gap-2 items-center">
-              <span className="text-sm text-muted-foreground font-bold">알림</span>
-              <Switch checked={isAlarmEnabled} onCheckedChange={handleToggleAlarmEnabled} />
-            </div> */}
             <CurrentLocationBtn onClick={handleSetCurrentLocation} />
             <span className="text-xs text-white bg-primary-600/90 px-2 py-1 rounded-md shadow">
               현재 위치
