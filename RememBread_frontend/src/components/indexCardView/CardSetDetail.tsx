@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-
 import { toast } from "@/hooks/use-toast";
 import { indexCard } from "@/types/indexCard";
 import { getCardSetById } from "@/services/cardSet";
@@ -44,6 +43,7 @@ const CardSetDetail = ({
   const [name, setName] = useState<string>("");
   const [hashtags, setHashTags] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<boolean>(false);
+  const [totalCards, setTotalCards] = useState<number>(0);
 
   const [page, setPage] = useState<number>(0);
   const [hasNext, setHasNext] = useState<boolean>(true);
@@ -157,6 +157,7 @@ const CardSetDetail = ({
 
       setCards((prev) => [...prev, ...response.result.cards]);
       setHasNext(response.result.hasNext);
+      setTotalCards(response.result.total);
       setPage((prev) => prev + 1);
     } catch (e) {
       console.error("카드 불러오기 실패:", e);
@@ -439,6 +440,7 @@ const CardSetDetail = ({
             <Button
               className="w-full"
               variant="primary-outline"
+              disabled={totalCards === 0}
               onClick={() =>
                 navigate(`/study/${selectedCardSetId}`, {
                   state: {
@@ -452,7 +454,9 @@ const CardSetDetail = ({
               학습하기
             </Button>
 
-            {isMyCardSet && <TestSettingDialog indexCardId={selectedCardSetId} />}
+            {isMyCardSet && (
+              <TestSettingDialog indexCardId={selectedCardSetId} disabled={totalCards === 0} />
+            )}
           </div>
         </div>
       )}
