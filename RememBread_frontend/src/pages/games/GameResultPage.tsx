@@ -20,26 +20,38 @@ interface UserProfile {
 const GameResultPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { memoryScore, compareScore, detectiveScore, shadowScore, resetMemoryScore, resetCompareScore, resetDetectiveScore, resetShadowScore } = useGameStore();
+  const {
+    memoryScore,
+    compareScore,
+    detectiveScore,
+    shadowScore,
+    resetMemoryScore,
+    resetCompareScore,
+    resetDetectiveScore,
+    resetShadowScore,
+  } = useGameStore();
   const [userProfile, setUserProfile] = useState<UserProfile>();
   const [Leaderboard, setLeaderboard] = useState<LeaderboardType[]>([]);
-  
+
   const gameType = location.state?.game.toUpperCase();
-  const score = gameType === "MEMORY" ? memoryScore : 
-                gameType === "COMPARE" ? compareScore : 
-                gameType === "DETECTIVE" ? detectiveScore :
-                shadowScore;
+  const score =
+    gameType === "MEMORY"
+      ? memoryScore
+      : gameType === "COMPARE"
+      ? compareScore
+      : gameType === "DETECTIVE"
+      ? detectiveScore
+      : shadowScore;
 
   useEffect(() => {
     const sendGameResult = async () => {
       try {
         const response = await postGameResult({
           gameType: gameType,
-          score: score
+          score: score,
         });
-        setUserProfile(response.result)
-      } catch (error) {
-      }
+        setUserProfile(response.result);
+      } catch (error) {}
     };
     const getLeaderboard = async () => {
       try {
@@ -55,68 +67,74 @@ const GameResultPage = () => {
   }, []);
 
   return (
-    <div className="min-h-[calc(100vh-126px)] flex flex-col items-center justify-center p-4">
-      <header>
-        <div className="flex justify-center mb-2">
-          {gameType === "MEMORY" ? <Memory className="w-24 h-24" /> :
-           gameType === "COMPARE" ? <Compare className="w-24 h-24" /> :
-           gameType === "DETECTIVE" ? <Detective className="w-24 h-24" /> :
-           <Shadow className="w-24 h-24" />}
-        </div>
-        <span className="flex text-2xl font-bold mb-4 justify-center">
-          {gameType === "MEMORY" ? "순간기억" : 
-          gameType === "COMPARE" ? "가격비교" : 
-          gameType === "DETECTIVE" ? "빵 탐정" :
-          "그림자빵"}
-        </span>
-      </header>
+    <div className="min-h-[calc(100vh-126px)] flex flex-col items-center justify-center px-5">
+      <div className="flex justify-center mb-2">
+        {gameType === "MEMORY" ? (
+          <Memory className="w-20 h-20" />
+        ) : gameType === "COMPARE" ? (
+          <Compare className="w-20 h-20" />
+        ) : gameType === "DETECTIVE" ? (
+          <Detective className="w-20 h-20" />
+        ) : (
+          <Shadow className="w-20 h-20" />
+        )}
+      </div>
+      <span className="flex text-xl font-bold justify-center">
+        {gameType === "MEMORY"
+          ? "순간기억"
+          : gameType === "COMPARE"
+          ? "가격비교"
+          : gameType === "DETECTIVE"
+          ? "빵 탐정"
+          : "그림자빵"}
+      </span>
 
-      <div className="w-full max-w-md bg-white rounded-lg border-2 border-primary-200 p-6 mb-8">
+      <div className="flex flex-col flex-grow w-full bg-white max-h-[calc(100vh-302px)] py-5">
         {/* 현재 사용자 점수 */}
-        <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg mb-6">
-          <div className="w-16 h-16 bg-gray-200 rounded-full overflow-hidden">
+        <div className="flex items-center gap-4 p-4 bg-blue-50 rounded-lg shrink-0">
+          <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
             {userProfile?.mainCharacterImageUrl ? (
-              <img      
-                src={userProfile.mainCharacterImageUrl} 
-                alt="User" 
-                className="w-full h-full object-cover" 
+              <img
+                src={userProfile.mainCharacterImageUrl}
+                alt="User"
+                className="w-full h-full object-cover"
               />
             ) : (
               <DefaultBread className="w-full h-full" />
             )}
           </div>
-          <div className="flex-1">
+          <div className="flex justify-between w-full">
             <div className="text-lg font-bold">{userProfile?.nickname}</div>
-            <div className="text-xl font-bold text-gray-600">{score} 점</div>
+            <div className="text-xl font-bold text-gray-500">{score}</div>
           </div>
         </div>
 
         {/* 전체 순위 */}
-        <div>
-          <h3 className="text-xl font-bold mb-4">전체 순위</h3>
-          <div className="space-y-2 h-[200px] sm:h-[270px] overflow-y-auto pr-2">
+        <h3 className="text-xl font-bold w-full shrink-0 bg-white mt-2">전체 순위</h3>
+        <div className="flex flex-col flex-grow overflow-y-auto scrollbar-hide my-2 border-2 rounded-lg border-primary-500 p-2">
+          <div className="space-y-2">
             {Leaderboard.map((player, index) => (
-              <div 
+              <div
                 key={index}
                 className={`flex items-center gap-4 p-3 rounded-lg ${
-                  player.nickname === userProfile?.nickname ? 'bg-gray-200' : 'hover:bg-gray-50'
+                  player.nickname === userProfile?.nickname ? "bg-gray-200" : "hover:bg-gray-50"
                 }`}
               >
                 <div className="w-8 text-center font-bold">{player.rank}</div>
                 <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
-                {userProfile?.mainCharacterImageUrl ? (
-              <img 
-                src={player.mainCharacterImageUrl} 
-                alt="User" 
-                className="w-full h-full object-cover" 
-              />
-            ) : (
-              <DefaultBread className="w-full h-full" />
-            )}
+                  {userProfile?.mainCharacterImageUrl ? (
+                    <img
+                      src={player.mainCharacterImageUrl}
+                      alt="User"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <DefaultBread className="w-full h-full" />
+                  )}
                 </div>
                 <div className="flex-1">
                   <div className="font-semibold">{player.nickname}</div>
-                  <div className="text-xs text-neutral-400">{player.playedAt.split('T')[0]}</div>
+                  <div className="text-xs text-neutral-400">{player.playedAt.split("T")[0]}</div>
                 </div>
                 <div className="font-bold text-primary-500">{player.maxScore}</div>
               </div>
@@ -125,7 +143,7 @@ const GameResultPage = () => {
         </div>
       </div>
 
-      <div className="flex flex-grid gap-4 w-full max-w-md">
+      <div className="flex flex-grid gap-4 w-full max-w-md pb-5">
         <button
           onClick={() => {
             if (gameType === "MEMORY") {
@@ -163,4 +181,4 @@ const GameResultPage = () => {
   );
 };
 
-export default GameResultPage; 
+export default GameResultPage;
