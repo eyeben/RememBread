@@ -144,7 +144,7 @@ const CardSetDetail = ({
       setHashTags(result.hashtags ?? []);
       setIsPublic(result.isPublic ? true : false);
     } catch (e) {
-      console.error("카드셋 불러오기 실패:", e);
+      // console.error("카드셋 불러오기 실패:", e);
     }
   };
 
@@ -160,7 +160,7 @@ const CardSetDetail = ({
       setTotalCards(response.result.total);
       setPage((prev) => prev + 1);
     } catch (e) {
-      console.error("카드 불러오기 실패:", e);
+      // console.error("카드 불러오기 실패:", e);
     } finally {
       setIsLoading(false);
     }

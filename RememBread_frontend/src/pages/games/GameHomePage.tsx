@@ -10,13 +10,7 @@ const GamesHomePage = () => {
   const controls = useAnimation();
   const [showSpeechBubble, setShowSpeechBubble] = useState(false);
 
-  const messages = [
-    "오늘도 열심히 해봐요!",
-    "힘내세요!",
-    "잘하고 있어요!",
-    "최고예요!",
-    "파이팅!",
-  ];
+  const messages = ["오늘도 열심히 해봐요!", "힘내세요!", "잘하고 있어요!", "최고예요!", "파이팅!"];
 
   useEffect(() => {
     // 컴포넌트가 마운트되면 바로 뛰는 애니메이션 시작
@@ -47,7 +41,7 @@ const GamesHomePage = () => {
 
   const handleGameClick = async () => {
     if (!controls) return;
-    
+
     setShowSpeechBubble(true);
 
     try {
@@ -73,7 +67,7 @@ const GamesHomePage = () => {
         },
       });
     } catch (error) {
-      console.error("Animation error:", error);
+      // console.error("Animation error:", error);
     }
   };
 
@@ -114,13 +108,13 @@ const GamesHomePage = () => {
         </Button>
         <Button
           className="w-full h-[80px] flex-shrink-0 rounded-[30px] bg-primary-200 text-2xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
-          onClick={() => navigate('/games/game-mode')}
+          onClick={() => navigate("/games/game-mode")}
         >
           선택모드
         </Button>
         <Button
           className="w-full h-[80px] flex-shrink-0 rounded-[30px] bg-primary-200 text-2xl text-neutral-700 hover:bg-primary-200 active:bg-primary-300"
-          onClick={() => navigate('/games/rank')}
+          onClick={() => navigate("/games/rank")}
         >
           랭킹
         </Button>

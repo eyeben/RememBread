@@ -19,8 +19,9 @@ const Header = () => {
   const [pendingAction, setPendingAction] = useState<(() => void) | null>(null);
 
   // '/card-view/숫자' 형태의 경로와 games 관련 경로에서 표시
-  const showBackButton = /^\/card-view\/\d+(\/.*)?$/.test(location.pathname) || 
-    ['/games/rank', '/games/game-mode'].includes(location.pathname);
+  const showBackButton =
+    /^\/card-view\/\d+(\/.*)?$/.test(location.pathname) ||
+    ["/games/rank", "/games/game-mode"].includes(location.pathname);
 
   const handleBack = () => {
     if (isRecording) {
@@ -38,11 +39,10 @@ const Header = () => {
     const longitude = currentLocation?.longitude ?? 0;
 
     try {
-      console.log("Header 기록 종료", { cardSetId, lastCardId, latitude, longitude });
       await stopRecord(cardSetId, { lastCardId, latitude, longitude });
       stopRecording();
     } catch (e) {
-      console.error("Header 기록 종료 실패", e);
+      // console.error("Header 기록 종료 실패", e);
     }
 
     setShowStopModal(false);

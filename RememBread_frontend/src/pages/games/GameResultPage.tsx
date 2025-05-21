@@ -58,7 +58,7 @@ const GameResultPage = () => {
         const response = await getRanks(gameType);
         setLeaderboard(response.result);
       } catch (error) {
-        console.error("게임 랭킹 조회 중 오류 발생:", error);
+        // console.error("게임 랭킹 조회 중 오류 발생:", error);
       }
     };
     sendGameResult().then(() => {

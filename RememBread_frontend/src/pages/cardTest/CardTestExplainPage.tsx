@@ -31,7 +31,7 @@ const CardTestExplainPage = () => {
 
       setName(response.result.name);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -41,7 +41,7 @@ const CardTestExplainPage = () => {
     try {
       await postStopTest(cardSetId, cardId, lat, lng);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     } finally {
       navigate("/card-view");
     }
@@ -72,7 +72,7 @@ const CardTestExplainPage = () => {
     try {
       await postLocation(cardSetId, lat, lng);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 

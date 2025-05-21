@@ -81,7 +81,7 @@ const Profile = () => {
           socialLoginType: userData.result.socialLoginType,
         });
       } catch (error) {
-        console.error("유저 정보를 불러오는 중 오류가 발생했습니다:", error);
+        // console.error("유저 정보를 불러오는 중 오류가 발생했습니다:", error);
         navigate("/login");
       }
     };
@@ -110,7 +110,7 @@ const Profile = () => {
           description: "이미 사용 중인 닉네임입니다. 다른 닉네임을 입력해주세요.",
         });
       } else {
-        console.error("유저 정보 수정 중 오류가 발생했습니다:", error);
+        // console.error("유저 정보 수정 중 오류가 발생했습니다:", error);
         toast({
           variant: "error",
           title: "오류 발생",
@@ -142,13 +142,13 @@ const Profile = () => {
             await patchFcmToken({ fcmToken: token });
           }
         } catch (error) {
-          console.error("알림 권한 요청 중 오류가 발생했습니다:", error);
+          // console.error("알림 권한 요청 중 오류가 발생했습니다:", error);
         }
       } else if (Notification.permission === "granted") {
         const token = await getDeviceToken();
         await patchFcmToken({ fcmToken: token });
       } else {
-        console.error("알림 설정을 켜주세요.");
+        // console.error("알림 설정을 켜주세요.");
       }
     }
   };
@@ -160,7 +160,7 @@ const Profile = () => {
       resetProfile();
       navigate("/login");
     } catch (error) {
-      console.error("로그아웃 중 오류가 발생했습니다:", error);
+      // console.error("로그아웃 중 오류가 발생했습니다:", error);
       tokenUtils.removeToken();
       resetProfile();
       navigate("/login");

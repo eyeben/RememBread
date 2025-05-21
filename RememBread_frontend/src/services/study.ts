@@ -18,7 +18,7 @@ export const postStartTest = async (
 
     return response.data.result;
   } catch (error) {
-    console.error("테스트 시작 중 오류:", error);
+    // console.error("테스트 시작 중 오류:", error);
     throw new Error("테스트 시작 실패");
   }
 };
@@ -30,7 +30,7 @@ export const getNextCard = async (cardSetId: number) => {
 
     return response.data.result;
   } catch (error) {
-    console.error("다음 카드 조회 중 오류:", error);
+    // console.error("다음 카드 조회 중 오류:", error);
     throw new Error("다음 카드 조회 실패");
   }
 };
@@ -42,7 +42,7 @@ export const postAnswer = async (cardSetId: number, cardId: number, isCorrect: b
 
     return response.data.result;
   } catch (error) {
-    console.error("답 제출 중 오류:", error);
+    // console.error("답 제출 중 오류:", error);
     throw new Error("답 제출 실패");
   }
 };
@@ -63,7 +63,7 @@ export const postStopTest = async (
 
     return response.data.result;
   } catch (error) {
-    console.error("테스트 중단 중 오류:", error);
+    // console.error("테스트 중단 중 오류:", error);
     throw new Error("테스트 중단 실패");
   }
 };
@@ -82,7 +82,7 @@ export const postLocation = async (
 
     return response.data;
   } catch (error) {
-    console.error("위치 전송 중 오류:", error);
+    // console.error("위치 전송 중 오류:", error);
     throw new Error("위치 전송 실패");
   }
 };

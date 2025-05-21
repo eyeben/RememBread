@@ -43,14 +43,14 @@ const CreateFromPDFPage = () => {
               setPageCount(pdf.numPages);
               setPageRange([1, pdf.numPages]);
             } catch (error) {
-              console.error("PDF 로딩 실패", error);
+              // console.error("PDF 로딩 실패", error);
             }
           }
         };
 
         fileReader.readAsArrayBuffer(file);
       } else {
-        console.error("PDF 파일만 업로드할 수 있습니다.");
+        // console.error("PDF 파일만 업로드할 수 있습니다.");
       }
     }
   };
@@ -76,7 +76,7 @@ const CreateFromPDFPage = () => {
           });
         })
         .catch((error) => {
-          console.error("카드 생성 중 오류:", error);
+          // console.error("카드 생성 중 오류:", error);
           toast({
             variant: "destructive",
             title: "카드 생성 실패",
@@ -86,7 +86,7 @@ const CreateFromPDFPage = () => {
           setIsLoading(false);
         });
     } catch (error) {
-      console.error("카드 생성 중 오류:", error);
+      // console.error("카드 생성 중 오류:", error);
     } finally {
       setTimeout(() => {
         navigate("/create");

@@ -29,7 +29,7 @@ const MergeCardAlertDialog = ({ selectedCardSet }: MergeCardAlertDialogProps) =>
     try {
       await postCards(selectedCardSet.cardSetId, cardSet);
     } catch (error) {
-      console.error("카드셋 병합 실패:", error);
+      // console.error("카드셋 병합 실패:", error);
       return;
     } finally {
       resetCardSet();

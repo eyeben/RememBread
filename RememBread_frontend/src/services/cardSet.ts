@@ -94,7 +94,7 @@ export const getCardSetList = async (
     });
     return response.data;
   } catch (error) {
-    console.error("API 호출 에러:", error);
+    // console.error("API 호출 에러:", error);
     throw new Error("카드셋 목록 조회 중 오류가 발생했습니다.");
   }
 };
@@ -107,7 +107,7 @@ export const getCardSetSimple = async (folderId: number) => {
     });
     return response.data;
   } catch (error) {
-    console.error("API 호출 에러:", error);
+    // console.error("API 호출 에러:", error);
     throw new Error("카드셋 간단 조회 중 오류가 발생했습니다.");
   }
 };
@@ -132,7 +132,7 @@ export const postCardSet = async (cardSetData: PostCardSetParams) => {
     const response = await http.post("/card-sets", cardSetData);
     return response.data;
   } catch (error) {
-    console.error("API 호출 에러:", error);
+    // console.error("API 호출 에러:", error);
     throw new Error("카드셋 생성 중 오류가 발생했습니다.");
   }
 };
@@ -151,7 +151,7 @@ export const updateCardSet = async (cardSet: indexCardSet): Promise<UpdateCardSe
     );
     return response.data;
   } catch (error) {
-    console.error("카드셋 수정 중 오류:", error);
+    // console.error("카드셋 수정 중 오류:", error);
     throw new Error("카드셋 수정 요청 실패");
   }
 };
@@ -162,7 +162,7 @@ export const deleteCardSet = async (cardSetId: number): Promise<DeleteCardSetRes
     const response = await http.delete<DeleteCardSetResponse>(`/card-sets/${cardSetId}`);
     return response.data;
   } catch (error) {
-    console.error("카드셋 삭제 중 오류:", error);
+    // console.error("카드셋 삭제 중 오류:", error);
     throw new Error("카드셋 삭제 요청에 실패했습니다.");
   }
 };
@@ -177,7 +177,7 @@ export const searchCardSet = async (
     });
     return response.data;
   } catch (error) {
-    console.error("카드셋 검색 API 오류:", error);
+    // console.error("카드셋 검색 API 오류:", error);
     throw new Error("카드셋 검색 중 오류가 발생했습니다.");
   }
 };
@@ -192,7 +192,7 @@ export const searchMyCardSet = async (
     });
     return response.data;
   } catch (error) {
-    console.error("내 카드셋 검색 API 오류:", error);
+    // console.error("내 카드셋 검색 API 오류:", error);
     throw new Error("내 카드셋 검색 중 오류가 발생했습니다.");
   }
 };
@@ -203,7 +203,7 @@ export const getCardSetById = async (cardSetId: number): Promise<GetCardSetRespo
     const response = await http.get<GetCardSetResponse>(`/card-sets/${cardSetId}`);
     return response.data;
   } catch (error) {
-    console.error("카드셋 단건 조회 중 오류:", error);
+    // console.error("카드셋 단건 조회 중 오류:", error);
     throw new Error("카드셋 조회 요청에 실패했습니다.");
   }
 };
@@ -218,7 +218,7 @@ export const getLikeCardSet = async (
     });
     return response.data;
   } catch (error) {
-    console.error("카드셋 검색 API 오류:", error);
+    // console.error("카드셋 검색 API 오류:", error);
     throw new Error("카드셋 검색 중 오류가 발생했습니다.");
   }
 };
@@ -229,7 +229,7 @@ export const postLikeCardSet = async (cardSetId: number): Promise<LikeCardSetRes
     const response = await http.post<LikeCardSetResponse>(`/card-sets/${cardSetId}/like`);
     return response.data;
   } catch (error) {
-    console.error("❌ [API 오류]", error);
+    // console.error("❌ [API 오류]", error);
     throw new Error("카드셋 좋아요 요청에 실패했습니다.");
   }
 };
@@ -240,7 +240,7 @@ export const deleteLikeCardSet = async (cardSetId: number): Promise<LikeCardSetR
     const response = await http.delete<LikeCardSetResponse>(`/card-sets/${cardSetId}/like`);
     return response.data;
   } catch (error) {
-    console.error("❌ [좋아요 취소 API 오류]", error);
+    // console.error("❌ [좋아요 취소 API 오류]", error);
     throw new Error("카드셋 좋아요 취소 요청에 실패했습니다.");
   }
 };
@@ -255,7 +255,7 @@ export const patchMoveCardSet = async (targetFolderId: number, cardSetIds: numbe
 
     return response.data;
   } catch (error) {
-    console.error("카드셋 이동 요청 실패:", error);
+    // console.error("카드셋 이동 요청 실패:", error);
     throw new Error("카드셋 이동 중 오류가 발생했습니다.");
   }
 };
@@ -269,7 +269,7 @@ export const postForkCardSet = async (
     const response = await http.post<ForkCardSetResponse>(`/card-sets/${cardSetId}/fork`, data);
     return response.data;
   } catch (error) {
-    console.error("카드셋 포크 요청 실패:", error);
+    // console.error("카드셋 포크 요청 실패:", error);
     throw new Error("카드셋 포크 중 오류가 발생했습니다.");
   }
 };

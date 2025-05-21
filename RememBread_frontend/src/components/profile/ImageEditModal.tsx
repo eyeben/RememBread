@@ -6,11 +6,11 @@ import { Character } from "@/types/profile";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 
 export interface ImageEditModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSelect: (characterId: number, characterImageUrl: string) => void;
-    currentCharacterId: number;
-  }
+  isOpen: boolean;
+  onClose: () => void;
+  onSelect: (characterId: number, characterImageUrl: string) => void;
+  currentCharacterId: number;
+}
 
 const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: ImageEditModalProps) => {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -21,7 +21,7 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
         const response = await getCharacters();
         setCharacters(response.result);
       } catch (error) {
-        console.error("캐릭터 목록을 불러오는 중 오류가 발생했습니다:", error);
+        // console.error("캐릭터 목록을 불러오는 중 오류가 발생했습니다:", error);
       }
     };
 
@@ -42,13 +42,14 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
               {character.isLocked ? (
                 <Popover>
                   <PopoverTrigger asChild>
-                    <div 
-                    tabIndex={0}
-                    className="relative cursor-pointer p-2 aspect-square opacity-50">
-                      <CharacterImage 
-                        characterId={character.id} 
+                    <div
+                      tabIndex={0}
+                      className="relative cursor-pointer p-2 aspect-square opacity-50"
+                    >
+                      <CharacterImage
+                        characterId={character.id}
                         characterImageUrl={character.imageUrl}
-                        className="w-full h-full" 
+                        className="w-full h-full"
                         isGrayscale={true}
                       />
                       <div className="text-center mt-2 text-sm">{character.name}</div>
@@ -60,7 +61,11 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
                       <p className="text-sm text-gray-500">
                         {character.description.split(/[()]/).map((part, index) => {
                           if (index % 2 === 1) {
-                            return <span key={index} className="text-positive-500">({part})</span>;
+                            return (
+                              <span key={index} className="text-positive-500">
+                                ({part})
+                              </span>
+                            );
                           }
                           return part;
                         })}
@@ -73,10 +78,10 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
                   className="relative cursor-pointer p-2 aspect-square hover:bg-neutral-100"
                   onClick={() => onSelect(character.id, character.imageUrl)}
                 >
-                  <CharacterImage 
-                    characterId={character.id} 
+                  <CharacterImage
+                    characterId={character.id}
                     characterImageUrl={character.imageUrl}
-                    className="w-full h-full" 
+                    className="w-full h-full"
                     isGrayscale={false}
                   />
                   <div className="text-center mt-2 text-sm">{character.name}</div>
@@ -95,4 +100,4 @@ const ImageEditModal = ({ isOpen, onClose, onSelect, currentCharacterId }: Image
   );
 };
 
-export default ImageEditModal; 
+export default ImageEditModal;

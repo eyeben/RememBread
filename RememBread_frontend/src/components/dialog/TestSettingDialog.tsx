@@ -47,7 +47,7 @@ const TestSettingDialog = ({ indexCardId, disabled = false }: TestSettingDialogP
         navigate(`/test/${indexCardId}/explain`);
       }
     } catch (error) {
-      console.error("테스트 시작 중 오류:", error);
+      // console.error("테스트 시작 중 오류:", error);
     }
   };
 

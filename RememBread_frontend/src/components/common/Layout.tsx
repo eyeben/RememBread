@@ -24,7 +24,7 @@ const Layout = () => {
     try {
       await sendNotificationByLocation(lat, lng);
     } catch (err) {
-      console.warn("알림 전송 실패", err);
+      // console.warn("알림 전송 실패", err);
     }
   };
 
@@ -55,7 +55,7 @@ const Layout = () => {
       if (latitude != null && longitude != null) {
         sendLocationData(latitude, longitude);
       } else {
-        console.warn("위치 정보가 없어 전송 생략");
+        // console.warn("위치 정보가 없어 전송 생략");
       }
     }, 15000);
 

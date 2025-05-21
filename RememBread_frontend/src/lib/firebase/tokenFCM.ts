@@ -6,10 +6,10 @@ function registerServiceWorker() {
   navigator.serviceWorker
     .register("/firebase-messaging-sw.js")
     .then(function (registration) {
-      console.log("Service Worker 등록 성공:", registration);
+      // console.log("Service Worker 등록 성공:", registration);
     })
     .catch(function (error) {
-      console.log("Service Worker 등록 실패:", error);
+      // console.log("Service Worker 등록 실패:", error);
     });
 }
 
@@ -20,11 +20,11 @@ export async function handleAllowNotification() {
     if (permission === "granted") {
       return await getDeviceToken();
     } else {
-      console.log("알림 권한이 거부되었습니다.");
+      // console.log("알림 권한이 거부되었습니다.");
       return null;
     }
   } catch (error) {
-    console.error("알림 권한 요청 중 오류 발생:", error);
+    // console.error("알림 권한 요청 중 오류 발생:", error);
     return null;
   }
 }
@@ -39,11 +39,11 @@ export async function getDeviceToken() {
     if (currentToken) {
       return currentToken;
     } else {
-      console.log("토큰을 가져오지 못했습니다. 권한을 다시 요청하세요.");
+      // console.log("토큰을 가져오지 못했습니다. 권한을 다시 요청하세요.");
       return null;
     }
   } catch (err) {
-    console.error("토큰을 가져오는 중 에러 발생: ", err);
+    // console.error("토큰을 가져오는 중 에러 발생: ", err);
     throw err;
   }
-} 
+}

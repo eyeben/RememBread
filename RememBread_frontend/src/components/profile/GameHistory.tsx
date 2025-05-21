@@ -22,7 +22,7 @@ const GameHistory = () => {
         const response = await getGameHistory();
         setGameHistory(response.result);
       } catch (error) {
-        console.error("게임 기록 조회 중 오류 발생:", error);
+        // console.error("게임 기록 조회 중 오류 발생:", error);
       } finally {
         setIsLoading(false);
       }

@@ -36,7 +36,7 @@ const CardTestConceptPage = () => {
 
       setName(response.result.name);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -46,7 +46,7 @@ const CardTestConceptPage = () => {
     try {
       await postStopTest(cardSetId, cardId, lat, lng);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     } finally {
       navigate("/card-view");
     }
@@ -90,7 +90,7 @@ const CardTestConceptPage = () => {
     try {
       await postLocation(cardSetId, lat, lng);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
