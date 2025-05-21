@@ -4,7 +4,7 @@ import { ArrowLeft } from "lucide-react";
 import Button from "@/components/common/Button";
 import CreateFolderDialog from "@/components/dialog/CreateFolderDialog";
 import FolderPathBreadcrumb from "@/components/folder/FolderPathBreadcrumb";
-import { postForkCardSet } from "@/services/cardSet";
+import { patchMoveCardSet, postForkCardSet } from "@/services/cardSet";
 import { getFolder, getSubFolder } from "@/services/folder";
 import { Folder } from "@/types/folder";
 import { useToast } from "@/hooks/use-toast";
@@ -18,12 +18,14 @@ type FolderTreeItem = Folder & {
 };
 
 interface SelectFolderProps {
+  isMyCardSet: boolean;
   selectedCardSetId: number | null;
   setFolderSelect: (folderSelect: boolean) => void;
   setSelectedFolderId: (id: number | null) => void;
 }
 
 const SelectFolder = ({
+  isMyCardSet,
   selectedCardSetId,
   setFolderSelect,
   setSelectedFolderId,
@@ -41,6 +43,30 @@ const SelectFolder = ({
   const handleSelectFolder = () => {
     setSelectedFolderId(selectedFolder?.id ?? null);
     setFolderSelect(false);
+  };
+
+  const handleMoveCardSet = async () => {
+    if (selectedCardSetId === null || selectedFolder === null) {
+      return;
+    }
+
+    try {
+      await patchMoveCardSet(selectedFolder.id, selectedCardSetId);
+
+      toast({
+        variant: "success",
+        title: "이동 완료",
+        description: "카드셋이 성공적으로 이동되었습니다.",
+      });
+
+      setFolderSelect(false);
+    } catch (error) {
+      toast({
+        variant: "destructive",
+        title: "이동 실패",
+        description: "카드셋 이동 중 오류가 발생했습니다.",
+      });
+    }
   };
 
   const handleForkCardSet = async () => {
@@ -262,6 +288,10 @@ const SelectFolder = ({
         {selectedCardSetId === null ? (
           <Button variant="primary" className="mt-5" onClick={handleSelectFolder}>
             선택하기
+          </Button>
+        ) : isMyCardSet ? (
+          <Button variant="primary" className="mt-5" onClick={handleMoveCardSet}>
+            이동하기
           </Button>
         ) : (
           <Button variant="primary" className="mt-5" onClick={handleForkCardSet}>

@@ -1,7 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
-
 import { toast } from "@/hooks/use-toast";
 import { indexCard } from "@/types/indexCard";
 import { getCardSetById } from "@/services/cardSet";
@@ -44,6 +43,7 @@ const CardSetDetail = ({
   const [name, setName] = useState<string>("");
   const [hashtags, setHashTags] = useState<string[]>([]);
   const [isPublic, setIsPublic] = useState<boolean>(false);
+  const [totalCards, setTotalCards] = useState<number>(0);
 
   const [page, setPage] = useState<number>(0);
   const [hasNext, setHasNext] = useState<boolean>(true);
@@ -68,7 +68,7 @@ const CardSetDetail = ({
 
   const handleEditCard = (index: number) => {
     const card = cards[index];
-    setEditingCardId(card.cardId);
+    setEditingCardId(card.cardId!);
     setEditConcept(card.concept);
     setEditDescription(card.description);
   };
@@ -83,6 +83,7 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 추가되었습니다.",
       });
 
+      setCards([]);
       setPage(0);
       setHasNext(true);
       fetchCard();
@@ -114,6 +115,7 @@ const CardSetDetail = ({
         description: "카드가 성공적으로 수정되었습니다.",
       });
 
+      setCards([]);
       setPage(0);
       setHasNext(true);
       fetchCard();
@@ -126,6 +128,13 @@ const CardSetDetail = ({
         description: "카드 저장 중 문제가 발생했습니다.",
       });
     }
+  };
+
+  const onDeleteSuccess = () => {
+    setCards([]);
+    setPage(0);
+    setHasNext(true);
+    fetchCard();
   };
 
   const fetchCardSet = async () => {
@@ -148,6 +157,7 @@ const CardSetDetail = ({
 
       setCards((prev) => [...prev, ...response.result.cards]);
       setHasNext(response.result.hasNext);
+      setTotalCards(response.result.total);
       setPage((prev) => prev + 1);
     } catch (e) {
       console.error("카드 불러오기 실패:", e);
@@ -228,6 +238,8 @@ const CardSetDetail = ({
                   setHashTags={setHashTags}
                   isPublic={isPublic}
                   setIsPublic={setIsPublic}
+                  setFolderSelect={setFolderSelect}
+                  setSelectedCardSetId={setSelectedCardSetId}
                 />
               )}
             </div>
@@ -318,7 +330,7 @@ const CardSetDetail = ({
                     <DeleteCardAlertDialog
                       selected={selected}
                       setSelected={setSelected}
-                      fetchCard={fetchCard}
+                      onDeleteSuccess={onDeleteSuccess}
                     />
                   ) : (
                     <Button
@@ -385,8 +397,8 @@ const CardSetDetail = ({
                           {isMyCardSet && (
                             <TableCell className="text-center p-0">
                               <Checkbox
-                                checked={selected.includes(card.cardId)}
-                                onCheckedChange={() => handleCheckboxChange(card.cardId)}
+                                checked={selected.includes(card.cardId!)}
+                                onCheckedChange={() => handleCheckboxChange(card.cardId!)}
                               />
                             </TableCell>
                           )}
@@ -428,6 +440,7 @@ const CardSetDetail = ({
             <Button
               className="w-full"
               variant="primary-outline"
+              disabled={totalCards === 0}
               onClick={() =>
                 navigate(`/study/${selectedCardSetId}`, {
                   state: {
@@ -441,7 +454,9 @@ const CardSetDetail = ({
               학습하기
             </Button>
 
-            {isMyCardSet && <TestSettingDialog indexCardId={selectedCardSetId} />}
+            {isMyCardSet && (
+              <TestSettingDialog indexCardId={selectedCardSetId} disabled={totalCards === 0} />
+            )}
           </div>
         </div>
       )}

@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 import Button from "@/components/common/Button";
-import InputBread from "@/components/svgs/breads/InputBread";
+import { Textarea } from "@/components/ui/textarea";
 import { postCardsByText } from "@/services/card";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,9 +13,12 @@ const CreateFromTextPage = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [inputText, setInputText] = useState<string>("");
+  const [isLoading, setIsLoading] = useState<boolean>(false);
   const remainingChars = MAX_LENGTH - inputText.length;
 
   const handleCreateCard = async () => {
+    setIsLoading(true);
+
     try {
       toast({
         title: "카드를 생성하는 중입니다.",
@@ -36,6 +40,8 @@ const CreateFromTextPage = () => {
             title: "카드 생성 실패",
             description: "카드 생성중 오류가 발생했어요",
           });
+
+          setIsLoading(false);
         });
     } catch (error) {
       console.error("카드 생성 중 오류:", error);
@@ -47,39 +53,51 @@ const CreateFromTextPage = () => {
   };
 
   return (
-    <div
-      className="flex flex-col justify-between w-full text-center"
-      style={{ minHeight: "calc(100vh - 120px)" }}
-    >
-      <h1 className="text-primary-500 text-2xl font-bold m-5">텍스트를 재료로 넣어봐뽱</h1>
+    <>
+      <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-[env(safe-area-inset-top)] top-0 left-0 right-0">
+        <nav className="h-full mx-auto">
+          <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
+            <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+            <h1 className="text-xl font-bold">카드 생성</h1>
+            <div className="w-8 h-8"></div>
+          </ul>
+        </nav>
+      </header>
 
-      <div className="flex justify-center relative w-full px-5">
-        <textarea
-          maxLength={MAX_LENGTH}
-          className="absolute top-[17%] left-[17%] pc:left-1/4 w-2/3 pc:w-1/2 h-3/4 bg-inherit border-none outline-none focus:ring-0 shadow-none resize-none font-bold"
-          value={inputText}
-          placeholder="여기에 텍스트를 입력하세요"
-          onChange={(e) => setInputText(e.target.value)}
-          style={{
-            scrollbarWidth: "none",
-          }}
-        />
+      <div
+        className="flex flex-col justify-between w-full mt-14 text-center"
+        style={{ minHeight: "calc(100vh - 126px)" }}
+      >
+        <div className="flex justify-center p-5 text-xl font-bold">텍스트를 재료로 넣어주세요</div>
 
-        <InputBread className="w-full h-full max-w-md aspect-square" />
+        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 126px)" }}>
+          <div className="flex flex-1 justify-center w-full overflow-auto rounded-xl">
+            <div className="flex w-full min-h-full mx-5 p-2 bg-[#BA7E4E] rounded-2xl">
+              <div className="flex flex-col w-full min-h-full bg-[#FDF0CF] border-8 border-[#F0A365] rounded-xl">
+                <Textarea
+                  maxLength={MAX_LENGTH}
+                  className="w-full h-full overflow-auto scrollbar-hide focus-visible:ring-0 shadow-none border-none"
+                  value={inputText}
+                  placeholder="여기에 텍스트를 입력하세요"
+                  onChange={(e) => setInputText(e.target.value)}
+                />
+                <div
+                  className={`text-right text-sm ${
+                    remainingChars <= 0 ? "text-negative-500" : "text-neutral-500"
+                  }`}
+                >
+                  {inputText.length}/{MAX_LENGTH}
+                </div>
+              </div>
+            </div>
+          </div>
 
-        <div
-          className={`absolute bottom-[-20px] pc:bottom-[-20px] right-16 pc:right-28 text-sm ${
-            remainingChars <= 0 ? "text-red-500" : "text-gray-400"
-          }`}
-        >
-          {inputText.length}/{MAX_LENGTH}
+          <Button className="m-5" variant="primary" onClick={handleCreateCard} disabled={isLoading}>
+            카드 생성하기
+          </Button>
         </div>
       </div>
-
-      <Button className="m-5" variant="primary" onClick={handleCreateCard}>
-        카드 생성하기
-      </Button>
-    </div>
+    </>
   );
 };
 

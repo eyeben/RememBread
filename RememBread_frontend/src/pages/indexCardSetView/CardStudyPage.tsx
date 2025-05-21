@@ -5,7 +5,7 @@ import { indexCard, indexCardSet } from "@/types/indexCard";
 import { getCardsByCardSet } from "@/services/card";
 import { getTTSFiles } from "@/services/study";
 import { startRecord, postLocation, stopRecord } from "@/services/map";
-import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { useLocationStore } from "@/stores/useLocationStore";
 import Button from "@/components/common/Button";
 import InputBread from "@/components/svgs/breads/InputBread";
 import StopStudyModal from "@/components/studyMap/StopStudyModal";
@@ -21,8 +21,9 @@ import {
 const CardStudyPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
-  const { location: currentLocation } = useCurrentLocation();
   const cardSet: indexCardSet | undefined = location.state?.card;
+
+  const { latitude, longitude } = useLocationStore();
 
   const [api, setApi] = useState<CarouselApi>();
   const [cards, setCards] = useState<indexCard[]>([]);
@@ -41,6 +42,7 @@ const CardStudyPage = () => {
 
   const [ttsUrl, setTtsUrl] = useState<string | undefined>();
   const [ttsMap, setTtsMap] = useState<Record<number, string>>({});
+  const [isTTSLoading, setIsTTSLoading] = useState<boolean>(false);
   const [isTTSMode, setIsTTSMode] = useState<boolean>(false);
   const [ttsMode, setTtsMode] = useState<"single" | "sequence" | null>(null);
   const audioRef = useRef<HTMLAudioElement | null>(null);
@@ -50,15 +52,15 @@ const CardStudyPage = () => {
       if (!isRecordingRef.current || !cardSet?.cardSetId) return;
       stopRecord(cardSet.cardSetId, {
         lastCardId,
-        latitude: currentLocation?.latitude ?? 0,
-        longitude: currentLocation?.longitude ?? 0,
+        latitude: latitude ?? 0,
+        longitude: longitude ?? 0,
       });
       e.preventDefault();
       e.returnValue = "";
     };
     window.addEventListener("beforeunload", handleBeforeUnload);
     return () => window.removeEventListener("beforeunload", handleBeforeUnload);
-  }, [lastCardId, currentLocation]);
+  }, [lastCardId, latitude, longitude, cardSet?.cardSetId]);
 
   useEffect(() => {
     const handlePopState = () => {
@@ -108,31 +110,36 @@ const CardStudyPage = () => {
   };
 
   useEffect(() => {
-    if (!cardSet?.cardSetId || !currentLocation || hasStarted) return;
+    if (!cardSet?.cardSetId || latitude == null || longitude == null) return;
+    if (hasStarted) return;
+
     const start = async () => {
       await startRecord(cardSet.cardSetId, {
         mode: "STUDY",
-        latitude: currentLocation.latitude,
-        longitude: currentLocation.longitude,
+        latitude,
+        longitude,
       });
       isRecordingRef.current = true;
       setHasStarted(true);
       useStudyStore.getState().setRecording(cardSet.cardSetId);
+
       const intervalId = setInterval(() => {
-        if (!currentLocation) return;
-        postLocation(cardSet.cardSetId, currentLocation.latitude, currentLocation.longitude);
+        const { latitude: lat, longitude: lng } = useLocationStore.getState();
+        console.log("📍 위치 전송 중:", lat, lng);
+        postLocation(cardSet.cardSetId, lat ?? 37.501274, lng ?? 127.039585);
       }, 2 * 60 * 1000);
       setLocationIntervalId(intervalId);
     };
+
     start();
-  }, [cardSet?.cardSetId, currentLocation, hasStarted]);
+  }, [cardSet?.cardSetId, hasStarted]);
 
   const handleStopConfirm = async () => {
     if (!cardSet?.cardSetId) return;
     await stopRecord(cardSet.cardSetId, {
       lastCardId,
-      latitude: currentLocation?.latitude ?? 0,
-      longitude: currentLocation?.longitude ?? 0,
+      latitude: latitude ?? 0,
+      longitude: longitude ?? 0,
     });
     useStudyStore.getState().stopRecording();
     if (locationIntervalId) clearInterval(locationIntervalId);
@@ -161,24 +168,35 @@ const CardStudyPage = () => {
   }, [currentIndex, ttsMap, cards]);
 
   useEffect(() => {
+    if (!cardSet?.cardSetId) return;
+    const loadTTS = async () => {
+      setIsTTSLoading(true);
+      const res = await getTTSFiles(cardSet.cardSetId);
+      const map: Record<number, string> = {};
+      res.result.forEach((item: { id: number; ttsFileUrl: string }) => {
+        map[item.id] = item.ttsFileUrl;
+      });
+      setTtsMap(map);
+      setIsTTSLoading(false);
+    };
+    loadTTS();
+  }, [cardSet?.cardSetId]);
+
+  useEffect(() => {
     if (ttsMode === "sequence" && audioRef.current) {
       audioRef.current.play().catch(() => {});
     }
   }, [ttsUrl]);
 
   return (
-    <div className="flex flex-col justify-between h-full w-full text-center gap-3 pc:p-4 p-2">
-      <Button
-        className="text-primary-500 text-2xl font-bold m-3 py-5"
-        variant="primary-outline"
-        onClick={handleFlip}
-        disabled={isButtonDisabled}
-      >
-        {!isFront ? "concept" : "description"}
-      </Button>
-
-      <div>
-        {currentIndex} / {cards.length}
+    <div className="flex flex-col justify-between h-full w-full text-center pc:gap-2 gap-6 p-4">
+      <div className="flex justify-end items-center">
+        <Button
+          onClick={() => setShowStopModal(true)}
+          className="bg-primary-600 text-white font-bold px-4 py-2 rounded-md shadow-md hover:bg-primary-700 transition text-sm pc:text-base"
+        >
+          학습 종료하기
+        </Button>
       </div>
 
       <Carousel
@@ -186,7 +204,7 @@ const CardStudyPage = () => {
         opts={{ align: "center", loop: false }}
         className="w-full max-w-md mx-auto px-4 pc:px-0"
       >
-        <CarouselContent className="aspect-square pc:mb-4 mb-2">
+        <CarouselContent className="aspect-square">
           {cards.map((card, index) => (
             <CarouselItem key={card.cardId ?? index} className="relative">
               <div className="relative w-full h-full hover:cursor-pointer" onClick={handleFlip}>
@@ -216,81 +234,79 @@ const CardStudyPage = () => {
         <CarouselPrevious className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
         <CarouselNext className="hidden pc:flex pc:items-center pc:justify-center pc:w-10 pc:h-10" />
       </Carousel>
+      <div className="text-center pc:text-md text-sm text-gray-600 mt-[-32px]">
+        {currentIndex} / {cards.length}
+      </div>
 
-      {/* TTS 제어 UI */}
       {!isTTSMode && (
-        <div className="flex gap-4 justify-center mt-2 ">
+        <div className="flex gap-4 justify-center">
           <Button
             onClick={() => setIsTTSMode(true)}
-            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
+            className="w-4/5 bg-white text-primary-600 font-bold border border-primary-600 px-6 py-3 my-2 rounded-md shadow-md hover:bg-primary-600 hover:text-white transition pc:h-10 h-8"
           >
             TTS 시작하기
           </Button>
         </div>
       )}
 
-      {isTTSMode && ttsUrl && (
-        <div className="flex flex-col pc:gap-2 gap-1 items-center mt-2 ">
-          <audio
-            ref={audioRef}
-            controls
-            autoPlay
-            src={ttsUrl}
-            onEnded={() => {
-              if (ttsMode === "sequence" && currentIndex < cards.length) {
-                setTimeout(() => {
-                  api?.scrollNext();
-                }, 1000); // 1초 뒤에 카드 넘김 (기다림 보장)
-              }
-            }}
-            className="w-4/5 pc:h-12 h-8 rounded-md "
-          />
-
-          <div className="w-4/5 mx-auto flex justify-between gap-2 mt-2">
-            <Button
-              onClick={() => setTtsMode("single")}
-              className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
-              ${
-                ttsMode === "single"
-                  ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
-                  : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
-              }`}
-            >
-              하나씩 재생
-            </Button>
-            <Button
-              onClick={() => setTtsMode("sequence")}
-              className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
-                ${
-                  ttsMode === "sequence"
-                    ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
-                    : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
-                }`}
-            >
-              연속 재생
-            </Button>
-            <Button
-              onClick={() => {
-                audioRef.current?.pause();
-                setIsTTSMode(false);
-                setTtsMode(null);
-              }}
-              className="flex-1 text-sm pc:text-base bg-white text-red-600 border border-red-300 px-3 py-2 rounded-lg font-medium hover:bg-red-50 transition pc:h-10 h-6"
-            >
-              종료
-            </Button>
-          </div>
+      {isTTSMode && (
+        <div className="flex flex-col pc:gap-2 gap-1 items-center w-full">
+          {isTTSLoading || !ttsUrl ? (
+            <div className="text-gray-500 text-sm pc:text-base mt-2">TTS 파일 생성 중입니다...</div>
+          ) : (
+            <>
+              <audio
+                ref={audioRef}
+                controls
+                autoPlay
+                src={ttsUrl}
+                onEnded={() => {
+                  if (ttsMode === "sequence" && currentIndex < cards.length) {
+                    setTimeout(() => {
+                      api?.scrollNext();
+                    }, 1000);
+                  }
+                }}
+                className="w-4/5 pc:h-12 h-8 rounded-md"
+              />
+              <div className="w-4/5 mx-auto flex justify-between gap-2 mt-1">
+                <Button
+                  onClick={() => setTtsMode("single")}
+                  className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
+                      ${
+                        ttsMode === "single"
+                          ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
+                          : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
+                      }`}
+                >
+                  하나씩 재생
+                </Button>
+                <Button
+                  onClick={() => setTtsMode("sequence")}
+                  className={`flex-1 text-sm pc:text-base px-3 py-2 rounded-lg font-medium transition pc:h-10 h-6 border
+                      ${
+                        ttsMode === "sequence"
+                          ? "bg-primary-100 text-primary-700 border-primary-400 hover:bg-primary-100 hover:text-primary-700"
+                          : "bg-white text-primary-600 border-primary-300 hover:bg-primary-100"
+                      }`}
+                >
+                  연속 재생
+                </Button>
+                <Button
+                  onClick={() => {
+                    audioRef.current?.pause();
+                    setIsTTSMode(false);
+                    setTtsMode(null);
+                  }}
+                  className="flex-1 text-sm pc:text-base bg-white text-red-600 border border-red-300 px-3 py-2 rounded-lg font-medium hover:bg-red-50 transition pc:h-10 h-6"
+                >
+                  종료
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       )}
-
-      <div className="flex gap-4 justify-center mt-2 ">
-        <Button
-          onClick={() => setShowStopModal(true)}
-          className="w-4/5 pc:mt-3 mt-1 bg-primary-600 text-white font-bold px-6 py-3 rounded-md shadow-md hover:bg-primary-700 transition pc:h-10 h-8"
-        >
-          기록 종료하기
-        </Button>
-      </div>
 
       <StopStudyModal
         open={showStopModal}

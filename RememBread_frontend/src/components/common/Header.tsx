@@ -80,8 +80,8 @@ const Header = () => {
           </li>
 
           <li className="flex items-center ml-auto">
-            <button onClick={() => setIsTutorialOpen(true)} className="p-1">
-              <HelpCircle size={25} className="text-neutral-400" />
+            <button onClick={() => setIsTutorialOpen(true)}>
+              <HelpCircle size={24} className="text-neutral-400" />
             </button>
           </li>
         </ul>

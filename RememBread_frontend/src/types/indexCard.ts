@@ -1,5 +1,5 @@
 export interface indexCard {
-  cardId: number;
+  cardId?: number;
   cardSetId?: number;
   number?: number;
   concept: string;

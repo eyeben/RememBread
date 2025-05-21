@@ -61,9 +61,7 @@ const ProtectedOutlet = () => {
   }, []);
 
   if (isLoading) {
-    return (
-      <Loading />
-    );
+    return <Loading />;
   }
 
   if (shouldRedirect) {
@@ -118,20 +116,16 @@ const router = createBrowserRouter([
         children: [
           {
             index: true,
-            element: <Navigate to="/card-view" replace />,
-          },
-          {
-            index: true,
             element: <CardViewPage />,
             handle: { header: false, footer: true },
           },
           {
             path: "create",
+            handle: { header: false, footer: true },
             children: [
               {
                 index: true,
                 element: <CreateFromSelfPage />,
-                handle: { header: false, footer: true },
               },
               { path: "pdf", element: <CreateFromPDFPage /> },
               { path: "text", element: <CreateFromTextFPage /> },
@@ -158,7 +152,7 @@ const router = createBrowserRouter([
               { path: "concept", element: <CardTestConceptPage /> },
               { path: "explain", element: <CardTestExplainPage /> },
             ],
-            handle: { header: false, footer: true },
+            handle: { header: false, footer: false },
           },
           {
             path: "profile",

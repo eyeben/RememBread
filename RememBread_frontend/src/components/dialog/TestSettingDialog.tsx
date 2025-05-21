@@ -21,9 +21,10 @@ import { useCurrentLocation } from "@/hooks/useCurrentLocation";
 
 interface TestSettingDialogProps {
   indexCardId: number;
+  disabled?: boolean;
 }
 
-const TestSettingDialog = ({ indexCardId }: TestSettingDialogProps) => {
+const TestSettingDialog = ({ indexCardId, disabled = false }: TestSettingDialogProps) => {
   const navigate = useNavigate();
   const { location: currentLocation } = useCurrentLocation();
 
@@ -53,7 +54,7 @@ const TestSettingDialog = ({ indexCardId }: TestSettingDialogProps) => {
   return (
     <Dialog aaria-hidden="false">
       <DialogTrigger asChild>
-        <Button className="w-full" variant="primary-outline">
+        <Button className="w-full" variant="primary-outline" disabled={disabled}>
           테스트하기
         </Button>
       </DialogTrigger>

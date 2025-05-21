@@ -28,8 +28,7 @@ const StopStudyModal = ({ open, onOpenChange, cardSetId, onConfirm }: StopStudyM
           </AlertDialogHeader>
 
           <div className="pc:my-5 my-2 text-center text-sm text-muted-foreground">
-            <span className="font-medium text-primary-700">{cardSetId}번</span> 카드셋의 학습을
-            종료하시겠습니까?
+            <span className="font-medium text-primary-700">학습을 종료하시겠습니까?</span>
           </div>
 
           <AlertDialogFooter className="">

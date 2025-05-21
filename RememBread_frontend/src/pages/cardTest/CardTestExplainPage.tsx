@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
 
 import Button from "@/components/common/Button";
 import { getCardSetById } from "@/services/cardSet";
@@ -95,41 +94,52 @@ const CardTestExplainPage = () => {
     };
   }, [cardSetId, currentLocation]);
 
+  useEffect(() => {
+    window.history.pushState(null, "", window.location.href);
+
+    const onPopState = (e: PopStateEvent) => {
+      window.history.pushState(null, "", window.location.href);
+    };
+
+    window.addEventListener("popstate", onPopState);
+
+    return () => {
+      window.removeEventListener("popstate", onPopState);
+    };
+  }, []);
+
   return (
     <>
       <header className="fixed w-full max-w-[600px] min-h-14 mx-auto bg-white pc:border-x border-b border-neutral-200 z-30 pt-env(safe-area-inset-top) top-0 left-0 right-0">
         <nav className="h-full mx-auto">
-          <ul className="flex justify-between items-center w-full min-h-14 px-5 relative">
-            <ArrowLeft className="cursor-pointer" onClick={() => navigate(-1)} />
+          <ul className="flex justify-center items-center w-full min-h-14 px-5 relative">
             <h1 className="text-xl font-bold">{name}</h1>
-            <div className="w-8 h-8"></div>
           </ul>
         </nav>
       </header>
 
       <div
         className="flex flex-col justify-between w-full h-full mt-14 text-center"
-        style={{ minHeight: "calc(100vh - 126px)" }}
+        style={{ minHeight: "calc(100vh - 56px)" }}
       >
-        {isCorrect !== null && (
-          <div className="absolute bottom-1/3 left-1/2 transform -translate-x-1/2 text-[200px] z-50 pointer-events-none select-none">
-            {isCorrect ? "⭕" : "❌"}
-          </div>
-        )}
-
-        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 126px)" }}>
+        <div className="flex flex-col flex-1" style={{ maxHeight: "calc(100vh - 56px)" }}>
           <div className="flex justify-center p-5 text-xl font-bold">
             {remainingCardCount === 101
               ? "테스트가 시작됐어요"
               : `남은 문제: ${remainingCardCount}`}
           </div>
 
-          <div className="flex flex-1 justify-center w-full overflow-auto rounded-xl">
-            <div className="flex w-full min-h-full mx-5 p-2 bg-[#BA7E4E] rounded-2xl">
+          <div className="flex flex-1 justify-center py-10 w-full overflow-auto rounded-xl">
+            <div className="relative flex w-full min-h-full mx-5 p-2 bg-[#BA7E4E] rounded-2xl">
               <div className="flex items-center justify-center w-full min-h-full bg-[#FDF0CF] border-8 border-[#F0A365] p-4 rounded-xl">
                 <div className="flex items-center justify-center w-full max-h-full overflow-auto scrollbar-hide text-2xl font-bold">
                   {concept}
                 </div>
+                {isCorrect !== null && (
+                  <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[200px] z-50 pointer-events-none select-none">
+                    {isCorrect ? "⭕" : "❌"}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -140,6 +150,7 @@ const CardTestExplainPage = () => {
                 variant="negative"
                 className="w-full"
                 onClick={() => handleSubmitAnswer(false)}
+                disabled={isCorrect === null ? false : true}
               >
                 몰라요
               </Button>
@@ -147,6 +158,7 @@ const CardTestExplainPage = () => {
                 variant="positive"
                 className="w-full"
                 onClick={() => handleSubmitAnswer(true)}
+                disabled={isCorrect === null ? false : true}
               >
                 알아요
               </Button>
