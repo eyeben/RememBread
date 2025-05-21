@@ -153,21 +153,25 @@ const MapView = () => {
 
   useEffect(() => {
     if (!mapRef.current || !selectedDateTime) return;
+
     const matched = routesByCardSet.find((r) => r.studiedAt === selectedDateTime);
-    if (!matched) return;
-    const second = new Date(selectedDateTime).getSeconds();
-    const stroke = lineColors[second % 10];
+    if (!matched || !matched.route.length) return;
+
+    // 초기화
     markersRef.current.forEach((m) => m.setMap(null));
     markersRef.current = [];
     if (polylineRef.current) {
       polylineRef.current.setMap(null);
       polylineRef.current = null;
     }
+
     const breadSvg = ReactDOMServer.renderToStaticMarkup(<MarkerStudyBread />);
-    const latlngs: naver.maps.LatLng[] = [];
-    matched.route.forEach(([lng, lat]: [number, number]) => {
-      const latlng = new naver.maps.LatLng(lat, lng);
-      latlngs.push(latlng);
+    const allLatLngs: naver.maps.LatLng[] = matched.route.map(
+      ([lng, lat]: [number, number]) => new naver.maps.LatLng(lat, lng),
+    );
+
+    // 마커 먼저 전부 생성
+    allLatLngs.forEach((latlng) => {
       const marker = new naver.maps.Marker({
         position: latlng,
         icon: {
@@ -179,9 +183,12 @@ const MapView = () => {
       });
       markersRef.current.push(marker);
     });
+
+    const stroke = lineColors[new Date(selectedDateTime).getSeconds() % 10];
+
     polylineRef.current = new naver.maps.Polyline({
       map: mapRef.current!,
-      path: latlngs,
+      path: [],
       strokeColor: stroke,
       strokeWeight: 10,
       strokeOpacity: 0.7,
@@ -189,6 +196,24 @@ const MapView = () => {
       strokeLineCap: "round",
       strokeLineJoin: "round",
     });
+
+    let i = 0;
+    const pathSoFar: naver.maps.LatLng[] = [];
+    const delay = 100; // 밀리초, 숫자를 늘릴수록 더 느려짐
+
+    const drawPath = () => {
+      if (i >= allLatLngs.length) return;
+
+      pathSoFar.push(allLatLngs[i]);
+      polylineRef.current?.setPath([...pathSoFar]);
+      i++;
+
+      setTimeout(() => {
+        requestAnimationFrame(drawPath);
+      }, delay);
+    };
+
+    requestAnimationFrame(drawPath);
   }, [selectedDateTime]);
 
   useEffect(() => {
