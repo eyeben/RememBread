@@ -63,9 +63,10 @@ const CardStudyPage = () => {
   }, [lastCardId, latitude, longitude, cardSet?.cardSetId]);
 
   useEffect(() => {
-    const handlePopState = () => {
+    const handlePopState = (e: PopStateEvent) => {
       if (isRecordingRef.current) {
         setShowStopModal(true);
+        navigate(1);
       }
     };
     window.addEventListener("popstate", handlePopState);
