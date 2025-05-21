@@ -12,7 +12,14 @@ interface TimePickerProps {
   onClose: () => void; // Dialog close 핸들러
 }
 
-const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinute, onChange, isOpen, onClose }: TimePickerProps) => {
+const TimePicker = ({
+  ampm: initialAmpm,
+  hour: initialHour,
+  minute: initialMinute,
+  onChange,
+  isOpen,
+  onClose,
+}: TimePickerProps) => {
   // 로컬 상태 추가
   const [localAmpm, setLocalAmpm] = useState(initialAmpm);
   const [localHour, setLocalHour] = useState(initialHour);
@@ -51,13 +58,13 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
       const container = ref.current;
       const items = Array.from(container.children) as HTMLDivElement[];
       const targetItem = items.find(
-        (item) => item.innerText.trim() === selectedValue && item.offsetParent !== null
+        (item) => item.innerText.trim() === selectedValue && item.offsetParent !== null,
       );
 
       if (targetItem) {
-        targetItem.scrollIntoView({ 
+        targetItem.scrollIntoView({
           behavior: "smooth",
-          block: "center" 
+          block: "center",
         });
       }
     };
@@ -97,7 +104,7 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
     ) => {
       if (!ref.current) return;
       const container = ref.current;
-      
+
       const items = Array.from(container.children) as HTMLDivElement[];
       // 컨테이너의 Y축 중앙값 계산
       const containerCenter = container.getBoundingClientRect().top + container.clientHeight / 2;
@@ -107,7 +114,7 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
       items.forEach((item) => {
         const rect = item.getBoundingClientRect();
         // 높이가 0인 아이템 (예: 숨겨진 spacer)은 건너뛰고, offsetParent가 없는 경우도 건너뜀
-        if (rect.height === 0 || item.offsetParent === null) return; 
+        if (rect.height === 0 || item.offsetParent === null) return;
 
         const itemCenter = rect.top + rect.height / 2;
         const centerDiff = Math.abs(itemCenter - containerCenter);
@@ -126,12 +133,12 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
         if (type === "minute") setLocalMinute(selectedValue);
       }
     };
-    
+
     // 스크롤 이벤트 리스너 함수 정의 (의존성 배열이 변경될 때마다 재생성됨)
     const ampmScrollHandler = () => handleScroll(ampmRef, localAmpm, "ampm");
     const hourScrollHandler = () => handleScroll(hourRef, localHour, "hour");
     const minuteScrollHandler = () => handleScroll(minuteRef, localMinute, "minute");
-    
+
     const ampmEl = ampmRef.current;
     const hourEl = hourRef.current;
     const minuteEl = minuteRef.current;
@@ -164,16 +171,19 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={(open) => {
-      if (!open) {
-        // Dialog가 닫힐 때 로컬 상태를 초기값으로 리셋
-        setLocalAmpm(initialAmpm);
-        setLocalHour(initialHour);
-        setLocalMinute(initialMinute);
-      }
-      onClose();
-    }}>
-      <DialogContent className="sm:max-w-[425px] rounded-lg">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) {
+          // Dialog가 닫힐 때 로컬 상태를 초기값으로 리셋
+          setLocalAmpm(initialAmpm);
+          setLocalHour(initialHour);
+          setLocalMinute(initialMinute);
+        }
+        onClose();
+      }}
+    >
+      <DialogContent className="w-[90%] rounded-lg">
         <DialogTitle className="text-center mb-2">알람 시간 설정</DialogTitle>
         <DialogDescription className="text-center mb-4">
           원하는 시간을 선택해주세요
@@ -193,9 +203,10 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
                   key={`ampm-${idx}`}
                   className={`p-1 text-center snap-center cursor-pointer min-h-11 flex items-center justify-center shrink-0 
                     transition-all duration-300 ease-in-out
-                    ${item === localAmpm 
-                      ? "text-xl font-bold text-primary-500 scale-110" 
-                      : "text-gray-500 scale-90 opacity-70"
+                    ${
+                      item === localAmpm
+                        ? "text-xl font-bold text-primary-500 scale-110"
+                        : "text-gray-500 scale-90 opacity-70"
                     }`}
                   onClick={() => setLocalAmpm(item)}
                 >
@@ -220,9 +231,10 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
                   key={`hour-${idx}`}
                   className={`p-1 text-center snap-center cursor-pointer min-h-11 flex items-center justify-center shrink-0 
                     transition-all duration-300 ease-in-out
-                    ${h === localHour 
-                      ? "text-xl font-bold text-primary-500 scale-110" 
-                      : "text-gray-500 scale-90 opacity-70"
+                    ${
+                      h === localHour
+                        ? "text-xl font-bold text-primary-500 scale-110"
+                        : "text-gray-500 scale-90 opacity-70"
                     }`}
                   onClick={() => setLocalHour(h)}
                 >
@@ -247,9 +259,10 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
                   key={`minute-${idx}`}
                   className={`p-1 text-center snap-center cursor-pointer min-h-11 flex items-center justify-center shrink-0 
                     transition-all duration-300 ease-in-out
-                    ${m === localMinute 
-                      ? "text-xl font-bold text-primary-500 scale-110" 
-                      : "text-gray-500 scale-90 opacity-70"
+                    ${
+                      m === localMinute
+                        ? "text-xl font-bold text-primary-500 scale-110"
+                        : "text-gray-500 scale-90 opacity-70"
                     }`}
                   onClick={() => setLocalMinute(m)}
                 >
@@ -262,10 +275,10 @@ const TimePicker = ({ ampm: initialAmpm, hour: initialHour, minute: initialMinut
             </div>
           </div>
           <div className="flex justify-end gap-2 mt-6">
-            <Button variant="primary" onClick={handleCancel}>
+            <Button variant="neutral" onClick={handleCancel}>
               취소
             </Button>
-            <Button onClick={handleConfirm}>
+            <Button variant="primary" onClick={handleConfirm}>
               확인
             </Button>
           </div>
