@@ -6,7 +6,8 @@ import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 // import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // GlobalWorkerOptions.workerSrc = pdfWorkerPath;
-GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
+// GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
+GlobalWorkerOptions.workerSrc = undefined as unknown as string;
 
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
