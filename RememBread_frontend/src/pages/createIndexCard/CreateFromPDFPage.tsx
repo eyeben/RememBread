@@ -2,14 +2,13 @@ import { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 
-import { getDocument, GlobalWorkerOptions, PDFWorker } from "pdfjs-dist";
+import { getDocument, GlobalWorkerOptions } from "pdfjs-dist";
 // import pdfWorkerPath from "pdfjs-dist/build/pdf.worker.min.mjs?url";
 
 // GlobalWorkerOptions.workerSrc = pdfWorkerPath;
 // GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 // GlobalWorkerOptions.workerSrc = undefined as unknown as string;
-// @ts-ignore
-GlobalWorkerOptions.workerPort = new PDFWorker({ name: "fake-worker" });
+GlobalWorkerOptions.workerSrc = "/pdf.worker.js";
 
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
