@@ -106,7 +106,7 @@ const GameResultPage = () => {
                 <div className="w-10 h-10 bg-gray-200 rounded-full overflow-hidden">
                 {userProfile?.mainCharacterImageUrl ? (
               <img 
-                src={userProfile.mainCharacterImageUrl} 
+                src={player.mainCharacterImageUrl} 
                 alt="User" 
                 className="w-full h-full object-cover" 
               />
