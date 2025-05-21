@@ -44,7 +44,7 @@ interface FcmTokenResponse {
   isSuccess: boolean;
   code: string;
   message: string;
-  result: {}
+  result: {};
 }
 
 interface StudyHistoryResponse {
@@ -52,11 +52,11 @@ interface StudyHistoryResponse {
   code: string;
   message: string;
   result: {
-  totalCorrect: number;
-  totalSolved: number;
-  totalStudyMinutes: number;
-  years: StudyHistoryYear[];
-  }
+    totalCorrect: number;
+    totalSolved: number;
+    totalStudyMinutes: number;
+    years: StudyHistoryYear[];
+  };
 }
 
 /**
@@ -97,7 +97,7 @@ export const updateUser = async (body: UpdateUserParams): Promise<UserResponse> 
     const response = await http.patch<UserResponse>(USER_END_POINT.PATCH_USER, body);
     return response.data;
   } catch (error) {
-    console.log(error);
+    // console.log(error);
     throw error;
   }
 };
@@ -135,7 +135,9 @@ export const getCharacters = async (): Promise<CharacterResponse> => {
  *
  * 서버에 device token 정보 전송
  */
-export const patchFcmToken = async (body: { fcmToken: string|null }): Promise<FcmTokenResponse> => {
+export const patchFcmToken = async (body: {
+  fcmToken: string | null;
+}): Promise<FcmTokenResponse> => {
   try {
     const response = await http.patch<FcmTokenResponse>(USER_END_POINT.PATCH_FCM_TOKEN, body);
     return response.data;
@@ -146,15 +148,20 @@ export const patchFcmToken = async (body: { fcmToken: string|null }): Promise<Fc
 
 /**
  * 학습 기록 조회
- * 
+ *
  * 학습 기록 조회 요청 (startDate, endDate 기준)
  */
-export const getStudyHistory = async (startDate: string, endDate: string): Promise<StudyHistoryResponse> => {
+export const getStudyHistory = async (
+  startDate: string,
+  endDate: string,
+): Promise<StudyHistoryResponse> => {
   try {
-    const response = await http.get<StudyHistoryResponse>(USER_END_POINT.GET_STUDY_HISTORY(startDate, endDate));
+    const response = await http.get<StudyHistoryResponse>(
+      USER_END_POINT.GET_STUDY_HISTORY(startDate, endDate),
+    );
     return response.data;
   } catch (error) {
-    console.log("학습 기록 조회 오류", error);
+    // console.log("학습 기록 조회 오류", error);
     throw error;
   }
 };

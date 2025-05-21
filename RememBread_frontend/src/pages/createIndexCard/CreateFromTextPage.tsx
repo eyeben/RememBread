@@ -34,7 +34,7 @@ const CreateFromTextPage = () => {
           });
         })
         .catch((error) => {
-          console.error("카드 생성 중 오류:", error);
+          // console.error("카드 생성 중 오류:", error);
           toast({
             variant: "destructive",
             title: "카드 생성 실패",
@@ -44,7 +44,7 @@ const CreateFromTextPage = () => {
           setIsLoading(false);
         });
     } catch (error) {
-      console.error("카드 생성 중 오류:", error);
+      // console.error("카드 생성 중 오류:", error);
     } finally {
       setTimeout(() => {
         navigate("/create");

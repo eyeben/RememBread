@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+import StopTestAlertDialog from "@/components/dialog/StopTestAlertDialog";
 import Button from "@/components/common/Button";
 import { getCardSetById } from "@/services/cardSet";
 import { getNextCard, postAnswer, postStopTest, postLocation } from "@/services/study";
@@ -17,6 +18,7 @@ const CardTestExplainPage = () => {
   const [remainingCardCount, setRemainingCardCount] = useState<number>(101);
 
   const [isCorrect, setIsCorrect] = useState<null | boolean>(null);
+  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
 
   const fetchCard = async () => {
     try {
@@ -29,7 +31,7 @@ const CardTestExplainPage = () => {
 
       setName(response.result.name);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -39,7 +41,7 @@ const CardTestExplainPage = () => {
     try {
       await postStopTest(cardSetId, cardId, lat, lng);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     } finally {
       navigate("/card-view");
     }
@@ -70,7 +72,7 @@ const CardTestExplainPage = () => {
     try {
       await postLocation(cardSetId, lat, lng);
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -93,6 +95,7 @@ const CardTestExplainPage = () => {
 
     const onPopState = () => {
       window.history.pushState(null, "", window.location.href);
+      setIsAlertOpen(true);
     };
 
     window.addEventListener("popstate", onPopState);
@@ -157,9 +160,11 @@ const CardTestExplainPage = () => {
                 알아요
               </Button>
             </div>
-            <Button variant="neutral" className="w-full" onClick={handleStopTest}>
-              그만하기
-            </Button>
+            <StopTestAlertDialog
+              handleStopTest={handleStopTest}
+              isOpen={isAlertOpen}
+              setIsOpen={setIsAlertOpen}
+            />
           </div>
         </div>
       </div>

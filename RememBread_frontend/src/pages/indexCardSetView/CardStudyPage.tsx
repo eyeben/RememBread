@@ -63,9 +63,10 @@ const CardStudyPage = () => {
   }, [lastCardId, latitude, longitude, cardSet?.cardSetId]);
 
   useEffect(() => {
-    const handlePopState = () => {
+    const handlePopState = (e: PopStateEvent) => {
       if (isRecordingRef.current) {
         setShowStopModal(true);
+        navigate(1);
       }
     };
     window.addEventListener("popstate", handlePopState);
@@ -125,7 +126,7 @@ const CardStudyPage = () => {
 
       const intervalId = setInterval(() => {
         const { latitude: lat, longitude: lng } = useLocationStore.getState();
-        console.log("📍 위치 전송 중:", lat, lng);
+        // console.log("📍 위치 전송 중:", lat, lng);
         postLocation(cardSet.cardSetId, lat ?? 37.501274, lng ?? 127.039585);
       }, 2 * 60 * 1000);
       setLocationIntervalId(intervalId);

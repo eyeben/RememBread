@@ -33,7 +33,7 @@ const DeleteCardAlertDialog = ({
 
       onDeleteSuccess();
     } catch (e) {
-      console.error("카드 삭제 실패:", e);
+      // console.error("카드 삭제 실패:", e);
     }
   };
 

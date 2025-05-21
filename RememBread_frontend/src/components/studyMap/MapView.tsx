@@ -72,7 +72,7 @@ const MapView = () => {
       const { result } = await searchMyCardSet(params);
       setMyCardSets(result.cardSets);
     } catch (err) {
-      console.error("내 카드셋 조회 실패:", err);
+      // console.error("내 카드셋 조회 실패:", err);
     }
   };
 
@@ -145,7 +145,7 @@ const MapView = () => {
         setRoutesByCardSet(result.routes);
         setTotalCount(result.total);
       } catch (err) {
-        console.error("학습 이력 조회 실패:", err);
+        // console.error("학습 이력 조회 실패:", err);
       }
     };
     fetchRoutes();
@@ -355,7 +355,7 @@ const MapView = () => {
         title: "알림 설정 실패",
         description: "위치 알림 설정 중 문제가 발생했습니다.",
       });
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -432,7 +432,7 @@ const MapView = () => {
         setAddressMarker(marker);
         setIsAlarmEnabled(result.notificationLocationEnable);
       } catch (e) {
-        console.error("알림 위치 불러오기 실패", e);
+        // console.error("알림 위치 불러오기 실패", e);
       }
     };
 

@@ -61,7 +61,7 @@ const CardSetSettingDialog = ({
       setHashTags(newHashtags);
       setIsPublic(newIsPublic ? true : false);
     } catch (e) {
-      console.error("카드셋 수정 실패:", e);
+      // console.error("카드셋 수정 실패:", e);
     }
   };
 
@@ -71,7 +71,7 @@ const CardSetSettingDialog = ({
 
       setSelectedCardSetId(null);
     } catch (e) {
-      console.error("카드셋 삭제 실패:", e);
+      // console.error("카드셋 삭제 실패:", e);
     }
   };
 

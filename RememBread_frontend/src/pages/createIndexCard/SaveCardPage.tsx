@@ -42,7 +42,7 @@ const SaveCardPage = () => {
       // 루트 폴더를 FolderTreeItem 형태로 변환
       setFolders(rootFolders.map((f: Folder) => ({ ...f })));
     } catch (error) {
-      console.error("루트 폴더 불러오기 실패:", error);
+      // console.error("루트 폴더 불러오기 실패:", error);
     }
   };
 
@@ -75,7 +75,7 @@ const SaveCardPage = () => {
                   children: childrenFolders.map((child: Folder) => ({ ...child, parent: node })),
                 };
               } catch (error) {
-                console.error("하위 폴더 불러오기 실패:", error);
+                // console.error("하위 폴더 불러오기 실패:", error);
                 return node;
               }
             }
