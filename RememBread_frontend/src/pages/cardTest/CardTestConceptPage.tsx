@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 
+import StopTestAlertDialog from "@/components/dialog/StopTestAlertDialog";
 import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
 import { getCardSetById } from "@/services/cardSet";
@@ -21,6 +22,7 @@ const CardTestConceptPage = () => {
 
   const [isCorrect, setIsCorrect] = useState<null | boolean>(null);
   const [isFlipped, setIsFlipped] = useState<boolean>(false);
+  const [isAlertOpen, setIsAlertOpen] = useState<boolean>(false);
 
   const fetchCard = async () => {
     try {
@@ -111,6 +113,7 @@ const CardTestConceptPage = () => {
 
     const onPopState = () => {
       window.history.pushState(null, "", window.location.href);
+      setIsAlertOpen(true);
     };
 
     window.addEventListener("popstate", onPopState);
@@ -181,30 +184,21 @@ const CardTestConceptPage = () => {
               />
             </div>
 
-            {remainingCardCount > 0 ? (
-              <div className="flex justify-between gap-5">
-                <Button variant="neutral" className="w-full" onClick={handleStopTest}>
-                  그만하기
-                </Button>
-                <Button
-                  variant="primary"
-                  className="w-full"
-                  onClick={handleSubmitAnswer}
-                  disabled={isFlipped}
-                >
-                  제출하기
-                </Button>
-              </div>
-            ) : (
-              <div className="flex justify-between gap-5">
-                <Button variant="neutral" className="w-full" onClick={handleStopTest}>
-                  그만하기
-                </Button>
-                <Button variant="primary" className="w-full" onClick={handleSubmitAnswer}>
-                  제출하고 종료하기
-                </Button>
-              </div>
-            )}
+            <div className="flex justify-between gap-5">
+              <StopTestAlertDialog
+                handleStopTest={handleStopTest}
+                isOpen={isAlertOpen}
+                setIsOpen={setIsAlertOpen}
+              />
+              <Button
+                variant="primary"
+                className="w-full"
+                onClick={handleSubmitAnswer}
+                disabled={remainingCardCount > 0 && isFlipped}
+              >
+                {remainingCardCount > 0 ? "제출하기" : "제출하고 종료하기"}
+              </Button>
+            </div>
           </div>
         </div>
       </div>
