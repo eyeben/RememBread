@@ -295,7 +295,7 @@ const Profile = () => {
             onClose={() => setIsTimePickerOpen(false)}
           />
         )}
-        <div className=" flex w-full flex-col justify-center items-center gap-5 flex-1">
+        <div className=" flex w-full flex-col justify-center items-center gap-3 flex-1">
           {isEditable ? (
             <Button className="w-full" variant="primary" onClick={handleCompleteClick}>
               완료
@@ -305,9 +305,9 @@ const Profile = () => {
               수정하기
             </Button>
           )}
-          <p className="text-neutral-500 underline cursor-pointer" onClick={handleLogout}>
+          <Button className="w-full" variant="negative" onClick={handleLogout}>
             로그아웃
-          </p>
+          </Button>
         </div>
       </div>
 
