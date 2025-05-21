@@ -31,33 +31,31 @@ const Profile = () => {
   const [hour, setHour] = useState<string>("09");
   const [minute, setMinute] = useState<string>("00");
   const [isTimePickerOpen, setIsTimePickerOpen] = useState<boolean>(false);
-  
 
-  
-  const { 
-    nickname, 
-    notificationTimeEnable, 
+  const {
+    nickname,
+    notificationTimeEnable,
     notificationTime,
     mainCharacterId,
     mainCharacterImageUrl,
     setProfile,
-    resetProfile 
+    resetProfile,
   } = useProfileStore();
 
   useEffect(() => {
     const fetchUserData = async () => {
       try {
         const userData = await getUser();
-        
+
         // 시간 데이터 파싱
         const timeString = userData.result.notificationTime; // "HH:mm:00"
-        const [hours, minutes] = timeString.split(':');
+        const [hours, minutes] = timeString.split(":");
         const hour24 = parseInt(hours);
-        
+
         // 오전/오후 및 12시간 형식으로 변환
         let hour12 = hour24;
         let ampmValue = "오전";
-        
+
         if (hour24 === 0) {
           // 자정(00시)는 오전 12시로 표시
           hour12 = 12;
@@ -71,7 +69,7 @@ const Profile = () => {
         }
 
         setAmpm(ampmValue);
-        setHour(hour12.toString().padStart(2, '0'));
+        setHour(hour12.toString().padStart(2, "0"));
         setMinute(minutes);
 
         setProfile({
@@ -80,7 +78,7 @@ const Profile = () => {
           notificationTime: userData.result.notificationTime,
           mainCharacterId: userData.result.mainCharacterId,
           mainCharacterImageUrl: userData.result.mainCharacterImageUrl,
-          socialLoginType: userData.result.socialLoginType
+          socialLoginType: userData.result.socialLoginType,
         });
       } catch (error) {
         console.error("유저 정보를 불러오는 중 오류가 발생했습니다:", error);
@@ -101,7 +99,7 @@ const Profile = () => {
         nickname,
         notificationTimeEnable,
         notificationTime,
-        mainCharacterId
+        mainCharacterId,
       });
       setIsEditable(false);
     } catch (error) {
@@ -125,14 +123,14 @@ const Profile = () => {
   const handleNameChange = (e: ChangeEvent<HTMLInputElement>) => {
     setProfile({
       ...useProfileStore.getState(),
-      nickname: e.target.value
+      nickname: e.target.value,
     });
   };
 
   const handlenotificationTimeEnableChange = async (checked: boolean) => {
     setProfile({
       ...useProfileStore.getState(),
-      notificationTimeEnable: checked
+      notificationTimeEnable: checked,
     });
 
     if (checked) {
@@ -146,7 +144,7 @@ const Profile = () => {
         } catch (error) {
           console.error("알림 권한 요청 중 오류가 발생했습니다:", error);
         }
-      } else if(Notification.permission === "granted") {
+      } else if (Notification.permission === "granted") {
         const token = await getDeviceToken();
         await patchFcmToken({ fcmToken: token });
       } else {
@@ -160,12 +158,12 @@ const Profile = () => {
       await logout();
       tokenUtils.removeToken();
       resetProfile();
-      navigate('/login');
+      navigate("/login");
     } catch (error) {
-      console.error('로그아웃 중 오류가 발생했습니다:', error);
+      console.error("로그아웃 중 오류가 발생했습니다:", error);
       tokenUtils.removeToken();
       resetProfile();
-      navigate('/login');
+      navigate("/login");
     }
   };
 
@@ -188,7 +186,7 @@ const Profile = () => {
     setProfile({
       ...useProfileStore.getState(),
       mainCharacterId: characterId,
-      mainCharacterImageUrl: characterImageUrl
+      mainCharacterImageUrl: characterImageUrl,
     });
     setIsImageModalOpen(false);
   };
@@ -210,114 +208,117 @@ const Profile = () => {
       }
     }
     // HH:mm:00 형식으로 변환
-    const formattedTime = `${hour24.toString().padStart(2, '0')}:${newMinute}:00`;
-    
+    const formattedTime = `${hour24.toString().padStart(2, "0")}:${newMinute}:00`;
+
     setProfile({
       ...useProfileStore.getState(),
-      notificationTime: formattedTime
+      notificationTime: formattedTime,
     });
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-200px)] px-4 sm:px-6 md:px-8 py-0 sm:py-8 gap-3 sm:gap-5">
-        <div className="flex flex-col items-center w-full max-w-md mx-auto">
-          {isEditable ? (
-            <button
-              onClick={handleImageEdit}
-              className="bg-transparent border-0 p-0 cursor-pointer relative"
-            >
-              <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
-              <div className="absolute bottom-4 right-4 bg-white rounded-full p-1">
-                <SquarePen className="w-6 h-6 text-neutral-500" />
-              </div>
-            </button>
-          ) : (
-            <CharacterImage characterId={mainCharacterId} characterImageUrl={mainCharacterImageUrl} />
-          )}
-        </div>
-        <div className="flex flex-col items-center w-full max-w-md mx-auto mt-2">
-          <div className="flex w-full justify-between items-center">
-            <div className="flex flex-col w-full min-h-[80px]">
-              <Input
-                className="min-w-48 w-full max-w-72 h-10 mx-auto"
-                type="text"
-                value={nickname}
-                disabled={!isEditable}
-                onChange={handleNameChange}
-                maxLength={10}
-                placeholder="닉네임 (최대 10자)"
-              />
-              {isEditable && (
-                <div className="flex justify-between items-center mt-1 w-full min-w-48 max-w-72 mx-auto">
-                  <span className="text-xs text-gray-500">
-                    최대 10자까지 입력 가능합니다
-                  </span>
-                  <span className="text-sm text-gray-500">
-                    {nickname.length}/10
-                  </span>
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="flex w-full justify-between items-center">
-            <div className="flex min-w-48 w-full max-w-72 mx-auto">
-              <span className="`text-sm text-nuetral-700">알림 설정</span>
-            </div>
-          </div>
-          <div className="flex w-full justify-center items-center">
-            <div className="flex min-w-48 w-full max-w-72 justify-between items-center">
-              <div 
-                className={`${notificationTimeEnable ? 'text-black' : 'text-gray-400'} ${isEditable && notificationTimeEnable ? 'cursor-pointer hover:text-primary-500' : ''}`}
-                onClick={() => isEditable && notificationTimeEnable && setIsTimePickerOpen(true)}
-              >
-                {`${ampm} ${hour}:${minute}`}
-              </div>
-              <Switch 
-                checked={notificationTimeEnable} 
-                onCheckedChange={handlenotificationTimeEnableChange}
-                disabled={!isEditable}
-                className="scale-150"
-              />
-            </div>
-          </div>
-          {isEditable && notificationTimeEnable && (
-            <TimePicker
-              ampm={ampm}
-              hour={hour}
-              minute={minute}
-              onChange={handleTimeChange}
-              isOpen={isTimePickerOpen}
-              onClose={() => setIsTimePickerOpen(false)}
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-176px)] px-5 pb-5 gap-5">
+      <div className="flex flex-col items-center w-full max-w-md mx-auto justify-center flex-1 gap-5">
+        {isEditable ? (
+          <button
+            onClick={handleImageEdit}
+            className="bg-transparent border-0 p-0 cursor-pointer relative w-full max-w-[60%] aspect-square"
+          >
+            <CharacterImage
+              characterId={mainCharacterId}
+              characterImageUrl={mainCharacterImageUrl}
+              className="w-full h-full object-cover"
             />
-          )}
-          <div className="w-full flex justify-center mt-6 ">
-            {isEditable ? (
-              <div className="w-full flex flex-col justify-center items-center gap-2">
-                <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleCompleteClick}>
-                  완료
-                </Button>
-              </div>
-            ) : (
-              <Button className="min-w-48 w-full max-w-72 h-10" variant="primary" onClick={handleEditClick}>
-                수정하기
-              </Button>
-            )}
+            <div className="absolute bottom-4 right-4 bg-white rounded-full p-1">
+              <SquarePen className="w-6 h-6 text-neutral-500" />
+            </div>
+          </button>
+        ) : (
+          <div className="relative w-full max-w-[60%] aspect-square">
+            <CharacterImage
+              characterId={mainCharacterId}
+              characterImageUrl={mainCharacterImageUrl}
+              className="w-full h-full object-cover"
+            />
           </div>
-        <Button className="min-w-48 w-full max-w-72 h-10 mt-3" variant="negative" onClick={handleLogout}>
-            로그아웃
-        </Button>
+        )}
+        <div className="flex flex-col w-full justify-between h-16 items-center">
+          <Input
+            className="min-w-48 w-full max-w-96 h-10 mx-auto"
+            type="text"
+            value={nickname}
+            disabled={!isEditable}
+            onChange={handleNameChange}
+            maxLength={10}
+            placeholder="닉네임 (최대 10자)"
+          />
+          {isEditable && (
+            <div className="flex justify-between items-center w-full max-w-96 mt-1 px-1">
+              <span className="text-xs text-gray-500">최대 10자까지 입력 가능합니다</span>
+              <span className="text-sm text-gray-500">{nickname.length}/10</span>
+            </div>
+          )}
         </div>
-        
-
-        <ImageEditModal
-          isOpen={isImageModalOpen}
-          onClose={() => setIsImageModalOpen(false)}
-          onSelect={handleCharacterSelect}
-          currentCharacterId={mainCharacterId}
-        />
       </div>
+      <div className="flex flex-col flex-1 w-full gap-1">
+        <div className="flex w-full justify-between items-center">
+          <div className="flex w-full">
+            <span className="text-sm text-nuetral-700 font-bold">알림 설정</span>
+          </div>
+        </div>
+        <div className="flex w-full justify-center items-center">
+          <div className="flex w-full justify-between items-center">
+            <div
+              className={`${notificationTimeEnable ? "text-black" : "text-gray-400"} ${
+                isEditable && notificationTimeEnable ? "cursor-pointer hover:text-primary-500" : ""
+              }`}
+              onClick={() => isEditable && notificationTimeEnable && setIsTimePickerOpen(true)}
+            >
+              {`${ampm} ${hour}:${minute}`}
+            </div>
+            <Switch
+              checked={notificationTimeEnable}
+              onCheckedChange={handlenotificationTimeEnableChange}
+              disabled={!isEditable}
+            />
+          </div>
+        </div>
+      </div>
+      <div className="flex flex-col w-full gap-5">
+        {isEditable && notificationTimeEnable && (
+          <TimePicker
+            ampm={ampm}
+            hour={hour}
+            minute={minute}
+            onChange={handleTimeChange}
+            isOpen={isTimePickerOpen}
+            onClose={() => setIsTimePickerOpen(false)}
+          />
+        )}
+        <div className=" flex w-full flex-col justify-center items-center gap-5 flex-1">
+          {isEditable ? (
+            <Button className="w-full" variant="primary" onClick={handleCompleteClick}>
+              완료
+            </Button>
+          ) : (
+            <Button className="w-full" variant="primary" onClick={handleEditClick}>
+              수정하기
+            </Button>
+          )}
+          <p className="text-neutral-500 underline cursor-pointer" onClick={handleLogout}>
+            로그아웃
+          </p>
+        </div>
+      </div>
+
+      <ImageEditModal
+        isOpen={isImageModalOpen}
+        onClose={() => setIsImageModalOpen(false)}
+        onSelect={handleCharacterSelect}
+        currentCharacterId={mainCharacterId}
+      />
+    </div>
   );
 };
 
 export default Profile;
-
