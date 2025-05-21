@@ -271,16 +271,19 @@ const SelectFolder = ({
           </div>
 
           <div className="flex flex-col flex-1 justify-start items-start overflow-auto rounded-md border p-5 scrollbar-hide bg-neutral-50">
-            <span
-              className="flex w-full text-left cursor-pointer"
-              onClick={() => {
-                const likeFolder = { id: -1, name: "즐겨찾기" };
-                setSelectedFolder(likeFolder);
-                setFolderPath(calculatePath(likeFolder));
-              }}
-            >
-              ⭐ 즐겨찾기
-            </span>
+            {isMyCardSet && (
+              <span
+                className="flex w-full text-left cursor-pointer"
+                onClick={() => {
+                  const likeFolder = { id: -1, name: "즐겨찾기" };
+                  setSelectedFolder(likeFolder);
+                  setFolderPath(calculatePath(likeFolder));
+                }}
+              >
+                ⭐ 즐겨찾기
+              </span>
+            )}
+
             {/* 폴더 트리 렌더링 */}
             {renderFolderTree(folders)}
           </div>

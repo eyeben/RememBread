@@ -5,13 +5,12 @@ import Button from "@/components/common/Button";
 import { Input } from "@/components/ui/input";
 import { getCardSetById } from "@/services/cardSet";
 import { getNextCard, postAnswer, postStopTest, postLocation } from "@/services/study";
-import { useCurrentLocation } from "@/hooks/useCurrentLocation";
+import { useLocationStore } from "@/stores/useLocationStore";
 
 const CardTestConceptPage = () => {
   const navigate = useNavigate();
   const { indexCardId } = useParams();
   const cardSetId = Number(indexCardId);
-  const { location: currentLocation } = useCurrentLocation();
 
   const [name, setName] = useState<string | undefined>("");
   const [answer, setAnswer] = useState<string>("");
@@ -40,13 +39,10 @@ const CardTestConceptPage = () => {
   };
 
   const handleStopTest = async () => {
+    const { latitude: lat, longitude: lng } = useLocationStore.getState();
+
     try {
-      await postStopTest(
-        cardSetId,
-        cardId,
-        currentLocation?.latitude ?? 0,
-        currentLocation?.longitude ?? 0,
-      );
+      await postStopTest(cardSetId, cardId, lat, lng);
     } catch (error) {
       console.error(error);
     } finally {
@@ -88,12 +84,9 @@ const CardTestConceptPage = () => {
   };
 
   const submitLocation = async () => {
+    const { latitude: lat, longitude: lng } = useLocationStore.getState();
     try {
-      await postLocation(
-        cardSetId,
-        currentLocation?.latitude ?? 0,
-        currentLocation?.longitude ?? 0,
-      );
+      await postLocation(cardSetId, lat, lng);
     } catch (error) {
       console.error(error);
     }
@@ -111,12 +104,12 @@ const CardTestConceptPage = () => {
     return () => {
       clearInterval(intervalId);
     };
-  }, [cardSetId, currentLocation]);
+  }, [cardSetId]);
 
   useEffect(() => {
     window.history.pushState(null, "", window.location.href);
 
-    const onPopState = (e: PopStateEvent) => {
+    const onPopState = () => {
       window.history.pushState(null, "", window.location.href);
     };
 
