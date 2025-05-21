@@ -30,7 +30,7 @@ export const getCardsByCardSet = async (
     });
     return response.data;
   } catch (error) {
-    console.error("카드 목록 조회 중 오류:", error);
+    // console.error("카드 목록 조회 중 오류:", error);
     throw new Error("카드셋 카드 조회 실패");
   }
 };
@@ -46,7 +46,7 @@ export const postCard = async (cardSetId: number, concept: string, description: 
 
     return response.data;
   } catch (error) {
-    console.error("카드 병합 중 오류:", error);
+    // console.error("카드 병합 중 오류:", error);
     throw new Error("카드 병합 실패");
   }
 };
@@ -60,7 +60,7 @@ export const postCards = async (cardSetId: number, cards: indexCard[]) => {
     });
     return response.data;
   } catch (error) {
-    console.error("카드 병합 중 오류:", error);
+    // console.error("카드 병합 중 오류:", error);
     throw new Error("카드 병합 실패");
   }
 };
@@ -96,7 +96,7 @@ const handleStreamedCards = async (response: Response) => {
     }
   }
 
-  console.log("모든 카드 수신 완료");
+  // console.log("모든 카드 수신 완료");
 };
 
 // 대량 텍스트로 카드 생성
@@ -116,7 +116,7 @@ export const postCardsByText = async (text: string) => {
 
     await handleStreamedCards(response);
   } catch (error) {
-    console.error("카드 생성 중 오류:", error);
+    // console.error("카드 생성 중 오류:", error);
     throw new Error("카드 생성 실패");
   }
 };
@@ -143,7 +143,7 @@ export const postCardsByPDF = async (file: File) => {
 
     await handleStreamedCards(response);
   } catch (error) {
-    console.error("카드 생성 중 오류:", error);
+    // console.error("카드 생성 중 오류:", error);
     throw new Error("카드 생성 실패");
   }
 };
@@ -176,7 +176,7 @@ export const postCardsPageByPDF = async (file: File, startPage: number, endPage:
 
     await handleStreamedCards(response);
   } catch (error) {
-    console.error("PDF 페이지 카드 생성 중 오류:", error);
+    // console.error("PDF 페이지 카드 생성 중 오류:", error);
     throw new Error("카드 생성 실패");
   }
 };
@@ -202,7 +202,7 @@ export const postCardsByImage = async (images: File[]) => {
 
     await handleStreamedCards(response);
   } catch (error) {
-    console.error("카드 생성 중 오류:", error);
+    // console.error("카드 생성 중 오류:", error);
     throw new Error("카드 생성 실패");
   }
 };
@@ -213,7 +213,7 @@ export const deleteCard = async (cardId: number) => {
     const { data } = await http.delete(`/cards/${cardId}`);
     return data;
   } catch (error) {
-    console.error("카드 삭제 중 오류:", error);
+    // console.error("카드 삭제 중 오류:", error);
     throw new Error("카드 삭제에 실패했습니다.");
   }
 };
@@ -227,7 +227,7 @@ export const deleteCards = async (cardIds: number[]) => {
 
     return data;
   } catch (error) {
-    console.error("카드 삭제 중 오류:", error);
+    // console.error("카드 삭제 중 오류:", error);
     throw new Error("카드 삭제에 실패했습니다.");
   }
 };
@@ -238,7 +238,7 @@ export const patchCard = async (cardId: number, card: Partial<indexCard>) => {
     const response = await http.patch(`/cards/${cardId}`, card);
     return response.data;
   } catch (error) {
-    console.error("카드 수정 중 오류:", error);
+    // console.error("카드 수정 중 오류:", error);
     throw new Error("카드 수정에 실패했습니다.");
   }
 };
@@ -256,7 +256,7 @@ export const getCardById = async (
     const response = await http.get(`/cards/${cardId}`);
     return response.data;
   } catch (error) {
-    console.error("카드 단건 조회 중 오류:", error);
+    // console.error("카드 단건 조회 중 오류:", error);
     throw new Error("카드 조회 실패");
   }
 };

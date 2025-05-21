@@ -46,11 +46,9 @@ const CreateIndexCardSetDialog = ({ selectedFolder }: CreateIndexCardSetDialogPr
 
       const cardSetId = response.result.cardSetId;
 
-      // console.log("생성된 카드셋 ID: ", cardSet);
-
       await postCards(cardSetId, cardSet);
     } catch (error) {
-      console.error("카드셋 생성 실패:", error);
+      // console.error("카드셋 생성 실패:", error);
       return;
     } finally {
       // 카드셋 초기화

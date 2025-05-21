@@ -22,7 +22,7 @@ const SignupTermsPage = () => {
       await completeAgree();
       navigate("/card-view");
     } catch (error) {
-      console.error("약관 동의 처리 중 오류:", error);
+      // console.error("약관 동의 처리 중 오류:", error);
       tokenUtils.removeToken();
       navigate("/login");
     }

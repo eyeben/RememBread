@@ -24,7 +24,7 @@ const CreateFromImagePage = () => {
         if (validImageTypes.includes(file.type)) {
           selectedFiles.push(file);
         } else {
-          console.error(`"${file.name}" 파일은 이미지 파일이 아닙니다.`);
+          // console.error(`"${file.name}" 파일은 이미지 파일이 아닙니다.`);
         }
       });
 
@@ -55,7 +55,7 @@ const CreateFromImagePage = () => {
           });
         })
         .catch((error) => {
-          console.error("카드 생성 중 오류:", error);
+          // console.error("카드 생성 중 오류:", error);
           toast({
             variant: "destructive",
             title: "카드 생성 실패",
@@ -65,7 +65,7 @@ const CreateFromImagePage = () => {
           setIsLoading(false);
         });
     } catch (error) {
-      console.error("카드 생성 중 오류:", error);
+      // console.error("카드 생성 중 오류:", error);
     } finally {
       setTimeout(() => {
         navigate("/create");

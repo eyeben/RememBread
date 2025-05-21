@@ -45,7 +45,7 @@ const CurrentLocation = ({ map, onUpdatePosition }: Props) => {
           if (watchId !== null) navigator.geolocation.clearWatch(watchId);
         },
         (err) => {
-          console.error("📛 watchPosition 실패:", err);
+          // console.error("📛 watchPosition 실패:", err);
           if (!received && !isAlerted) {
             isAlerted = true;
             toast({

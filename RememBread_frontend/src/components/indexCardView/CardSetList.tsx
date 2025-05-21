@@ -97,7 +97,7 @@ const CardSetList = ({
       setHasNext(res.result.hasNext);
       setPage((prev) => prev + 1);
     } catch (e) {
-      console.error("카드셋 조회 실패:", e);
+      // console.error("카드셋 조회 실패:", e);
     } finally {
       setIsLoading(false);
     }
@@ -120,7 +120,7 @@ const CardSetList = ({
         ),
       );
     } catch (error) {
-      console.error("좋아요 토글 실패:", error);
+      // console.error("좋아요 토글 실패:", error);
     }
   };
 
