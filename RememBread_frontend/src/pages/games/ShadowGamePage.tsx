@@ -45,7 +45,6 @@ const GameShadowPage = () => {
   const generateNewProblem = () => {
     const newIndices = getRandomIndices(level);
     setRandomIdx(newIndices);
-    
     setAnswerButtons(getAnswerButtons(newIndices));
   };
 
@@ -88,6 +87,8 @@ useEffect(() => {
                   ease: "easeInOut",
                 }
               });
+              // 애니메이션이 완료될 때까지 대기
+              await new Promise(resolve => setTimeout(resolve, getDuration(level) * 1000));
             }
           } catch (error) {
             if (!isCancelled) {
@@ -115,10 +116,8 @@ useEffect(() => {
       });
       
       // 모든 애니메이션 Promise 정리
-      animationPromises.forEach(promise => {
-        promise.catch(() => {
-          // 이미 취소된 애니메이션의 에러는 무시
-        });
+      Promise.all(animationPromises).catch(() => {
+        // 이미 취소된 애니메이션의 에러는 무시
       });
     };
   }, [isGameStarted, randomIdx, controls, level]);
